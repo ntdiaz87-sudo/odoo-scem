@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Heredar la vista form del partner -->
+    <record id="view_partner_form_cem_import_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.cem.import</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Quitar el atributo required del campo email -->
+            <field name="email" position="attributes">
+                <attribute name="required">0</attribute>
+                <attribute name="options">{'required': False}</attribute>
+            </field>
+
+            <!-- También quitar cualquier clase que indique obligatorio -->
+            <field name="email" position="before">
+                <attribute name="class" remove="o_required_modifier"/>
+            </field>
+
+        </field>
+    </record>
+
+    <!--&lt;!&ndash; Heredar la vista tree del partner (por si acaso) &ndash;&gt;
+    <record id="view_partner_tree_cem_import_inherit" model="ir.ui.view">
+        <field name="name">res.partner.tree.inherit.cem.import</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <field name="email" position="attributes">
+                <attribute name="required">0</attribute>
+            </field>
+        </field>
+    </record>-->
+
+</odoo>

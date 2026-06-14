@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SNIPPET: featured_products
+         NOTA CLAUDE CODE: portar el bloque 'featured_products' de preview/index.html
+         a este snippet, con la MISMA estructura que snippets/hero_split.xml:
+           1. <template id="s_cevende_featured_products"> con el HTML del bloque.
+           2. Registro en website.snippets para hacerlo arrastrable.
+         Para datos dinámicos (productos, precios) usar t-foreach sobre
+         product.template en vez de tarjetas estáticas. -->
+    <template id="s_cevende_featured_products" name="CEVENDE featured_products">
+        <!-- Pendiente: ver preview/index.html, sección featured_products -->
+    </template>
+</odoo>

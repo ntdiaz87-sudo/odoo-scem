@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- VIEWS -->
+
+    <record id="cem_virtual_contract_form_view" model="ir.ui.view">
+        <field name="name">cem.virtual.contract.form</field>
+        <field name="model">cem.virtual.contract</field>
+        <field name="arch" type="xml">
+            <form string="Virtual Contract" class="o_sale_order">
+                <header>
+                    <button name="action_sent" invisible="state not in ['pending', 'sent'] or not contract_file" type="object" string="Send"/>
+                    <button name="action_confirm" class="oe_highlight" invisible="state != 'accepted'" type="object" string="Confirm"
+                            confirm="Are you sure you want confirm this contract? This action can't be undone."/>
+                    <button name="action_cancel" invisible="state != 'confirmed'" type="object" string="Cancel"
+                            confirm="Are you sure you want cancel this contract? This action can't be undone."/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,sent,accepted,confirmed"
+                           readonly="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="code_gen_type" invisible="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <widget name="web_ribbon" title="Canceled" bg_color="text-bg-danger"
+                            invisible="state != 'canceled'"/>
+                    <div class="badge rounded-pill text-bg-secondary float-end fs-6 border-0"
+                         invisible="state != 'confirmed'">
+                        <i class="fa fa-lock"/>
+                        Locked
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="code"
+                                   readonly="code_gen_type == 'auto'"
+                                   placeholder="Specify the contract code..."/>
+                        </h1>
+                    </div>
+                    <group name="vc_header">
+                        <group name="partner_details">
+                            <field name="partner_id"
+                                   readonly="state != 'pending'"
+                                   widget="res_partner_many2one"
+                                   context="{'res_partner_search_mode': 'customer', 'show_address': 1}"
+                                   placeholder="Type to find a customer..."/>
+                        </group>
+                        <group name="vc_details">
+                            <field name="upload_date" readonly="state == 'accepted'"/>
+                            <field name="confirm_date"/>
+                            <field name="expiry_date" readonly="True"/>
+                            <field name="validity_perc" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="contract_file" readonly="state == 'accepted'"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="cem_virtual_contract_tree_view" model="ir.ui.view">
+        <field name="name">cem.virtual.contract.tree</field>
+        <field name="model">cem.virtual.contract</field>
+        <field name="arch" type="xml">
+            <tree class="o_sale_order" string="Virtual Contracts" decoration-muted="state == 'expired'" decoration-danger="state == 'canceled'">
+                <field name="state" column_invisible="True"/>
+                <field name="code"/>
+                <field name="partner_id"/>
+                <field name="upload_date"/>
+                <field name="confirm_date"/>
+                <field name="expiry_date"/>
+                <field name="validity_perc" widget="progressbar"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="cem_virtual_contract_search_view" model="ir.ui.view">
+        <field name="name">cem.virtual.contract.search</field>
+        <field name="model">cem.virtual.contract</field>
+        <field name="arch" type="xml">
+            <search string="Search Virtual Contract">
+                <field name="code" string="Virtual Contract" filter_domain="[('code', 'ilike', self)]"/>
+                <field name="partner_id"/>
+                <field name="state"/>
+                <filter string="Expire Today" name="f_expire_today"
+                        domain="[('expiry_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Expire in 7 days" name="f_expire_7_days"
+                        domain="[
+                        ('expiry_date', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                        ('expiry_date', '&lt;=', ((context_today()+relativedelta(days=7)).strftime('%Y-%m-%d')))]"/>
+                <group>
+                    <filter string="Confirmed" name="f_confirmed" domain="[('state', '=', 'confirmed')]"/>
+                    <filter string="Pending" name="f_ending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Sent" name="f_sent" domain="[('state', '=', 'sent')]"/>
+                    <filter string="Accepted" name="f_accepted" domain="[('state', '=', 'accepted')]"/>
+                    <filter string="Expired" name="f_expired" domain="[('state', '=', 'expired')]"/>
+                    <filter string="Canceled" name="f_canceled" domain="[('state', '=', 'canceled')]"/>
+                </group>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="state_group" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter name="customer" string="Customer" domain="[]" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ACTIONS (WINDOW) -->
+
+    <record id="cem_virtual_contract_action" model="ir.actions.act_window">
+        <field name="name">Virtual Contracts</field>
+        <field name="res_model">cem.virtual.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="cem_virtual_contract_search_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new virtual contract.
+            </p>
+        </field>
+    </record>
+
+    <menuitem
+            id="cem_vc"
+            name="Virtual Contracts"
+            parent="crm.crm_menu_sales"
+            action="cem_virtual_contract_action"
+            sequence="10"/>
+
+</odoo>

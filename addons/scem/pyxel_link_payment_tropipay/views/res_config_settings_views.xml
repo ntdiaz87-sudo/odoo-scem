@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pyxel.payment.tpp</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='sale_management']" position="inside">
+                <block title="Tropipay Settings" id="tpp_setting_container" name="tpp_setting_container">
+                     <setting id="sett_tpp_time_diff">
+                        <div class="mt16">
+                            <div class="mt16" title="Time difference respect Tropipay platform time zone">
+                                <label for="time_diff" class="col-lg-3"/>
+                                <field name="time_diff" required="True" class="text-center" style="width: 5rem;"/>
+                                <div class="d-inline-block">hours</div>
+                            </div>
+
+                        </div>
+                    </setting>
+                    <setting id="tpp_link_exp_hours">
+                        <div class="mt16" id="tpp_values_div">
+                            <div class="mt16" title="After this hours the Tropipay payment link expire">
+                                <label for="link_exp_hours" string="The Tropipay payment link expire after"/>
+                                <field name="link_exp_hours" class="text-center" style="width: 5rem;"/>
+                                <div class="d-inline-block">hours</div>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

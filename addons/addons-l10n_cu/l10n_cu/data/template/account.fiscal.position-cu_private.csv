@@ -1,0 +1,3 @@
+"id","name","country_id","note"
+"private_account_fiscal_position_mayorista","Ventas Mayoristas (PRIVADO Y COOPERATIVO)","base.cu","Las ventas mayoristas no estan gravadas."
+"private_account_fiscal_position_servicio_persona_jurid","Servicios Personas Jurídicas (PRIVADO Y COOPERATIVO)","base.cu","Los servicios a personas jurídicas no estan gravados."

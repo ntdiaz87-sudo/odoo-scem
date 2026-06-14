@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sale_order_view_form_inherit_cem" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.cem</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="pyxel_cem_sale.sale_order_view_form_inherit"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='payment_meth_ids_comp']" position="before">
+                <field name="is_website_order" invisible="1"/>
+                <field name="pricelist_id"
+                    string="Moneda"
+                    domain="[('active', '=', True)]"
+                    required="1"
+                    readonly="is_website_order"/>
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <menuitem
+        id="menu_sale_invoices"
+        name="Facturas"
+        parent="sale.sale_menu_root"
+        action="account.action_move_out_invoice_type"
+        sequence="45"
+    />
+
+
+</odoo>

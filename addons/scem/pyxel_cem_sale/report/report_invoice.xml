@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- SUB-TEMPLATE 1: Bloque de informaciones (cliente + dirección) | El elemento raíz lleva name="cem_informations_root" para que | los hijos puedan localizarlo con xpath //div[@name='...']. -->
+        <template id="invoice_informations_block">
+            <div id="informations_cem" name="cem_informations_root"
+                 class="row mt-3 mb-1"
+                 style="flex-direction: column; gap: 0.5rem;">
+                <div t-attf-class="#{'col-auto col-3 mw-100 d-flex align-items-center' if report_type != 'html' else 'col d-flex align-items-center'} mb-2">
+                    <strong style="width: 120px;">Cliente:</strong>
+                    <span t-field="o.partner_id.name" style="white-space: nowrap;"/>
+                    <br/>
+                    <strong style="width: 120px;">Dirección:</strong>
+                    <span t-esc="', '.join(filter(None, [
+                        o.partner_id.street,
+                        o.partner_id.street2,
+                        o.partner_id.city,
+                        (o.partner_id.state_id and o.partner_id.state_id.name) or '',
+                        o.partner_id.zip,
+                        (o.partner_id.country_id and o.partner_id.country_id.name) or ''
+                    ]))" style="white-space: nowrap;"/>
+                </div>
+            </div>
+            <br/>
+            <br/>
+        </template>
+
+        <!-- SUB-TEMPLATE 2: Bloque de detalles de pago (default genérico) | Raíz con name="cem_payment_details_root". | pyxel_cem_bank_provider hereda este template para añadir | datos bancarios cuando el proveedor los tiene registrados. -->
+        <template id="invoice_payment_details_block">
+            <div name="cem_payment_details_root"
+                 class="payment-details"
+                 style="border: 1px solid #000; padding: 15px; margin-top: 20px;">
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                            <strong>Beneficiario:</strong>
+                            <span>Proveedor Extranjero</span>
+                        </p>
+                        <p>
+                            <strong>Método de pago:</strong>
+                            <span>Transferencia bancaria en el exterior</span>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p>
+                            <strong>Moneda de Pago:</strong>
+                            <t t-esc="o.currency_id.name or ''"/>
+                        </p>
+                        <p>
+                            <strong>Estado de la mercancía:</strong>
+                            <span>Consignación</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- SUB-TEMPLATE 3: Tabla de firmas (default 4 columnas) | Raíz con name="cem_sign_table_root". | Los hijos que no la usen hacen replace de ese name. -->
+        <template id="invoice_sign_table_block">
+            <table name="cem_sign_table_root"
+                   style="width: 100%; border-collapse: collapse; margin-top: 30px;">
+                <tr>
+                    <td style="border: 1px solid #000; height: 80px; padding: 5px;">
+                        <strong>Realizada por:</strong>
+                    </td>
+                    <td style="border: 1px solid #000; height: 80px; padding: 5px;">
+                        <strong>Revisada por:</strong>
+                    </td>
+                    <td style="border: 1px solid #000; height: 80px; padding: 5px;">
+                        <strong>Aprobada por:</strong>
+                    </td>
+                    <td style="border: 1px solid #000; height: 80px; padding: 5px;">
+                        <strong>Contabilizada por:</strong>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- SECCIÓN DE GARANTÍAS -->
+            <t t-if="o.show_warranty_section">
+
+                <div style="page-break-before: always; margin-top: 50px;"></div>
+
+                <div class="container mt-4 warranty-section">
+                    <h2 class="text-center mb-4">GARANTÍAS</h2>
+
+                    <div class="row mt-4 mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <strong>Nota:</strong>
+                                La garantía aplica según las condiciones establecidas por el fabricante/proveedor.
+                                Para hacer válida la garantía, conserve esta factura en buen estado.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 style="color: #000; margin-bottom: 20px; border-bottom: 1px solid #000; padding-bottom: 10px;">
+                            Condiciones de Garantía
+                        </h2>
+
+                        <div t-field="o.company_id.company_warranty"
+                             t-options="{'widget': 'html'}"
+                             style="margin-top: 20px;"/>
+                    </div>
+                </div>
+
+                <div t-if="o.show_terms_conditions_section and o.display_terms_conditions"
+                     style="page-break-before: always;"></div>
+
+                <!-- TÉRMINOS Y CONDICIONES -->
+                <div t-if="o.show_terms_conditions_section and o.display_terms_conditions"
+                     class="terms-conditions-page"
+                     style="page-break-after: avoid;">
+
+                    <div style="margin: 2cm 1.5cm; min-height: 25cm;">
+                        <h2 style="text-align: center; margin-bottom: 30px; font-size: 18px;">
+                            <strong>TÉRMINOS Y CONDICIONES</strong>
+                        </h2>
+
+                        <div style="text-align: justify; line-height: 1.6; font-size: 11px;">
+                            <t t-raw="o.display_terms_conditions"/>
+                        </div>
+
+                        <div style="margin-top: 50px;">
+                            <div style="border-top: 1px solid #000; width: 200px; margin-top: 30px; padding-top: 5px;">
+                                <small>Firma del Cliente</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </t>
+        </template>
+
+        <!-- SUB-TEMPLATE 4: Footer de contacto de la empresa | Raíz con name="cem_footer_contact_root". -->
+        <template id="invoice_footer_contact_block">
+            <div name="cem_footer_contact_root"
+                 style="width: 100%; margin-top: 50px; font-size: 10px;
+                        display: flex; justify-content: flex-end;">
+                <div style="text-align: right; line-height: 1.4;">
+                    <div t-if="o.company_id">
+                        <t t-esc="o.company_id.name"/>
+                        <br/>
+                        <t t-esc="o.company_id.street or ''"/>
+                        <br/>
+                        <t t-esc="(o.company_id.city or '') + ', ' + (o.company_id.country_id.name or '')"/>
+                        <br/>
+                    </div>
+                    <div t-if="o.company_id.phone">
+                        Tel:
+                        <t t-esc="o.company_id.phone"/>
+                    </div>
+                    <br t-if="o.company_id.phone"/>
+                    <div t-if="o.company_id.email">
+                        Email:
+                        <t t-esc="o.company_id.email"/>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+
+        <!-- LAYOUT HEADER: herencia del external_layout_standard de Odoo | Añade logo, NIT, REEUP, No.Factura y Fecha en 3 columnas. -->
+        <template id="external_layout_standard_inherit"
+                  inherit_id="web.external_layout_standard">
+            <xpath expr="//div[@class='row'][1]" position="replace">
+                <div class="row text-center align-items-center">
+                    <div class="col-4">
+                        <img t-if="company and company.logo"
+                             t-att-src="image_data_uri(company.logo)"
+                             style="max-height: 60px; margin: auto;" alt="Logo"/>
+                    </div>
+                    <t t-if="o and o._name == 'account.move' and o.move_type == 'out_invoice'">
+                        <div class="col-4">
+                            <p style="margin: 0;">
+                                <strong>NIT:</strong>
+                                <t t-esc="company and company.nit or ''"/>
+                            </p>
+                            <p style="margin: 0;">
+                                <strong>REEUP:</strong>
+                                <t t-esc="company and company.reeup or ''"/>
+                            </p>
+                        </div>
+                        <div class="col-4">
+                            <p style="margin: 0;">
+                                <strong>No. Factura:</strong>
+                                <t t-esc="o.name or ''"/>
+                            </p>
+                            <p style="margin: 0;">
+                                <strong>Fecha:</strong>
+                                <t t-if="o._fields.get('invoice_date') and o.invoice_date">
+                                    <t t-esc="o.invoice_date"/>
+                                </t>
+                            </p>
+                        </div>
+                    </t>
+                </div>
+            </xpath>
+        </template>
+
+
+        <!-- PADRE PRINCIPAL: report_invoice_document_cem_inherit | Único template que hereda de account.report_invoice_document. | Los hijos heredan de ESTE template o de sus sub-templates. -->
+        <template id="report_invoice_document_cem_inherit"
+                  inherit_id="account.report_invoice_document">
+
+            <!-- 1. Oculta bloque de dirección original del abuelo -->
+            <xpath expr="//div[hasclass('row')]" position="attributes">
+                <attribute name="t-if">o.move_type not in ('out_invoice', 'out_refund', 'out_receipt')</attribute>
+            </xpath>
+            <!-- 2. Columna IMPUESTOS en thead: condicional por empresa -->
+            <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']"
+                   position="attributes">
+                <attribute name="t-if">o.move_type not in ('out_invoice', 'out_refund', 'out_receipt') and
+                    o.company_id.cem_show_invoice_taxes
+                </attribute>
+            </xpath>
+
+            <!-- 3. Celda de impuestos en tbody: condicional por empresa -->
+            <xpath expr="//table[@name='invoice_line_table']//tbody//tr//td[@name='td_taxes']"
+                   position="attributes">
+                <attribute name="t-if">o.move_type not in ('out_invoice', 'out_refund', 'out_receipt') and
+                    o.company_id.cem_show_invoice_taxes
+                </attribute>
+
+
+            </xpath>
+
+            <!-- 4. Redirige tax totals al sub-template custom -->
+            <t t-call="account.document_tax_totals" position="attributes">
+                <attribute name="t-call">pyxel_cem_sale.document_tax_totals</attribute>
+            </t>
+
+            <!-- 5. Cabecera columna subtotal en español -->
+            <xpath expr="//th[@name='th_subtotal']" position="replace">
+                <th name="th_subtotal" class="text-end">
+                    <span>Importe</span>
+                </th>
+            </xpath>
+
+            <!-- 6. Watermark Paid / Canceled -->
+            <xpath expr="//div[hasclass('page')]" position="before">
+                <div class="row"
+                     t-if="o.move_type in ('out_invoice', 'out_refund', 'out_receipt') and report_type == 'pdf' and (o.payment_state in ('paid', 'in_payment') or o.state == 'cancel')"
+                     style="height:0px; width:100%; margin-left:10%; margin-top:0%;">
+                    <div class="col-6" name="watermark">
+                        <span t-if="o.payment_state in ('paid', 'in_payment') and o.env.company.cem_print_paid_waterm"
+                              style="-webkit-transform:rotate(-45deg); color:green; font-size:12em;
+                                     text-align:center; position:absolute; opacity:0.2;">
+                            Paid
+                        </span>
+                        <span t-elif="o.state == 'cancel'"
+                              style="-webkit-transform:rotate(-45deg); color:red; font-size:12em;
+                                     text-align:center; position:absolute; opacity:0.2;">
+                            Canceled
+                        </span>
+                    </div>
+                </div>
+            </xpath>
+
+            <!-- 7. H2 centrado -->
+            <xpath expr="//h2" position="attributes">
+                <attribute name="t-attf-class">{{ 'text-center' if o.move_type in ('out_invoice', 'out_refund',
+                    'out_receipt') else 'text-left'}}
+                </attribute>
+            </xpath>
+
+            <!-- 8. Elimina número de factura del h2 (va en el header) -->
+            <xpath expr="//h2/span[@t-field='o.name']" position="attributes">
+                <attribute name="t-if">o.move_type not in ('out_invoice', 'out_refund', 'out_receipt')</attribute>
+            </xpath>
+
+            <!-- 9. Bloque informaciones ? sub-template -->
+            <xpath expr="//div[@id='informations']" position="attributes">
+                <attribute name="t-if">o.move_type not in ('out_invoice', 'out_refund', 'out_receipt')</attribute>
+            </xpath>
+            <xpath expr="//div[@id='informations']" position="after">
+                <t t-if="o.move_type in ('out_invoice', 'out_refund', 'out_receipt')">
+                    <t t-call="pyxel_cem_sale.invoice_informations_block"/>
+                </t>
+            </xpath>
+
+            <!-- 10. Bloques post-tabla: pago, firmas, footer via sub-templates -->
+            <xpath expr="//div[contains(@class, 'clearfix')]" position="after">
+                <t t-if="o.move_type in ('out_invoice', 'out_refund', 'out_receipt')">
+                    <br/>
+                    <br/>
+                    <t t-call="pyxel_cem_sale.invoice_payment_details_block"/>
+                    <br/>
+                    <br/>
+                    <t t-call="pyxel_cem_sale.invoice_sign_table_block"/>
+                    <t t-call="pyxel_cem_sale.invoice_footer_contact_block"/>
+                </t>
+            </xpath>
+
+            <!-- 11. Elimina bloque de términos de pago estándar -->
+            <xpath expr="//div[@id='payment_term']" position="attributes">
+                <attribute name="t-if">o.move_type in ('out_invoice', 'out_refund', 'out_receipt')</attribute>
+            </xpath>
+
+        </template>
+
+
+        <!-- TAX TOTALS custom con condicional cem_show_invoice_taxes -->
+        <template id="document_tax_totals"
+                  inherit_id="account.document_tax_totals"
+                  primary="True">
+            <xpath expr="//t[@t-foreach]" position="attributes">
+                <attribute name="t-if">(o.company_id.cem_show_invoice_taxes and o.move_type in ('out_invoice',
+                    'out_refund', 'out_receipt')) or o.move_type not in ('out_invoice', 'out_refund', 'out_receipt')
+                </attribute>
+            </xpath>
+            <t t-call="account.tax_groups_totals" position="attributes">
+                <attribute name="t-if">(o.company_id.cem_show_invoice_taxes and o.move_type in ('out_invoice',
+                    'out_refund', 'out_receipt')) or o.move_type not in ('out_invoice', 'out_refund', 'out_receipt')
+                </attribute>
+            </t>
+        </template>
+
+    </data>
+</odoo>

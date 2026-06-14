@@ -1,0 +1,67 @@
+# -*- coding: utf-8 -*-
+{
+    'name': "Pyxel Shop Cuba Electrónica Website Sales",
+    'summary': "Tienda online CEVENDE — e-commerce con venta minorista y mayorista",
+    'author': "Pyxel Solutions",
+    'website': "http://www.pyxelsolutions.com",
+    'category': 'Uncategorized',
+    'version': '0.1',
+
+    'depends': [
+        'base',
+        'web',
+        'pyxel_cem_website_sale',
+        'pyxel_cem_configuration',
+        'pyxel_cem_website_account',
+        'pyxel_cem_delivery_methods',
+        'sale',
+        'account',
+        'payment',
+    ],
+
+    'data': [
+        "data/categorias.xml",
+        "data/sequence.xml",
+
+        'security/ir.model.access.csv',
+        'views/topbar.xml',
+        'views/checkout.xml',
+        'views/mayorista_checkout.xml',
+        'views/home_page_template.xml',
+        'views/product_template_views.xml',
+        'views/carousel_customization_views.xml',
+        'views/register_template.xml',
+        'views/report_sale_order.xml',
+        'views/footer.xml',
+        'views/about_us_template.xml',
+        'views/website_invoice.xml',
+        'views/website_views.xml',
+        'views/website_sale_templates.xml',
+        'views/website_filter_products.xml',
+        'views/sale_order_view.xml',
+        'views/res_partner_view.xml',
+        'views/report_invoice_custom.xml',
+        'views/res_company_views.xml',
+        'views/cron_job.xml',
+        'views/signup_templates.xml',
+        'views/crm_lead_views.xml',
+        'views/payment_provider_views.xml',
+    ],
+
+    'installable': True,
+    'auto_install': False,
+
+    'assets': {
+        'web.assets_frontend': [
+            'pyxel_cubaelectronica_website/static/src/css/home_page.css',
+            'pyxel_cubaelectronica_website/static/src/css/custom.scss',
+            'pyxel_cubaelectronica_website/static/src/css/footer.scss',
+            'pyxel_cubaelectronica_website/static/src/css/about_us.scss',
+            'pyxel_cubaelectronica_website/static/src/js/about_us.js',
+            'pyxel_cubaelectronica_website/static/src/js/utils/formatting.js',
+            'pyxel_cubaelectronica_website/static/src/css/registration_extension.scss',
+            'pyxel_cubaelectronica_website/static/src/js/registration_extension.js',
+            'pyxel_cubaelectronica_website/static/src/js/cevende_main.js',
+        ],
+    },
+}

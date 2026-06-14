@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="theme_scita_top_dealers_snippet" name="Client Snippet 4">
+        <section id="top_dealers_snippet" class="our-clients four-client-snippet oe_top_dealers_section" data-disp='client_snippet' style="background-image: url('/web/image/theme_scita.top_dealer_background_image');">
+            <div class="container">
+               <div class="section-title-wrapper d-flex flex-wrap  justify-content-between align-items-center">
+                    <h2 class="section-title style1">Top Dealers</h2>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="theme_scita_top_dealers_snippet_data" name="Client Snippet 4">
+        <div class="container">
+           <div class="section-title-wrapper d-flex flex-wrap  justify-content-between align-items-center">
+                <h2 class="section-title style1">Top Dealers</h2>
+            </div>
+            <div class="row dealers-block-wrapper" id="scita-top-deals">
+                <t t-foreach="top_dealers_details[:6]" t-as="dealer">
+                    <div class="col-md-6 col-lg-4 dealers-block-inner">
+                        <div class="dealers-block">
+                            <div class="block-top">
+                                <div class="logo">
+                                    <a href="#">
+                                        <img t-att-alt="dealer.name" t-att-src="website.image_url(dealer, 'image_1920')" t-att-title="dealer.name"/>
+                                    </a>
+                                </div>
+                                <div class="product-disc">
+                                    <h3 class="title"><t t-esc="dealer.product_count"/> Products</h3>
+                                </div>
+                            </div>
+                            <div class="block-bottom">
+                                <ul>
+                                    <li>
+                                        <img src="/web/image/theme_scita.top_dealer_location_svg" alt="Location" title="Location"/>
+                                        <p>
+                                            <span t-esc="dealer.street"/>
+                                            <span t-esc="dealer.street2"/>
+                                            <span t-esc="dealer.city"/>
+                                            <span t-esc="dealer.state_id.name"/>
+                                            <span t-esc="dealer.country_id.name"/>
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <img src="/web/image/theme_scita.top_dealer_phone_svg_img" alt="Contact" title="Contact"/>
+                                        <p>
+                                            <a href="#" t-att-title="dealer.phone"><span t-esc="dealer.phone"/></a>
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+</odoo>

@@ -1,0 +1,350 @@
+#notification-bell-desktop,
+#notification-bell-mobile {
+    position: relative;
+    display: none;
+}
+
+#notification-bell-desktop {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    #notification-bell-desktop {
+        display: none !important;
+    }
+
+    #notification-bell-mobile {
+        display: block !important;
+    }
+}
+
+/* === CONTADOR === */
+.notif-counter {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+    padding: 1px 5px;
+    min-width: 16px;
+    line-height: 1;
+    text-align: center;
+    z-index: 1001;
+    transform: none;
+}
+
+/* === CAMPANA con animación === */
+.notification-toggle .fa-bell {
+    transition: transform 0.3s ease;
+}
+
+.notification-toggle:hover .fa-bell {
+    animation: bell-rotate 0.6s ease;
+}
+
+@keyframes bell-rotate {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(-15deg); }
+    50% { transform: rotate(15deg); }
+    75% { transform: rotate(-10deg); }
+    100% { transform: rotate(0); }
+}
+
+/* === POPUP === */
+.notif-popup {
+    position: absolute;
+    top: 120%;
+    right: 0;
+    width: 300px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
+    padding: 12px;
+    font-size: 14px;
+    color: #212529;
+    transition: opacity 0.3s ease;
+}
+
+/* === TRIÁNGULO - sigue apuntando a la campana === */
+.notif-popup::before,
+.notif-popup::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    right: 20px; /* Mantiene el triángulo hacia la campana */
+}
+
+.notif-popup::before {
+    border-width: 0 8px 10px 8px;
+    border-style: solid;
+    border-color: transparent transparent #ccc transparent;
+    z-index: 1001;
+}
+
+.notif-popup::after {
+    top: -9px;
+    border-width: 0 7px 9px 7px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
+    z-index: 1002;
+}
+
+/* === ANIMACIONES === */
+.notif-popup.fade-in {
+    opacity: 0;
+    animation: fadeInNotif 0.3s ease forwards;
+}
+
+.notif-popup.fade-out {
+    opacity: 1;
+    animation: fadeOutNotif 0.3s ease forwards;
+}
+
+@keyframes fadeInNotif {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutNotif {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+}
+
+/* === LISTA DE NOTIFICACIONES === */
+.notification-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.notif-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eaeaea;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-item.unread {
+    background-color: #f8fbff; /* Fondo azul muy claro */
+    border-left: 4px solid #2e6bdc; /* Borde lateral azul */
+    padding-left: 11px; /* Ajuste por el borde */
+}
+
+.notif-item.unread:hover {
+    background-color: #e6f0ff !important; /* Azul más intenso al hover */
+    box-shadow: 0 2px 5px rgba(46, 107, 220, 0.1);
+}
+
+/* Icono de check (inicialmente oculto) */
+.notif-item.unread:hover::after {
+    content: "\f00c"; /* Icono check de FontAwesome */
+    font-family: 'FontAwesome';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #28a745; /* Verde */
+    font-size: 14px;
+}
+
+.notif-item:not(.unread) {
+    background-color: #ffffff;
+    color: #666;
+}
+
+.notif-item:not(.unread):hover {
+    background-color: #f9f9f9 !important;
+}
+
+/* ===== MEJORAS ADICIONALES RECOMENDADAS ===== */
+
+/* Transición suave para todos los items */
+.notif-item {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Efecto de elevación al hacer hover */
+.notif-item:hover {
+    transform: translateY(-1px);
+    z-index: 1;
+}
+
+.notif-item.portal {
+    border-right: 2px solid rgba(23, 162, 184, 0.1); /* Azul turquesa */
+}
+
+.notif-item.internal {
+    border-right: 2px solid rgba(111, 66, 193, 0.1); /* Morado */
+}
+
+/* Color diferente para tipos de notificación */
+.notif-item.portal:hover {
+    border-left: 3px solid #17a2b8; /* Azul turquesa */
+}
+
+.notif-item.internal:hover {
+    border-left: 3px solid #6f42c1; /* Morado */
+}
+
+
+/* Efecto de elevación al hacer hover */
+// .notif-item:hover {
+//     transform: translateX(2px);
+//     box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+// }
+
+.notif-message {
+    margin-bottom: 4px;
+    line-height: 1.4;
+     white-space: normal;
+    word-wrap: break-word;
+}
+
+.notif-message br {
+    display: block;
+    content: "";
+    margin-top: 5px;
+}
+
+.notif-message span.notif-order-name {
+    color: #2e6bdc; /* Azul corporativo */
+    font-weight: 600;
+}
+
+.notif-products {
+    display: inline-block;
+    margin-top: 5px;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.notif-message .notif-sale {
+    color: #17a2b8; /* Azul turquesa */
+    font-weight: 600;
+}
+
+.notif-message .notif-sale::before {
+    content: "✓✓ ";
+    color: #28a745; /* Verde para doble check */
+}
+
+.notif-message span.notif-products {
+    color: #28a745; /* Verde para productos */
+}
+
+.notif-message span.notif-order-name::after {
+    content: " ";
+    white-space: pre;
+}
+
+/* Estilos específicos para notificaciones de confirmación */
+.notif-message .notif-confirmation {
+    color: #28a745; /* Verde para confirmaciones */
+    font-weight: 500;
+}
+
+.notif-message .notif-products {
+    font-style: italic;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+/* Estilos para notificaciones de pagos */
+.notif-message .notif-paid {
+    color: #28a745; /* Verde para pagos */
+    font-weight: 600;
+}
+
+.notif-message .notif-paid::before {
+    content: "✓ ";
+}
+
+/* Estilos para notificaciones de entrega */
+.notif-message .notif-delivered {
+    color: #20c997; /* Verde turquesa */
+    font-weight: 600;
+}
+
+.notif-message .notif-delivered::before {
+    content: "🚚 "; /* Ícono de camión de entrega */
+    margin-right: 5px;
+}
+
+
+
+.notification-date {
+    font-size: 12px;
+    color: #888;
+}
+
+.notification-toggle.animate-bell .fa-bell {
+    animation: bell-arrival 0.6s ease;
+}
+
+.notif-order-link {
+    margin-top: 4px;
+}
+
+.notif-order-link a {
+    color: #17a2b8;
+    font-size: 12px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.notif-order-link a:hover {
+    color: #0d6e7e;
+    text-decoration: underline;
+}
+
+@keyframes bell-arrival {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(-15deg); }
+    50% { transform: rotate(15deg); }
+    75% { transform: rotate(-10deg); }
+    100% { transform: rotate(0); }
+}
+
+/* === MOBILE === */
+@media (max-width: 768px) {
+    .notif-popup {
+        right: 0;
+        left: auto;
+        transform: none;
+        max-width: 90vw;
+        min-width: 250px;
+    }
+
+    .notif-popup::before,
+    .notif-popup::after {
+        right: 20px;
+        left: auto;
+        transform: none;
+    }
+
+    .notif-counter {
+        top: 0;
+        right: 0;
+        transform: translate(45%, -45%);
+    }
+}

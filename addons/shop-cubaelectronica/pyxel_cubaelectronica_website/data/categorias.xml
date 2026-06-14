@@ -1,0 +1,11 @@
+<odoo>
+    <data noupdate="1">
+        <record id="mas_vendidos" model="product.category">
+            <field name="name">Más vendidos</field>
+        </record>
+
+        <record id="ofertas_descuentos" model="product.category">
+            <field name="name">Ofertas y descuentos</field>
+        </record>
+    </data>
+</odoo>

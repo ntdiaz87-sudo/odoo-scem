@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <template id="pricelist_list_custom" name="Pricelist Dropdown Custom">
+        <!--
+            FIX CRÍTICO: t-nocache
+            Sin esto Odoo cachea el header y sirve la moneda vieja
+            aunque la sesión ya tenga la nueva selección del usuario.
+            Efecto: cambias a USD, el servidor lo guarda, pero el header
+            sigue mostrando EUR porque devuelve HTML cacheado.
+        -->
+        <t t-nocache="pricelist dropdown depends on session currency">
+            <t t-set="curr_pl" t-value="request.website._get_current_pricelist()"/>
+            <t t-set="available_pricelists" t-value="request.website.get_pricelist_available(show_visible=True)"/>
+
+            <div class="o_pricelist_dropdown dropdown"
+                 t-if="available_pricelists and len(available_pricelists) > 1">
+
+                <a role="button"
+                   href="#"
+                   class="dropdown-toggle btn btn-outline-secondary border-0"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <small>
+                        <t t-esc="curr_pl.currency_id.symbol"/>
+                        <t t-esc="' '"/>
+                        <t t-esc="curr_pl.currency_id.name"/>
+                    </small>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end" role="menu">
+                    <t t-foreach="available_pricelists" t-as="pl">
+                        <a role="menuitem"
+                           t-att-href="'/shop/change_pricelist/%s?r=%s' % (
+                               pl.id,
+                               request.httprequest.path + (
+                                   ('?' + request.httprequest.query_string.decode('utf-8'))
+                                   if request.httprequest.query_string else ''
+                               )
+                           )"
+                           t-attf-class="dropdown-item js_change_currency #{pl.id == curr_pl.id and 'active' or ''}"
+                           t-att-data-pl-id="pl.id"
+                           t-att-data-currency-name="pl.currency_id.name">
+                            <span class="switcher_pricelist" t-att-data-pl_id="pl.id">
+                                <t t-esc="pl.currency_id.symbol"/>
+                                <t t-esc="' '"/>
+                                <t t-esc="pl.currency_id.name"/>
+                            </span>
+                            <t t-if="pl.id == curr_pl.id">
+                                <i class="fa fa-check text-success ms-2 small"/>
+                            </t>
+                        </a>
+                    </t>
+                </div>
+            </div>
+
+            <div t-if="available_pricelists and len(available_pricelists) == 1"
+                 class="d-flex align-items-center px-2">
+                <small class="text-muted">
+                    <t t-esc="curr_pl.currency_id.symbol"/>
+                    <t t-esc="' '"/>
+                    <t t-esc="curr_pl.currency_id.name"/>
+                </small>
+            </div>
+        </t>
+    </template>
+
+
+    <template id="custom_header_currency" inherit_id="website.template_header_default">
+        <xpath expr="//ul[@class='navbar-nav align-items-center gap-2 flex-shrink-0 justify-content-end ps-3']"
+               position="before">
+            <li class="nav-item" role="presentation" style="list-style: none;">
+                <t t-call="pyxel_cem_website_sale.pricelist_list_custom"/>
+            </li>
+            <li class="nav-item" role="presentation" style="list-style: none;">
+                <t t-call="pyxel_cem_website_sale.tracking_order_menu_item"/>
+            </li>
+        </xpath>
+    </template>
+
+
+    <template id="tracking_order_menu_item" name="Tracking Order Menu Item">
+        <a href="/shop/tracking_order" class="nav-link">
+            <i class="fa fa-truck"/>
+            Rastrear Orden
+        </a>
+    </template>
+
+    <template id="tracking_order_page" name="Tracking Order Page">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <div class="container traking-order-container my-5">
+                    <div class="traking-info text-center mb-4">
+                        <h1>Order Tracking</h1>
+                        <p>To track your order, enter your Order ID in the box below and press "Track Order".</p>
+                    </div>
+                    <div class="traking-form">
+                        <form action="/shop/tracking_order" method="post"
+                              class="mx-auto" style="max-width: 500px;">
+                            <input type="hidden" name="csrf_token"
+                                   t-att-value="request.csrf_token()"
+                                   t-nocache="The csrf token must always be up to date."/>
+                            <t t-if="error">
+                                <div class="alert alert-danger" role="alert">
+                                    <strong t-esc="error"/>
+                                </div>
+                            </t>
+                            <div class="mb-3">
+                                <label for="order_id" class="form-label">Order ID</label>
+                                <input type="text" class="form-control" name="order_id"
+                                       id="order_id" placeholder="Find in the mail" required="1"/>
+                            </div>
+                            <div class="mb-3">
+                                <label for="invoice_id" class="form-label">Invoice Email</label>
+                                <input type="email" class="form-control" name="invoice_id"
+                                       id="invoice_id" placeholder="Enter your email" required="1"/>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Track Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

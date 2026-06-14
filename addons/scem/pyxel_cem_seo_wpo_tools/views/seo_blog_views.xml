@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_blog_post_seo_form" model="ir.ui.view">
+        <field name="name">blog.post.seo.form.extension</field>
+        <field name="model">blog.post</field>
+        <field name="inherit_id" ref="website_blog.view_blog_post_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group name="seo" string="Optimización SEO" colspan="2">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"/>
+                        Optimiza tu entrada de blog para los motores de búsqueda
+                    </div>
+                    <group>
+                        <field name="seo_custom_title" placeholder="Título SEO (50-60 caracteres)"/>
+                        <field name="website_meta_description" placeholder="Meta descripción (50-160 caracteres)"/>
+                        <field name="seo_h1_text" placeholder="Texto de la etiqueta H1"/>
+                        <field name="seo_focus_keyword" placeholder="Palabra clave principal"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

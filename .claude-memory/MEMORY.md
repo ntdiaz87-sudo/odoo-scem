@@ -1,0 +1,8 @@
+- [Imágenes dentro del proyecto](imagenes-dentro-del-proyecto.md) — copiar siempre las imágenes del usuario al módulo, mantener aspecto, cache-bust con ?v=N
+- [Flujo compra minorista/mayorista](flujo-compra-minorista-mayorista.md) — minorista /cevende/checkout vs mayorista /shop/order_request, elegidos por botón; Tropipay redirige con local=False
+- [Entrega por zona del producto](entrega-por-zona-del-producto.md) — se quitó el modal de zona; cada producto lleva provincia/municipio de entrega; desactivar vista layout (no el modal)
+- [Proyecto Agrimpex y rediseño](agrimpex-proyecto-y-rediseno.md) — odoo_agrimpex clon rebrandeado de CEIMPEX (puerto 8369, db agrimpex_dev); sitio público aún con marca CUPET, rediseño pendiente
+- [Verificar diseño con puppeteer](verificar-diseno-con-puppeteer.md) — en maquetación, SIEMPRE capturar la página real (puppeteer+login) y comparar con el mockup antes de mostrar; tool en tmp_manifests/ppt
+- [No preguntar rutina](no-preguntar-rutina.md) — no consultar acciones de rutina (PowerShell, comandos, -u, capturas); solo preguntar decisiones de diseño/negocio
+- [SMTP pyxelsolution / Cloudflare](smtp-pyxelsolution-cloudflare.md) — mail.pyxelsolution.com resuelve a Cloudflare (sin SMTP); el real es 51.75.242.31:587 STARTTLS; fix con extra_hosts en docker-compose
+- [Diseño de facturas Odoo](diseno-facturas-odoo.md) — facturas sin diseño = compañía sin external_report_layout_id; layout boxed + verde; bug es_ES "Amount"→"Cantidad" (debe ser Importe); falta NIT real

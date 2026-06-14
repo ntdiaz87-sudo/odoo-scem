@@ -1,0 +1,28 @@
+
+// Colors
+/*$o-color-palette1: o-safe-nth($o-color-palettes, $o-color-palette-number, ()) !default;
+// Original color palette can contain override of the default combinations (so keep 'null' values for this merge)
+$o-color-palette1: map-merge($-combination-additions, $o-color-palette);
+$o-color-palette1: map-merge($o-base-color-palette, o-map-omit($o-color-palette));
+*/
+$font-base-label:		 13px;
+$font-size-base-scita:         14px;
+$font-body:		         15px;
+$title:                  18px;
+$subtitle:			     38px;
+$theme:                  #f00;
+// @if o-color('theme') {
+//    $primary:   o-color('theme');
+// }
+
+$light-color:       #ffffff;
+$light-grey-color:  #f0f0f0;
+$dark-color:        #202020;
+$body-color:        #111111;
+$fot-label:			15px;
+$head-label:		15px;
+$black:				#000000;
+$dark-grey-color:	#484848;
+
+ /*$img-path:         '../img/';*/
+

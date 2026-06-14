@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_sale_delivered" model="mail.template">
+            <field name="name">CEM Sales: Order Delivered Confirmation</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">{{ object.company_id.name }}: (Order Fully Delivered {{ object.name or 'n/a' }})</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted }}</field>
+            <field name="description">Sent to customers when order has been fully delivered</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+                        Dear
+                        <t t-out="object.partner_id.name or ''">Brandon Freeman</t>.
+                        <br/>
+                        <br/>
+                        Your order
+                        <span style="font-weight:bold;" t-out="object.name or ''">SUB003</span>
+                        amounting in
+                        <span style="font-weight:bold;"
+                              t-out="format_amount(object.amount_total, object.currency_id) or ''">$ 143,750.00
+                        </span>
+                        from <t t-out="object.company_id.name or ''">YourCompany</t> has been fully delivered.
+                        <br/>
+                        It has been a pleasure serving you.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pyxel.cem</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Invoice Document Setting" id="cem_sale_invoice_sett"
+                       name="cem_sale_invoice_wtm_sett">
+                    <setting id="wt_mark"
+                             title="Mark this option to print a 'Paid' watermark in invoice document.">
+                        <field name="cem_print_paid_waterm" class="o_light_label"/>
+                    </setting>
+                    <setting id="show_taxes"
+                             title="Mark this option to show taxes data in invoice document.">
+                        <field name="cem_show_invoice_taxes" class="o_light_label"/>
+                    </setting>
+                </block>
+            </xpath>
+
+            <xpath expr="//app[@name='sale_management']" position="inside">
+                <block title="Supplier Management" name="supplier_management_block">
+                    <setting id="supplier_management_setting"
+                             string="Supplier Management"
+                             help="Enable supplier management features.">
+                        <field name="supplier_management"/>
+                    </setting>
+                </block>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

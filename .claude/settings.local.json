@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import rarfile; print\\('rarfile ok'\\)\")",
+      "Bash(python3 -c \"import zipfile; print\\('zipfile ok'\\)\")",
+      "Bash(find \"/mnt/c/Users/demov/Downloads/Grancomerx/Grancomex\" -type f | head -80)",
+      "Read(//mnt/c/Users/demov/Downloads/Grancomerx/**)",
+      "Bash(docker compose *)",
+      "Bash(npx playwright *)",
+      "Bash(python3 -c \"from playwright.sync_api import sync_playwright; print\\('playwright ok'\\)\")"
+    ]
+  }
+}

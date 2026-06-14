@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "Submayor de Vacaciones",
+    "version": "17.0.1.0.0",
+    "description": """ Submayor de Vacaciones Description """,
+    "summary": """ Submayor de Vacaciones (v17) """,
+    "author": "Pyxel Solutions",
+    "website": "",
+    "category": "Human Resources/Employees",
+    "contributors": ["Leudis Estrada González <leudix.rafael@gmail.com>"],
+    "depends": ["base", "l10n_cu_hr_payroll"],
+    "data": [
+        "security/ir.model.access.csv",
+        "views/hr_submayor_views.xml",
+        "views/hr_employee_views.xml",
+        "wizards/hr_submayor_report.xml",
+        "reports/hr_submayor_report_view_report.xml",
+        "views/hr_payslip_views.xml",
+        "wizards/hr_payroll_vacaciones_views.xml",
+    ],
+    "application": True,
+    "installable": True,
+    "auto_install": False,
+    "license": "LGPL-3",
+}

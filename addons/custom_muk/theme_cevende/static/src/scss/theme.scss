@@ -1,0 +1,28 @@
+// ============================================================
+// CEVENDE - Hoja de estilos principal del tema
+// Las reglas completas están en preview/index.html (maqueta).
+// Aquí se portan a SCSS usando las variables del tema.
+// NOTA PARA CLAUDE CODE: trasladar los estilos del <style> de
+// preview/index.html a este fichero, sustituyendo los var(--cv-*)
+// por las variables SCSS de _variables.scss ($cv-*).
+// ============================================================
+
+@import 'variables';
+
+// Tipografía base
+body {
+  font-family: $cv-font;
+  color: $cv-text;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+// Contenedor
+.cv-container {
+  max-width: $cv-container;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+// ... (resto de estilos: ver preview/index.html como fuente de verdad)
+// Botones, topbar, header, hero, secciones, footer, responsive.

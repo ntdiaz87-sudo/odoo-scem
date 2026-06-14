@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Template PDF -->
+        <template id="report_sales_manager_reconciliation_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+
+                            <!-- Encabezado del Reporte -->
+                            <div class="text-center">
+                                <h2 style="margin-bottom: 20px;">CONCILIACIÓN DE GESTORES DE VENTAS</h2>
+                            </div>
+
+                            <!-- Información del Filtro -->
+                            <div class="row mt-3 mb-4"
+                                 style="border: 1px solid #ddd; padding: 15px; background-color: #f9f9f9;">
+                                <div class="col-6">
+                                    <strong>Período:</strong>
+                                    <span t-esc="doc.date_from.strftime('%d/%m/%Y') if doc.date_from else ''"/>
+                                    -
+                                    <span t-esc="doc.date_to.strftime('%d/%m/%Y') if doc.date_to else ''"/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Tipo de Documento:</strong>
+                                    <t t-if="doc.document_type == 'sale_order'">Pedidos de Venta</t>
+                                    <t t-elif="doc.document_type == 'invoice'">Facturas</t>
+                                    <!--                                    <t t-else>Ambos</t>-->
+                                </div>
+                                <t t-if="doc.sales_manager_id">
+                                    <div class="col-12 mt-2">
+                                        <strong>Gestor Seleccionado:</strong>
+                                        <span t-esc="doc.sales_manager_id.partner_id.name"/>
+                                        (<span t-esc="doc.sales_manager_id.code or 'Sin código'"/>)
+                                    </div>
+                                </t>
+                                <t t-if="doc.product_id">
+                                    <div class="col-12 mt-2">
+                                        <strong>Producto Filtrado:</strong>
+                                        <span t-esc="doc.product_id.display_name"/>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <!-- Obtener datos del reporte -->
+                            <t t-set="report_data" t-value="doc._get_report_data()"/>
+
+                            <!-- Verificar si hay datos -->
+                            <t t-if="not report_data">
+                                <div class="alert alert-warning text-center">
+                                    <strong>No se encontraron registros para los filtros seleccionados.</strong>
+                                </div>
+                            </t>
+
+                            <!-- Procesar datos por gestor -->
+                            <t t-else="">
+                                <!-- Filtrar solo líneas con comisión -->
+                                <t t-set="filtered_data" t-value="[item for item in report_data if item.get('commission_amount', 0) > 0 or item.get('product_commission_percent', 0) > 0]"/>
+
+                                <!-- Verificar si hay datos después del filtro -->
+                                <t t-if="not filtered_data">
+                                    <div class="alert alert-warning text-center">
+                                        <strong>No se encontraron registros con comisiones para los filtros seleccionados.</strong>
+                                    </div>
+                                </t>
+
+                                <t t-else="">
+                                    <!-- Agrupar por gestor -->
+                                    <t t-set="managers_dict" t-value="{}"/>
+                                    <t t-foreach="filtered_data" t-as="item">
+                                        <t t-set="manager_id" t-value="item['sales_manager_id']"/>
+                                        <t t-if="manager_id not in managers_dict">
+                                            <t t-set="dummy" t-value="managers_dict.update({manager_id: []})"/>
+                                        </t>
+                                        <t t-set="dummy" t-value="managers_dict[manager_id].append(item)"/>
+                                    </t>
+
+                                    <!-- Variables para totales generales -->
+                                    <t t-set="grand_total_sales" t-value="0.0"/>
+                                    <t t-set="grand_total_commission" t-value="0.0"/>
+
+                                    <!-- Iterar por cada gestor -->
+                                    <t t-foreach="sorted(managers_dict.keys())" t-as="manager_id">
+                                        <t t-set="manager_lines" t-value="managers_dict[manager_id]"/>
+                                        <t t-set="first_item" t-value="manager_lines[0]"/>
+
+                                        <!-- Encabezado del Gestor -->
+                                        <div class="mt-4 mb-3"
+                                             style="background-color: #4472C4; color: white; padding: 10px; font-weight: bold; font-size: 14px;">
+                                            GESTOR:
+                                            <span t-esc="first_item['sales_manager_name']"/>
+                                            (<span t-esc="first_item['sales_manager_code']"/>)
+                                        </div>
+
+                                        <!-- Tabla de detalles -->
+                                        <table class="table table-sm table-bordered" style="font-size: 9px;">
+                                            <thead style="background-color: #D3D3D3;">
+                                                <tr>
+                                                    <th class="text-center" style="width: 12%;">Documento</th>
+                                                    <th class="text-center" style="width: 8%;">Fecha</th>
+                                                    <th class="text-center" style="width: 10%;">Cód. Prod.</th>
+                                                    <th class="text-left" style="width: 25%;">Producto</th>
+                                                    <th class="text-right" style="width: 8%;">Cantidad</th>
+                                                    <th class="text-right" style="width: 10%;">P. Unit.</th>
+                                                    <th class="text-right" style="width: 12%;">Subtotal</th>
+                                                    <th class="text-right" style="width: 7%;">Com. %</th>
+                                                    <th class="text-right" style="width: 12%;">Imp. Com.</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Variables para totales del gestor -->
+                                                <t t-set="manager_total_sales" t-value="0.0"/>
+                                                <t t-set="manager_total_commission" t-value="0.0"/>
+
+                                                <t t-foreach="manager_lines" t-as="line">
+                                                    <tr>
+                                                        <td>
+                                                            <span t-esc="line['document_name']"/>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span t-esc="line['document_date'].strftime('%d/%m/%Y') if line['document_date'] else ''"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="line['product_code']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="line['product_name']"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="'{:,.2f}'.format(line['quantity'])"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="line.get('currency_symbol', '$')"/>
+                                                            <span t-esc="'{:,.2f}'.format(line['price_unit'])"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="line.get('currency_symbol', '$')"/>
+                                                            <span t-esc="'{:,.2f}'.format(line['price_subtotal'])"/>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="'{:.2f}'.format(line['product_commission_percent'])"/>
+                                                            %
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span t-esc="line.get('currency_symbol', '$')"/>
+                                                            <span t-esc="'{:,.2f}'.format(line['commission_amount'])"/>
+                                                        </td>
+                                                    </tr>
+
+                                                    <!-- Acumular totales del gestor -->
+                                                    <t t-set="manager_total_sales"
+                                                       t-value="manager_total_sales + line['price_subtotal']"/>
+                                                    <t t-set="manager_total_commission"
+                                                       t-value="manager_total_commission + line['commission_amount']"/>
+                                                </t>
+                                            </tbody>
+                                            <tfoot style="background-color: #E0E0E0; font-weight: bold;">
+                                                <tr>
+                                                    <td colspan="6" class="text-right">TOTAL GESTOR:</td>
+                                                    <td class="text-right">
+                                                        <span t-esc="first_item.get('currency_symbol', '$')"/>
+                                                        <span t-esc="'{:,.2f}'.format(manager_total_sales)"/>
+                                                    </td>
+                                                    <td></td>
+                                                    <td class="text-right">
+                                                        <span t-esc="first_item.get('currency_symbol', '$')"/>
+                                                        <span t-esc="'{:,.2f}'.format(manager_total_commission)"/>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+
+                                        <!-- Información del comprobante si existe -->
+                                        <t t-if="first_item.get('sales_proof_filename')">
+                                            <div class="mb-3" style="font-size: 9px; color: #666;">
+                                                <strong>Comprobante:</strong>
+                                                <span t-esc="first_item['sales_proof_filename']"/>
+                                            </div>
+                                        </t>
+
+                                        <!-- Acumular totales generales -->
+                                        <t t-set="grand_total_sales" t-value="grand_total_sales + manager_total_sales"/>
+                                        <t t-set="grand_total_commission"
+                                           t-value="grand_total_commission + manager_total_commission"/>
+
+                                        <!-- Salto de página entre gestores (excepto el último) -->
+                                        <t t-if="manager_id != sorted(managers_dict.keys())[-1]">
+                                            <div style="page-break-after: always;"/>
+                                        </t>
+                                    </t>
+
+                                    <!-- Resumen General -->
+                                    <div class="mt-5">
+                                        <h4 style="border-bottom: 2px solid #4472C4; padding-bottom: 5px; margin-bottom: 15px;">
+                                            Resumen General
+                                        </h4>
+
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <table class="table table-sm table-bordered"
+                                                       style="width: 50%; margin-left: auto; font-size: 11px;">
+                                                    <thead style="background-color: #D3D3D3;">
+                                                        <tr>
+                                                            <th style="width: 60%;">Concepto</th>
+                                                            <th class="text-right" style="width: 40%;">Importe</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <strong>Total Vendido</strong>
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <strong>
+                                                                    <t t-set="first_currency"
+                                                                       t-value="filtered_data[0].get('currency_symbol', '$') if filtered_data else '$'"/>
+                                                                    <span t-esc="first_currency"/>
+                                                                    <span t-esc="'{:,.2f}'.format(grand_total_sales)"/>
+                                                                </strong>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <strong>Total Comisión Generada</strong>
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <strong>
+                                                                    <span t-esc="first_currency"/>
+                                                                    <span t-esc="'{:,.2f}'.format(grand_total_commission)"/>
+                                                                </strong>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Estadísticas adicionales -->
+                                        <div class="row mt-4">
+                                            <div class="col-6">
+                                                <div style="border: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;">
+                                                    <strong>Total de Gestores:</strong>
+                                                    <span t-esc="len(managers_dict)"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div style="border: 1px solid #ddd; padding: 10px; background-color: #f9f9f9;">
+                                                    <strong>Total de Líneas con Comisión:</strong>
+                                                    <span t-esc="len(filtered_data)"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pie de página con información adicional -->
+                                    <div class="mt-5"
+                                         style="border-top: 1px solid #ddd; padding-top: 10px; font-size: 9px; color: #666;">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong>Fecha de emisión:</strong>
+                                                <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M')"/>
+                                            </div>
+                                            <div class="col-6 text-right">
+                                                <strong>Usuario:</strong>
+                                                <span t-esc="user.name"/>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12">
+                                                <strong>Estado de documentos:</strong>
+                                                <t t-if="doc.state == 'confirmed'">Confirmados</t>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </t>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!-- Definición del reporte PDF -->
+        <record id="action_report_sales_manager_reconciliation_pdf" model="ir.actions.report">
+            <field name="name">Conciliación de Gestores de Ventas</field>
+            <field name="model">sales.manager.reconciliation.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pyxel_sales_managers.report_sales_manager_reconciliation_document</field>
+            <field name="report_file">pyxel_sales_managers.report_sales_manager_reconciliation_document</field>
+            <field name="print_report_name">'Conciliacion_Gestores_%s_%s' % (object.date_from.strftime('%Y%m%d'),
+                object.date_to.strftime('%Y%m%d'))
+            </field>
+            <field name="binding_model_id" ref="model_sales_manager_reconciliation_wizard"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="base.paperformat_euro"/>
+        </record>
+
+    </data>
+</odoo>

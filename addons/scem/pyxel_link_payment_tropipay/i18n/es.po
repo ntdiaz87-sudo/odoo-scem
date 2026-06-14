@@ -1,0 +1,437 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pyxel_link_payment_tropipay
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-11 09:48+0000\n"
+"PO-Revision-Date: 2026-02-11 09:48+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pyxel_link_payment_tropipay
+#: model:mail.template,body_html:pyxel_link_payment_tropipay.mail_template_sale_confirmation_custom
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Dear <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Your order <span style=\"font-weight:bold;\" t-out=\"object.name or ''\"></span> has been confirmed.\n"
+"                        <br>\n"
+"                        Thank you for your trust!.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Do payment by: <span style=\"font-weight:bold;\" t-out=\"object.payment_meth_id.name or ''\"></span>.\n"
+"                        <br>\n"
+"                        Payment Link: <a t-attf-href=\"{{object.tpp_link}}\" target=\"_blank\"><span style=\"color:#1A0DAB\" t-out=\"object.tpp_link\"></span></a>\n"
+"                        <br>\n"
+"                        This link expire on: <span style=\"font-weight:bold;\" t-out=\"object.tpp_link_exp_date_str or ''\"></span>.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Su pedido ha sido confirmado.\n"
+"                        <br>\n"
+"                        Agradecemos su confianza.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Realizar el pago por: <span style=\"font-weight:bold;\" t-out=\"object.payment_meth_id.name or ''\"></span>\n"
+"                        <br>\n"
+"                        Enlace de pago: <a t-attf-href=\"{{object.tpp_link}}\" target=\"_blank\"><span style=\"color:#1A0DAB\" t-out=\"object.tpp_link\"></span></a>\n"
+"                        <br>\n"
+"                        Este enlace expira el: <span style=\"font-weight:bold;\" t-out=\"object.tpp_link_exp_date_str or ''\"></span>.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.res_config_settings_view_form_inherit
+msgid "After this hours the Tropipay payment link expire"
+msgstr "Transcurridas estas horas el enlace de pago en Tropipay caduca"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__amount
+msgid "Amount"
+msgstr "Cantidad"
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/sale_order.py:0
+#, python-format
+msgid ""
+"Can't posible resolve the Tropipay payment link of the order. Please check "
+"your connection to Tropipay or resolve the following issue. %s"
+msgstr ""
+"No es posible determinar el enlace de pago por Tropipay. Por favor revise la"
+" conexión a Tropipay o analice el siguiente aspecto. %s"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_payment_provider__client_id
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.payment_provider_form_inherit
+msgid "Client Id"
+msgstr "Id del Cliente"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.payment_provider_form_inherit
+msgid "Client Secret"
+msgstr "Contraseña del Cliente"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.pay_tpp_link_wizard_view_form
+msgid "Close"
+msgstr "Cerrar"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_payment_provider__code
+msgid "Code"
+msgstr "Código"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model,name:pyxel_link_payment_tropipay.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model,name:pyxel_link_payment_tropipay.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__display_name
+msgid "Display Name"
+msgstr "Nombre"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__partner_email
+msgid "Email"
+msgstr ""
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_sale_order__error_msg
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__error_msg
+msgid "Error Message"
+msgstr "Mensaje de error"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.pay_tpp_link_wizard_view_form
+msgid "Expires at"
+msgstr "Caduca el"
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Failed Connection"
+msgstr "Conexión fallida"
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Failed connection. Please, check your connection to Tropipay."
+msgstr "Conexión fallida. Por favor, revise su conexión a Tropipay."
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model,name:pyxel_link_payment_tropipay.model_tropipay_pay_link_wizard
+msgid "Generate Pay by Tropipay Link"
+msgstr "Generar enlace de pago"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.pay_tpp_link_wizard_view_form
+msgid "Generate Payment Link"
+msgstr "Generar enlace de pago"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.pay_tpp_link_wizard_view_form
+msgid "Generate and copy Link"
+msgstr "Generar y copiar el enlace"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_sale_order__is_fully_paid
+msgid "Is Fully Paid"
+msgstr "Totalmente pagado"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_res_company__link_exp_hours
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_res_config_settings__link_exp_hours
+msgid "Link Expiration Hours"
+msgstr "Horas de vigencia del enlace"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.view_order_form_inherit
+msgid "Link Pay by Tropipay"
+msgstr "Enlace Pago Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.actions.act_window,name:pyxel_link_payment_tropipay.action_generate_tpp_link
+msgid "Link to Pay by Tropipay"
+msgstr "Enlace para pagar por Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Must spcify address in client data."
+msgstr "Debe especificar la dirección en los datos del cliente."
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Must spcify country in client data."
+msgstr "Debe especificar el país/estado en los datos del cliente."
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Must specify language in partner data."
+msgstr "Debe especificar el lenguaje en los datos del cliente."
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Must specify phone in partner data."
+msgstr "Debe especificar el teléfono en los datos del cliente."
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/wizards/pay_tpp_link_wizard.py:0
+#, python-format
+msgid "No record found"
+msgstr "Registro no encontrado"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__partner_id
+msgid "Partner"
+msgstr "Socio"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_payment_provider__client_secret
+msgid "Password"
+msgstr "Contraseña"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_sale_order__pay_by_tpp
+msgid "Pay by Tropipay"
+msgstr "Pago por Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_sale_order__tpp_link
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__link
+msgid "Payment Link"
+msgstr "Enlace de pago"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__link_exp_date
+msgid "Payment Link Expiration Date"
+msgstr "Fecha de caducidad del enlace de pago"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model,name:pyxel_link_payment_tropipay.model_payment_provider
+msgid "Payment Provider"
+msgstr "Proveedor de pago"
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Please configure the Tropipay credentials."
+msgstr "Por favor configure las credenciales para Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__reference
+msgid "Reference"
+msgstr "Referencia"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__res_id
+msgid "Related Document ID"
+msgstr "ID Documento relacionado"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_tropipay_pay_link_wizard__res_model
+msgid "Related Document Model"
+msgstr "Modelo Documento relacionado"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model,name:pyxel_link_payment_tropipay.model_sale_order
+msgid "Sales Order"
+msgstr "Pedido de venta"
+
+#. module: pyxel_link_payment_tropipay
+#: model:mail.template,description:pyxel_link_payment_tropipay.mail_template_sale_confirmation_custom
+msgid "Sent to customers on order confirmation and Tropipay payment link"
+msgstr ""
+"Enviado a los clientes en la confirmación del pedido, también se envía el "
+"enlace de pago de Tropipay."
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/sale_order.py:0
+#, python-format
+msgid "Shopping in %s"
+msgstr "Compra en %s"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:payment.provider,auth_msg:pyxel_link_payment_tropipay.payment_provider_upi
+msgid "Your payment has been authorized."
+msgstr "Su pago ha sido autorizado."
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:payment.provider,cancel_msg:pyxel_link_payment_tropipay.payment_provider_upi
+msgid "Your payment has been cancelled."
+msgstr "Su pago ha sido cancelado."
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:payment.provider,pending_msg:pyxel_link_payment_tropipay.payment_provider_upi
+msgid ""
+"Your payment has been successfully processed but is waiting for approval."
+msgstr ""
+"Su pago ha sido satisfactoriamente procesado pero está en espera de "
+"aprobación."
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:payment.provider,done_msg:pyxel_link_payment_tropipay.payment_provider_upi
+msgid "Your payment has been successfully processed."
+msgstr "Su pago ha sido satisfactoriamente procesado."
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Successful Connection"
+msgstr "Conexión exitosa"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.payment_provider_form_inherit
+msgid "Test Connection"
+msgstr "Probar conexión"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.res_config_settings_view_form_inherit
+msgid "The Tropipay payment link expire after"
+msgstr "El enlace de pago por Tropipay expira después de"
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "The connection test was successful."
+msgstr "La prueba de conexión fue exitosa."
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "The link generation failed. %s"
+msgstr "La generación del enlace falló. %s"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,help:pyxel_link_payment_tropipay.field_payment_provider__code
+msgid "The technical code of this payment provider."
+msgstr "El código técnico de este proveedor de pagos."
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_res_company__time_diff
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_res_config_settings__time_diff
+msgid "Time Difference"
+msgstr "Diferencia horaria"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.res_config_settings_view_form_inherit
+msgid "Time difference respect Tropipay platform time zone"
+msgstr ""
+"Diferencia horaria respecto a la zona horaria de la plataforma Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#: model:payment.provider,name:pyxel_link_payment_tropipay.payment_provider_upi
+msgid "Tropipay"
+msgstr ""
+
+#. module: pyxel_link_payment_tropipay
+#: model:mail.template,name:pyxel_link_payment_tropipay.mail_template_sale_confirmation_custom
+msgid "Tropipay CEM Sales: Order Confirmation and Payment Link"
+msgstr "Tropipay CEM Ventas: Confirmación de pedido y enlace de pago"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields.selection,name:pyxel_link_payment_tropipay.selection__payment_provider__code__tropipay
+msgid "Tropipay Payment"
+msgstr "Pago Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#: model:ir.model.fields,field_description:pyxel_link_payment_tropipay.field_sale_order__tpp_link_exp_date
+msgid "Tropipay Payment Link Expiration"
+msgstr "Caducidad del enlace de pago por Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.res_config_settings_view_form_inherit
+msgid "Tropipay Settings"
+msgstr "Configuración Tropipay"
+
+#. module: pyxel_link_payment_tropipay
+#. odoo-python
+#: code:addons/pyxel_link_payment_tropipay/models/payment_provider.py:0
+#, python-format
+msgid "Unable to establish a connection. Please check your credentials."
+msgstr "No es posible esblecer la conexión. Por favor revise las credenciales."
+
+#. module: pyxel_link_payment_tropipay
+#: model_terms:ir.ui.view,arch_db:pyxel_link_payment_tropipay.res_config_settings_view_form_inherit
+msgid "hours"
+msgstr "horas"
+
+#. module: pyxel_link_payment_tropipay
+#: model:mail.template,subject:pyxel_link_payment_tropipay.mail_template_sale_confirmation_custom
+msgid ""
+"{{ object.company_id.name }}: Confirmed Order {{ object.name or 'n/a' }}"
+msgstr ""
+"{{ object.company_id.name }}: Pedido Confirmado {{ object.name or 'n/a' }}"

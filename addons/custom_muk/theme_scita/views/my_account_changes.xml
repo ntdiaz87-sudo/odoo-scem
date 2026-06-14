@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="side_content_add_class" inherit_id="portal.side_content" name='My Account Side Content'>
+        <xpath expr="//div[2]" position="attributes">
+            <attribute name='t-attf-class'>{{'offcanvas-body' if isOffcanvas else 'mt-3 rounded text-bg-light p-3'}}</attribute>
+        </xpath>
+        <xpath expr="//a[@href='/my/account']" position="attributes">
+            <attribute name='class'>btn btn-link mt-3</attribute>
+        </xpath>
+    </template>
+    <template id="my_account_home_page" inherit_id="portal.portal_layout" name='My Account Home Page'>
+        <xpath expr="//div[hasclass('o_portal_wrap')]//div[hasclass('d-none', 'd-lg-flex', 'justify-content-end', 'col-lg-4')]" position="attributes">
+            <attribute name='class'>d-none d-lg-flex justify-content-end col-lg-4 account-detail</attribute>
+        </xpath>
+         <xpath expr="//div[hasclass('o_portal_wrap')]//div[hasclass('row', 'justify-content-between')]" position="attributes">
+            <attribute name='class'>row justify-content-between align-items-start</attribute>
+        </xpath>
+        <xpath expr="//div[@id='accountOffCanvas']" position="attributes">
+            <attribute name='class'>offcanvas offcanvas-start d-lg-none account-detail</attribute>
+        </xpath>
+    </template>
+    <template id="my_account_user_details_page" inherit_id="portal.portal_my_details" name='My Account User Details Page'>
+        <xpath expr="//div[hasclass('clearfix', 'text-end', 'mb-5')]" position="attributes">
+            <attribute name='class'>clearfix mb-5 mt-3</attribute>
+        </xpath>
+        <xpath expr="//button[hasclass('btn', 'btn-primary', 'float-end')]" position="attributes">
+            <attribute name='class'>btn btn-primary</attribute>
+        </xpath>
+    </template>
+    <template id="my_security_details_page" inherit_id="portal.portal_my_security" name='My Security Details Page'>
+        <xpath expr="//div[hasclass('o_portal_security_body','w-md-75','w-lg-50','pb-5')]" position="attributes">
+            <attribute name='class'>o_portal_security_body w-md-75 pb-5</attribute>
+        </xpath>
+    </template>
+</odoo>

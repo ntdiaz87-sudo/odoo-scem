@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record model="ir.ui.view" id="mp_warehouse_inherit_view">
+        <field name="name">mp.warehouse.inherit.view</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="stock.view_warehouse"/>
+        <field name="arch" type="xml">
+            <page name="warehouse_config" position="after">
+                    <page string="Configuración para el MP" name="marketplace_config">
+                        <group>
+                            <group>
+                                <field name="name_mp"/>
+                                <field name="address_mp"/>
+                                <field name="phone_mp"/>
+                                <field name="mobile_mp"/>
+                                <field name="is_pick_up_in_store"/>
+                                <field name="horary_mp"/>
+                            </group>
+                        </group>
+                    </page>
+                </page>
+        </field>
+    </record>
+
+</odoo>

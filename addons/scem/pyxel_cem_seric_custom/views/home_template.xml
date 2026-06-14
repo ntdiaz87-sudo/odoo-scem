@@ -1,0 +1,913 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="home_template" name="Home Page">
+        <t t-call="website.layout">
+            
+            <t t-set="pricelist" t-value="request.env['website'].browse(request.website.id).pricelist_id"/>
+
+            <div>
+                <div class="section_1">
+                    <div class="banner-container" id="banner-container">
+
+                        <div class="info_banner">
+                            <h1 id="banner-title"></h1>
+                            <p id="banner-category" class="home-category-prod"></p>
+                            <p id="banner-description" class="home-descrip-prod"></p>
+                            <a id="banner-button" href="#" class="banner-button">Comprar ahora</a>
+                        </div>
+                    </div>
+
+                    <div class="banner-progress">
+                        <div class="banner-line-progress"/>
+                    </div>
+
+                    <div class="banner_blur"/>
+
+                    <button id="banner-prev">
+                        <svg width="53" height="51" viewBox="0 0 53 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M26.5 49C12.8923 49 2.0001 38.4249 2 25.5479C2 12.6708 12.8922 2.09571 26.5 2.09571C40.1078 2.0957 51 12.6708 51 25.5479C50.9999 38.4249 40.1077 49 26.5 49Z" stroke="currentColor" stroke-width="4"/>
+                            <path class="inside-arrow" d="M28.7828 19.4523L23.2715 24.7457L28.7828 30.0391" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+
+                    <button id="banner-next">
+                        <svg width="53" height="51" viewBox="0 0 53 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M26.5 2C40.1077 2 50.9999 12.5751 51 25.4521C51 38.3292 40.1078 48.9043 26.5 48.9043C12.8922 48.9043 2 38.3292 2 25.4521C2.0001 12.5751 12.8923 2 26.5 2Z" stroke="currentColor" stroke-width="4"/>
+                            <path class="inside-arrow" d="M24.2172 31.5477L29.7284 26.2543L24.2172 20.9609" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="section_2">
+                    <h1>Servicios que Ofrecemos</h1>
+
+                    <div class="px-services-grid">
+
+                        <t t-set="services" t-value="[
+                            {
+                                'title': request.website.title_services_1,
+                                'url': request.website.url_services_1 or '#',
+                                'img_field': 'img_services_1',
+                                'has_img': request.website.img_services_1,
+                            },
+                            {
+                                'title': request.website.title_services_2,
+                                'url': request.website.url_services_2 or '#',
+                                'img_field': 'img_services_2',
+                                'has_img': request.website.img_services_2,
+                            },
+                            {
+                                'title': request.website.title_services_3,
+                                'url': request.website.url_services_3 or '#',
+                                'img_field': 'img_services_3',
+                                'has_img': request.website.img_services_3,
+                            },
+                            {
+                                'title': request.website.title_services_4,
+                                'url': request.website.url_services_4 or '#',
+                                'img_field': 'img_services_4',
+                                'has_img': request.website.img_services_4,
+                            },
+                            {
+                                'title': request.website.title_services_5,
+                                'url': request.website.url_services_5 or '#',
+                                'img_field': 'img_services_5',
+                                'has_img': request.website.img_services_5,
+                            },
+                            {
+                                'title': request.website.title_services_6,
+                                'url': request.website.url_services_6 or '#',
+                                'img_field': 'img_services_6',
+                                'has_img': request.website.img_services_6,
+                            },
+                        ]"/>
+
+                        <t t-foreach="services" t-as="service">
+                            <t t-if="service.get('title')">
+                                <a class="px-service-card"
+                                t-att-href="service.get('url')">
+
+                                    <t t-if="service.get('has_img')">
+                                        <img class="px-service-icon"
+                                            t-att-src="'/web/image/website/%s/%s' % (request.website.id, service.get('img_field'))"
+                                            t-att-alt="service.get('title')"/>
+                                    </t>
+
+                                    <span class="px-service-text">
+                                        <t t-esc="service.get('title')"/>
+                                    </span>
+                                </a>
+                            </t>
+                        </t>
+
+
+                    </div>
+
+                </div>
+                
+
+
+                <t t-set="some_products"
+                t-value="request.env['product.template'].sudo().search(
+                        request.website.sale_product_domain() + [
+                            ('is_published', '=', True),
+                        ]
+                ) or []"/>
+
+                <div t-if="some_products" class="section_3">
+                    <div class="some-products">
+                        <div class="some-products-header">
+                            <h1>Alguno de nuestros productos</h1>
+                            <div class="line"></div>
+
+                            <div class="carrusel-buttons">
+                                <button id="some-products-prev-btn" class="carousel-button prev">
+                                    <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="8.5" cy="8.5" r="8.5" transform="rotate(180 8.5 8.5)" fill="#09254A"/>
+                                        <path d="M9.23223 7.23223L7.46447 9L9.23223 10.7678" stroke="white" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+
+                                <button id="some-products-next-btn" class="carousel-button next">
+                                    <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="8.5" cy="8.5" r="8.5" fill="#09254A"/>
+                                        <path d="M7.76777 10.5356L9.53553 8.76782L7.76777 7.00006" stroke="white" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="carousel-container">
+                            <div class="some-products-container">
+                                <t t-foreach="some_products" t-as="product">
+
+                                    <t t-set="product_with_pricelist" t-value="product.with_context(pricelist=pricelist.id)"/>
+                                    <t t-set="price_info" t-value="product_with_pricelist._get_combination_info(add_qty=1)"/>
+
+                                    <div class="card home-product-card">
+                                        <a t-att-href="product.website_url">
+                                            <img t-if="product.image_1920"
+                                                t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
+                                                class="card-img-top"
+                                                alt="Imagen del producto"/>
+                                        </a>
+
+                                        <div class="card-body">
+                                            <div class="card-text">
+                                                <div class="price">
+                                                    <h4 class="card-price">
+                                                        <t t-esc="pricelist.currency_id.symbol"/>
+                                                        <t t-esc="'%.2f' % price_info['price']"/>
+                                                    </h4>
+                                                </div>
+
+                                                <p class="card-title">
+                                                    <t t-esc="product.name if len(product.name) &lt;= 25 else product.name[:25] + '...'"/>
+                                                </p>
+                                            </div>
+
+                                            <div class="extra-info">
+                                                <span class="product-span">
+                                                    Orden mínima:
+                                                    <t t-esc="product.sale_min_qty"/>
+                                                    <t t-esc="product.sudo().uom_sale_id.name"/>
+                                                </span>
+                                                <br/>
+
+                                                <span class="product-span stock">
+                                                    <t t-esc="int(product.product_variant_id.qty_available)"/> in Stock
+                                                </span>
+                                                <br/>
+
+                                                <p class="product-time-delivery">
+                                                    <span class="product-span">
+                                                        <img class="delivery-img" src="/pyxel_cem_website_sale/static/img/truck-1058.png"/>
+                                                        <t t-esc="product.delivery_time"/>
+                                                    </span>
+                                                </p>
+
+                                                <span class="product-span provider">
+                                                    <t t-esc="product.provider_id.sudo().name"/>
+                                                </span>
+                                            </div>
+
+                                            <form t-if="product._is_add_to_cart_possible()" action="/shop/cart/update" method="POST">
+                                                <input type="hidden"
+                                                    name="csrf_token"
+                                                    t-att-value="request.csrf_token()"
+                                                    t-nocache="The csrf token must always be up to date."/>
+
+                                                <input type="hidden"
+                                                    name="product_id"
+                                                    t-att-value="product.product_variant_id.id"/>
+
+                                                <input type="hidden"
+                                                    name="available_qty"
+                                                    t-att-value="product.product_variant_id.qty_available"/>
+
+                                                <div class="form-buy-counter">
+                                                    <div class="counter-container-home">
+                                                        <button type="button" class="btn border minus_btn btn-less-home">-</button>
+
+                                                        <input type="number"
+                                                            class="form-control text-center counter counter-qty-home"
+                                                            name="add_qty"
+                                                            t-att-value="product.sale_min_qty"
+                                                            t-att-min="product.sale_min_qty"
+                                                            t-att-max="int(product.product_variant_id.qty_available)"/>
+
+                                                        <button type="button" class="btn border plus_btn btn-more-home">+</button>
+                                                    </div>
+
+                                                    <button type="submit"
+                                                            class="btn btn-primary js_check_product a-submit buy-now js_add_to_cart">
+                                                        <i class="icon-basket"/>
+                                                        Añadir
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; place-content: center;">
+                        <div class="some-products-progress">
+                            <div class="some-products-line-progress"/>
+                        </div>
+                    </div>
+
+                    <div class="btn-prod-container">
+                        <a href="/shop" class="all-products">View all</a>
+                    </div>
+                </div>
+
+
+                <div class="section_4 banner_1">
+                    <t t-if="
+                        request.website.promo_image_2
+                        or request.website.promo_title_2
+                        or request.website.promo_text_2
+                        or request.website.promo_button_2
+                    ">
+                        <t t-set="promo_desktop_field"
+                        t-value="'promo_image_2' if request.website.promo_image_2 else False"/>
+
+                        <t t-set="promo_mobile_field"
+                        t-value="'promo_image_responsive_2' if request.website.promo_image_responsive_2 else 'promo_image_2'"/>
+
+                        <section class="px-promo-section">
+                                <div id="px-promo-banner-1"
+                                    class="px-promo-card"
+                                    t-att-style="
+                                        ('--px-promo-bg: url(/web/image/website/%s/%s); --px-promo-bg-mobile: url(/web/image/website/%s/%s);'
+                                        % (request.website.id, promo_desktop_field, request.website.id, promo_mobile_field))
+                                        if promo_desktop_field else ''
+                                    ">
+
+                                    <div class="px-promo-content">
+                                        <h2 t-if="request.website.promo_title_2"
+                                            class="px-promo-title">
+                                            <t t-esc="request.website.promo_title_2"/>
+                                        </h2>
+
+                                        <p t-if="request.website.promo_text_2"
+                                        class="px-promo-text">
+                                            <t t-esc="request.website.promo_text_2"/>
+                                        </p>
+
+                                        <a t-if="request.website.promo_button_2"
+                                        class="px-promo-button"
+                                        t-att-href="request.website.promo_url_2 or '#'">
+                                            <t t-esc="request.website.promo_button_2"/>
+                                        </a>
+                                    </div>
+
+                                </div>
+                        </section>
+                    </t>
+                </div>
+
+                <t t-set="sugerencias_categ"
+                    t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Sugerencias')], limit=1)"/>
+
+                <t t-set="suggestion_products"
+                    t-value="sugerencias_categ and request.env['product.template'].sudo().search(
+                        request.website.sale_product_domain() + [
+                            ('is_published', '=', True),
+                            ('public_categ_ids', 'child_of', sugerencias_categ.id),
+                        ]
+                ) or []"/>
+
+                <div t-if="suggestion_products" class="section_3 section_suggestions">
+                    <div class="some-products">
+                        <div class="some-products-header">
+                            <h1>Te Sugerimos</h1>
+                            <div class="line"></div>
+
+                            <div class="carrusel-buttons">
+                                <button id="suggestions-prev-btn" class="carousel-button prev">
+                                    <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="8.5" cy="8.5" r="8.5" transform="rotate(180 8.5 8.5)" fill="#09254A"/>
+                                        <path d="M9.23223 7.23223L7.46447 9L9.23223 10.7678" stroke="white" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+
+                                <button id="suggestions-next-btn" class="carousel-button next">
+                                    <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="8.5" cy="8.5" r="8.5" fill="#09254A"/>
+                                        <path d="M7.76777 10.5356L9.53553 8.76782L7.76777 7.00006" stroke="white" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="carousel-container">
+                            <div class="some-products-container suggestions-products-container">
+
+                                <t t-foreach="suggestion_products" t-as="product">
+
+                                    <t t-set="product_with_pricelist" t-value="product.with_context(pricelist=pricelist.id)"/>
+                                    <t t-set="price_info" t-value="product_with_pricelist._get_combination_info(add_qty=1)"/>
+
+                                    <div class="card home-product-card">
+                                        <a t-att-href="product.website_url">
+                                            <img t-if="product.image_1920"
+                                                t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
+                                                class="card-img-top"
+                                                alt="Imagen del producto"/>
+                                        </a>
+
+                                        <div class="card-body">
+                                            <div class="card-text">
+                                                <div class="price">
+                                                    <h4 class="card-price">
+                                                        <t t-esc="pricelist.currency_id.symbol"/>
+                                                        <t t-esc="'%.2f' % price_info['price']"/>
+                                                    </h4>
+                                                </div>
+
+                                                <p class="card-title">
+                                                    <t t-esc="product.name if len(product.name) &lt;= 25 else product.name[:25] + '...'"/>
+                                                </p>
+                                            </div>
+
+                                            <div class="extra-info">
+                                                <span class="product-span">
+                                                    Orden mínima:
+                                                    <t t-esc="product.sale_min_qty"/>
+                                                    <t t-esc="product.sudo().uom_sale_id.name"/>
+                                                </span>
+                                                <br/>
+
+                                                <span class="product-span stock">
+                                                    <t t-esc="int(product.product_variant_id.qty_available)"/> in Stock
+                                                </span>
+                                                <br/>
+
+                                                <p class="product-time-delivery">
+                                                    <span class="product-span">
+                                                        <img class="delivery-img" src="/pyxel_cem_website_sale/static/img/truck-1058.png"/>
+                                                        <t t-esc="product.delivery_time"/>
+                                                    </span>
+                                                </p>
+
+                                                <span class="product-span provider">
+                                                    <t t-esc="product.provider_id.sudo().name"/>
+                                                </span>
+                                            </div>
+
+                                            <form t-if="product._is_add_to_cart_possible()" action="/shop/cart/update" method="POST">
+                                                <input type="hidden"
+                                                    name="csrf_token"
+                                                    t-att-value="request.csrf_token()"
+                                                    t-nocache="The csrf token must always be up to date."/>
+
+                                                <input type="hidden"
+                                                    name="product_id"
+                                                    t-att-value="product.product_variant_id.id"/>
+
+                                                <input type="hidden"
+                                                    name="available_qty"
+                                                    t-att-value="product.product_variant_id.qty_available"/>
+
+                                                <div class="form-buy-counter">
+                                                    <div class="counter-container-home">
+                                                        <button type="button" class="btn border minus_btn btn-less-home">-</button>
+
+                                                        <input type="number"
+                                                            class="form-control text-center counter counter-qty-home"
+                                                            name="add_qty"
+                                                            t-att-value="product.sale_min_qty"
+                                                            t-att-min="product.sale_min_qty"
+                                                            t-att-max="int(product.product_variant_id.qty_available)"/>
+
+                                                        <button type="button" class="btn border plus_btn btn-more-home">+</button>
+                                                    </div>
+
+                                                    <button type="submit"
+                                                            class="btn btn-primary js_check_product a-submit buy-now js_add_to_cart">
+                                                        <i class="icon-basket"/>
+                                                        Añadir
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </t>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; place-content: center;">
+                        <div class="some-products-progress suggestions-progress">
+                            <div class="some-products-line-progress suggestions-line-progress"/>
+                        </div>
+                    </div>
+
+                </div>
+
+                
+                <div class="section_4">
+                    <t t-if="
+                        request.website.promo_image_1
+                        or request.website.promo_title_1
+                        or request.website.promo_text_1
+                        or request.website.promo_button_1
+                    ">
+                        <t t-set="promo_desktop_field"
+                        t-value="'promo_image_1' if request.website.promo_image_1 else False"/>
+
+                        <t t-set="promo_mobile_field"
+                        t-value="'promo_image_responsive_1' if request.website.promo_image_responsive_1 else 'promo_image_1'"/>
+
+                        <section class="px-promo-section">
+                                <div id="px-promo-banner-1"
+                                    class="px-promo-card"
+                                    t-att-style="
+                                        ('--px-promo-bg: url(/web/image/website/%s/%s); --px-promo-bg-mobile: url(/web/image/website/%s/%s);'
+                                        % (request.website.id, promo_desktop_field, request.website.id, promo_mobile_field))
+                                        if promo_desktop_field else ''
+                                    ">
+
+                                    <div class="px-promo-content">
+                                        <h2 t-if="request.website.promo_title_1"
+                                            class="px-promo-title">
+                                            <t t-esc="request.website.promo_title_1"/>
+                                        </h2>
+
+                                        <p t-if="request.website.promo_text_1"
+                                        class="px-promo-text">
+                                            <t t-esc="request.website.promo_text_1"/>
+                                        </p>
+
+                                        <a t-if="request.website.promo_button_1"
+                                        class="px-promo-button"
+                                        t-att-href="request.website.promo_url_1 or '#'">
+                                            <t t-esc="request.website.promo_button_1"/>
+                                        </a>
+                                    </div>
+
+                                </div>
+                        </section>
+                    </t>
+                </div>
+
+                <div class="why-us">
+                    <h1>¿POR QUÉ ELEGIRNOS?</h1>
+                    <div class="card-container">
+                        <div class="card">
+                            <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M44.4262 29.2498C46.0063 26.9786 46.9601 24.3312 47.1918 21.5741C47.4234 18.817 46.9247 16.0475 45.7458 13.5445C44.5669 11.0414 42.7494 8.89305 40.4763 7.31567C38.2032 5.73829 35.5547 4.78755 32.7973 4.55914C30.0399 4.33073 27.2711 4.83271 24.7694 6.01457C22.2677 7.19642 20.1215 9.01643 18.5468 11.2914C16.9721 13.5664 16.0245 16.216 15.7993 18.9736C15.5742 21.7313 16.0794 24.4995 17.2642 26.9998" stroke="#054E92" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M31.5 13.5C29.0137 13.5 27 15.012 27 16.875C27 18.738 29.0137 20.25 31.5 20.25C33.9863 20.25 36 21.762 36 23.625C36 25.488 33.9863 27 31.5 27M31.5 13.5C33.4575 13.5 35.127 14.4382 35.7435 15.75M31.5 13.5V11.25M31.5 27C29.5425 27 27.873 26.0618 27.2565 24.75M31.5 27V29.25M6.75 31.5H12.1387C12.8002 31.5 13.4528 31.6485 14.0445 31.9365L18.639 34.1595C19.2308 34.4453 19.8832 34.5938 20.547 34.5938H22.8915C25.1595 34.5938 27 36.3735 27 38.5695C27 38.6595 26.9393 38.736 26.8515 38.7607L21.1342 40.3425C20.1084 40.6259 19.0144 40.5267 18.0562 40.0635L13.1445 37.6875M27 37.125L37.3343 33.9502C38.2339 33.6742 39.1978 33.6894 40.0884 33.9936C40.9789 34.2979 41.7506 34.8757 42.2933 35.6445C43.1235 36.792 42.786 38.439 41.5755 39.1365L24.6668 48.8948C24.138 49.2007 23.5526 49.3957 22.946 49.4681C22.3395 49.5404 21.7246 49.4885 21.1388 49.3155L6.75 45.045" stroke="#054E92" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>Seguridad y Confianza en tus Transacciones</p>
+                        </div>
+                        <div class="card">
+                            <svg width="49" height="49" viewBox="0 0 49 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.06091 28.2129H12.8874C13.4798 28.2129 14.0642 28.3459 14.5942 28.6038L18.7093 30.5949C19.2393 30.8508 19.8237 30.9838 20.4182 30.9838H22.5181C24.5494 30.9838 26.1979 32.5779 26.1979 34.5447C26.1979 34.6253 26.1435 34.6938 26.0649 34.716L20.9442 36.1327C20.0254 36.3865 19.0456 36.2977 18.1874 35.8828L13.7882 33.7547" stroke="#054E92" stroke-width="3.375" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M26.1979 33.2509L35.4538 30.4075C36.2596 30.1602 37.1229 30.1738 37.9205 30.4463C38.7181 30.7188 39.4093 31.2363 39.8953 31.9249C40.6389 32.9527 40.3366 34.4278 39.2525 35.0525L24.1081 43.7925C23.6345 44.0665 23.1102 44.2412 22.5669 44.306C22.0237 44.3708 21.4729 44.3243 20.9482 44.1694L8.06091 40.3445M26.1979 10.0759H30.2283M30.2283 24.1824H26.1979C22.3972 24.1824 20.4988 24.1824 19.3179 23.0015C18.137 21.8206 18.137 19.9223 18.137 16.1216V12.0911C18.137 8.29044 18.137 6.39211 19.3179 5.21119C20.4988 4.03027 22.3972 4.03027 26.1979 4.03027H30.2283C34.029 4.03027 35.9273 4.03027 37.1083 5.21119C38.2892 6.39211 38.2892 8.29044 38.2892 12.0911V16.1216C38.2892 19.9223 38.2892 21.8206 37.1083 23.0015C35.9273 24.1824 34.029 24.1824 30.2283 24.1824Z" stroke="#054E92" stroke-width="3.375" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>Importación Segura</p>
+                        </div>
+                        <div class="card">
+                            <svg width="49" height="49" viewBox="0 0 49 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.1446 42.3193C21.9256 45.0056 26.4396 45.0056 29.2206 42.3193M34.2587 27.8198C34.2587 27.1226 34.2587 26.7739 34.3635 26.4636C34.6678 25.5608 35.4719 25.2122 36.2779 24.8454C37.1808 24.4323 37.6322 24.2267 38.0816 24.1904C38.5894 24.1501 39.0992 24.259 39.5345 24.5028C40.1109 24.8252 40.5139 25.4419 40.925 25.9417C42.8254 28.2511 43.7766 29.4058 44.1232 30.6774C44.4053 31.7052 44.4053 32.7813 44.1232 33.8071C43.6174 35.6651 42.0153 37.2208 40.8283 38.6637C40.2217 39.3993 39.9174 39.7681 39.5345 39.9837C39.0918 40.2292 38.5861 40.3379 38.0816 40.2961C37.6322 40.2598 37.1808 40.0542 36.2759 39.6411C35.4698 39.2743 34.6678 38.9257 34.3635 38.0229C34.2587 37.7125 34.2587 37.3639 34.2587 36.6687V27.8198ZM14.1065 27.8198C14.1065 26.9412 14.0823 26.1533 13.373 25.5366C13.115 25.3129 12.7724 25.1577 12.0893 24.8454C11.1845 24.4343 10.733 24.2267 10.2836 24.1904C8.9395 24.0816 8.21604 25.0006 7.44219 25.9437C5.53983 28.2511 4.58865 29.4058 4.24001 30.6794C3.95987 31.7032 3.95987 32.7833 4.24001 33.8071C4.74785 35.6651 6.35196 37.2208 7.53691 38.6637C8.28455 39.5706 8.99996 40.3988 10.2836 40.2961C10.733 40.2598 11.1845 40.0542 12.0893 39.6411C12.7745 39.3287 13.115 39.1736 13.373 38.9499C14.0823 38.3332 14.1065 37.5453 14.1065 36.6666V27.8198Z" stroke="#054E92" stroke-width="3.375" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M4.03052 32.2433V24.1824C4.03052 13.0524 13.0526 4.03027 24.1827 4.03027C35.3127 4.03027 44.3349 13.0524 44.3349 24.1824V32.2433" stroke="#054E92" stroke-width="3.375" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>Cercanía y Trato Personalizado</p>
+                        </div>
+                        <div class="card">
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M44.25 6C44.7656 6 45.25 6.09375 45.7031 6.28125C46.1562 6.46875 46.5547 6.74219 46.8984 7.10156C47.2422 7.46094 47.5078 7.85938 47.6953 8.29688C47.8828 8.73438 47.9844 9.21875 48 9.75V35.25C48 35.7656 47.9062 36.25 47.7188 36.7031C47.5312 37.1562 47.2578 37.5547 46.8984 37.8984C46.5391 38.2422 46.1406 38.5078 45.7031 38.6953C45.2656 38.8828 44.7812 38.9844 44.25 39H3.75C3.23438 39 2.75 38.9062 2.29688 38.7188C1.84375 38.5312 1.44531 38.2578 1.10156 37.8984C0.757812 37.5391 0.492188 37.1406 0.304688 36.7031C0.117188 36.2656 0.015625 35.7812 0 35.25V9.75C0 9.23438 0.09375 8.75 0.28125 8.29688C0.46875 7.84375 0.742188 7.44531 1.10156 7.10156C1.46094 6.75781 1.85938 6.49219 2.29688 6.30469C2.73438 6.11719 3.21875 6.01562 3.75 6H44.25ZM3.75 9C3.53125 9 3.35156 9.07031 3.21094 9.21094C3.07031 9.35156 3 9.53125 3 9.75V15H45V9.75C45 9.53125 44.9297 9.35156 44.7891 9.21094C44.6484 9.07031 44.4688 9 44.25 9H3.75ZM44.25 36C44.4688 36 44.6484 35.9297 44.7891 35.7891C44.9297 35.6484 45 35.4688 45 35.25V18H3V35.25C3 35.4688 3.07031 35.6484 3.21094 35.7891C3.35156 35.9297 3.53125 36 3.75 36H44.25ZM33 27H39V30H33V27Z" fill="#054E92"/>
+                            </svg>
+                            <p>Pago desde el exterior</p>
+                        </div>
+                    </div>
+                    
+                </div>
+
+
+                <t t-set="mas_vendidos_categ"
+                t-value="request.env['product.public.category'].sudo().search([('name', '=', 'Más vendidos')], limit=1)"/>
+
+                <t t-set="best_seller_products"
+                t-value="mas_vendidos_categ and request.env['product.template'].sudo().search(
+                        request.website.sale_product_domain() + [
+                            ('is_published', '=', True),
+                            ('public_categ_ids', 'child_of', mas_vendidos_categ.id),
+                        ]
+                ) or []"/>
+
+                <div t-if="best_seller_products" class="section_3 section_best_sellers">
+                    <div class="some-products">
+                        <div class="some-products-header">
+                            <h1>Lo más vendido</h1>
+                            <div class="line"></div>
+
+                            <div class="carrusel-buttons">
+                                <button id="best-sellers-prev-btn" class="carousel-button prev">
+                                    <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="8.5" cy="8.5" r="8.5" transform="rotate(180 8.5 8.5)" fill="#09254A"/>
+                                        <path d="M9.23223 7.23223L7.46447 9L9.23223 10.7678" stroke="white" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+
+                                <button id="best-sellers-next-btn" class="carousel-button next">
+                                    <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="8.5" cy="8.5" r="8.5" fill="#09254A"/>
+                                        <path d="M7.76777 10.5356L9.53553 8.76782L7.76777 7.00006" stroke="white" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="carousel-container">
+                            <div class="some-products-container best-sellers-products-container">
+
+                                <t t-foreach="best_seller_products" t-as="product">
+
+                                    <t t-set="product_with_pricelist" t-value="product.with_context(pricelist=pricelist.id)"/>
+                                    <t t-set="price_info" t-value="product_with_pricelist._get_combination_info(add_qty=1)"/>
+
+                                    <div class="card home-product-card">
+                                        <a t-att-href="product.website_url">
+                                            <img t-if="product.image_1920"
+                                                t-att-src="'/web/image/product.template/' + str(product.id) + '/image_1920'"
+                                                class="card-img-top"
+                                                alt="Imagen del producto"/>
+                                        </a>
+
+                                        <div class="card-body">
+                                            <div class="card-text">
+                                                <div class="price">
+                                                    <h4 class="card-price">
+                                                        <t t-esc="pricelist.currency_id.symbol"/>
+                                                        <t t-esc="'%.2f' % price_info['price']"/>
+                                                    </h4>
+                                                </div>
+
+                                                <p class="card-title">
+                                                    <t t-esc="product.name if len(product.name) &lt;= 25 else product.name[:25] + '...'"/>
+                                                </p>
+                                            </div>
+
+                                            <div class="extra-info">
+                                                <span class="product-span">
+                                                    Orden mínima:
+                                                    <t t-esc="product.sale_min_qty"/>
+                                                    <t t-esc="product.sudo().uom_sale_id.name"/>
+                                                </span>
+                                                <br/>
+
+                                                <span class="product-span stock">
+                                                    <t t-esc="int(product.product_variant_id.qty_available)"/> in Stock
+                                                </span>
+                                                <br/>
+
+                                                <p class="product-time-delivery">
+                                                    <span class="product-span">
+                                                        <img class="delivery-img" src="/pyxel_cem_website_sale/static/img/truck-1058.png"/>
+                                                        <t t-esc="product.delivery_time"/>
+                                                    </span>
+                                                </p>
+
+                                                <span class="product-span provider">
+                                                    <t t-esc="product.provider_id.sudo().name"/>
+                                                </span>
+                                            </div>
+
+                                            <form t-if="product._is_add_to_cart_possible()" action="/shop/cart/update" method="POST">
+                                                <input type="hidden"
+                                                    name="csrf_token"
+                                                    t-att-value="request.csrf_token()"
+                                                    t-nocache="The csrf token must always be up to date."/>
+
+                                                <input type="hidden"
+                                                    name="product_id"
+                                                    t-att-value="product.product_variant_id.id"/>
+
+                                                <input type="hidden"
+                                                    name="available_qty"
+                                                    t-att-value="product.product_variant_id.qty_available"/>
+
+                                                <div class="form-buy-counter">
+                                                    <div class="counter-container-home">
+                                                        <button type="button" class="btn border minus_btn btn-less-home">-</button>
+
+                                                        <input type="number"
+                                                            class="form-control text-center counter counter-qty-home"
+                                                            name="add_qty"
+                                                            t-att-value="product.sale_min_qty"
+                                                            t-att-min="product.sale_min_qty"
+                                                            t-att-max="int(product.product_variant_id.qty_available)"/>
+
+                                                        <button type="button" class="btn border plus_btn btn-more-home">+</button>
+                                                    </div>
+
+                                                    <button type="submit"
+                                                            class="btn btn-primary js_check_product a-submit buy-now js_add_to_cart">
+                                                        <i class="icon-basket"/>
+                                                        Añadir
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </t>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; place-content: center;">
+                        <div class="some-products-progress best-sellers-progress">
+                            <div class="some-products-line-progress best-sellers-line-progress"/>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div t-if="some_products" class="us-container">
+                            <div class="us-info">
+                                <h1><t t-esc="website.us_title"/></h1>
+                                <p><t t-esc="website.us_text"/></p>
+                                <a t-att-href="request.website.us_url"><button>Leer más</button></a>
+                            </div>
+                            <div class="us-img"> 
+                                <img t-if="request.website.us_img" t-att-src="'/web/image/website/' + str(request.website.id) + '/us_img'" alt="Banner Image 1"/>
+                            </div> 
+                </div>
+
+                <div class="section_5">
+                    <div class="reviews-title">
+                        <h1>Nuestros clientes opinan</h1>
+                        <div class="home-separator-line"/>
+                        <div class="review-botons">
+                            <button id="reviews-prev-btn">
+                                <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="8.5" cy="8.5" r="8.5" transform="rotate(180 8.5 8.5)" fill="#09254A"/>
+                                    <path d="M9.23223 7.23223L7.46447 9L9.23223 10.7678" stroke="white" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+
+                            <button id="reviews-next-btn" >
+                                <svg width="currentWidth" height="currentHeight" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="8.5" cy="8.5" r="8.5" fill="#09254A"/>
+                                    <path d="M7.76777 10.5356L9.53553 8.76782L7.76777 7.00006" stroke="white" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="review-container">
+                        <div class="card-review">
+                            <div class="review-header">
+                                <img id="review-img-profile"
+                                t-att-src="'/web/image/website/' + str(request.website.id) + '/img_review_1'"
+                                alt="Review img profile"/>
+
+                                <div class="review-subtitle">
+                                    <strong><t t-esc="website.name_review_1"/></strong>
+                                    <small><t t-esc="website.position_review_1"/></small>
+                                </div>
+                            </div>
+
+                            <p>
+                                <t t-esc="website.text_review_1"/>
+                            </p>
+
+                            <div class="review-footer">
+                                <svg width="155" height="26" viewBox="0 0 155 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.06173 25.5637C6.37924 25.5637 6.69518 25.4662 6.96712 25.2721L13.3606 20.687L19.7541 25.2721C20.019 25.4627 20.3374 25.5647 20.6637 25.5636C20.99 25.5624 21.3076 25.4582 21.5712 25.2658C21.835 25.0745 22.0318 24.8049 22.1335 24.4953C22.2352 24.1858 22.2368 23.852 22.1378 23.5415L19.7533 15.8457L26.0895 11.3809C26.3521 11.1871 26.5471 10.9156 26.6469 10.6049C26.7468 10.2942 26.7464 9.95997 26.6459 9.64947C26.5446 9.33973 26.3485 9.06967 26.0853 8.87744C25.8222 8.68522 25.5053 8.58056 25.1794 8.57826L17.3319 8.56647L14.8334 1.06166C14.7303 0.752497 14.5326 0.483606 14.2682 0.293068C14.0038 0.102529 13.6861 0 13.3602 0C13.0343 0 12.7167 0.102529 12.4523 0.293068C12.1879 0.483606 11.9901 0.752497 11.887 1.06166L9.43099 8.56647L1.54344 8.57826C1.21717 8.5801 0.899778 8.6847 0.636351 8.87722C0.372923 9.06973 0.176859 9.34035 0.0760078 9.65065C-0.0248413 9.96095 -0.0253506 10.2951 0.0745583 10.6057C0.174465 10.9163 0.369711 11.1876 0.632553 11.3809L6.96869 15.8457L4.58419 23.5415C4.48506 23.8519 4.4864 24.1857 4.588 24.4953C4.6896 24.8049 4.88628 25.0745 5.15005 25.2658C5.41443 25.4597 5.73386 25.5641 6.06173 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M37.896 25.5637C38.2135 25.5637 38.5295 25.4662 38.8014 25.2721L45.1949 20.687L51.5884 25.2721C51.8533 25.4627 52.1717 25.5647 52.498 25.5636C52.8243 25.5624 53.1419 25.4582 53.4055 25.2658C53.6693 25.0745 53.8661 24.8049 53.9678 24.4953C54.0696 24.1858 54.0711 23.852 53.9721 23.5415L51.5876 15.8457L57.9238 11.3809C58.1864 11.1871 58.3814 10.9156 58.4812 10.6049C58.5811 10.2942 58.5807 9.95997 58.4802 9.64947C58.3789 9.33973 58.1828 9.06967 57.9196 8.87744C57.6565 8.68522 57.3396 8.58056 57.0137 8.57826L49.1662 8.56647L46.6678 1.06166C46.5646 0.752497 46.3669 0.483606 46.1025 0.293068C45.8381 0.102529 45.5204 0 45.1945 0C44.8686 0 44.551 0.102529 44.2866 0.293068C44.0222 0.483606 43.8244 0.752497 43.7213 1.06166L41.2653 8.56647L33.3777 8.57826C33.0515 8.5801 32.7341 8.6847 32.4707 8.87722C32.2072 9.06973 32.0112 9.34035 31.9103 9.65065C31.8095 9.96095 31.809 10.2951 31.9089 10.6057C32.0088 10.9163 32.204 11.1876 32.4669 11.3809L38.803 15.8457L36.4185 23.5415C36.3194 23.8519 36.3207 24.1857 36.4223 24.4953C36.5239 24.8049 36.7206 25.0745 36.9844 25.2658C37.2487 25.4597 37.5682 25.5641 37.896 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M69.7304 25.5637C70.0479 25.5637 70.3638 25.4662 70.6357 25.2721L77.0292 20.687L83.4228 25.2721C83.6876 25.4627 84.006 25.5647 84.3323 25.5636C84.6586 25.5624 84.9762 25.4582 85.2398 25.2658C85.5036 25.0745 85.7004 24.8049 85.8021 24.4953C85.9039 24.1858 85.9054 23.852 85.8065 23.5415L83.422 15.8457L89.7581 11.3809C90.0207 11.1871 90.2157 10.9156 90.3156 10.6049C90.4154 10.2942 90.4151 9.95997 90.3145 9.64947C90.2132 9.33973 90.0171 9.06967 89.754 8.87744C89.4908 8.68522 89.1739 8.58056 88.848 8.57826L81.0005 8.56647L78.5021 1.06166C78.399 0.752497 78.2012 0.483606 77.9368 0.293068C77.6724 0.102529 77.3548 0 77.0289 0C76.703 0 76.3853 0.102529 76.1209 0.293068C75.8565 0.483606 75.6587 0.752497 75.5556 1.06166L73.0996 8.56647L65.2121 8.57826C64.8858 8.5801 64.5684 8.6847 64.305 8.87722C64.0415 9.06973 63.8455 9.34035 63.7446 9.65065C63.6438 9.96095 63.6433 10.2951 63.7432 10.6057C63.8431 10.9163 64.0383 11.1876 64.3012 11.3809L70.6373 15.8457L68.2528 23.5415C68.1537 23.8519 68.155 24.1857 68.2566 24.4953C68.3582 24.8049 68.5549 25.0745 68.8187 25.2658C69.0831 25.4597 69.4025 25.5641 69.7304 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M101.444 25.5637C101.762 25.5637 102.078 25.4662 102.35 25.2721L108.743 20.687L115.137 25.2721C115.402 25.4627 115.72 25.5647 116.046 25.5636C116.373 25.5624 116.69 25.4582 116.954 25.2658C117.218 25.0745 117.414 24.8049 117.516 24.4953C117.618 24.1858 117.619 23.852 117.52 23.5415L115.136 15.8457L121.472 11.3809C121.735 11.1871 121.93 10.9156 122.03 10.6049C122.129 10.2942 122.129 9.95997 122.029 9.64947C121.927 9.33973 121.731 9.06967 121.468 8.87744C121.205 8.68522 120.888 8.58056 120.562 8.57826L112.715 8.56647L110.216 1.06166C110.113 0.752497 109.915 0.483606 109.651 0.293068C109.386 0.102529 109.069 0 108.743 0C108.417 0 108.099 0.102529 107.835 0.293068C107.571 0.483606 107.373 0.752497 107.27 1.06166L104.814 8.56647L96.9261 8.57826C96.5998 8.5801 96.2824 8.6847 96.019 8.87722C95.7556 9.06973 95.5595 9.34035 95.4586 9.65065C95.3578 9.96095 95.3573 10.2951 95.4572 10.6057C95.5571 10.9163 95.7523 11.1876 96.0152 11.3809L102.351 15.8457L99.9668 23.5415C99.8677 23.8519 99.869 24.1857 99.9706 24.4953C100.072 24.8049 100.269 25.0745 100.533 25.2658C100.797 25.4597 101.116 25.5641 101.444 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M133.399 25.5637C133.716 25.5637 134.032 25.4662 134.304 25.2721L140.698 20.687L147.091 25.2721C147.356 25.4627 147.675 25.5647 148.001 25.5636C148.327 25.5624 148.645 25.4582 148.908 25.2658C149.172 25.0745 149.369 24.8049 149.471 24.4953C149.572 24.1858 149.574 23.852 149.475 23.5415L147.091 15.8457L153.427 11.3809C153.689 11.1871 153.884 10.9156 153.984 10.6049C154.084 10.2942 154.084 9.95997 153.983 9.64947C153.882 9.33973 153.686 9.06967 153.423 8.87744C153.159 8.68522 152.843 8.58056 152.517 8.57826L144.669 8.56647L142.171 1.06166C142.068 0.752496 141.87 0.483606 141.605 0.293068C141.341 0.102529 141.023 0 140.697 0C140.372 0 140.054 0.102529 139.79 0.293068C139.525 0.483606 139.327 0.752496 139.224 1.06166L136.768 8.56647L128.881 8.57826C128.554 8.5801 128.237 8.6847 127.974 8.87722C127.71 9.06973 127.514 9.34035 127.413 9.65065C127.312 9.96095 127.312 10.2951 127.412 10.6057C127.512 10.9163 127.707 11.1876 127.97 11.3809L134.306 15.8457L131.921 23.5415C131.822 23.8519 131.824 24.1857 131.925 24.4953C132.027 24.8049 132.224 25.0745 132.487 25.2658C132.752 25.4597 133.071 25.5641 133.399 25.5637Z" fill="#CEC9C1"/>
+                                </svg>
+
+                                <small><t t-esc="website.date_review_1"/></small>
+
+                            </div>
+                        </div>
+
+                        <div class="card-review">
+                            <div class="review-header">
+                                <img id="review-img-profile"
+                                t-att-src="'/web/image/website/' + str(request.website.id) + '/img_review_2'"
+                                alt="Review img profile"/>
+
+                                <div class="review-subtitle">
+                                    <strong><t t-esc="website.name_review_2"/></strong>
+                                    <small><t t-esc="website.position_review_2"/></small>
+                                </div>
+                            </div>
+
+                            <p>
+                                <t t-esc="website.text_review_2"/>
+                            </p>
+
+                            <div class="review-footer">
+                                <svg width="155" height="26" viewBox="0 0 155 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.06173 25.5637C6.37924 25.5637 6.69518 25.4662 6.96712 25.2721L13.3606 20.687L19.7541 25.2721C20.019 25.4627 20.3374 25.5647 20.6637 25.5636C20.99 25.5624 21.3076 25.4582 21.5712 25.2658C21.835 25.0745 22.0318 24.8049 22.1335 24.4953C22.2352 24.1858 22.2368 23.852 22.1378 23.5415L19.7533 15.8457L26.0895 11.3809C26.3521 11.1871 26.5471 10.9156 26.6469 10.6049C26.7468 10.2942 26.7464 9.95997 26.6459 9.64947C26.5446 9.33973 26.3485 9.06967 26.0853 8.87744C25.8222 8.68522 25.5053 8.58056 25.1794 8.57826L17.3319 8.56647L14.8334 1.06166C14.7303 0.752497 14.5326 0.483606 14.2682 0.293068C14.0038 0.102529 13.6861 0 13.3602 0C13.0343 0 12.7167 0.102529 12.4523 0.293068C12.1879 0.483606 11.9901 0.752497 11.887 1.06166L9.43099 8.56647L1.54344 8.57826C1.21717 8.5801 0.899778 8.6847 0.636351 8.87722C0.372923 9.06973 0.176859 9.34035 0.0760078 9.65065C-0.0248413 9.96095 -0.0253506 10.2951 0.0745583 10.6057C0.174465 10.9163 0.369711 11.1876 0.632553 11.3809L6.96869 15.8457L4.58419 23.5415C4.48506 23.8519 4.4864 24.1857 4.588 24.4953C4.6896 24.8049 4.88628 25.0745 5.15005 25.2658C5.41443 25.4597 5.73386 25.5641 6.06173 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M37.896 25.5637C38.2135 25.5637 38.5295 25.4662 38.8014 25.2721L45.1949 20.687L51.5884 25.2721C51.8533 25.4627 52.1717 25.5647 52.498 25.5636C52.8243 25.5624 53.1419 25.4582 53.4055 25.2658C53.6693 25.0745 53.8661 24.8049 53.9678 24.4953C54.0696 24.1858 54.0711 23.852 53.9721 23.5415L51.5876 15.8457L57.9238 11.3809C58.1864 11.1871 58.3814 10.9156 58.4812 10.6049C58.5811 10.2942 58.5807 9.95997 58.4802 9.64947C58.3789 9.33973 58.1828 9.06967 57.9196 8.87744C57.6565 8.68522 57.3396 8.58056 57.0137 8.57826L49.1662 8.56647L46.6678 1.06166C46.5646 0.752497 46.3669 0.483606 46.1025 0.293068C45.8381 0.102529 45.5204 0 45.1945 0C44.8686 0 44.551 0.102529 44.2866 0.293068C44.0222 0.483606 43.8244 0.752497 43.7213 1.06166L41.2653 8.56647L33.3777 8.57826C33.0515 8.5801 32.7341 8.6847 32.4707 8.87722C32.2072 9.06973 32.0112 9.34035 31.9103 9.65065C31.8095 9.96095 31.809 10.2951 31.9089 10.6057C32.0088 10.9163 32.204 11.1876 32.4669 11.3809L38.803 15.8457L36.4185 23.5415C36.3194 23.8519 36.3207 24.1857 36.4223 24.4953C36.5239 24.8049 36.7206 25.0745 36.9844 25.2658C37.2487 25.4597 37.5682 25.5641 37.896 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M69.7304 25.5637C70.0479 25.5637 70.3638 25.4662 70.6357 25.2721L77.0292 20.687L83.4228 25.2721C83.6876 25.4627 84.006 25.5647 84.3323 25.5636C84.6586 25.5624 84.9762 25.4582 85.2398 25.2658C85.5036 25.0745 85.7004 24.8049 85.8021 24.4953C85.9039 24.1858 85.9054 23.852 85.8065 23.5415L83.422 15.8457L89.7581 11.3809C90.0207 11.1871 90.2157 10.9156 90.3156 10.6049C90.4154 10.2942 90.4151 9.95997 90.3145 9.64947C90.2132 9.33973 90.0171 9.06967 89.754 8.87744C89.4908 8.68522 89.1739 8.58056 88.848 8.57826L81.0005 8.56647L78.5021 1.06166C78.399 0.752497 78.2012 0.483606 77.9368 0.293068C77.6724 0.102529 77.3548 0 77.0289 0C76.703 0 76.3853 0.102529 76.1209 0.293068C75.8565 0.483606 75.6587 0.752497 75.5556 1.06166L73.0996 8.56647L65.2121 8.57826C64.8858 8.5801 64.5684 8.6847 64.305 8.87722C64.0415 9.06973 63.8455 9.34035 63.7446 9.65065C63.6438 9.96095 63.6433 10.2951 63.7432 10.6057C63.8431 10.9163 64.0383 11.1876 64.3012 11.3809L70.6373 15.8457L68.2528 23.5415C68.1537 23.8519 68.155 24.1857 68.2566 24.4953C68.3582 24.8049 68.5549 25.0745 68.8187 25.2658C69.0831 25.4597 69.4025 25.5641 69.7304 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M101.444 25.5637C101.762 25.5637 102.078 25.4662 102.35 25.2721L108.743 20.687L115.137 25.2721C115.402 25.4627 115.72 25.5647 116.046 25.5636C116.373 25.5624 116.69 25.4582 116.954 25.2658C117.218 25.0745 117.414 24.8049 117.516 24.4953C117.618 24.1858 117.619 23.852 117.52 23.5415L115.136 15.8457L121.472 11.3809C121.735 11.1871 121.93 10.9156 122.03 10.6049C122.129 10.2942 122.129 9.95997 122.029 9.64947C121.927 9.33973 121.731 9.06967 121.468 8.87744C121.205 8.68522 120.888 8.58056 120.562 8.57826L112.715 8.56647L110.216 1.06166C110.113 0.752497 109.915 0.483606 109.651 0.293068C109.386 0.102529 109.069 0 108.743 0C108.417 0 108.099 0.102529 107.835 0.293068C107.571 0.483606 107.373 0.752497 107.27 1.06166L104.814 8.56647L96.9261 8.57826C96.5998 8.5801 96.2824 8.6847 96.019 8.87722C95.7556 9.06973 95.5595 9.34035 95.4586 9.65065C95.3578 9.96095 95.3573 10.2951 95.4572 10.6057C95.5571 10.9163 95.7523 11.1876 96.0152 11.3809L102.351 15.8457L99.9668 23.5415C99.8677 23.8519 99.869 24.1857 99.9706 24.4953C100.072 24.8049 100.269 25.0745 100.533 25.2658C100.797 25.4597 101.116 25.5641 101.444 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M133.399 25.5637C133.716 25.5637 134.032 25.4662 134.304 25.2721L140.698 20.687L147.091 25.2721C147.356 25.4627 147.675 25.5647 148.001 25.5636C148.327 25.5624 148.645 25.4582 148.908 25.2658C149.172 25.0745 149.369 24.8049 149.471 24.4953C149.572 24.1858 149.574 23.852 149.475 23.5415L147.091 15.8457L153.427 11.3809C153.689 11.1871 153.884 10.9156 153.984 10.6049C154.084 10.2942 154.084 9.95997 153.983 9.64947C153.882 9.33973 153.686 9.06967 153.423 8.87744C153.159 8.68522 152.843 8.58056 152.517 8.57826L144.669 8.56647L142.171 1.06166C142.068 0.752496 141.87 0.483606 141.605 0.293068C141.341 0.102529 141.023 0 140.697 0C140.372 0 140.054 0.102529 139.79 0.293068C139.525 0.483606 139.327 0.752496 139.224 1.06166L136.768 8.56647L128.881 8.57826C128.554 8.5801 128.237 8.6847 127.974 8.87722C127.71 9.06973 127.514 9.34035 127.413 9.65065C127.312 9.96095 127.312 10.2951 127.412 10.6057C127.512 10.9163 127.707 11.1876 127.97 11.3809L134.306 15.8457L131.921 23.5415C131.822 23.8519 131.824 24.1857 131.925 24.4953C132.027 24.8049 132.224 25.0745 132.487 25.2658C132.752 25.4597 133.071 25.5641 133.399 25.5637Z" fill="#CEC9C1"/>
+                                </svg>
+
+                                <small><t t-esc="website.date_review_2"/></small>
+
+                            </div>
+                        </div>
+
+                        <div class="card-review">
+                            <div class="review-header">
+                                <img id="review-img-profile"
+                                t-att-src="'/web/image/website/' + str(request.website.id) + '/img_review_3'"
+                                alt="Review img profile"/>
+
+                                <div class="review-subtitle">
+                                    <strong><t t-esc="website.name_review_3"/></strong>
+                                    <small><t t-esc="website.position_review_3"/></small>
+                                </div>
+                            </div>
+
+                            <p>
+                                <t t-esc="website.text_review_3"/>
+                            </p>
+
+                            <div class="review-footer">
+                                <svg width="155" height="26" viewBox="0 0 155 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.06173 25.5637C6.37924 25.5637 6.69518 25.4662 6.96712 25.2721L13.3606 20.687L19.7541 25.2721C20.019 25.4627 20.3374 25.5647 20.6637 25.5636C20.99 25.5624 21.3076 25.4582 21.5712 25.2658C21.835 25.0745 22.0318 24.8049 22.1335 24.4953C22.2352 24.1858 22.2368 23.852 22.1378 23.5415L19.7533 15.8457L26.0895 11.3809C26.3521 11.1871 26.5471 10.9156 26.6469 10.6049C26.7468 10.2942 26.7464 9.95997 26.6459 9.64947C26.5446 9.33973 26.3485 9.06967 26.0853 8.87744C25.8222 8.68522 25.5053 8.58056 25.1794 8.57826L17.3319 8.56647L14.8334 1.06166C14.7303 0.752497 14.5326 0.483606 14.2682 0.293068C14.0038 0.102529 13.6861 0 13.3602 0C13.0343 0 12.7167 0.102529 12.4523 0.293068C12.1879 0.483606 11.9901 0.752497 11.887 1.06166L9.43099 8.56647L1.54344 8.57826C1.21717 8.5801 0.899778 8.6847 0.636351 8.87722C0.372923 9.06973 0.176859 9.34035 0.0760078 9.65065C-0.0248413 9.96095 -0.0253506 10.2951 0.0745583 10.6057C0.174465 10.9163 0.369711 11.1876 0.632553 11.3809L6.96869 15.8457L4.58419 23.5415C4.48506 23.8519 4.4864 24.1857 4.588 24.4953C4.6896 24.8049 4.88628 25.0745 5.15005 25.2658C5.41443 25.4597 5.73386 25.5641 6.06173 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M37.896 25.5637C38.2135 25.5637 38.5295 25.4662 38.8014 25.2721L45.1949 20.687L51.5884 25.2721C51.8533 25.4627 52.1717 25.5647 52.498 25.5636C52.8243 25.5624 53.1419 25.4582 53.4055 25.2658C53.6693 25.0745 53.8661 24.8049 53.9678 24.4953C54.0696 24.1858 54.0711 23.852 53.9721 23.5415L51.5876 15.8457L57.9238 11.3809C58.1864 11.1871 58.3814 10.9156 58.4812 10.6049C58.5811 10.2942 58.5807 9.95997 58.4802 9.64947C58.3789 9.33973 58.1828 9.06967 57.9196 8.87744C57.6565 8.68522 57.3396 8.58056 57.0137 8.57826L49.1662 8.56647L46.6678 1.06166C46.5646 0.752497 46.3669 0.483606 46.1025 0.293068C45.8381 0.102529 45.5204 0 45.1945 0C44.8686 0 44.551 0.102529 44.2866 0.293068C44.0222 0.483606 43.8244 0.752497 43.7213 1.06166L41.2653 8.56647L33.3777 8.57826C33.0515 8.5801 32.7341 8.6847 32.4707 8.87722C32.2072 9.06973 32.0112 9.34035 31.9103 9.65065C31.8095 9.96095 31.809 10.2951 31.9089 10.6057C32.0088 10.9163 32.204 11.1876 32.4669 11.3809L38.803 15.8457L36.4185 23.5415C36.3194 23.8519 36.3207 24.1857 36.4223 24.4953C36.5239 24.8049 36.7206 25.0745 36.9844 25.2658C37.2487 25.4597 37.5682 25.5641 37.896 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M69.7304 25.5637C70.0479 25.5637 70.3638 25.4662 70.6357 25.2721L77.0292 20.687L83.4228 25.2721C83.6876 25.4627 84.006 25.5647 84.3323 25.5636C84.6586 25.5624 84.9762 25.4582 85.2398 25.2658C85.5036 25.0745 85.7004 24.8049 85.8021 24.4953C85.9039 24.1858 85.9054 23.852 85.8065 23.5415L83.422 15.8457L89.7581 11.3809C90.0207 11.1871 90.2157 10.9156 90.3156 10.6049C90.4154 10.2942 90.4151 9.95997 90.3145 9.64947C90.2132 9.33973 90.0171 9.06967 89.754 8.87744C89.4908 8.68522 89.1739 8.58056 88.848 8.57826L81.0005 8.56647L78.5021 1.06166C78.399 0.752497 78.2012 0.483606 77.9368 0.293068C77.6724 0.102529 77.3548 0 77.0289 0C76.703 0 76.3853 0.102529 76.1209 0.293068C75.8565 0.483606 75.6587 0.752497 75.5556 1.06166L73.0996 8.56647L65.2121 8.57826C64.8858 8.5801 64.5684 8.6847 64.305 8.87722C64.0415 9.06973 63.8455 9.34035 63.7446 9.65065C63.6438 9.96095 63.6433 10.2951 63.7432 10.6057C63.8431 10.9163 64.0383 11.1876 64.3012 11.3809L70.6373 15.8457L68.2528 23.5415C68.1537 23.8519 68.155 24.1857 68.2566 24.4953C68.3582 24.8049 68.5549 25.0745 68.8187 25.2658C69.0831 25.4597 69.4025 25.5641 69.7304 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M101.444 25.5637C101.762 25.5637 102.078 25.4662 102.35 25.2721L108.743 20.687L115.137 25.2721C115.402 25.4627 115.72 25.5647 116.046 25.5636C116.373 25.5624 116.69 25.4582 116.954 25.2658C117.218 25.0745 117.414 24.8049 117.516 24.4953C117.618 24.1858 117.619 23.852 117.52 23.5415L115.136 15.8457L121.472 11.3809C121.735 11.1871 121.93 10.9156 122.03 10.6049C122.129 10.2942 122.129 9.95997 122.029 9.64947C121.927 9.33973 121.731 9.06967 121.468 8.87744C121.205 8.68522 120.888 8.58056 120.562 8.57826L112.715 8.56647L110.216 1.06166C110.113 0.752497 109.915 0.483606 109.651 0.293068C109.386 0.102529 109.069 0 108.743 0C108.417 0 108.099 0.102529 107.835 0.293068C107.571 0.483606 107.373 0.752497 107.27 1.06166L104.814 8.56647L96.9261 8.57826C96.5998 8.5801 96.2824 8.6847 96.019 8.87722C95.7556 9.06973 95.5595 9.34035 95.4586 9.65065C95.3578 9.96095 95.3573 10.2951 95.4572 10.6057C95.5571 10.9163 95.7523 11.1876 96.0152 11.3809L102.351 15.8457L99.9668 23.5415C99.8677 23.8519 99.869 24.1857 99.9706 24.4953C100.072 24.8049 100.269 25.0745 100.533 25.2658C100.797 25.4597 101.116 25.5641 101.444 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M133.399 25.5637C133.716 25.5637 134.032 25.4662 134.304 25.2721L140.698 20.687L147.091 25.2721C147.356 25.4627 147.675 25.5647 148.001 25.5636C148.327 25.5624 148.645 25.4582 148.908 25.2658C149.172 25.0745 149.369 24.8049 149.471 24.4953C149.572 24.1858 149.574 23.852 149.475 23.5415L147.091 15.8457L153.427 11.3809C153.689 11.1871 153.884 10.9156 153.984 10.6049C154.084 10.2942 154.084 9.95997 153.983 9.64947C153.882 9.33973 153.686 9.06967 153.423 8.87744C153.159 8.68522 152.843 8.58056 152.517 8.57826L144.669 8.56647L142.171 1.06166C142.068 0.752496 141.87 0.483606 141.605 0.293068C141.341 0.102529 141.023 0 140.697 0C140.372 0 140.054 0.102529 139.79 0.293068C139.525 0.483606 139.327 0.752496 139.224 1.06166L136.768 8.56647L128.881 8.57826C128.554 8.5801 128.237 8.6847 127.974 8.87722C127.71 9.06973 127.514 9.34035 127.413 9.65065C127.312 9.96095 127.312 10.2951 127.412 10.6057C127.512 10.9163 127.707 11.1876 127.97 11.3809L134.306 15.8457L131.921 23.5415C131.822 23.8519 131.824 24.1857 131.925 24.4953C132.027 24.8049 132.224 25.0745 132.487 25.2658C132.752 25.4597 133.071 25.5641 133.399 25.5637Z" fill="#CEC9C1"/>
+                                </svg>
+
+                                <small><t t-esc="website.date_review_3"/></small>
+
+                            </div>
+                        </div>
+
+                        <div class="card-review">
+                            <div class="review-header">
+                                <img id="review-img-profile"
+                                t-att-src="'/web/image/website/' + str(request.website.id) + '/img_review_4'"
+                                alt="Review img profile"/>
+
+                                <div class="review-subtitle">
+                                    <strong><t t-esc="website.name_review_4"/></strong>
+                                    <small><t t-esc="website.position_review_4"/></small>
+                                </div>
+                            </div>
+
+                            <p>
+                                <t t-esc="website.text_review_4"/>
+                            </p>
+
+                            <div class="review-footer">
+                                <svg width="155" height="26" viewBox="0 0 155 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.06173 25.5637C6.37924 25.5637 6.69518 25.4662 6.96712 25.2721L13.3606 20.687L19.7541 25.2721C20.019 25.4627 20.3374 25.5647 20.6637 25.5636C20.99 25.5624 21.3076 25.4582 21.5712 25.2658C21.835 25.0745 22.0318 24.8049 22.1335 24.4953C22.2352 24.1858 22.2368 23.852 22.1378 23.5415L19.7533 15.8457L26.0895 11.3809C26.3521 11.1871 26.5471 10.9156 26.6469 10.6049C26.7468 10.2942 26.7464 9.95997 26.6459 9.64947C26.5446 9.33973 26.3485 9.06967 26.0853 8.87744C25.8222 8.68522 25.5053 8.58056 25.1794 8.57826L17.3319 8.56647L14.8334 1.06166C14.7303 0.752497 14.5326 0.483606 14.2682 0.293068C14.0038 0.102529 13.6861 0 13.3602 0C13.0343 0 12.7167 0.102529 12.4523 0.293068C12.1879 0.483606 11.9901 0.752497 11.887 1.06166L9.43099 8.56647L1.54344 8.57826C1.21717 8.5801 0.899778 8.6847 0.636351 8.87722C0.372923 9.06973 0.176859 9.34035 0.0760078 9.65065C-0.0248413 9.96095 -0.0253506 10.2951 0.0745583 10.6057C0.174465 10.9163 0.369711 11.1876 0.632553 11.3809L6.96869 15.8457L4.58419 23.5415C4.48506 23.8519 4.4864 24.1857 4.588 24.4953C4.6896 24.8049 4.88628 25.0745 5.15005 25.2658C5.41443 25.4597 5.73386 25.5641 6.06173 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M37.896 25.5637C38.2135 25.5637 38.5295 25.4662 38.8014 25.2721L45.1949 20.687L51.5884 25.2721C51.8533 25.4627 52.1717 25.5647 52.498 25.5636C52.8243 25.5624 53.1419 25.4582 53.4055 25.2658C53.6693 25.0745 53.8661 24.8049 53.9678 24.4953C54.0696 24.1858 54.0711 23.852 53.9721 23.5415L51.5876 15.8457L57.9238 11.3809C58.1864 11.1871 58.3814 10.9156 58.4812 10.6049C58.5811 10.2942 58.5807 9.95997 58.4802 9.64947C58.3789 9.33973 58.1828 9.06967 57.9196 8.87744C57.6565 8.68522 57.3396 8.58056 57.0137 8.57826L49.1662 8.56647L46.6678 1.06166C46.5646 0.752497 46.3669 0.483606 46.1025 0.293068C45.8381 0.102529 45.5204 0 45.1945 0C44.8686 0 44.551 0.102529 44.2866 0.293068C44.0222 0.483606 43.8244 0.752497 43.7213 1.06166L41.2653 8.56647L33.3777 8.57826C33.0515 8.5801 32.7341 8.6847 32.4707 8.87722C32.2072 9.06973 32.0112 9.34035 31.9103 9.65065C31.8095 9.96095 31.809 10.2951 31.9089 10.6057C32.0088 10.9163 32.204 11.1876 32.4669 11.3809L38.803 15.8457L36.4185 23.5415C36.3194 23.8519 36.3207 24.1857 36.4223 24.4953C36.5239 24.8049 36.7206 25.0745 36.9844 25.2658C37.2487 25.4597 37.5682 25.5641 37.896 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M69.7304 25.5637C70.0479 25.5637 70.3638 25.4662 70.6357 25.2721L77.0292 20.687L83.4228 25.2721C83.6876 25.4627 84.006 25.5647 84.3323 25.5636C84.6586 25.5624 84.9762 25.4582 85.2398 25.2658C85.5036 25.0745 85.7004 24.8049 85.8021 24.4953C85.9039 24.1858 85.9054 23.852 85.8065 23.5415L83.422 15.8457L89.7581 11.3809C90.0207 11.1871 90.2157 10.9156 90.3156 10.6049C90.4154 10.2942 90.4151 9.95997 90.3145 9.64947C90.2132 9.33973 90.0171 9.06967 89.754 8.87744C89.4908 8.68522 89.1739 8.58056 88.848 8.57826L81.0005 8.56647L78.5021 1.06166C78.399 0.752497 78.2012 0.483606 77.9368 0.293068C77.6724 0.102529 77.3548 0 77.0289 0C76.703 0 76.3853 0.102529 76.1209 0.293068C75.8565 0.483606 75.6587 0.752497 75.5556 1.06166L73.0996 8.56647L65.2121 8.57826C64.8858 8.5801 64.5684 8.6847 64.305 8.87722C64.0415 9.06973 63.8455 9.34035 63.7446 9.65065C63.6438 9.96095 63.6433 10.2951 63.7432 10.6057C63.8431 10.9163 64.0383 11.1876 64.3012 11.3809L70.6373 15.8457L68.2528 23.5415C68.1537 23.8519 68.155 24.1857 68.2566 24.4953C68.3582 24.8049 68.5549 25.0745 68.8187 25.2658C69.0831 25.4597 69.4025 25.5641 69.7304 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M101.444 25.5637C101.762 25.5637 102.078 25.4662 102.35 25.2721L108.743 20.687L115.137 25.2721C115.402 25.4627 115.72 25.5647 116.046 25.5636C116.373 25.5624 116.69 25.4582 116.954 25.2658C117.218 25.0745 117.414 24.8049 117.516 24.4953C117.618 24.1858 117.619 23.852 117.52 23.5415L115.136 15.8457L121.472 11.3809C121.735 11.1871 121.93 10.9156 122.03 10.6049C122.129 10.2942 122.129 9.95997 122.029 9.64947C121.927 9.33973 121.731 9.06967 121.468 8.87744C121.205 8.68522 120.888 8.58056 120.562 8.57826L112.715 8.56647L110.216 1.06166C110.113 0.752497 109.915 0.483606 109.651 0.293068C109.386 0.102529 109.069 0 108.743 0C108.417 0 108.099 0.102529 107.835 0.293068C107.571 0.483606 107.373 0.752497 107.27 1.06166L104.814 8.56647L96.9261 8.57826C96.5998 8.5801 96.2824 8.6847 96.019 8.87722C95.7556 9.06973 95.5595 9.34035 95.4586 9.65065C95.3578 9.96095 95.3573 10.2951 95.4572 10.6057C95.5571 10.9163 95.7523 11.1876 96.0152 11.3809L102.351 15.8457L99.9668 23.5415C99.8677 23.8519 99.869 24.1857 99.9706 24.4953C100.072 24.8049 100.269 25.0745 100.533 25.2658C100.797 25.4597 101.116 25.5641 101.444 25.5637Z" fill="#FFAC33"/>
+                                    <path d="M133.399 25.5637C133.716 25.5637 134.032 25.4662 134.304 25.2721L140.698 20.687L147.091 25.2721C147.356 25.4627 147.675 25.5647 148.001 25.5636C148.327 25.5624 148.645 25.4582 148.908 25.2658C149.172 25.0745 149.369 24.8049 149.471 24.4953C149.572 24.1858 149.574 23.852 149.475 23.5415L147.091 15.8457L153.427 11.3809C153.689 11.1871 153.884 10.9156 153.984 10.6049C154.084 10.2942 154.084 9.95997 153.983 9.64947C153.882 9.33973 153.686 9.06967 153.423 8.87744C153.159 8.68522 152.843 8.58056 152.517 8.57826L144.669 8.56647L142.171 1.06166C142.068 0.752496 141.87 0.483606 141.605 0.293068C141.341 0.102529 141.023 0 140.697 0C140.372 0 140.054 0.102529 139.79 0.293068C139.525 0.483606 139.327 0.752496 139.224 1.06166L136.768 8.56647L128.881 8.57826C128.554 8.5801 128.237 8.6847 127.974 8.87722C127.71 9.06973 127.514 9.34035 127.413 9.65065C127.312 9.96095 127.312 10.2951 127.412 10.6057C127.512 10.9163 127.707 11.1876 127.97 11.3809L134.306 15.8457L131.921 23.5415C131.822 23.8519 131.824 24.1857 131.925 24.4953C132.027 24.8049 132.224 25.0745 132.487 25.2658C132.752 25.4597 133.071 25.5641 133.399 25.5637Z" fill="#CEC9C1"/>
+                                </svg>
+
+                                <small><t t-esc="website.date_review_4"/></small>
+
+                            </div>
+                        </div>
+
+
+
+                       
+                    </div>
+                    
+                    <div style="display: flex;place-content: center;">
+                        <div class="review-line-progress">
+                            <div class="line-progress"/>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="section_6">
+                    <h1>Contáctanos</h1>
+                    <div class="bg-contactus"></div>
+                    <div class="contact-us-container">
+                        <div class="img-form">
+                            <img class="img-contat-us" src="/pyxel_cem_seric_custom/static/src/img/contact_us.svg" alt="contact-us-img"/>
+                        </div>
+                        <div class="contact-form">
+                            <form action="/website/form/mail.mail" method="post" class="form o_mark_required" data-model_name="mail.mail" data-success-mode="redirect" data-success-page="/contactus-thank-you">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" t-nocache="The csrf token must always be up to date."/>
+                                <input type="hidden" name="email_to" t-att-value="website.company_id.email"/>
+                                <div class="flex-form">
+                                    <div class="form-group s_website_form_field s_website_form_required">
+                                        <label for="name" class="s_website_form_label">Nombre <span class="s_website_form_mark">*</span></label>
+                                        <input type="text" id="name" name="name" class="form-control s_website_form_input" required="required"/>
+                                    </div>
+                                    <div class="form-group s_website_form_field s_website_form_required">
+                                        <label for="lastname" class="s_website_form_label">Apellido <span class="s_website_form_mark">*</span></label>
+                                        <input type="text" id="lastname" name="lastname" class="form-control s_website_form_input" required="required"/>
+                                    </div>
+                                </div>
+                                <div class="flex-form">
+                                    <div class="form-group s_website_form_field s_website_form_required">
+                                        <label for="email" class="s_website_form_label">Correo <span class="s_website_form_mark">*</span></label>
+                                        <input type="email" id="email" name="email_from" class="form-control s_website_form_input" required="required"/>
+                                    </div>
+                                    <div class="form-group s_website_form_field s_website_form_required">
+                                        <label for="phone" class="s_website_form_label">Teléfono <span class="s_website_form_mark">*</span></label>
+                                        <input type="tel" id="phone" name="phone" class="form-control s_website_form_input" required="required"/>
+                                    </div>
+                                </div>
+                                <div class="form-group s_website_form_field">
+                                    <label class="s_website_form_label">Asunto</label>
+                                    <div class="radio-group">
+                                        <label><input type="radio" name="subject" value="Personal Affairs"/> Asuntos generales</label>
+                                        <label><input type="radio" name="subject" value="Imports"/> Importaciones</label>
+                                        <label><input type="radio" name="subject" value="Payments"/> Pagos</label>
+                                        <label><input type="radio" name="subject" value="Returns"/> Devoluciones</label>
+                                    </div>
+                                </div>
+                                <div class="form-group s_website_form_field s_website_form_required">
+                                    <label for="message" class="s_website_form_label">Mensaje <span class="s_website_form_mark">*</span></label>
+                                    <textarea id="message" name="description" class="form-control s_website_form_input" placeholder="Escribe tu mensaje aquí         " rows="5" required="required"></textarea>
+                                </div>
+                                <div class="form-group form-button s_website_form_submit">
+                                    <button type="submit" class="btn btn-primary s_website_form_send">Enviar Mensaje</button>
+                                    <span id="s_website_form_result"></span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="responsive-footer-form">
+                    <img class="responsive-img-contat-us" src="/pyxel_cem_seric_custom/static/src/img/contact_us.svg" alt="contact-us-img"/>
+                </div>
+            </div>
+        </t>
+       
+        <t t-set="website" t-value="request.env['website'].sudo().get_current_website()"/>
+        <script type="text/javascript">
+            window.bannerSlides = [
+                <t t-if="website">
+                    {
+                        image: "<t t-esc="'/web/image/website/' + str(website.id) + '/banner_image_1'" />",
+                        title: "<t t-esc="website.title_banner_1 or 'Sin título'" />",
+                        category: "Categoría: <t t-esc="website.category_banner_1 or 'Sin categoría'" />",
+                        description: "<t t-esc="website.description_banner_1 or 'Sin descripción'" />",
+                        url: "<t t-esc="website.url_button_1 or '#'" />"
+                    },
+                    {
+                        image: "<t t-esc="'/web/image/website/' + str(website.id) + '/banner_image_2'" />",
+                        title: "<t t-esc="website.title_banner_2 or 'Sin título'" />",
+                        category: "Categoría: <t t-esc="website.category_banner_2 or 'Sin categoría'" />",
+                        description: "<t t-esc="website.description_banner_2 or 'Sin descripción'" />",
+                        url: "<t t-esc="website.url_button_2 or '#'" />"
+                    },
+                    {
+                        image: "<t t-esc="'/web/image/website/' + str(website.id) + '/banner_image_3'" />",
+                        title: "<t t-esc="website.title_banner_3 or 'Sin título'" />",
+                        category: "Categoría: <t t-esc="website.category_banner_3 or 'Sin categoría'" />",
+                        description: "<t t-esc="website.description_banner_3 or 'Sin descripción'" />",
+                        url: "<t t-esc="website.url_button_3 or '#'" />"
+                    }
+                </t>
+            ];
+        </script>
+    </template>
+
+</odoo>

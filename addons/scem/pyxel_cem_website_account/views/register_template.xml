@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paso 2 del registro básico: introducir el código enviado al correo. -->
+    <template id="signup_verify_code" name="Verificación de correo (código)">
+        <t t-call="web.login_layout">
+            <form class="oe_signup_form" role="form" method="post" action="/web/signup">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="signup_step" value="verify"/>
+                <input type="hidden" name="redirect" t-att-value="redirect"/>
+
+                <div class="text-center mb-3">
+                    <p class="mb-1">Te enviamos un código de 6 dígitos a:</p>
+                    <strong t-esc="login"/>
+                </div>
+
+                <div class="mb-3">
+                    <label for="verify_code" class="form-label">Código de verificación</label>
+                    <input type="text" name="verify_code" id="verify_code" inputmode="numeric"
+                           autocomplete="one-time-code" maxlength="6"
+                           class="form-control form-control-lg text-center"
+                           style="letter-spacing:8px;font-weight:700;"
+                           placeholder="______" required="required" autofocus="autofocus"/>
+                </div>
+
+                <p class="alert alert-danger" t-if="error" role="alert"><t t-esc="error"/></p>
+                <p class="alert alert-success" t-if="info" role="alert"><t t-esc="info"/></p>
+
+                <div class="text-center oe_login_buttons d-grid pt-2 gap-2">
+                    <button type="submit" class="btn btn-primary">Verificar y registrarse</button>
+                    <button type="submit" name="resend" value="1" class="btn btn-link btn-sm">Reenviar código</button>
+                    <a href="/web/signup" class="btn btn-link btn-sm">← Cambiar correo</a>
+                </div>
+            </form>
+        </t>
+    </template>
+
+    <template id="registration_form" inherit_id="auth_signup.signup">
+        <xpath expr="//form" position="replace">
+            <form id="registration_form" class="oe_signup_form register-form"
+                  role="form" method="post" enctype="multipart/form-data" t-if="not message">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="form-step active register-step">
+
+                    <p id="error-message" class="alert alert-danger" style="display:none; font-size: 12px;"/>
+
+                    <!-- Step 1: Fields selection user type -->
+                    <div id="step1">
+                        <div class="form-section step-natural">
+                            <div class="selection-box">
+                                <h6 class="register-title">¿Es usted persona jurídica o natural?</h6>
+                                <div class="button-container">
+                                    <label class="register-option">
+                                        <input type="radio" name="user_type" value="natural" required="1"/>
+                                        <span>Persona Natural</span>
+                                    </label>
+                                    <label class="register-option">
+                                        <input type="radio" name="user_type" value="juridico" required="1"/>
+                                        <span>Persona Jurídica</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+                    <!-- Step 2: Fields for Natural User -->
+                    <div id="step2_natural" style="display:none;">
+                        <div class="form-section step-natural">
+                            <div class="form-section-container">
+                                <div class="form-group">
+                                    <label for="name">Nombre *</label>
+                                    <input type="text" name="name" id="name" placeholder="Ingrese su nombre"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_name">Apellidos *</label>
+                                    <input type="text" name="last_name" id="lastName"
+                                           placeholder="Ingrese sus apellidos"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+                    <!-- Step 2: Fields for Juridico User -->
+                    <t t-set="import_backend_installed"
+                       t-value="request.env['ir.module.module'].sudo().search_count([('name', '=', 'pyxel_import_backend'), ('state', '=', 'installed')])"/>
+                    <div id="step2_juridico" style="display:none;"
+                         t-attf-class="#{'d-none' if import_backend_installed else ''}">
+                        <div class="form-section step-juridico">
+                            <div class="form-section-container">
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="name_entity">Nombre de la Entidad *</label>
+                                    <input type="text" name="name_entity" id="name_entity"
+                                           placeholder="Ingrese el nombre" pattern="[A-Za-zÀ-ÿ0-9\s]+"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="name_entity_short">Nombre corto</label>
+                                    <input type="text" name="name_entity_short" id="name_entity_short"
+                                           placeholder="Ingrese nombre"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="entity_type">Tipo de entidad *</label>
+                                    <select name="entity_type" id="entity_type"
+                                            t-att-required="'required' if not import_backend_installed else ''"
+                                            style="color: black !important;">
+                                        <option value="">Seleccione el tipo de entidad</option>
+                                        <option value="estatal">Estatal</option>
+                                        <option value="firma">Firma</option>
+                                        <option value="mipime">MIPYME</option>
+                                        <option value="tcp">TCP</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="nit">NIT *</label>
+                                    <input type="text" name="nit" id="nit"
+                                           placeholder="Ingrese el NIT"
+                                           t-att-required="'required' if not import_backend_installed else ''"
+                                           maxlength="11"/>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="reeup">REEUP</label>
+                                    <input type="text" name="reeup" id="reeup"
+                                           placeholder="Ingrese el REEUP"/>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="phone">Teléfono *</label>
+                                    <input type="text" name="phone" id="phone" placeholder="53"
+                                           t-att-required="'required' if not import_backend_installed else ''"
+                                           maxlength="16"/>
+                                </div>
+                            </div>
+                            <div class="form-section-container">
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="email">Correo electrónico *</label>
+                                    <input type="text" name="email" id="email"
+                                           placeholder="Ingrese su correo"/>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="address">Dirección general *</label>
+                                    <input type="text" name="address" id="address" placeholder="Escriba su dirección"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="state_id">Provincia *</label>
+                                    <select name="state_id" id="state_id" class="form-control"
+                                            t-att-required="'required' if not import_backend_installed else ''">
+                                        <option value="">Seleccione la provincia</option>
+                                        <t t-foreach="request.env['res.country.state'].search([('country_id.code', '=', 'CU')])"
+                                           t-as="state">
+                                            <option t-att-value="state.id">
+                                                <t t-esc="state.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="padding-top: 5px;">
+                                    <label for="municipality_id">Municipio *</label>
+                                    <select name="res_municipality_id" id="res_municipality_id" class="form-control"
+                                            required="1">
+                                        <option value="">Seleccione el municipio</option>
+                                        <!-- <t t-foreach="request.env['res.city'].sudo().search([])" t-as="city">
+                                             <option t-att-value="city.id">
+                                                 <t t-esc="city.name"/>
+                                             </option>
+                                         </t>-->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="social_object">Objeto Social *</label>
+                                    <textarea name="social_object" id="social_object"
+                                              placeholder="Ingrese el objeto social o propósito de la entidad"
+                                              t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+                    <!-- Step 2 comun: Fields for datos bancarios - MODIFICADO -->
+                    <!-- SOLO se oculta para jurídico cuando el módulo está instalado -->
+                    <div id="step2_comun" style="display:none;">
+                        <div class="form-section" style="width: 50%;margin-left: 25%;">
+                            <div class="form-section-container">
+                                <div id="account_numbers"/>
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+                    <!-- Step 3: Fields for Natural User -->
+                    <div id="step3_natural" style="display:none;">
+                        <div class="form-section" style="width: 50%;margin-left: 25%;">
+                            <div class="form-section-container">
+                                <div class="form-group">
+                                    <label for="identification_num">CI o Pasaporte *</label>
+                                    <input type="text" name="identification_num" id="identification_num"
+                                           placeholder="Ingrese su CI o Pasaporte"
+                                           t-att-required="'required' if not import_backend_installed else ''"
+                                           maxlength="11"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="date_of_birth">Fecha de Nacimiento *</label>
+                                    <input type="date" name="date_of_birth" id="date_of_birth"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone1">Contacto1(Móvil) *</label>
+                                    <input type="text" name="phone1" id="phone1"
+                                           placeholder="Ingrese su número de móvil"
+                                           t-att-required="'required' if not import_backend_installed else ''"
+                                           maxlength="16"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone2">Contacto2(Móvil)</label>
+                                    <input type="text" name="phone2" id="phone2"
+                                           placeholder="Ingrese otro número de móvil" maxlength="16"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email1">Correo *</label>
+                                    <input type="text" name="email1" id="email1"
+                                           placeholder="Ingrese una dirreción de correo electrónico"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address1">Dirección *</label>
+                                    <input type="text" name="address1" id="address1" placeholder="Ingrese su dirección"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+                    <!-- Step 3: Fields for Juridico User -->
+                    <div id="step3_juridico" style="display:none;"
+                         t-attf-class="#{'d-none' if import_backend_installed else ''}">
+                        <div class="form-section" style="width: 80%; margin-left: 10%;">
+                            <div class="form-section-container">
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Documento constitutivo -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Documento constitutivo de la firma o compañía</span>
+                                    <button class="upload-btn" data-input-id="documento_constitutivo">Subir documento
+                                    </button>
+                                    <input type="file" name="documento_constitutivo" id="documento_constitutivo"
+                                           style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Documento de existencia legal -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Documento que acredite la existencia legal de la firma
+                                        o compañía
+                                    </span>
+                                    <button class="upload-btn" data-input-id="documento_existencia">Subir documento
+                                    </button>
+                                    <input type="file" name="documento_existencia" id="documento_existencia"
+                                           style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Registro mercantil -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Certificación del Registro Mercantil o Registro
+                                        Público
+                                    </span>
+                                    <button class="upload-btn" data-input-id="documento_registro_mercantil">Subir
+                                        documento
+                                    </button>
+                                    <input type="file" name="documento_registro_mercantil"
+                                           id="documento_registro_mercantil" style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Registro de contribuyente -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Certificación de inscripción en el Registro de
+                                        Contribuyente
+                                    </span>
+                                    <button class="upload-btn" data-input-id="documento_registro_contribuyente">Subir
+                                        documento
+                                    </button>
+                                    <input type="file" name="documento_registro_contribuyente"
+                                           id="documento_registro_contribuyente" style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Licencia Cámara de Comercio -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Licencia de la Cámara de Comercio de Cuba</span>
+                                    <button class="upload-btn" data-input-id="documento_licencia_comercio">Subir
+                                        documento
+                                    </button>
+                                    <input type="file" name="documento_licencia_comercio"
+                                           id="documento_licencia_comercio" style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Carta timbrada -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Carta timbrada a nombre de tu compañía con la intención
+                                        de negocios
+                                    </span>
+                                    <button class="upload-btn" data-input-id="documento_carta_timbrada">Subir
+                                        documento
+                                    </button>
+                                    <input type="file" name="documento_carta_timbrada" id="documento_carta_timbrada"
+                                           style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Carnet de ACOREC -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Carnet de ACOREC o permiso de trabajo en Cuba del
+                                        representante de la compañía
+                                    </span>
+                                    <button class="upload-btn" data-input-id="documento_carnet_acorec">Subir documento
+                                    </button>
+                                    <input type="file" name="documento_carnet_acorec" id="documento_carnet_acorec"
+                                           style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                                <div class="alert alert-info" style="margin-bottom: 20px; font-size: 14px;">
+                                    <i class="fa fa-info-circle me-2"></i>
+                                    Formatos permitidos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF. Tamaño máximo: 10MB por
+                                    archivo.
+                                </div>
+                                <!-- Perfil del cliente -->
+                                <div class="document-row upload-container">
+                                    <span class="document-label">Perfil del cliente</span>
+                                    <button class="upload-btn" data-input-id="documento_perfil_cliente">Subir
+                                        documento
+                                    </button>
+                                    <input type="file" name="documento_perfil_cliente" id="documento_perfil_cliente"
+                                           style="display:none;"
+                                           t-att-required="'required' if not import_backend_installed else ''"/>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+                    <!-- Step 5: representante -->
+                    <div id="step5_juridico" style="display:none;"
+                         t-attf-class="#{'d-none' if import_backend_installed else ''}">
+                        <div class="form-section" style="width: 50%;margin-left: 25%;">
+                            <div class="form-section-container">
+                                <div class="form-group">
+                                    <label for="is_representative">¿Desea nombrar un representante?</label>
+                                    <input type="checkbox" name="is_representative" id="is_representative"/>
+                                </div>
+                                <div class="form-group" id="representative_name_group" style="display:none;">
+                                    <label for="representative_name">Nombre del Representante *</label>
+                                    <input type="text" name="representative_name" id="representative_name"
+                                           placeholder="Ingrese el nombre del representante"/>
+                                </div>
+                                <div class="form-group" id="representative_last_name_group" style="display:none;">
+                                    <label for="representative_last_name">Apellido del Representante *</label>
+                                    <input type="text" name="representative_last_name" id="representative_last_name"
+                                           placeholder="Ingrese el apellido del representante"/>
+                                </div>
+                                <div class="form-group" id="representative_id_number_group" style="display:none;">
+                                    <label for="representative_identification_num">CI o Pasaporte del Representante *
+                                    </label>
+                                    <input type="text" name="representative_identification_num"
+                                           id="representative_id_number"
+                                           placeholder="Ingrese el número de identificación del representante"
+                                           maxlength="11"/>
+                                </div>
+                                <div class="form-group" id="representative_phone_group" style="display:none;">
+                                    <label for="representative_phone">Contacto del Representante *</label>
+                                    <input type="text" name="representative_phone" id="representative_phone"
+                                           placeholder="Ingrese su número de móvil"
+                                           required="1" maxlength="16"/>
+                                </div>
+                                <div class="form-group" id="representative_email_group" style="display:none;">
+                                    <label for="representative_email">Correo del Representante *</label>
+                                    <input type="text" name="representative_email" id="representative_email"
+                                           placeholder="Ingrese una dirreción de correo electrónico"/>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+                    <!-- Step 4: Fields for Natural User -->
+                    <div id="step4_comun" style="display:none;">
+                        <div class="form-section" style="width: 50%; margin-left: 25%;">
+                            <div class="form-section-container">
+                                <!-- Nombre de Usuario -->
+                                <div class="form-group">
+                                    <label for="login">Nombre de Usuario *</label>
+                                    <input type="text" name="login" id="login"
+                                           t-att-value="login" autofocus="autofocus"
+                                           autocapitalize="off" required="required"
+                                           class="form-control"
+                                           t-att-readonly="'readonly' if only_passwords else None"/>
+                                </div>
+
+                                <!-- Contraseña -->
+                                <div class="form-group">
+                                    <label for="password">Contraseña *</label>
+                                    <div class="input-group">
+                                        <input type="password" name="password" id="password"
+                                               required="required" class="form-control"/>
+                                        <button type="button" class="btn btn-outline-secondary toggle-password"
+                                                data-target="#password">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Confirmar Contraseña -->
+                                <div class="form-group">
+                                    <label for="confirm_password">Confirmar Contraseña *</label>
+                                    <div class="input-group">
+                                        <input type="password" name="confirm_password" id="confirm_password"
+                                               required="required" class="form-control"/>
+                                        <button type="button" class="btn btn-outline-secondary toggle-password"
+                                                data-target="#confirm_password">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Step 5: Terms and Conditions -->
+                    <div id="step5_natural" style="display:none;">
+                        <div class="form-section" style="width: 50%;margin-left: 25%;">
+                            <div class="form-section-container">
+
+                                <h6 class="register-title">
+                                    Antes de continuar, asegúrate de leer nuestros Términos y Condiciones.
+                                </h6>
+                                <!-- Modal buttons styled similarly to radio buttons section -->
+                                <div class="button-container"
+                                     style="display: -webkit-inline-box; align-items: center; gap: 10px; padding-left: 10px;">
+                                    <input type="checkbox" name="terms" id="accept_terms" required="1"/>
+                                    <label for="accept_terms" style="margin: auto; font-size: 10px;">He leído y acepto
+                                        los términos y
+                                        condiciones
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+                        <p class="alert alert-danger" t-if="error" role="alert">
+                            <t t-esc="error"/>
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Fixed Progress Bar -->
+                <div class="stepper-wrapper">
+                    <div class="stepper-item active" id="step-1">
+                        <div class="step-counter"></div>
+                        <div class="step-name" style="font-size: 80%;">Inicio</div>
+                    </div>
+
+                    <!-- Paso 2: Datos Generales - SOLO MOSTRAR CUANDO NO ES JURÍDICO CON MÓDULO -->
+                    <t t-if="not import_backend_installed">
+                        <div class="stepper-item" id="step-2">
+                            <div class="step-counter"></div>
+                            <div class="step-name" style="font-size: 80%;">Datos generales</div>
+                        </div>
+                    </t>
+
+                    <!-- Paso 3: Datos Bancarios - SOLO MOSTRAR CUANDO NO ES JURÍDICO CON MÓDULO -->
+                    <t t-if="not import_backend_installed">
+                        <div class="stepper-item" id="step-3">
+                            <div class="step-counter"></div>
+                            <div class="step-name" style="font-size: 80%;">Datos bancarios</div>
+                        </div>
+                    </t>
+
+                    <!-- Paso 4: Documentación/Contacto - NOMBRE DINÁMICO -->
+                    <div class="stepper-item" id="step-4">
+                        <div class="step-counter"></div>
+                        <div class="step-name" style="font-size: 80%;">
+                            <t t-if="import_backend_installed">Seguridad</t>
+                            <t t-else="">Documentación/Contacto</t>
+                        </div>
+                    </div>
+
+                    <!-- Paso 5: Representante/Seguridad - NOMBRE DINÁMICO -->
+                    <div class="stepper-item" id="step-5">
+                        <div class="step-counter"></div>
+                        <div class="step-name" style="font-size: 80%;">
+                            <t t-if="import_backend_installed">Final</t>
+                            <t t-else="">Representante/Seguridad</t>
+                        </div>
+                    </div>
+
+                    <!-- Paso 6: Final - SOLO PARA JURÍDICO SIN MÓDULO -->
+                    <t t-if="not import_backend_installed">
+                        <div class="stepper-item" id="step-6">
+                            <div class="step-counter"></div>
+                            <div class="step-name" style="font-size: 80%;">Final</div>
+                        </div>
+                    </t>
+                </div>
+
+                <div class="form-navigation">
+                    <button type="button" class="register-button prev" disabled="1">Paso anterior</button>
+                    <button id="next-button" type="button" class="register-button next">Siguiente paso</button>
+                </div>
+
+            </form>
+        </xpath>
+    </template>
+</odoo>

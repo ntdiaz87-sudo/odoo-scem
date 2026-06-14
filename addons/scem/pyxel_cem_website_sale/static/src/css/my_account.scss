@@ -1,0 +1,70 @@
+.o_portal_wrap h3 {
+    font-weight: bold;
+}
+.o_portal_category .o_portal_index_card a {
+    background-color: #CFE8FF !important;
+    padding: 25px 20px !important;
+    border-radius: 25px !important;
+}
+.o_portal_category .o_portal_index_card p {
+    color: #595959 !important;
+}
+.o_portal_category .o_portal_index_card h5 {
+    font-weight: bold;
+}
+.o_portal_icon.align-self-start {
+    width: 50px;
+}
+
+
+
+//----------------------------------PERSONAL INFO CONTAINER---------------------------------------------
+.mt-3.rounded.text-bg-light.p-3 {
+    border-radius: 25px !important;
+    margin-bottom: 30px;
+    padding: 20px 40px !important;
+}
+.info-name-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+}
+.info-name-container img {
+    border-radius: 100% !important;
+    width: 60px !important;
+}
+.info-name-container h5 {
+    font-size: 23px;
+}
+.o_portal_my_details {
+    padding: 0 20px;
+}
+.o_portal_my_details i {
+    font-size: 25px;
+    color: #7c7b7b !important;
+}
+.o_portal_my_details .d-flex {
+    margin-bottom: 15px;
+}
+a#edit-info {
+    border: 2px solid #3058A4;
+    background-color: transparent !important;
+    color: black !important;
+    font-size: 14px;
+    width: 100%;
+    border-radius: 100px;
+    padding: 10px !important;
+    margin-bottom: 10px;
+}
+
+
+.contact-line {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.o_portal_my_details img {
+    width: 26px;
+    height: 28px;
+}

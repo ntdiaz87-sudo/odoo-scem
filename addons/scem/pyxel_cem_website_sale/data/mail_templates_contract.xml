@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_contract_accepted" model="mail.template">
+        <field name="name">Contract Accepted Notification</field>
+        <field name="model_id" ref="pyxel_cem_virtual_contract.model_cem_virtual_contract"/>
+        <field name="email_from">${object.company_id.email or object.env.user.email}</field>
+        <field name="email_to">${object.partner_id.user_id.email or object.partner_id.commercial_partner_id.user_id.email}</field>
+        <field name="subject">Contract Accepted: ${object.code}</field>
+        <field name="body_html" type="html"><![CDATA[
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <h2 style="color: #2C3E50;">Contract Accepted Notification</h2>
+
+    <p>Hello <strong>${object.partner_id.user_id.name or object.partner_id.commercial_partner_id.user_id.name}</strong>,</p>
+
+    <p>The following contract has been accepted by the customer:</p>
+
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+        <p><strong>Contract Code:</strong> ${object.code}</p>
+        <p><strong>Customer:</strong> ${object.partner_id.name}</p>
+        <p><strong>Sent Date:</strong> ${object.upload_date}</p>
+        <p><strong>Expiry Date:</strong> ${object.expiry_date}</p>
+        <p><strong>Status:</strong> <span style="color: #28a745;">Accepted</span></p>
+    </div>
+
+    <p>You can review the contract in the system by clicking the link below:</p>
+
+    <div style="text-align: center; margin: 20px 0;">
+        <a href="${object.get_contract_url()}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Contract</a>
+    </div>
+
+    <p>Best regards,<br/>
+    <strong>${object.company_id.name} System</strong></p>
+
+    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;"/>
+    <p style="color: #6c757d; font-size: 12px;">This is an automated notification. Please do not reply to this email.</p>
+</div>
+        ]]></field>
+    </record>
+</odoo>

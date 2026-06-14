@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista de formulario del wizard -->
+        <record id="view_sales_manager_reconciliation_wizard_form" model="ir.ui.view">
+            <field name="name">sales.manager.reconciliation.wizard.form</field>
+            <field name="model">sales.manager.reconciliation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Conciliación de Gestores de Ventas">
+                    <sheet>
+                        <group>
+                            <group string="Período">
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                            <group string="Filtros">
+                                <field name="sales_manager_id"/>
+                                <field name="document_type"/>
+                                <field name="product_id"/>
+                                <field name="state"/>
+                            </group>
+                        </group>
+
+                        <!-- Campos ocultos para descargar Excel -->
+                        <group invisible="1">
+                            <field name="excel_file" filename="excel_filename"/>
+                            <field name="excel_filename"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <!--                        <button name="action_generate_report"-->
+                        <!--                                string="Ver Reporte"-->
+                        <!--                                type="object"-->
+                        <!--                                class="btn-primary"/>-->
+                        <button name="action_print_pdf"
+                                string="Imprimir PDF"
+                                type="object"
+                                class="btn-secondary"/>
+                        <button name="action_generate_excel"
+                                string="Descargar Excel"
+                                type="object"
+                                class="btn-success"/>
+                        <button string="Cancelar"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Acción del wizard -->
+        <record id="action_sales_manager_reconciliation_wizard" model="ir.actions.act_window">
+            <field name="name">Conciliación de Gestores de Ventas</field>
+            <field name="res_model">sales.manager.reconciliation.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menú -->
+        <menuitem id="menu_sales_manager_reconciliation"
+                  name="Conciliación de Gestores de Ventas"
+                  parent="sale.menu_sale_report"
+                  action="action_sales_manager_reconciliation_wizard"
+                  sequence="99"
+                  groups="pyxel_sales_managers.group_sales_manager_user"/>
+
+    </data>
+</odoo>

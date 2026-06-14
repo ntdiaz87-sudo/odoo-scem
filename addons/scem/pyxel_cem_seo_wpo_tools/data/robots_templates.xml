@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seo_robots_template" model="ir.ui.view">
+            <field name="name">SEO Robots.txt Template</field>
+            <field name="type">qweb</field>
+            <field name="arch" type="xml">
+                <t t-name="pyxel_cem_seo_wpo_tools.robots_template">
+                    <t t-esc="content"/>
+                </t>
+            </field>
+        </record>
+    </data>
+</odoo>

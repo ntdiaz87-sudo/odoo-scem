@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Contactos Demo para Gestores -->
+        <record id="partner_sales_manager_1" model="res.partner">
+            <field name="name">Juan Pérez</field>
+            <field name="email">juan.perez@example.com</field>
+            <field name="phone">+34 600 123 456</field>
+            <field name="is_company" eval="False"/>
+        </record>
+
+        <record id="partner_sales_manager_2" model="res.partner">
+            <field name="name">María González</field>
+            <field name="email">maria.gonzalez@example.com</field>
+            <field name="phone">+34 600 234 567</field>
+            <field name="is_company" eval="False"/>
+        </record>
+
+        <record id="partner_sales_manager_3" model="res.partner">
+            <field name="name">Carlos Rodríguez</field>
+            <field name="email">carlos.rodriguez@example.com</field>
+            <field name="phone">+34 600 345 678</field>
+            <field name="is_company" eval="False"/>
+        </record>
+
+        <!-- Gestores de Ventas Demo -->
+        <record id="sales_manager_demo_1" model="pyxel.sales.manager">
+            <field name="name">Juan Pérez</field>
+            <field name="partner_id" ref="partner_sales_manager_1"/>
+            <field name="commission_rate">5.0</field>
+            <field name="date_start" eval="(DateTime.now() - timedelta(days=365)).strftime('%Y-%m-%d')"/>
+            <field name="notes">Gestor de ventas senior con 5 años de experiencia</field>
+        </record>
+
+        <record id="sales_manager_demo_2" model="pyxel.sales.manager">
+            <field name="name">María González</field>
+            <field name="partner_id" ref="partner_sales_manager_2"/>
+            <field name="commission_rate">7.5</field>
+            <field name="manager_id" ref="sales_manager_demo_1"/>
+            <field name="date_start" eval="(DateTime.now() - timedelta(days=180)).strftime('%Y-%m-%d')"/>
+            <field name="notes">Especialista en ventas B2B</field>
+        </record>
+
+        <record id="sales_manager_demo_3" model="pyxel.sales.manager">
+            <field name="name">Carlos Rodríguez</field>
+            <field name="partner_id" ref="partner_sales_manager_3"/>
+            <field name="commission_rate">6.0</field>
+            <field name="manager_id" ref="sales_manager_demo_1"/>
+            <field name="date_start" eval="(DateTime.now() - timedelta(days=90)).strftime('%Y-%m-%d')"/>
+            <field name="notes">Nuevo gestor en formación</field>
+        </record>
+
+    </data>
+</odoo>

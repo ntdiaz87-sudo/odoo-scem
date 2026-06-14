@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════
+         VISTA FORMULARIO
+    ══════════════════════════════════════════ -->
+    <record id="conciliation_report_view_form" model="ir.ui.view">
+        <field name="name">conciliation.report.form</field>
+        <field name="model">conciliation.report</field>
+        <field name="arch" type="xml">
+            <form string="Acta de Conciliación">
+                <header>
+                    <button name="action_recompute"
+                            string="Recalcular"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-refresh"/>
+                    <button name="action_print_report"
+                            string="Imprimir Acta"
+                            type="object"
+                            class="btn-secondary"
+                            icon="fa-print"/>
+                </header>
+
+                <sheet>
+                    <!-- ── Cabecera ── -->
+                    <div class="oe_title">
+                        <h1>Acta de Conciliación</h1>
+                    </div>
+
+                    <group string="Filtros / Encabezado">
+                        <group>
+                            <field name="origin"/>
+                            <field name="month"/>
+                            <field name="provider_id"/>
+                            <field name="seller_name"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="concept"/>
+                            <field name="margin_pct"
+                                   widget="percentage"
+                                   string="Margen %"/>
+                        </group>
+                    </group>
+
+                    <!-- ── Tabla de resultados ── -->
+                    <separator string="Resultados de Conciliación"/>
+
+                    <group>
+                        <div class="o_wrap_field" style="width:100%;">
+                            <table class="o_list_table table table-bordered"
+                                   style="width:100%; border-collapse:collapse;">
+                                <thead>
+                                    <tr style="background:#f5f5f5;">
+                                        <th style="width:6%; border:1px solid #ccc; padding:8px; text-align:center;">No.</th>
+                                        <th style="width:34%; border:1px solid #ccc; padding:8px;">Descripción</th>
+                                        <th style="width:30%; border:1px solid #ccc; padding:8px; text-align:right;">Monto (USD)</th>
+                                        <th style="width:30%; border:1px solid #ccc; padding:8px;">Observaciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Fila 1: Ventas -->
+                                    <tr>
+                                        <td style="border:1px solid #ccc; padding:8px; text-align:center;">1</td>
+                                        <td style="border:1px solid #ccc; padding:8px;">Ventas</td>
+                                        <td style="border:1px solid #ccc; padding:8px; text-align:right;">
+                                            <field name="amount_sales"
+                                                   widget="monetary"
+
+                                                   readonly="1"/>
+                                        </td>
+                                        <td style="border:1px solid #ccc; padding:8px;">
+                                            <field name="obs_sales" placeholder="Observaciones..."/>
+                                        </td>
+                                    </tr>
+                                    <!-- Fila 2: CIF -->
+                                    <tr>
+                                        <td style="border:1px solid #ccc; padding:8px; text-align:center;">2</td>
+                                        <td style="border:1px solid #ccc; padding:8px;">CIF</td>
+                                        <td style="border:1px solid #ccc; padding:8px; text-align:right;">
+                                            <field name="amount_cif"
+                                                   widget="monetary"
+
+                                                   readonly="1"/>
+                                        </td>
+                                        <td style="border:1px solid #ccc; padding:8px;">
+                                            <field name="obs_cif" placeholder="Observaciones..."/>
+                                        </td>
+                                    </tr>
+                                    <!-- Fila 3: Margen -->
+                                    <tr style="background:#f0fff0;">
+                                        <td style="border:1px solid #ccc; padding:8px; text-align:center;">3</td>
+                                        <td style="border:1px solid #ccc; padding:8px; font-weight:bold;">Margen</td>
+                                        <td style="border:1px solid #ccc; padding:8px; text-align:right; font-weight:bold;">
+                                            <field name="amount_margin"
+                                                   widget="monetary"
+
+                                                   readonly="1"/>
+                                        </td>
+                                        <td style="border:1px solid #ccc; padding:8px;">
+                                            <field name="obs_margin" placeholder="Observaciones..."/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </group>
+
+                    <!-- ── Debug ── -->
+<!--                    <notebook>-->
+<!--                        <page string="Referencias" groups="base.group_no_one">-->
+<!--&lt;!&ndash;                            <field name="debug_info" readonly="1"/>&ndash;&gt;-->
+<!--                            <field name="debug_line_ids" readonly="1">-->
+<!--                                <tree>-->
+<!--                                    <field name="move_id"/>-->
+<!--                                    <field name="product_id"/>-->
+<!--                                    <field name="quantity"/>-->
+<!--                                    <field name="price_subtotal"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
+                </sheet>
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         VISTA LISTA
+    ══════════════════════════════════════════ -->
+    <record id="conciliation_report_view_list" model="ir.ui.view">
+        <field name="name">conciliation.report.list</field>
+        <field name="model">conciliation.report</field>
+        <field name="arch" type="xml">
+            <tree string="Actas de Conciliación" decoration-success="amount_margin &gt; 0"
+                  decoration-danger="amount_margin &lt; 0">
+                <field name="origin"/>
+                <field name="month"/>
+                <field name="provider_id"/>
+                <field name="seller_name"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="concept"/>
+                <field name="margin_pct" string="Margen %"/>
+                <field name="amount_sales" string="Ventas (USD)"/>
+                <field name="amount_cif" string="CIF (USD)"/>
+                <field name="amount_margin" string="Margen (USD)"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         VISTA BÚSQUEDA
+    ══════════════════════════════════════════ -->
+    <record id="conciliation_report_view_search" model="ir.ui.view">
+        <field name="name">conciliation.report.search</field>
+        <field name="model">conciliation.report</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Conciliaciones">
+                <field name="provider_id"/>
+                <field name="seller_name"/>
+                <field name="concept"/>
+                <filter name="filter_sale" string="Ventas" domain="[('origin','=','sale')]"/>
+                <filter name="filter_purchase" string="Compras" domain="[('origin','=','purchase')]"/>
+                <separator/>
+                <filter name="filter_positive" string="Margen Positivo" domain="[('amount_margin','>',0)]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_origin" string="Origen" context="{'group_by':'origin'}"/>
+                    <filter name="group_month" string="Mes" context="{'group_by':'month'}"/>
+                    <filter name="group_provider" string="Proveedor" context="{'group_by':'provider_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         ACCIÓN DE VENTANA
+    ══════════════════════════════════════════ -->
+    <record id="conciliation_report_act_window" model="ir.actions.act_window">
+        <field name="name">Actas de Conciliación</field>
+        <field name="res_model">conciliation.report</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="conciliation_report_view_list"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crea tu primera Acta de Conciliación
+            </p>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════
+         MENÚ
+    ══════════════════════════════════════════ -->
+    <menuitem name="Acta de Conciliación"
+              id="conciliation_report_menu"
+              parent="cem_reports_menu"
+              action="conciliation_report_act_window"
+              sequence="20"/>
+
+</odoo>

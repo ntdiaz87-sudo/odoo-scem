@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seric_inherit_products_item" model="ir.ui.view">
+            <field name="name">seric_inherit_products_item</field>
+            <field name="inherit_id" search="[('key', '=', 'pyxel_cem_website_sale.scem_inherit_products_item')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seric_custom.seric_inherit_products_item</field>
+            <field name="arch" type="xml">
+
+                <xpath expr="//span[contains(@class, 'stock')]" position="replace">
+                    <span class="product-span stock"><t t-esc="int(product.product_variant_id.qty_available)"/> en Almacén</span>
+                </xpath>
+
+            </field>
+    </record>
+</odoo>

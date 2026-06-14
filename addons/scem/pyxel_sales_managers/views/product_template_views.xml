@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Extensión de la vista de producto para agregar comisión del gestor -->
+        <record id="product_template_form_view_sales_manager_commission" model="ir.ui.view">
+            <field name="name">product.template.form.sales.manager.commission</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+
+                <!-- Heredar el tab "Wholesale Sale" existente -->
+                <xpath expr="//field[@name='delivery_time']" position="after">
+                    <!-- Campo computed invisible para controlar visibilidad -->
+                    <field name="show_sales_manager" invisible="1"/>
+                    <!-- Campo de comisión del gestor -->
+                    <field name="sales_manager_commission"
+                           widget="percentage"
+                           invisible="not show_sales_manager"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

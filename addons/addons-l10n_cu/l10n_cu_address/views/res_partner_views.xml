@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_form_partner_inherited" model="ir.ui.view">
+        <field name="name">view_partner_municipaly_form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='street2']" position="after">
+                <field name="res_municipality_id"
+                       options="{'no_create': True, 'no_edit': True, 'no_quick_create': True}"
+                       placeholder="Municipio..." context="{'state_id': state_id, 'default_state_id': state_id}"/>
+            </xpath>
+            <xpath expr="//page[@name='contact_addresses']//div[hasclass('o_address_format')]//field[@name='street2']"
+                   position="after">
+                <field name="res_municipality_id"
+                       options="{'no_create': True, 'no_edit': True, 'no_quick_create': True}"
+                       placeholder="Municipio..." context="{'state_id': state_id, 'default_state_id': state_id}"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
+
+

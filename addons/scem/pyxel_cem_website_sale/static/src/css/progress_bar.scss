@@ -1,0 +1,218 @@
+// ================================================================
+//  Checkout Progress Bar — Pyxel CEM  (Odoo 17)
+//  Diseño: pill moderno con línea de progreso animada
+// ================================================================
+
+$cpb-active:    #4f46e5;   // índigo principal
+$cpb-done:      #10b981;   // esmeralda (completado)
+$cpb-inactive:  #94a3b8;   // slate gris
+$cpb-bg:        #f8fafc;
+$cpb-border:    #e2e8f0;
+$cpb-white:     #ffffff;
+$cpb-text-dark: #1e293b;
+$cpb-text-mid:  #64748b;
+$cpb-shadow:    0 4px 24px rgba(79, 70, 229, 0.10);
+
+.o_wsale_checkout_progress_bar {
+    position: relative;
+    background: $cpb-white;
+    border: 1px solid $cpb-border;
+    border-radius: 20px;
+    padding: 28px 40px 24px;
+    margin: 0 auto 32px;
+    max-width: 900px;
+    box-shadow: $cpb-shadow;
+    overflow: hidden;
+
+    // ── Fondo decorativo sutil ──────────────────────────────────
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(79,70,229,.03) 0%, transparent 60%);
+        pointer-events: none;
+    }
+
+    // ── Línea base (gris) ───────────────────────────────────────
+    .cpb-track {
+        position: absolute;
+        top: 54px;
+        left: calc(40px + 36px);
+        right: calc(40px + 36px);
+        height: 4px;
+        background: $cpb-border;
+        border-radius: 2px;
+        z-index: 0;
+    }
+
+    // ── Línea de progreso (coloreada, JS la anima con width) ────
+    .cpb-track-fill {
+        position: absolute;
+        top: 54px;
+        left: calc(40px + 36px);
+        height: 4px;
+        background: linear-gradient(90deg, $cpb-done 0%, $cpb-active 100%);
+        border-radius: 2px;
+        z-index: 1;
+        width: 0%;
+        transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    }
+
+    // ── Contenedor de pasos ─────────────────────────────────────
+    .cpb-steps {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        position: relative;
+        z-index: 2;
+    }
+
+    // ── Paso individual ─────────────────────────────────────────
+    .cpb-step {
+        flex: 1;
+        text-align: center;
+
+        .cpb-step-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none !important;
+            color: inherit;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        // icono circular
+        .cpb-icon-wrap {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: $cpb-white;
+            border: 2.5px solid $cpb-border;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .35s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+        }
+
+        .cpb-icon {
+            display: flex;
+            i {
+                font-size: 20px;
+                color: $cpb-inactive;
+                transition: all .3s ease;
+            }
+        }
+
+        .cpb-check {
+            display: none;
+            i { font-size: 18px; color: $cpb-white; }
+        }
+
+        // etiqueta bajo el icono
+        .cpb-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .cpb-num {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .08em;
+            color: $cpb-inactive;
+            transition: color .3s;
+        }
+
+        .cpb-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: $cpb-inactive;
+            transition: color .3s;
+        }
+
+        .cpb-desc {
+            font-size: 11px;
+            color: $cpb-border;
+            transition: color .3s;
+        }
+
+        // ── Estado: COMPLETADO ──────────────────────────────────
+        &.completed {
+            .cpb-step-inner {
+                cursor: pointer;
+                pointer-events: auto;
+                &:hover .cpb-icon-wrap {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(16,185,129,.25);
+                }
+            }
+            .cpb-icon-wrap {
+                background: $cpb-done;
+                border-color: $cpb-done;
+            }
+            .cpb-icon { display: none; }
+            .cpb-check { display: flex; }
+            .cpb-num   { color: $cpb-done; }
+            .cpb-title { color: $cpb-text-dark; }
+            .cpb-desc  { color: $cpb-text-mid; }
+        }
+
+        // ── Estado: ACTIVO ──────────────────────────────────────
+        &.active {
+            .cpb-icon-wrap {
+                background: $cpb-active;
+                border-color: $cpb-active;
+                box-shadow: 0 0 0 6px rgba(79,70,229,.15),
+                            0 4px 12px rgba(79,70,229,.30);
+                animation: cpb-pulse 2.2s ease infinite;
+            }
+            .cpb-icon i { color: $cpb-white; }
+            .cpb-num     { color: $cpb-active; }
+            .cpb-title   { color: $cpb-active; font-weight: 700; }
+            .cpb-desc    { color: $cpb-text-mid; }
+        }
+    }
+}
+
+// ── Pulso suave en el paso activo ───────────────────────────────
+@keyframes cpb-pulse {
+    0%, 100% { box-shadow: 0 0 0 6px rgba(79,70,229,.15), 0 4px 12px rgba(79,70,229,.30); }
+    50%       { box-shadow: 0 0 0 10px rgba(79,70,229,.08), 0 4px 16px rgba(79,70,229,.25); }
+}
+
+// ── Responsive ─────────────────────────────────────────────────
+@media (max-width: 768px) {
+    .o_wsale_checkout_progress_bar {
+        padding: 20px 16px 18px;
+        border-radius: 14px;
+
+        .cpb-track,
+        .cpb-track-fill {
+            top: 36px;
+            left: calc(16px + 26px);
+            right: calc(16px + 26px);
+        }
+
+        .cpb-icon-wrap {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .cpb-icon i  { font-size: 15px !important; }
+        .cpb-check i { font-size: 13px !important; }
+
+        .cpb-title { font-size: 11px !important; }
+        .cpb-desc,
+        .cpb-num   { display: none; }
+    }
+}
+
+@media (max-width: 480px) {
+    .o_wsale_checkout_progress_bar {
+        .cpb-title { font-size: 10px !important; }
+    }
+}

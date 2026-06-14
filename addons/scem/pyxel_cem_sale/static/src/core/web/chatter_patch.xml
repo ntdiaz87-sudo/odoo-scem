@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="cem.Chatter" t-inherit="mail.Chatter" t-inherit-mode="extension">
+
+        <xpath expr="//*[contains(@class, 'o-mail-Chatter-logNote')]" position="replace">
+        </xpath>
+        <xpath expr="//*[contains(@class, 'o-mail-Chatter-activity')]" position="replace">
+        </xpath>
+    </t>
+</templates>

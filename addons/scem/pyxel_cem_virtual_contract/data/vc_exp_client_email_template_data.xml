@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_client_vc_exp_doc" model="mail.template">
+            <field name="name">CEM Sending of Expired Virtual Contract Notification to Client</field>
+            <field name="model_id" ref="pyxel_cem_virtual_contract.model_cem_virtual_contract"/>
+            <field name="subject">{{ object.company_id.name }}: Vencimiento de contrato con la tienda</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted }}</field>
+            <field name="description">Sent to client when virtual contract expire</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+                        Estimado/a <span style="font-weight:bold;" t-out="object.partner_id.name or ''"/>:<br/>
+                        <br/>
+                        Le informamos que su contrato comercial con nuestra tienda ha vencido en fecha <span style="font-weight:bold;" t-out="object.expiry_date" t-options='{"widget": "date"}'/>, por lo que, conforme a nuestras políticas internas, no será posible realizar nuevas compras hasta tanto se formalice la renovación del acuerdo.
+                        <br/>
+                        Si desea continuar con sus operaciones habituales, estaremos encantados de asistirle en el proceso de renovación. Puede contactarnos directamente para coordinar los pasos necesarios.
+                        <br/>
+                        Agradecemos su comprensión y quedamos atentos a cualquier consulta.<br/>
+                        <br/>
+                        Atentamente,
+                        <br/>
+                        <t t-out="object.company_id.name or ''">YourCompany</t>
+                        <br/>
+                        <span>
+                            <t t-if="object.company_id.phone">
+                                <span t-out="object.company_id.phone"/> /
+                            </t>
+                            <t t-if="object.company_id.mobile">
+                                <span t-out="object.company_id.mobile"/> /
+                            </t>
+                            <span t-if="object.company_id.email" t-out="object.company_id.email"/>
+                        </span>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

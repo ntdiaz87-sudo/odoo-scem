@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <template id="portal_my_home_inherit" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[@id='portal_alert_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+
+        <xpath expr="//div[@id='portal_vendor_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+
+        <xpath expr="//div[@id='portal_common_category']" position="replace">
+            <div class="o_portal_category row g-2 mt-3" id="portal_common_category">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_cem_website_sale/static/img/facturas.svg'"/>
+                    <t t-set="title">
+                        <t t-esc="new_invoices_count or ''"/>
+                        Facturas
+                    </t>
+                    <t t-set="text">Vea sus facturas</t>
+                    <t t-set="url" t-value="'/my/invoices'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_cem_website_sale/static/img/importaciones.svg'"/>
+
+                    <t t-set="title">
+                        <t t-esc="new_importaciones_count or ''"/>
+                        Importaciones
+                    </t>
+                    <t t-set="text">Vea sus importaciones</t>
+                    <t t-set="url" t-value="'/model/imports'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_side_content_inherit" inherit_id="portal.side_content">
+        <xpath expr="//div[@class='o_portal_my_details']" position="inside">
+            <t t-if="contract_status != 'False'">
+                <div>
+                    <span t-esc="contract_status"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="sale_portal_my_home_inherit" inherit_id="sale.portal_my_home_sale" priority="1000">
+        <xpath expr="//div[@id='portal_alert_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='portal_client_category']" position="replace">
+            <div class="o_portal_category row g-2 mt-3" id="portal_client_category">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_cem_website_sale/static/img/pedidos.svg'"/>
+
+                    <t t-set="title">
+                        <t t-esc="new_quotations_count or ''"/>
+                        Solicitudes
+                    </t>
+                    <t t-set="text">Vea sus cotizaciones</t>
+                    <t t-set="url" t-value="'/my/quotes'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_cem_website_sale/static/img/solicitudes.svg'"/>
+
+                    <t t-set="title">
+                        <t t-esc="new_orders_count or ''"/>
+                        Pedidos
+                    </t>
+                    <t t-set="text">Vea sus órdenes</t>
+                    <t t-set="url" t-value="'/my/orders'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <record id="payment.portal_my_home_payment" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+    <record id="account.portal_my_home_invoice" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+    <!-- <record id="purchase.portal_my_home_purchase" model="ir.ui.view">
+        <field name="active">False</field>
+    </record> -->
+    <record id="project.portal_my_home" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+    <!-- <record id="knowledge.portal_my_home_knowledge" model="ir.ui.view">
+        <field name="active">False</field>
+    </record> -->
+    
+
+
+    <record id="scem_side_content" model="ir.ui.view">
+            <field name="name">scem_side_content</field>
+            <field name="inherit_id" search="[('key', '=', 'portal.side_content')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_side_content</field>
+            <field name="arch" type="xml">
+                <xpath expr="//div[contains(@class, 'justify-content-start')]" position="replace">
+                    <div class="d-flex justify-content-start align-items-center gap-3 mb-2 info-name-container">
+                        <img class="o_portal_contact_img rounded o_object_fit_cover" t-att-src="image_data_uri(user_id.partner_id.avatar_128)" alt="Contact" width="50"/>
+                        <div class="d-flex flex-column justify-content-center">
+                            <h5 class="mb-0" t-out="user_id.name"/>
+                            <!-- <p class="mb-0 text-muted" t-out="user_id.company_name"/> -->
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[contains(@class, 'o_portal_my_details')]" position="replace">
+                    <div class="o_portal_my_details">
+                        <div class="contact-line" t-if="user_id.partner_id">
+                            <img src="/pyxel_cem_website_sale/static/img/address.svg" class="contact-icon"/>
+                            <div>
+                                <div t-if="user_id.partner_id.street" t-field="user_id.partner_id.street"/>
+                                <div t-if="user_id.partner_id.street2" t-field="user_id.partner_id.street2"/>
+                                <div class="d-flex m-0" style="gap: 5px">
+                                    <div t-if="user_id.partner_id.city" t-field="user_id.partner_id.city"/>
+                                    <div t-if="user_id.partner_id.zip" t-field="user_id.partner_id.zip"/>
+                                </div> 
+                                
+                                <div t-if="user_id.partner_id.country_id.name" t-field="user_id.partner_id.country_id.name"/>
+                            </div>
+                        </div> 
+                      
+                        <div class="contact-line" t-if="user_id.partner_id.phone">
+                            <img src="/pyxel_cem_website_sale/static/img/phone.svg" class="contact-icon"/>
+                            <span t-field="user_id.partner_id.phone"/>
+                        </div>
+                        
+                        <div class="contact-line" t-if="user_id.partner_id.email">
+                            <img src="/pyxel_cem_website_sale/static/img/email.svg" class="contact-icon"/>
+                            <span t-field="user_id.partner_id.email"/>
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//a" position="replace">
+                    <a role="button" href="/my/account" id="edit-info" class="btn btn-link p-0 mt-3">Editar información</a>
+                </xpath>
+
+            </field>
+    </record>
+
+</odoo>

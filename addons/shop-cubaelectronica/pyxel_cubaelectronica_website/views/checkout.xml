@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ══════════ Snippets reutilizables del checkout ══════════ -->
+
+  <!-- Indicador de 2 pasos: Datos de entrega · Pago -->
+  <template id="cevende_checkout_steps" name="CEVENDE checkout pasos">
+    <div class="cv-wizard">
+      <div t-attf-class="cv-wizard__step #{'is-active' if active == 1 else ''} #{'is-done' if active &gt; 1 else ''}">
+        <span class="cv-wizard__num"><t t-if="active &gt; 1"><i class="fa fa-check"/></t><t t-else="">1</t></span>
+        <span class="cv-wizard__txt">Datos de entrega</span>
+      </div>
+      <span class="cv-wizard__bar"/>
+      <div t-attf-class="cv-wizard__step #{'is-active' if active == 2 else ''}">
+        <span class="cv-wizard__num">2</span>
+        <span class="cv-wizard__txt">Pago</span>
+      </div>
+    </div>
+  </template>
+
+  <!-- Resumen del pedido (columna derecha) -->
+  <template id="cevende_checkout_summary" name="CEVENDE checkout resumen">
+    <aside class="cv-checkout__summary">
+      <h3>Tu pedido</h3>
+      <div class="cv-checkout__lines">
+        <t t-foreach="order.website_order_line" t-as="line" t-key="line.id">
+          <t t-if="not line.display_type">
+            <div class="cv-checkout__line">
+              <div class="cv-checkout__line-img">
+                <img t-att-src="'/web/image/product.product/%s/image_128' % line.product_id.id" alt=""/>
+                <span class="cv-checkout__line-qty"><t t-esc="int(line.product_uom_qty)"/></span>
+              </div>
+              <div class="cv-checkout__line-info">
+                <span class="cv-checkout__line-name"><t t-esc="line.product_id.display_name"/></span>
+              </div>
+              <span class="cv-checkout__line-price">
+                <t t-esc="order.currency_id.symbol"/><t t-esc="'%.2f' % line.price_subtotal"/>
+              </span>
+            </div>
+          </t>
+        </t>
+      </div>
+      <div class="cv-checkout__totals">
+        <div class="cv-checkout__total-row cv-checkout__total-row--grand">
+          <span>Total</span>
+          <strong><t t-esc="order.currency_id.symbol"/><t t-esc="'%.2f' % order.amount_total"/></strong>
+        </div>
+      </div>
+      <a href="/shop" class="cv-checkout__back">← Seguir comprando</a>
+    </aside>
+  </template>
+
+  <!-- Lista de mecanismos de pago (radios). Espera 'providers'. Compartido
+       por el checkout minorista y mayorista. -->
+  <template id="cevende_pay_methods_fields" name="CEVENDE métodos de pago">
+    <t t-if="providers">
+      <div class="cv-checkout__methods">
+        <t t-foreach="providers" t-as="prov" t-key="prov.id">
+          <label class="cv-pay-method">
+            <input type="radio" name="provider_id" t-att-value="prov.id"
+                   t-att-checked="'checked' if prov_index == 0 else None" required="required"/>
+            <span class="cv-pay-method__box">
+              <span class="cv-pay-method__name">
+                <i class="fa fa-university" t-if="prov.cv_requires_proof"/>
+                <i class="fa fa-credit-card" t-if="not prov.cv_requires_proof"/>
+                <t t-esc="prov.cv_display_name or prov.name"/>
+              </span>
+              <span class="cv-pay-method__tag" t-if="prov.cv_requires_proof">Subir comprobante</span>
+            </span>
+          </label>
+        </t>
+      </div>
+    </t>
+    <t t-else="">
+      <p class="text-muted">No hay métodos de pago configurados. Contacta al administrador.</p>
+    </t>
+  </template>
+
+  <!-- ══════════ MINORISTA · Paso 1: Datos de entrega ══════════ -->
+  <template id="cevende_checkout" name="Checkout CEVENDE">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Finalizar compra</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_checkout_steps"><t t-set="active" t-value="1"/></t>
+
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/checkout/pago" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">1</span> Datos de entrega</h3>
+                  <p class="cv-checkout__hint">Completa tus datos para procesar el envío y el pago.</p>
+                  <div class="cv-form-grid">
+                    <div class="cv-field cv-field--full">
+                      <label>Nombre completo <span class="cv-req">*</span></label>
+                      <input type="text" name="name" t-att-value="partner.name" required="required"/>
+                    </div>
+                    <div class="cv-field">
+                      <label>Teléfono <span class="cv-req">*</span></label>
+                      <input type="tel" name="phone" t-att-value="partner.phone" required="required" placeholder="+53 ..."/>
+                    </div>
+                    <div class="cv-field">
+                      <label>Correo electrónico</label>
+                      <input type="email" name="email_display" t-att-value="partner.email" disabled="disabled"/>
+                    </div>
+                    <div class="cv-field cv-field--full">
+                      <label>Dirección <span class="cv-req">*</span></label>
+                      <input type="text" name="street" t-att-value="partner.street" required="required" placeholder="Calle, número, entre calles"/>
+                    </div>
+                    <div class="cv-field">
+                      <label>Provincia <span class="cv-req">*</span></label>
+                      <select name="state_id" id="cv_state" required="required">
+                        <option value="">Selecciona...</option>
+                        <t t-foreach="states" t-as="st" t-key="st.id">
+                          <option t-att-value="st.id" t-att-selected="'selected' if partner.state_id and partner.state_id.id == st.id else None">
+                            <t t-esc="st.name"/>
+                          </option>
+                        </t>
+                      </select>
+                    </div>
+                    <div class="cv-field">
+                      <label>Municipio / Ciudad <span class="cv-req">*</span></label>
+                      <select name="municipality_id" id="cv_city" required="required"
+                              data-current="" t-att-data-current="partner.municipality_id.id or ''">
+                        <option value="">
+                          <t t-if="municipalities">Selecciona...</t>
+                          <t t-else="">Selecciona provincia primero...</t>
+                        </option>
+                        <t t-foreach="municipalities" t-as="m" t-key="m.id">
+                          <option t-att-value="m.id" t-att-selected="'selected' if partner.municipality_id and partner.municipality_id.id == m.id else None">
+                            <t t-esc="m.name"/>
+                          </option>
+                        </t>
+                      </select>
+                    </div>
+                    <div class="cv-field">
+                      <label>Código postal</label>
+                      <input type="text" name="zip" t-att-value="partner.zip" placeholder="Opcional"/>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="cv-checkout__submit">
+                  Continuar al pago
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+              </form>
+
+              <t t-call="pyxel_cubaelectronica_website.cevende_checkout_summary"/>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ MINORISTA · Paso 2: Selección de método de pago ══════════ -->
+  <template id="cevende_checkout_pago" name="Checkout CEVENDE - Pago">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Finalizar compra</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_checkout_steps"><t t-set="active" t-value="2"/></t>
+
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/checkout/process" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">2</span> Método de pago</h3>
+                  <p class="cv-checkout__hint">Elige cómo quieres pagar tu pedido.</p>
+                  <t t-call="pyxel_cubaelectronica_website.cevende_pay_methods_fields"/>
+                </div>
+                <button type="submit" class="cv-checkout__submit">
+                  Continuar
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+                <a href="/cevende/checkout" class="cv-checkout__link">← Volver a los datos</a>
+              </form>
+
+              <t t-call="pyxel_cubaelectronica_website.cevende_checkout_summary"/>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ MINORISTA · Paso 2b: Detalle del mecanismo + comprobante ══════════ -->
+  <template id="cevende_checkout_detalle" name="Checkout CEVENDE - Detalle de pago">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Finalizar compra</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_checkout_steps"><t t-set="active" t-value="2"/></t>
+
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/checkout/process" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="provider_id" t-att-value="provider.id"/>
+                <input type="hidden" name="cv_confirm" value="1"/>
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">2</span> <t t-esc="provider.cv_display_name or provider.name"/></h3>
+                  <div class="cv-pay-instructions" t-if="provider.cv_instructions">
+                    <t t-out="provider.cv_instructions"/>
+                  </div>
+                  <div class="cv-field cv-field--full cv-pay-proof">
+                    <label>Comprobante de pago <span class="cv-req">*</span></label>
+                    <input type="file" name="comprobante" required="required"
+                           accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.tif"/>
+                    <p class="cv-docs-note"><i class="fa fa-info-circle"/> Sube una foto o PDF del comprobante. Verificaremos tu pago antes de despachar.</p>
+                  </div>
+                </div>
+                <button type="submit" class="cv-checkout__submit">
+                  Confirmar pedido
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+                <a href="/cevende/checkout/pago" class="cv-checkout__link">← Elegir otro método</a>
+              </form>
+
+              <t t-call="pyxel_cubaelectronica_website.cevende_checkout_summary"/>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ CONFIRMACIÓN DE PEDIDO ══════════ -->
+  <template id="cevende_checkout_done" name="Pedido confirmado CEVENDE">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section">
+          <div class="cv-container">
+            <div class="cv-done">
+              <div class="cv-done__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="44" height="44"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <h1>¡Pedido confirmado!</h1>
+              <p class="cv-done__sub">Gracias por tu compra. Tu pedido <strong t-esc="order.name"/> ha sido registrado.</p>
+
+              <div class="cv-done__card">
+                <div class="cv-done__row"><span>Número de pedido</span><strong t-esc="order.name"/></div>
+                <div class="cv-done__row"><span>Total</span><strong><t t-esc="order.currency_id.symbol"/><t t-esc="'%.2f' % order.amount_total"/></strong></div>
+                <t t-if="order.payment_prov_id or order.payment_provider_id">
+                  <div class="cv-done__row"><span>Método de pago</span><strong t-esc="(order.payment_prov_id or order.payment_provider_id).name"/></div>
+                </t>
+              </div>
+
+              <!-- Datos de pago según el método elegido -->
+              <t t-set="prov" t-value="order.payment_prov_id or order.payment_provider_id"/>
+              <t t-if="pay_error">
+                <div class="cv-done__bank cv-done__bank--error">
+                  <h4><i class="fa fa-exclamation-triangle"/> No pudimos iniciar el pago en línea</h4>
+                  <p>Tu pedido <strong t-esc="order.name"/> quedó registrado, pero no se pudo generar el enlace de pago automáticamente. Nuestro equipo te contactará para completar el cobro, o puedes escribirnos directamente.</p>
+                </div>
+              </t>
+              <t t-elif="prov and prov.code != 'tropipay' and prov.pending_msg">
+                <div class="cv-done__bank">
+                  <h4><i class="fa fa-university"/> Instrucciones de pago</h4>
+                  <p>Completa el pago por transferencia para que procesemos tu pedido:</p>
+                  <div t-out="prov.pending_msg"/>
+                </div>
+              </t>
+
+              <div class="cv-done__actions">
+                <a t-att-href="order.get_portal_url()" class="cv-btn cv-btn--cta">Ver mi pedido</a>
+                <a href="/shop" class="cv-btn cv-btn--outline-dark">Seguir comprando</a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+</odoo>

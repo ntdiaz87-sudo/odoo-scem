@@ -1,0 +1,701 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pyxel_cem_virtual_contract
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-01 14:15+0000\n"
+"PO-Revision-Date: 2025-09-01 14:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid ""
+"\n"
+"                    <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\n"
+"                        <h2 style=\"color: #2C3E50;\">Notificación de aprobación del contrato</h2>\n"
+"\n"
+"                        <p>Hello <strong>Equipo de ventas</strong>,</p>\n"
+"\n"
+"                        <p>El contrato  <strong>%s</strong> ha sido aprobado por el cliente <strong>%s</strong>.</p>\n"
+"\n"
+"                        <div style=\"background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;\">\n"
+"                            <p><strong>Código de contrato:</strong> %s</p>\n"
+"                            <p><strong>Cliente:</strong> %s</p>\n"
+"                            <p><strong>Correo electrónico del cliente:</strong> %s</p>\n"
+"                            <p><strong>Teléfono del cliente:</strong> %s</p>\n"
+"                            <p><strong>Fecha de envío:</strong> %s</p>\n"
+"                            <p><strong>Fecha de vencimiento:</strong> %s</p>\n"
+"                            <p><strong>Estado:</strong> <span style=\"color: #28a745;\">Accepted</span></p>\n"
+"                        </div>\n"
+"\n"
+"                        <p>Puedes revisar el contrato en el sistema haciendo clic en el siguiente enlace:</p>\n"
+"\n"
+"                        <div style=\"text-align: center; margin: 20px 0;\">\n"
+"                            <a href=\"%s\" style=\"background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;\">\n"
+"                                Ver contrato en el sistema\n"
+"                            </a>\n"
+"                        </div>\n"
+"\n"
+"                        <p>Atentamente,<br/>\n"
+"                        <strong>%s Sistema</strong></p>\n"
+"                    </div>\n"
+"                    "
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__validity_perc
+msgid "% Validity"
+msgstr "% Validez"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,body_html:pyxel_cem_virtual_contract.mail_template_vc_manag_notify
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"\n"
+"                        Estimado,<br>\n"
+"                        Esto es una notificación para indicarle que el contrato del cliente <span style=\"font-weight:bold;\" t-out=\"object.partner_id.name or ''\"></span> ya ha sido firmado por nuestra parte. Por favor, comunícale lo siguiente:<br>\n"
+"                        <p style=\"font-size: 12px; margin-left: 30px\">\n"
+"                            1.  Que el contrato está disponible para descarga.<br>\n"
+"                            2.  Que debe descargarlo, firmarlo manualmente y escanearlo.<br>\n"
+"                            3.  Luego, debe acceder a su perfil en la tienda, subir el contrato firmado y hacer clic en “Enviar” para completar el proceso.<br>\n"
+"                        </p>\n"
+"                        Una vez que el cliente haya realizado estos pasos, podremos avanzar con la activación del servicio.<br>\n"
+"                        Gracias por tu gestión. Ante cualquier duda por favor comunicárnosla.<br>\n"
+"                        Saludos.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,body_html:pyxel_cem_virtual_contract.mail_template_client_vc_exp_doc
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a <span style=\"font-weight:bold;\" t-out=\"object.partner_id.name or ''\"></span>:<br>\n"
+"                        <br>\n"
+"                        Le informamos que su contrato comercial con nuestra tienda ha vencido en fecha <span style=\"font-weight:bold;\" t-out=\"object.expiry_date\" t-options='{\"widget\": \"date\"}'></span>, por lo que, conforme a nuestras políticas internas, no será posible realizar nuevas compras hasta tanto se formalice la renovación del acuerdo.\n"
+"                        <br>\n"
+"                        Si desea continuar con sus operaciones habituales, estaremos encantados de asistirle en el proceso de renovación. Puede contactarnos directamente para coordinar los pasos necesarios.\n"
+"                        <br>\n"
+"                        Agradecemos su comprensión y quedamos atentos a cualquier consulta.<br>\n"
+"                        <br>\n"
+"                        Atentamente,\n"
+"                        <br>\n"
+"                        <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
+"                        <br>\n"
+"                        <span>\n"
+"                            <t t-if=\"object.company_id.phone\">\n"
+"                                <span t-out=\"object.company_id.phone\"></span> /\n"
+"                            </t>\n"
+"                            <t t-if=\"object.company_id.mobile\">\n"
+"                                <span t-out=\"object.company_id.mobile\"></span> /\n"
+"                            </t>\n"
+"                            <span t-if=\"object.company_id.email\" t-out=\"object.company_id.email\"></span>\n"
+"                        </span>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"box-sizing:border-box;margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a <span style=\"font-weight:bold;\" t-out=\"object.partner_id.name or ''\"></span>:<br>\n"
+"                        <br>\n"
+"                        Le informamos que su contrato comercial con nuestra tienda ha vencido en fecha <span style=\"font-weight:bold;\" t-out=\"object.expiry_date\" t-options=\"{&quot;widget&quot;: &quot;date&quot;}\"></span>, por lo que, conforme a nuestras políticas internas, no será posible realizar nuevas compras hasta tanto se formalice la renovación del acuerdo.\n"
+"                        <br>\n"
+"                        Si desea continuar con sus operaciones habituales, estaremos encantados de asistirle en el proceso de renovación. Puede contactarnos directamente para coordinar los pasos necesarios.\n"
+"                        <br>\n"
+"                        Agradecemos su comprensión y quedamos atentos a cualquier consulta.<br>\n"
+"                        <br>\n"
+"                        Atentamente,\n"
+"                        <br>\n"
+"                        <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
+"                        <br>\n"
+"                        \n"
+"                            <t t-if=\"object.company_id.phone\">\n"
+"                                <span t-out=\"object.company_id.phone\"></span> /\n"
+"                            </t>\n"
+"                            <t t-if=\"object.company_id.mobile\">\n"
+"                                <span t-out=\"object.company_id.mobile\"></span> /\n"
+"                            </t>\n"
+"                            <span t-if=\"object.company_id.email\" t-out=\"object.company_id.email\"></span>\n"
+"                        \n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,body_html:pyxel_cem_virtual_contract.mail_template_vc_send_doc
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a <span style=\"font-weight:bold;\" t-out=\"object.partner_id.name or ''\"></span>:<br>\n"
+"                        <br>\n"
+"                        Le informamos que su contrato ha sido debidamente firmado por nuestra parte y ya se encuentra disponible para su descarga.<br>\n"
+"                        <br>\n"
+"                        A continuación, le indicamos los pasos que debe seguir para completar el proceso:<br>\n"
+"                        <br>\n"
+"                        <p style=\"font-size: 12px; margin-left: 30px\">\n"
+"                            1.  Descargue el contrato adjunto en este correo.<br>\n"
+"                            2.  Firme el documento de forma manuscrita.<br>\n"
+"                            3.  Escanee el contrato firmado en formato PDF o imagen legible.<br>\n"
+"                            4.  Acceda nuevamente a su perfil en la tienda.<br>\n"
+"                            5.  Diríjase a la sección correspondiente y suba el archivo del contrato firmado.<br>\n"
+"                            6.  Una vez cargado, haga clic en “Enviar” para confirmar la recepción.<br>\n"
+"                        </p>\n"
+"                        Este procedimiento es indispensable para formalizar su vínculo con nosotros y continuar con la activación del servicio.<br>\n"
+"                        <br>\n"
+"                        Quedamos atentos a cualquier duda o asistencia que necesite durante el proceso.<br>\n"
+"                        <br>\n"
+"                        Atentamente.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,body_html:pyxel_cem_virtual_contract.mail_template_salem_vc_exp_doc
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a comercial:<br>\n"
+"                        <br>\n"
+"                        Te informo que el cliente <span style=\"font-weight:bold;\" t-out=\"object.partner_id.name or ''\"></span> no podrá realizar nuevas compras en la tienda, dado que su contrato comercial <span style=\"font-weight:bold;\" t-out=\"object.code or ''\"></span> venció el <span style=\"font-weight:bold;\" t-out=\"object.expiry_date\" t-options='{\"widget\": \"date\"}'></span> y aún no ha sido renovado.\n"
+"                        <br>\n"
+"                        Por favor, asegúrate de que no se procesen pedidos ni se aprueben cotizaciones hasta tanto se regularice su situación contractual. En caso de que el cliente solicite información, puedes remitirlo directamente al equipo de administración para gestionar la renovación.\n"
+"                        <br>\n"
+"                        Gracias por tu colaboración.<br>\n"
+"                        <br>\n"
+"                        Saludos cordiales,\n"
+"                        <br>\n"
+"                        <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
+"                        <br>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"box-sizing:border-box;margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a comercial:<br>\n"
+"                        <br>\n"
+"                        Te informo que el cliente <span style=\"font-weight:bold;\" t-out=\"object.partner_id.name or ''\"></span> no podrá realizar nuevas compras en la tienda, dado que su contrato comercial <span style=\"font-weight:bold;\" t-out=\"object.code or ''\"></span> venció el <span style=\"font-weight:bold;\" t-out=\"object.expiry_date\" t-options=\"{&quot;widget&quot;: &quot;date&quot;}\"></span> y aún no ha sido renovado.\n"
+"                        <br>\n"
+"                        Por favor, asegúrate de que no se procesen pedidos ni se aprueben cotizaciones hasta tanto se regularice su situación contractual. En caso de que el cliente solicite información, puedes remitirlo directamente al equipo de administración para gestionar la renovación.\n"
+"                        <br>\n"
+"                        Gracias por tu colaboración.<br>\n"
+"                        <br>\n"
+"                        Saludos cordiales,\n"
+"                        <br>\n"
+"                        <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
+"                        <br>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid ""
+"<i class=\"fa fa-lock\"/>\n"
+"                        Locked"
+msgstr ""
+"<i class=\"fa fa-lock\"/>\n"
+"                        No editable"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_partner__cem_abbreviations
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_users__cem_abbreviations
+msgid "Abbreviations"
+msgstr "Siglas"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__cem_virtual_contract__state__accepted
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Accepted"
+msgstr "Aceptado"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_partner__active_vc_ids
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_users__active_vc_ids
+msgid "Active Virtual Contract"
+msgstr "Contrato virtual activo"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#: code:addons/pyxel_cem_virtual_contract/models/res_partner.py:0
+#, python-format
+msgid "Active virtual contract"
+msgstr "Contrato virtual activo"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid ""
+"Are you sure you want cancel this contract? This action can't be undone."
+msgstr ""
+"¿Está seguro que desea cancelar este contrato?. Esta operación no puede ser "
+"revertida."
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid ""
+"Are you sure you want confirm this contract? This action can't be undone."
+msgstr ""
+"¿Está seguro que desea confirmar este contrato?. Esta operación no puede ser"
+" revertida."
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__res_company__cem_vc_code_gen_type__auto
+msgid "Automatic"
+msgstr "Automático"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,name:pyxel_cem_virtual_contract.mail_template_vc_manag_notify
+msgid "CEM Notification for Virtual Contract Management"
+msgstr "CEM Notificación para Gestión de Contrato Virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,name:pyxel_cem_virtual_contract.mail_template_client_vc_exp_doc
+msgid "CEM Sending of Expired Virtual Contract Notification to Client"
+msgstr "CEM Envío de Notificación de Contrato Virtual Vencido al Cliente"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,name:pyxel_cem_virtual_contract.mail_template_salem_vc_exp_doc
+msgid "CEM Sending of Expired Virtual Contract Notification to Salesmans"
+msgstr "CEM Envío de Notificación de Contrato Virtual Vencido al Comercial"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,name:pyxel_cem_virtual_contract.mail_template_vc_send_doc
+msgid "CEM Sending Virtual Contract to Client"
+msgstr "CEM Envío de Contrato Virtual al Cliente"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model,name:pyxel_cem_virtual_contract.model_cem_virtual_contract
+msgid "CEM Virtual Contract"
+msgstr "CEM Contrato Virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model,name:pyxel_cem_virtual_contract.model_crm_stage
+msgid "CRM Stages"
+msgstr "Etapas del CRM"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__cem_virtual_contract__state__canceled
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Canceled"
+msgstr "Cancelado"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__code
+msgid "Code"
+msgstr "Código"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.res_config_settings_view_form_inherit
+msgid "Code Format"
+msgstr "Formato de código"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_company__cem_vc_prefix_code
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_config_settings__cem_vc_prefix_code
+msgid "Code Prefix"
+msgstr "Prefijo del código"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.constraint,message:pyxel_cem_virtual_contract.constraint_cem_virtual_contract_code_uniq
+msgid "Code must be unique!."
+msgstr "¡El código debe ser único!."
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model,name:pyxel_cem_virtual_contract.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__company_id
+msgid "Company"
+msgstr "Compañías+"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model,name:pyxel_cem_virtual_contract.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid "Confirm"
+msgstr "Confirmar"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__confirm_date
+msgid "Confirmation Date"
+msgstr "Fecha de confirmación"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__cem_virtual_contract__state__confirmed
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Confirmed"
+msgstr "Confirmado"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model,name:pyxel_cem_virtual_contract.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "Contrato aceptado: %s - %s"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.actions.act_window,help:pyxel_cem_virtual_contract.cem_virtual_contract_action
+msgid "Create a new virtual contract."
+msgstr "Crear un nuevo contrato virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.res_config_settings_view_form_inherit
+msgid "Duration"
+msgstr "Duración"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_company__cem_virtual_contract_duration
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_config_settings__cem_virtual_contract_duration
+msgid "Duration in Months"
+msgstr "Duración en meses"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_crm_stage__cem_manag_contract
+msgid "Enable virtual contract management"
+msgstr "Habilitar gestión de contrato virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Expire Today"
+msgstr "Vence hoy"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Expire in 7 days"
+msgstr "VEnce en 7 días"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__cem_virtual_contract__state__expired
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Expired"
+msgstr "Vencido"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__expiry_date
+msgid "Expiry Date"
+msgstr "Fecha de vencimiento"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__contract_file
+msgid "File"
+msgstr "Documento"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__res_company__cem_vc_prefix_code__5-abb
+msgid "Firts 5 Abbreviations"
+msgstr "Primeras 5 siglas"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__code_gen_type
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_company__cem_vc_code_gen_type
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_res_config_settings__cem_vc_code_gen_type
+msgid "Generation Type for Virtual Contract Code"
+msgstr "Tipo de generación de código para contrato virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Group By"
+msgstr "Agrupar por"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__id
+msgid "ID"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model,name:pyxel_cem_virtual_contract.model_crm_lead
+msgid "Lead/Opportunity"
+msgstr "Lead/Oportunidad"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__upload_date
+msgid "Upload Date"
+msgstr "Fecha de subida del contrato"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__res_company__cem_vc_code_gen_type__manual
+msgid "Manual"
+msgstr "Manual"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "Must specify %s for %s"
+msgstr "Debe especificar %s para %s"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "Must specify Confirmation Date and Contract File."
+msgstr "Debe especificar la fecha de confirmación y el documento."
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "Must specify the confirm_date and contract file."
+msgstr "Debe especificar la fecha de confirmación y el archivo del contrato."
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "New"
+msgstr "Nuevo"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "Only can be active a unique virtual contract for these partners: %s."
+msgstr ""
+"Solo puede estar activo un único contrato virtual para estos socios: %s."
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid ""
+"Only can be active a unique virtual contract for this partner. You can "
+"review the existing contract."
+msgstr ""
+"Solo puede estar activo un único contrato virtual para este socio. Puede "
+"revisar el contrato existente."
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "A virtual contract only can confirmed from Accepted state."
+msgstr "Un contrato virtual solo puede ser confirmado desde el estado Aceptado."
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__partner_id
+msgid "Partner"
+msgstr "Socio"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__cem_virtual_contract__state__pending
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Pending"
+msgstr "Pendiente"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__res_company__cem_vc_prefix_code__reeup
+msgid "REEUP"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Search Virtual Contract"
+msgstr "Buscar contratos virtuales"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid "Send"
+msgstr "Enviar"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields.selection,name:pyxel_cem_virtual_contract.selection__cem_virtual_contract__state__sent
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Sent"
+msgstr "Enviado"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,description:pyxel_cem_virtual_contract.mail_template_client_vc_exp_doc
+msgid "Sent to client when virtual contract expire"
+msgstr "Enviado al cliente cuando el contrato virtual expira"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,description:pyxel_cem_virtual_contract.mail_template_vc_send_doc
+msgid "Sent to client with virtual contract file"
+msgstr "Enviado al cliente con el archivo del contrato virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,description:pyxel_cem_virtual_contract.mail_template_salem_vc_exp_doc
+msgid "Sent to salesman when virtual contract expire"
+msgstr "Enviado al comercial cuando el contrato virtual expira"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,description:pyxel_cem_virtual_contract.mail_template_vc_manag_notify
+msgid ""
+"Sent to salesmans when lead go to a stage that allows management of virtual "
+"contract"
+msgstr ""
+"Se envía a los comerciales cuando la oportunidad pasa a una etapa que "
+"permite la gestión del contrato virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid "Specify the contract code..."
+msgstr "Especifique el código del contrato..."
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_cem_virtual_contract__state
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "State"
+msgstr "Estadp"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "The contract document must be specified."
+msgstr "El documento debe ser especificado."
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+msgid "Type to find a customer..."
+msgstr "Escriba para encontrar un cliente..."
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.view_partner_cem_vc_form_inherit
+msgid "View Active Contract"
+msgstr "Ver Contrato Activo"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "View active contract"
+msgstr "Ver contrato activo"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_form_view
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_search_view
+msgid "Virtual Contract"
+msgstr "Contrato virtual"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "Virtual Contract %s"
+msgstr "Contrato Virtual %s"
+
+#. module: pyxel_cem_virtual_contract
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.res_config_settings_view_form_inherit
+msgid "Virtual Contract Settings"
+msgstr "Conficuración Contrato virtual"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.actions.server,name:pyxel_cem_virtual_contract.ir_cron_update_vc_validity_ir_actions_server
+msgid "Virtual Contract: update validity state"
+msgstr "Contrato Virtual: actualizar estado de validez"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.actions.act_window,name:pyxel_cem_virtual_contract.cem_virtual_contract_action
+#: model:ir.ui.menu,name:pyxel_cem_virtual_contract.cem_vc
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_virtual_contract.cem_virtual_contract_tree_view
+msgid "Virtual Contracts"
+msgstr "Contratos virtuales"
+
+#. module: pyxel_cem_virtual_contract
+#: model:ir.model.fields,field_description:pyxel_cem_virtual_contract.field_crm_stage__cem_vcontract_expired
+msgid "Virtual contract expired"
+msgstr "Contrato virtual vencido"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "the REEUP code"
+msgstr "el código REEUP"
+
+#. module: pyxel_cem_virtual_contract
+#. odoo-python
+#: code:addons/pyxel_cem_virtual_contract/models/cem_virtual_contract.py:0
+#, python-format
+msgid "the abbreviations"
+msgstr "las siglas"
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,subject:pyxel_cem_virtual_contract.mail_template_vc_manag_notify
+msgid ""
+"{{ object.company_id.name }}: Acción requerida: Enviar contrato firmado al cliente\n"
+"            "
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,subject:pyxel_cem_virtual_contract.mail_template_vc_send_doc
+msgid ""
+"{{ object.company_id.name }}: Confirmación de contrato y pasos para "
+"completar el proceso"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,subject:pyxel_cem_virtual_contract.mail_template_salem_vc_exp_doc
+msgid ""
+"{{ object.company_id.name }}: Restricción de compras para cliente con "
+"contrato vencido"
+msgstr ""
+
+#. module: pyxel_cem_virtual_contract
+#: model:mail.template,subject:pyxel_cem_virtual_contract.mail_template_client_vc_exp_doc
+msgid "{{ object.company_id.name }}: Vencimiento de contrato con la tienda"
+msgstr ""

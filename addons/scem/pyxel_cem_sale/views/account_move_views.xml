@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_move_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.cem</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Añadir campo oculto para controlar la sección de garantías -->
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <!-- Campo oculto para control de garantías -->
+                    <field name="show_warranty_section" invisible="1"/>
+                     <field name="display_warranty" invisible="1"/>
+                     <!-- Campo oculto para control de términos y condiciones -->
+                      <field name="show_terms_conditions_section" invisible="1"/>
+                    <!-- Campo oculto para términos y condiciones a mostrar -->
+                    <field name="display_terms_conditions" invisible="1"/>
+                </xpath>
+
+                <!-- Botón personalizado -->
+                <xpath expr="//button[@name='action_post']" position="after">
+                    <field name="move_type" invisible="1"/>
+                    <button name="action_post_pay_custom" string="Confirm/Pay" class="oe_highlight"
+                            type="object" groups="account.group_account_invoice" data-hotkey="q"
+                            invisible="hide_post_button or move_type != 'out_invoice'"
+                    />
+                </xpath>
+
+                <xpath expr="//button[@name='action_post'][1]" position="attributes">
+                    <attribute name="invisible">hide_post_button or move_type != 'entry' or move_type == 'out_invoice'</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_post'][2]" position="attributes">
+                    <attribute name="invisible">hide_post_button or move_type == 'entry' or display_inactive_currency_warning or move_type == 'out_invoice'</attribute>
+                </xpath>
+
+                <xpath expr="//group[@id='header_right_group']" position="inside">
+                    <field name="sale_id" invisible="1"/>
+                    <field name="selected_payment_method_payment_id" required="True"
+                           readonly="not move_type in ('in_invoice', 'in_refund') or sale_id"
+                    />
+
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <field name="show_invoice_supplier_management_columns" readonly="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_line_ids']//tree" position="inside">
+
+                <field name="sale_has_supplier_source" column_invisible="1"/>
+                <field name="sale_available_supplier_ids" column_invisible="1"/>
+                <field name="sale_supplier_currency_id" column_invisible="1"/>
+
+                <field name="sale_supplier_partner_id"
+                    string="Proveedor"
+                    domain="[('id', 'in', sale_available_supplier_ids)]"
+                    readonly="not sale_has_supplier_source"
+                    options="{'no_create': True, 'no_create_edit': True}"
+                    optional="show"
+                    column_invisible="not parent.show_invoice_supplier_management_columns"/>
+
+                <field name="sale_supplier_price"
+                    string="Precio de proveedor"
+                    readonly="1"
+                    optional="show"
+                    column_invisible="not parent.show_invoice_supplier_management_columns"/>
+
+            </xpath>
+
+
+                <!-- Hacer readonly los campos payment_method_id y payment_provider_id -->
+<!--                <xpath expr="//field[@name='selected_payment_method_payment_id']" position="attributes">-->
+<!--                    <attribute name="force_save">1</attribute>-->
+<!--                    <attribute name="required">move_type in ('out_invoice', 'out_refund')-->
+<!--                    </attribute>-->
+<!--                </xpath>-->
+
+
+            </field>
+        </record>
+    </data>
+</odoo>

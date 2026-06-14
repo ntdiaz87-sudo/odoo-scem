@@ -1,0 +1,790 @@
+<odoo>
+    <data>
+        <record id="scem_products" model="ir.ui.view">
+            <field name="name">scem_products</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.products')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_products</field>
+            <field name="arch" type="xml">
+                <xpath expr="//div[contains(@class, 'products_header')]" position="replace">
+                    <div class="products_header btn-toolbar flex-nowrap align-items-center justify-content-between gap-3 mb-3">
+                        <t t-if="is_view_active('website_sale.search')" t-call="website_sale.search">
+                            <t t-set="search" t-value="original_search or search"/>
+                            <t t-set="_form_classes"
+                               t-valuef="d-lg-inline {{'d-inline' if not category else 'd-none'}}"/>
+                        </t>
+
+                        <t t-if="is_view_active('website_sale.sort')" t-call="website_sale.sort">
+                            <t t-set="_classes" t-valuef="d-none d-lg-inline-block"/>
+                        </t>
+
+                        <div class="shop-search">
+                            <div class="col-md-12">
+                                <form action="/shop" method="get"
+                                      class="form-inline justify-content-center product-search-form">
+                                    <div class="input-group search-group position-relative">
+                                        <input type="text" name="search" id="search-input" class="form-control pe-5"
+                                               placeholder="Buscar" t-att-value="request.params.get('search', '')"/>
+                                        <t t-if="request.params.get('search')">
+                                            <a href="/shop" class="clear-search position-absolute"
+                                               style="top: 50%; right: 40px; transform: translateY(-50%); z-index: 2;">
+                                                <i class="fa fa-close"></i>
+                                            </a>
+                                        </t>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-primary btn-search" type="submit">
+                                                <i class="fa fa-search search-icon"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div t-if="category" class="d-flex align-items-center d-lg-none me-auto">
+                            <t t-if="not category.parent_id" t-set="backUrl" t-valuef="/shop"/>
+                            <t t-else="" t-set="backUrl"
+                               t-value="keep('/shop/category/' + slug(category.parent_id), category=0)"/>
+                            <a t-attf-class="btn btn-{{navClass}} me-2"
+                               t-att-href="category.parent_id and keep('/shop/category/' + slug(category.parent_id), category=0) or '/shop'">
+                                <i class="fa fa-angle-left"/>
+                            </a>
+                            <h4 t-out="category.name" class="mb-0 me-auto"/>
+                        </div>
+
+                        <div class="option-container">
+                            <t t-if="is_view_active('website_sale.add_grid_or_list_option')"
+                               t-call="website_sale.add_grid_or_list_option">
+                                <t t-set="_classes" t-valuef="d-flex"/>
+                            </t>
+                            <button t-if="is_view_active('website_sale.sort') or opt_wsale_categories or opt_wsale_attributes or opt_wsale_attributes_top"
+                                    t-attf-class="btn btn-{{navClass}} position-relative {{not opt_wsale_attributes_top and 'd-lg-none'}}"
+                                    data-bs-toggle="offcanvas"
+                                    data-bs-target="#o_wsale_offcanvas">
+                                <i class="fa fa-sliders"/>
+                                <span t-if="isFilteringByPrice or attrib_set or tags"
+                                      t-attf-class="position-absolute top-0 start-100 translate-middle border border-{{navClass}} rounded-circle bg-danger p-1">
+                                    <span class="visually-hidden">filters active</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="scem_sale_products" model="ir.ui.view">
+            <field name="name">scem_sale_products</field>
+            <field name="inherit_id" search="[('key', '=', 'theme_scita.theme_scita_sale_products')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_sale_products</field>
+            <field name="arch" type="xml">
+                <xpath expr="//section[contains(@class, 'page-title')]" position="replace">
+                    <section class="page-title">
+                        <div class="container">
+                            <h1 class='brandcum_title'>
+                                <span t-if="not (category and category.name)">
+                                    Todos los productos
+                                </span>
+                                <span t-if="category and category.name">
+                                    <t t-esc="category.name"/>
+                                </span>
+                            </h1>
+                            <ul class="breadcrumb">
+                                <li>
+                                    <a href="/">Inicio</a>
+                                </li>
+                                <li t-att-class="'' if category else 'active'">
+                                    <a href="/shop">Productos</a>
+                                </li>
+                                <t t-if="category">
+                                    <t t-if="website.get_parent_category_breadcum(category)">
+                                        <t t-set="category_breadcum"
+                                           t-value="website.get_parent_category_breadcum(category)"/>
+                                        <t t-foreach="category_breadcum" t-as="cat">
+                                            <li>
+                                                <a t-att-href="keep('/shop/category/%s' % slug(cat), category=0)"
+                                                   t-field="cat.name"/>
+                                            </li>
+                                        </t>
+                                    </t>
+                                </t>
+                            </ul>
+                        </div>
+                    </section>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="scem_inherit_products_item" model="ir.ui.view">
+            <field name="name">shop_page</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.products_item')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_inherit_products_item</field>
+            <field name="arch" type="xml">
+                <xpath expr="//form[hasclass('oe_product_cart')]" position="attributes">
+                    <attribute name="t-if">
+                        (not rating_valid_ids or product.id in rating_valid_ids) and product.qty_available > 0
+                    </attribute>
+
+                </xpath>
+
+
+                <xpath expr="//div[contains(@class, 'oe_product_image')]" position="replace">
+                    <div class="oe_product_image position-relative h-100 flex-grow-0 overflow-hidden">
+                        <div class="whatsapp-container">
+                            <a t-attf-href="https://api.whatsapp.com/send?phone=#{website.mobile_number}"
+                               class="cy_whatsapp_web" target="_blank">
+                                <i class="fa fa-whatsapp cy-icon whatsapp-icon"/>
+                            </a>
+                        </div>
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"
+                               t-nocache="The csrf token must always be up to date."/>
+                        <a t-att-href="product_href" class="oe_product_image_link d-block h-100 position-relative"
+                           itemprop="url" contenteditable="false">
+                            <t t-set="image_holder" t-value="product._get_image_holder()"/>
+                            <span t-field="image_holder.image_1920"
+                                  t-options="{'widget': 'image', 'preview_image': image_type, 'itemprop': 'image', 'class': 'h-100 w-100 position-absolute'}"
+                                  class="oe_product_image_img_wrapper d-flex h-100 justify-content-center align-items-center position-absolute"/>
+                            <t t-set="bg_color" t-value="td_product['ribbon']['bg_color'] or ''"/>
+                            <t t-set="text_color" t-value="td_product['ribbon']['text_color']"/>
+                            <t t-set="bg_class" t-value="td_product['ribbon']['html_class']"/>
+                            <span t-attf-class="o_ribbon o_not_editable #{bg_class}"
+                                  t-attf-style="#{text_color and ('color: %s; ' % text_color)}#{bg_color and 'background-color:' + bg_color}"
+                                  t-out="td_product['ribbon']['html'] or ''"/>
+                        </a>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[contains(@class, 'o_wsale_product_information')]" position="replace">
+                    <div class="o_wsale_product_information position-relative d-flex flex-column flex-grow-1 flex-shrink-1">
+                        <div class="o_wsale_product_information_text flex-grow-1">
+                            <h6 class="o_wsale_products_item_title mb-2">
+                                <a class="text-primary text-decoration-none" itemprop="name" t-att-href="product_href"
+                                   t-att-content="product.name" t-esc="product.name"/>
+                                <a t-if="not product.website_published" role="button" t-att-href="product_href"
+                                   class="btn btn-sm btn-danger" title="This product is unpublished.">
+                                    Unpublished
+                                </a>
+                            </h6>
+                        </div>
+                        <div class="o_wsale_product_sub d-flex justify-content-between align-items-end gap-2 flex-wrap pb-1">
+                            <t t-set="template_price_vals" t-value="get_product_prices(product)"/>
+                            <div class="o_wsale_product_btn"/>
+                            <div class="product_price" itemprop="offers" itemscope="itemscope"
+                                 itemtype="http://schema.org/Offer">
+                                <span class="h6 mb-0"
+                                      t-if="template_price_vals['price_reduce'] or not website.prevent_zero_price_sale"
+                                      t-esc="template_price_vals['price_reduce']"
+                                      t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                <span class="h6 mb-0" t-else="" t-field="website.prevent_zero_price_sale_text"/>
+                                <span itemprop="price" style="display:none;"
+                                      t-esc="template_price_vals['price_reduce']"/>
+                                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                            </div>
+                        </div>
+
+                        <div class="extra-info">
+                            <span class="product-span">Orden mínima:
+                                <t t-esc="product.sale_min_qty"/>
+                                <t t-esc="product.sudo().uom_sale_id.name"/>
+                            </span>
+                            <br/>
+                            <span class="product-span stock">
+                                <t t-esc="int(product.product_variant_id.sudo().qty_available)"/>
+                                <t t-esc="product.sudo().uom_id.name"/>
+                                disponibles
+                            </span>
+                            <br/>
+                            <p class="product-time-delivery">
+                                <span class="product-span">
+                                    <img class="delivery-img" src="/pyxel_cem_website_sale/static/img/truck-1058.png"/>
+                                    <t t-esc="product.delivery_time"/>
+                                </span>
+                            </p>
+                            <span class="product-span provider">
+                                <t t-esc="product.provider_id.sudo().name"/>
+                            </span>
+                        </div>
+
+                        <div class="counter-btns">
+                            <form action="/shop/cart/update" method="post"
+                                  class="tp-cart-form mt-2 d-flex align-items-center">
+                                <input type="hidden" name="product_template_id" t-att-value="product.id"/>
+                                <t t-set="product_variant_id"
+                                   t-value="in_wish or product._get_first_possible_variant_id()"/>
+                                <input type="hidden" name="product_id" t-att-value="product_variant_id"/>
+                                <div class="counter-buy-btns shop">
+                                    <div id="counter-container-card" class="me-2 counter-container">
+                                        <button type="button" class="btn border minus_btn btn-less-card btn-less">-
+                                        </button>
+                                        <input type="number"
+                                               class="form-control text-center counter counter-qty"
+                                               name="add_qty"
+                                               t-att-value="product.sale_min_qty or 1"
+                                               t-att-min="product.sale_min_qty or 1"
+                                               t-att-data-sale-min-qty="product.sale_min_qty or 1"
+                                               t-att-max="int(product.product_variant_id.qty_available)"/>
+                                        <button type="button" class="btn border plus_btn btn-more-card btn-more">+
+                                        </button>
+                                    </div>
+                                    <button id="add_to_cart" type="submit"
+                                            class="btn btn-primary js_check_product a-submit buy-now js_add_to_cart">
+                                        <i class="icon-basket"/>
+                                        Add to cart
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_price_no_compare" model="ir.ui.view">
+            <field name="name">product.price.no.compare</field>
+            <field name="inherit_id" ref="website_sale.product_price"/>
+            <field name="arch" type="xml">
+                <xpath expr="//h3[contains(@class,'css_editable_mode_hidden')]" position="replace">
+                    <h3 class="css_editable_mode_hidden">
+                        <span class="oe_price" style="white-space: nowrap;"
+                              t-out="combination_info['price']"
+                              t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                        <span itemprop="price" style="display:none;" t-out="combination_info['price']"/>
+                        <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name"/>
+                        <t t-if="is_view_active('website_sale.tax_indication')"
+                           t-call="website_sale.tax_indication"/>
+                    </h3>
+                </xpath>
+                <xpath expr="//h3[contains(@class,'css_non_editable_mode_hidden')]" position="replace">
+                    <h3 class="css_non_editable_mode_hidden decimal_precision"
+                        t-att-data-precision="str(website.currency_id.decimal_places)">
+                        <span t-field="product.list_price"
+                              t-options="{'widget': 'monetary', 'display_currency': product.currency_id}"/>
+                        <t t-if="is_view_active('website_sale.tax_indication')"
+                           t-call="website_sale.tax_indication"/>
+                    </h3>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="scem_filter_products" model="ir.ui.view">
+            <field name="name">scem_filter_products</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.products')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_filter_products</field>
+            <field name="arch" type="xml">
+                <xpath expr="//t[@t-foreach='tr_product']/t[@t-if='td_product']" position="attributes">
+                    <attribute name="t-if">
+                        td_product and td_product['product'].qty_available > 0
+                    </attribute>
+                </xpath>
+                <xpath expr="//div[contains(@class, 'o_wsale_products_grid_before_rail')]" position="before">
+                    <div class="extra-filters">
+
+                        <!-- ===== CATEGORÍAS ===== -->
+                        <div class="tp-categories-filter">
+                            <b>Categories</b>
+                            <ul class="nav nav-pills flex-column">
+                                <li class="nav-item">
+                                    <div t-att-data-link-href="keep('/shop', category=0, provider=current_provider, min_rating=current_min_rating)"
+                                         class="custom-control form-check mb-1 d-inline-block">
+                                        <input type="radio" class="form-check-input o_not_editable"
+                                               id="all_categories" name="category" value="all"
+                                               t-att-checked="'checked' if not current_category else None"/>
+                                        <label class="form-check-label fw-normal" for="all_categories"
+                                               t-translation="on">All Categories
+                                        </label>
+                                    </div>
+                                </li>
+                                <t t-foreach="categories" t-as="parent_cat">
+                                    <t t-if="not parent_cat.get('parent_id') or not parent_cat.get('parent_id')[0]">
+                                        <li class="nav-item parent-category">
+                                            <div class="d-flex align-items-center">
+                                                <a t-att-data-link-href="keep('/shop', category=parent_cat.get('id'), provider=current_provider, min_rating=current_min_rating)"
+                                                   class="custom-control form-check mb-1 d-inline-block flex-grow-1">
+                                                    <input type="radio" class="form-check-input o_not_editable"
+                                                           t-att-id="'category_' + str(parent_cat.get('id'))"
+                                                           name="category"
+                                                           t-att-value="parent_cat.get('id')"
+                                                           t-att-checked="'checked' if current_category == parent_cat.get('id') else None"/>
+                                                    <label class="form-check-label fw-normal"
+                                                           t-att-for="'category_' + str(parent_cat.get('id'))">
+                                                        <span t-esc="parent_cat.get('name')"/>
+                                                        <span t-if="parent_cat.get('product_count')">
+                                                            (<t t-esc="parent_cat.get('product_count')"/>)
+                                                        </span>
+                                                    </label>
+                                                </a>
+                                                <t t-if="parent_cat.get('child_id') and len(parent_cat.get('child_id')) &gt; 0">
+                                                    <span class="dropdown-toggle ml-auto" style="cursor:pointer;"
+                                                          data-bs-toggle="collapse"
+                                                          t-att-data-bs-target="'#child_%s' % parent_cat.get('id')"
+                                                          onclick="event.stopPropagation();">
+                                                    </span>
+                                                </t>
+                                            </div>
+                                            <t t-if="parent_cat.get('child_id') and len(parent_cat.get('child_id')) &gt; 0">
+                                                <ul t-att-id="'child_' + str(parent_cat.get('id'))"
+                                                    class="nav nav-pills flex-column collapse child-categories">
+                                                    <t t-foreach="categories" t-as="child_cat">
+                                                        <t t-if="child_cat.get('parent_id') and child_cat.get('parent_id')[0] == parent_cat.get('id')">
+                                                            <li class="nav-item child-category">
+                                                                <div t-att-data-link-href="keep('/shop', category=child_cat.get('id'), provider=current_provider, min_rating=current_min_rating)"
+                                                                     class="custom-control form-check mb-1 d-inline-block">
+                                                                    <input type="radio"
+                                                                           class="form-check-input o_not_editable"
+                                                                           t-att-id="'category_' + str(child_cat.get('id'))"
+                                                                           name="category"
+                                                                           t-att-value="child_cat.get('id')"
+                                                                           t-att-checked="'checked' if current_category == child_cat.get('id') else None"/>
+                                                                    <label class="form-check-label fw-normal"
+                                                                           t-att-for="'category_' + str(child_cat.get('id'))">
+                                                                        <span t-esc="child_cat.get('name')"/>
+                                                                        <span t-if="child_cat.get('product_count')">
+                                                                            (
+                                                                            <t t-esc="child_cat.get('product_count')"/>
+                                                                            )
+                                                                        </span>
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        </t>
+                                                    </t>
+                                                </ul>
+                                            </t>
+                                        </li>
+                                    </t>
+                                </t>
+                            </ul>
+                        </div>
+
+                        <div class="line"/>
+
+                        <!-- ===== PROVEEDORES ===== -->
+                        <div class="tp-providers-filter mt-3">
+                            <b>Suppliers</b>
+                            <ul class="nav nav-pills flex-column">
+                                <li class="nav-item">
+                                    <div t-att-data-link-href="keep('/shop', provider=0, category=current_category, min_rating=current_min_rating)"
+                                         class="custom-control form-check mb-1 d-inline-block">
+                                        <input type="radio" class="form-check-input o_not_editable"
+                                               id="all_providers" name="provider" value="all"
+                                               t-att-checked="'checked' if not current_provider else None"/>
+                                        <label class="form-check-label fw-normal" for="all_providers"
+                                               t-translation="on">All Suppliers
+                                        </label>
+                                    </div>
+                                </li>
+                                <t t-foreach="providers" t-as="provider">
+                                    <li class="nav-item">
+                                        <div t-att-data-link-href="keep('/shop', provider=provider.get('id'), category=current_category, min_rating=current_min_rating)"
+                                             class="custom-control form-check mb-1 d-inline-block">
+                                            <input type="radio" class="form-check-input o_not_editable"
+                                                   t-att-id="'provider_' + str(provider.get('id'))"
+                                                   name="provider"
+                                                   t-att-value="provider.get('id')"
+                                                   t-att-checked="'checked' if current_provider == provider.get('id') else None"/>
+                                            <label class="form-check-label fw-normal"
+                                                   t-att-for="'provider_' + str(provider.get('id'))">
+                                                <span t-esc="provider.get('name')"/>
+                                                <span t-if="provider.get('product_count')">
+                                                    (<t t-esc="provider.get('product_count')"/>)
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+
+                        <div class="line"/>
+
+                        <!-- ===== RANGO DE PRECIO ===== -->
+                        <div class="tp-price-filter mt-3"
+                             t-att-data-currency-symbol="currency_symbol"
+                             t-att-data-decimal-places="decimal_places">
+                            <b>Rango de precio</b>
+                            <div class="price-range-container mt-2">
+                                <div class="price-range-slider-dual">
+                                    <input type="range" id="price-range-min" class="form-range dual-slider"
+                                           t-att-min="actual_min_price" t-att-max="actual_max_price"
+                                           t-att-value="min_price" t-att-step="0.01"/>
+                                    <input type="range" id="price-range-max" class="form-range dual-slider"
+                                           t-att-min="actual_min_price" t-att-max="actual_max_price"
+                                           t-att-value="max_price" t-att-step="0.01"/>
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="price-range-values d-flex justify-content-between mt-2">
+                                    <div class="price-min">
+                                        <label class="small">Mínimo</label>
+                                        <input type="text" id="price-min-input"
+                                               class="form-control form-control-sm price-input"
+                                               t-att-value="website._format_price_es(min_price, currency_symbol)"
+                                               t-att-data-currency-symbol="currency_symbol"
+                                               t-att-data-decimal-places="decimal_places"/>
+                                    </div>
+                                    <div class="price-max">
+                                        <label class="small">Máximo</label>
+                                        <input type="text" id="price-max-input"
+                                               class="form-control form-control-sm price-input"
+                                               t-att-value="website._format_price_es(max_price, currency_symbol)"
+                                               t-att-data-currency-symbol="currency_symbol"
+                                               t-att-data-decimal-places="decimal_places"/>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="actual-min-price" t-att-value="actual_min_price"/>
+                                <input type="hidden" id="actual-max-price" t-att-value="actual_max_price"/>
+                            </div>
+                        </div>
+
+                        <div class="line"/>
+
+                        <!-- ===== RESEÑAS / RATING DESKTOP ===== -->
+                        <div class="tp-rating-filter mt-3">
+                            <b>Reseñas</b>
+                            <ul class="nav nav-pills flex-column mt-2">
+
+                                <!-- Todas las reseñas -->
+                                <li class="nav-item">
+                                    <div t-att-data-link-href="keep('/shop', min_rating=0, category=current_category, provider=current_provider)"
+                                         class="custom-control form-check mb-1 d-inline-block">
+                                        <input type="radio"
+                                               class="form-check-input o_not_editable"
+                                               id="rating_all"
+                                               name="rating"
+                                               value="0"
+                                               t-att-checked="'checked' if int(current_min_rating or 0) == 0 else None"/>
+                                        <label class="form-check-label fw-normal" for="rating_all">
+                                            Todas las reseñas
+                                        </label>
+                                    </div>
+                                </li>
+
+                                <!-- 4, 3, 2, 1 estrellas -->
+                                <t t-foreach="[4, 3, 2, 1]" t-as="star">
+                                    <li class="nav-item">
+                                        <div class="custom-control form-check mb-2 d-inline-block"
+                                             style="cursor:pointer;"
+                                             t-att-onclick="'window.location.href=\'' + keep('/shop', min_rating=star, category=current_category, provider=current_provider) + '\''">
+                                            <input type="radio"
+                                                   class="form-check-input o_not_editable"
+                                                   t-att-id="'rating_' + str(star)"
+                                                   name="rating"
+                                                   t-att-value="str(star)"
+                                                   t-att-checked="'checked' if int(current_min_rating or 0) == star else None"/>
+                                            <label class="form-check-label fw-normal d-flex align-items-center gap-1"
+                                                   t-att-for="'rating_' + str(star)">
+                                                <t t-foreach="range(5)" t-as="i">
+                                                    <i t-attf-class="fa fa-star#{' text-warning' if i &lt; star else ' text-muted-star'}"/>
+                                                </t>
+                                                <span class="ms-1 text-muted small">y más</span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+
+                        <div class="line"/>
+
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[contains(@class, 'o_wsale_products_grid_before_rail')]" position="inside">
+                    <div class="line">
+                        <a href='/shop' class="btn-primary reset-button">Reset</a>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="scem_filter_products_responsive" model="ir.ui.view">
+            <field name="name">scem_filter_products_responsive</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.o_wsale_offcanvas')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_filter_products_responsive</field>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='o_wsale_offcanvas_content']" position="before">
+                    <div class="extra-filters-responsive">
+
+                        <!-- ===== CATEGORÍAS RESPONSIVE ===== -->
+                        <div class="tp-categories-filter">
+                            <b>Categories</b>
+                            <ul class="nav nav-pills flex-column">
+                                <li class="nav-item">
+                                    <div t-att-data-link-href="keep('/shop', category=0, provider=current_provider, min_rating=current_min_rating)"
+                                         class="custom-control form-check mb-1 d-inline-block">
+                                        <input type="radio" class="form-check-input o_not_editable"
+                                               id="all_categories_responsive" name="category_responsive" value="all"
+                                               t-att-checked="'checked' if not current_category else None"/>
+                                        <label class="form-check-label fw-normal" for="all_categories_responsive"
+                                               t-translation="on">All Categories
+                                        </label>
+                                    </div>
+                                </li>
+                                <t t-foreach="categories" t-as="parent_cat">
+                                    <t t-if="not parent_cat.get('parent_id') or not parent_cat.get('parent_id')[0]">
+                                        <li class="nav-item parent-category">
+                                            <div class="d-flex align-items-center">
+                                                <a t-att-data-link-href="keep('/shop', category=parent_cat.get('id'), provider=current_provider, min_rating=current_min_rating)"
+                                                   class="custom-control form-check mb-1 d-inline-block flex-grow-1">
+                                                    <input type="radio" class="form-check-input o_not_editable"
+                                                           t-att-id="'category_r_' + str(parent_cat.get('id'))"
+                                                           name="category_responsive"
+                                                           t-att-value="parent_cat.get('id')"
+                                                           t-att-checked="'checked' if current_category == parent_cat.get('id') else None"/>
+                                                    <label class="form-check-label fw-normal"
+                                                           t-att-for="'category_r_' + str(parent_cat.get('id'))">
+                                                        <span t-esc="parent_cat.get('name')"/>
+                                                        <span t-if="parent_cat.get('product_count')">
+                                                            (<t t-esc="parent_cat.get('product_count')"/>)
+                                                        </span>
+                                                    </label>
+                                                </a>
+                                                <t t-if="parent_cat.get('child_id') and len(parent_cat.get('child_id')) &gt; 0">
+                                                    <span class="dropdown-toggle ml-auto" style="cursor:pointer;"
+                                                          data-bs-toggle="collapse"
+                                                          t-att-data-bs-target="'#child_r_%s' % parent_cat.get('id')"
+                                                          onclick="event.stopPropagation();">
+                                                    </span>
+                                                </t>
+                                            </div>
+                                            <t t-if="parent_cat.get('child_id') and len(parent_cat.get('child_id')) &gt; 0">
+                                                <ul t-att-id="'child_r_' + str(parent_cat.get('id'))"
+                                                    class="nav nav-pills flex-column collapse child-categories">
+                                                    <t t-foreach="categories" t-as="child_cat">
+                                                        <t t-if="child_cat.get('parent_id') and child_cat.get('parent_id')[0] == parent_cat.get('id')">
+                                                            <li class="nav-item child-category">
+                                                                <div t-att-data-link-href="keep('/shop', category=child_cat.get('id'), provider=current_provider, min_rating=current_min_rating)"
+                                                                     class="custom-control form-check mb-1 d-inline-block">
+                                                                    <input type="radio"
+                                                                           class="form-check-input o_not_editable"
+                                                                           t-att-id="'category_r_' + str(child_cat.get('id'))"
+                                                                           name="category_responsive"
+                                                                           t-att-value="child_cat.get('id')"
+                                                                           t-att-checked="'checked' if current_category == child_cat.get('id') else None"/>
+                                                                    <label class="form-check-label fw-normal"
+                                                                           t-att-for="'category_r_' + str(child_cat.get('id'))">
+                                                                        <span t-esc="child_cat.get('name')"/>
+                                                                        <span t-if="child_cat.get('product_count')">
+                                                                            (
+                                                                            <t t-esc="child_cat.get('product_count')"/>
+                                                                            )
+                                                                        </span>
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        </t>
+                                                    </t>
+                                                </ul>
+                                            </t>
+                                        </li>
+                                    </t>
+                                </t>
+                            </ul>
+                        </div>
+
+                        <!-- ===== PROVEEDORES RESPONSIVE ===== -->
+                        <div class="tp-providers-filter mt-3">
+                            <b>Suppliers</b>
+                            <ul class="nav nav-pills flex-column">
+                                <li class="nav-item">
+                                    <div t-att-data-link-href="keep('/shop', provider=0, category=current_category, min_rating=current_min_rating)"
+                                         class="custom-control form-check mb-1 d-inline-block">
+                                        <input type="radio" class="form-check-input o_not_editable"
+                                               id="all_providers_responsive" name="provider_responsive" value="all"
+                                               t-att-checked="'checked' if not current_provider else None"/>
+                                        <label class="form-check-label fw-normal" for="all_providers_responsive"
+                                               t-translation="on">All Suppliers
+                                        </label>
+                                    </div>
+                                </li>
+                                <t t-foreach="providers" t-as="provider">
+                                    <li class="nav-item">
+                                        <div t-att-data-link-href="keep('/shop', provider=provider.get('id'), category=current_category, min_rating=current_min_rating)"
+                                             class="custom-control form-check mb-1 d-inline-block">
+                                            <input type="radio" class="form-check-input o_not_editable"
+                                                   t-att-id="'provider_r_' + str(provider.get('id'))"
+                                                   name="provider_responsive"
+                                                   t-att-value="provider.get('id')"
+                                                   t-att-checked="'checked' if current_provider == provider.get('id') else None"/>
+                                            <label class="form-check-label fw-normal"
+                                                   t-att-for="'provider_r_' + str(provider.get('id'))">
+                                                <span t-esc="provider.get('name')"/>
+                                                <span t-if="provider.get('product_count')">
+                                                    (<t t-esc="provider.get('product_count')"/>)
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+
+                        <!-- ===== RANGO DE PRECIO RESPONSIVE ===== -->
+                        <div class="tp-price-filter mt-3"
+                             t-att-data-currency-symbol="currency_symbol"
+                             t-att-data-decimal-places="decimal_places">
+                            <b>Rango de precio</b>
+                            <div class="price-range-container mt-2">
+                                <div class="price-range-slider-dual">
+                                    <input type="range" id="price-range-min-responsive" class="form-range dual-slider"
+                                           t-att-min="actual_min_price" t-att-max="actual_max_price"
+                                           t-att-value="min_price" t-att-step="0.01"/>
+                                    <input type="range" id="price-range-max-responsive" class="form-range dual-slider"
+                                           t-att-min="actual_min_price" t-att-max="actual_max_price"
+                                           t-att-value="max_price" t-att-step="0.01"/>
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="price-range-values d-flex justify-content-between mt-2">
+                                    <div class="price-min">
+                                        <label class="small">Mínimo</label>
+                                        <input type="text" id="price-min-input-responsive"
+                                               class="form-control form-control-sm price-input"
+                                               t-att-value="website._format_price_es(min_price, currency_symbol)"
+                                               t-att-data-currency-symbol="currency_symbol"
+                                               t-att-data-decimal-places="decimal_places"/>
+                                    </div>
+                                    <div class="price-max">
+                                        <label class="small">Máximo</label>
+                                        <input type="text" id="price-max-input-responsive"
+                                               class="form-control form-control-sm price-input"
+                                               t-att-value="website._format_price_es(max_price, currency_symbol)"
+                                               t-att-data-currency-symbol="currency_symbol"
+                                               t-att-data-decimal-places="decimal_places"/>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="actual-min-price-responsive" t-att-value="actual_min_price"/>
+                                <input type="hidden" id="actual-max-price-responsive" t-att-value="actual_max_price"/>
+                            </div>
+                        </div>
+
+                        <!-- ===== RESEÑAS / RATING RESPONSIVE ===== -->
+                        <div class="tp-rating-filter mt-3">
+                            <b>Reseñas</b>
+                            <ul class="nav nav-pills flex-column mt-2">
+
+                                <!-- Todas las reseñas -->
+                                <li class="nav-item">
+                                    <div t-att-data-link-href="keep('/shop', min_rating=0, category=current_category, provider=current_provider)"
+                                         class="custom-control form-check mb-1 d-inline-block">
+                                        <input type="radio"
+                                               class="form-check-input o_not_editable"
+                                               id="rating_all_responsive"
+                                               name="rating_responsive"
+                                               value="0"
+                                               t-att-checked="'checked' if int(current_min_rating or 0) == 0 else None"/>
+                                        <label class="form-check-label fw-normal" for="rating_all_responsive">
+                                            Todas las reseñas
+                                        </label>
+                                    </div>
+                                </li>
+
+                                <!-- 4, 3, 2, 1 estrellas -->
+                                <t t-foreach="[4, 3, 2, 1]" t-as="star">
+                                    <li class="nav-item">
+                                        <div t-att-data-link-href="keep('/shop', min_rating=star, category=current_category, provider=current_provider)"
+                                             class="custom-control form-check mb-2 d-inline-block">
+                                            <input type="radio"
+                                                   class="form-check-input o_not_editable"
+                                                   t-att-id="'rating_r_' + str(star)"
+                                                   name="rating_responsive"
+                                                   t-att-value="str(star)"
+                                                   t-att-checked="'checked' if int(current_min_rating or 0) == star else None"/>
+                                            <label class="form-check-label fw-normal d-flex align-items-center gap-1"
+                                                   t-att-for="'rating_r_' + str(star)">
+                                                <t t-foreach="range(5)" t-as="i">
+                                                    <i t-attf-class="fa fa-star#{' text-warning' if i &lt; star else ' text-muted-star'}"/>
+                                                </t>
+                                                <span class="ms-1 text-muted small">y más</span>
+                                            </label>
+                                        </div>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+
+                        <div class="line"/>
+
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="scem_filter_products_price" model="ir.ui.view">
+            <field name="name">scem_filter_products_price</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.filter_products_price')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_filter_products_price</field>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='o_wsale_price_range_option']" position="after">
+                    <div class="line"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="website_sale.products_categories_top" model="ir.ui.view">
+            <field name="active">False</field>
+        </record>
+
+        <record id="divep_inherit_products_item" model="ir.ui.view">
+            <field name="name">divep.products_item.inherit</field>
+            <field name="inherit_id" ref="pyxel_cem_website_sale.scem_inherit_products_item"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.divep_inherit_products_item</field>
+            <field name="arch" type="xml">
+
+                <!-- Modificar botón para que tenga data-product-type -->
+                <xpath expr="//button[@id='add_to_cart']" position="attributes">
+                    <attribute name="t-att-data-product-type">product.product_wsale_type</attribute>
+                    <attribute name="t-att-data-product-id">product.id</attribute>
+                </xpath>
+
+                <!-- Cambiar texto del botón según tipo -->
+                <xpath expr="//button[@id='add_to_cart']" position="replace">
+                    <button id="add_to_cart" type="submit"
+                            class="btn btn-primary js_check_product a-submit buy-now js_add_to_cart"
+                            t-att-data-product-id="product.id"
+                            t-att-data-product-type="product.product_wsale_type">
+                        <i class="icon-basket"/>
+                        <t t-if="product.product_wsale_type == 'in'">Reservar</t>
+                        <t t-else="">Añadir</t>
+                    </button>
+                </xpath>
+
+                <!-- Agregar el modal después del formulario -->
+                <xpath expr="//form[contains(@class, 'tp-cart-form')]" position="after">
+                    <!-- Modal para productos in-bond -->
+                    <div class="modal fade" id="inBondModal" tabindex="-1" aria-labelledby="inBondModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="inBondModalLabel">Solicitud de Importación</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="mb-0">Este producto no se encuentra en consignación en estos momentos,
+                                        usted debe hacer una solicitud de importación. Si desea continuar con el
+                                        proceso, presiona Aceptar, si no presione Cancelar.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="confirmImportRequest"
+                                            t-att-data-import-url="website.import_request_url or ''">
+                                        Aceptar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

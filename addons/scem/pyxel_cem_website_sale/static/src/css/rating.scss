@@ -1,0 +1,23 @@
+// Rating filter stars
+.tp-rating-filter {
+    .fa-star {
+        font-size: 13px;
+
+        &.text-warning {
+            color: #f5a623 !important;
+        }
+
+        &.text-muted-star {
+            color: #d5d5d5 !important;
+        }
+    }
+
+    label {
+        cursor: pointer;
+        line-height: 1.4;
+    }
+
+    .form-check-input:checked + label {
+        font-weight: 600;
+    }
+}

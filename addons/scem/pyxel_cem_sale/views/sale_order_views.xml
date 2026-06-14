@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sale_order_view_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.pyxel.cem</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Ribbons -->
+            <xpath expr="//div[@name='button_box']" position="after">
+                <field name="so_cem_state" invisible="1"/>
+                <widget name="web_ribbon" title="Paid" invisible="state != 'sale' or so_cem_state != 'paid'"
+                        bg_color="text-bg-info"/>
+                <widget name="web_ribbon" title="Delivered" invisible="state != 'sale' or so_cem_state != 'delivered'"
+                        bg_color="text-bg-success"/>
+                <widget name="web_ribbon" title="No Paid" invisible="state != 'sale' or so_cem_state != 'no_paid'"
+                        bg_color="text-bg-danger"/>
+            </xpath>
+
+            <!-- Botones personalizados -->
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="action_confirm_custom" string="Confirm/Notify" type="object" class="oe_highlight"
+                        invisible="state not in ('draft', 'sent')"/>
+                <button name="action_delivered" string="Mark as delivered" type="object" class="oe_highlight"
+                        invisible="state != 'sale' or so_cem_state != 'paid'"/>
+            </xpath>
+
+            <!-- Ocultar botones estándar -->
+            <xpath expr="//button[@name='action_confirm'][1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@id='create_invoice']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//button[@id='create_invoice_percentage']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="invisible">state not in ['draft', 'sent', 'sale'] or not id or locked or so_cem_state != 'no_paid'</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_draft']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_preview_sale_order']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_unlock']" position="attributes">
+                <attribute name="invisible">not locked or so_cem_state == 'delivered'</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='delivery_count']" position="attributes">
+                <attribute name="string">Dispatch Order</attribute>
+            </xpath>
+
+            <!-- Ocultar pricelist -->
+            <xpath expr="//label[@for='pricelist_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@groups='product.group_product_pricelist']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Ocultar pestañas -->
+            <xpath expr="//page[@name='optional_products']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='customer_signature']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Ocultar direcciones originales -->
+            <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_shipping_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Direcciones personalizadas -->
+<!--            <xpath expr="//field[@name='partner_id']" position="after">-->
+
+<!--                <group name="group_addresses" colspan="4">-->
+<!--                    <field name="partner_invoice_id"-->
+<!--                           string="Dirección de Factura"-->
+<!--                           readonly="state == 'sale'"-->
+<!--                           force_save="1"-->
+<!--                           context="{'default_type':'invoice'}"-->
+<!--                           options="{'no_create': True, 'no_open': True}"/>-->
+<!--                    <field name="partner_shipping_id"-->
+<!--                           string="Dirección de Entrega"-->
+<!--                           readonly="state == 'sale'"-->
+<!--                           force_save="1"-->
+<!--                           context="{'default_type':'delivery'}"-->
+<!--                           options="{'no_create': True, 'no_open': True}"/>-->
+<!--                </group>-->
+
+<!--            </xpath>-->
+
+            <!-- Payment Terms -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="payment_meth_ids_comp" invisible="1"/>
+                <field name="payment_prov_id"
+                       required="1"
+                       force_save="1"
+                       readonly="state == 'sale'"/>
+                <field name="payment_meth_id"
+                       required="1"
+                       force_save="1"
+                       readonly="state == 'sale'"
+                       domain="[('id', 'in', payment_meth_ids_comp)]"/>
+
+                 <field name="partner_invoice_id"
+                           string="Dirección de Factura"
+                           readonly="state == 'sale'"
+                           force_save="1"
+                           context="{'default_type':'invoice'}"
+                           options="{'no_create': True, 'no_open': True}"/>
+                    <field name="partner_shipping_id"
+                           string="Dirección de Entrega"
+                           readonly="state == 'sale'"
+                           force_save="1"
+                           context="{'default_type':'delivery'}"
+                           options="{'no_create': True, 'no_open': True}"/>
+                     
+                
+                <field name="delivery_lapse"  string="Tiempo de entrega"/>
+            </xpath>
+
+
+            <xpath expr="//sheet" position="inside">
+                <field name="show_supplier_management_columns" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//tree" position="inside">
+
+                <field name="available_supplier_ids" column_invisible="1"/>
+                <field name="has_multiple_suppliers" column_invisible="1"/>
+                <field name="supplier_currency_id" column_invisible="1"/>
+                <field name="supplierinfo_id" column_invisible="1"/>
+
+                <field name="supplier_partner_id"
+                    string="Proveedor"
+                    domain="[('id', 'in', available_supplier_ids)]"
+                    required="has_multiple_suppliers"
+                    options="{'no_create': True, 'no_create_edit': True}"
+                    column_invisible="not parent.show_supplier_management_columns"/>
+
+                <field name="supplier_price"
+                    string="Precio de proveedor"
+                    readonly="1"
+                    column_invisible="not parent.show_supplier_management_columns"/>
+
+            </xpath>
+
+
+        </field>
+    </record>
+</odoo>

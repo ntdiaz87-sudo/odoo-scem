@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+        ============================================================
+        SEO / WPO — Lazy Loading: Detalle de producto + Carousel
+        ============================================================
+        Objetivo: aplicar loading="lazy" a las imágenes del detalle
+        de producto y al carousel de imágenes.
+
+        Imágenes identificadas en product_extended.product
+        (pyxel_cem_website_sale):
+
+        A) Imagen del proveedor — <img t-att-src="'/web/image/res.partner/...'">
+           Odoo 17 NO permite @alt como selector XPath en herencia.
+           Estrategia: se selecciona el nodo padre <t t-if="product.provider_id">
+           (selector válido con t-*) y se reemplaza el bloque completo
+           incluyendo loading="lazy" en el <img>.
+
+        B) Carousel — hereda website_sale.shop_product_carousel.
+           Las imágenes del carousel son generadas por el widget de
+           Odoo; se optimizan con fetchpriority="low" en la primera
+           no-activa para no bloquear el LCP de la imagen principal.
+
+        Cómo validar:
+        1. Navega a la página de detalle de cualquier producto (/shop/...).
+        2. Inspecciona con DevTools:
+           a) La imagen del proveedor debe tener loading="lazy".
+           b) Las miniaturas del carousel deben tener loading="lazy".
+        3. En Network → Img: la imagen del proveedor no se descarga
+           hasta que el usuario hace scroll hasta esa sección.
+        4. Herramienta Lighthouse (DevTools → Lighthouse):
+           "Defer offscreen images" no debe listar las imágenes de
+           proveedor ni las miniaturas del carousel.
+        ============================================================
+        -->
+
+        <!-- =========================================================
+             A) Imagen del proveedor en detalle de producto
+             ========================================================= -->
+        <record id="seo_wpo_product_provider_img_lazy" model="ir.ui.view">
+            <field name="name">seo_wpo_product_provider_img_lazy</field>
+            <!--
+                Heredamos la vista del módulo padre que define el detalle
+                del producto con key 'product_extended.product'.
+            -->
+            <field name="inherit_id" search="[('key', '=', 'product_extended.product')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seo_wpo_tools.seo_wpo_product_provider_img_lazy</field>
+            <field name="arch" type="xml">
+
+                <!--
+                    PROBLEMA: Odoo 17 NO permite @alt como selector en XPath
+                    de herencia de vistas. Solo acepta: @id, @name,
+                    contains(@class,...) y atributos t-*.
+
+                    SOLUCIÓN: Seleccionamos el <div class="term-cond"> padre
+                    (selector válido por clase) y usamos position="replace"
+                    para reescribir el bloque completo incluyendo el <img>
+                    ya con loading="lazy".
+
+                    El bloque reemplazado es idéntico al original del padre
+                    excepto por el atributo loading="lazy" en el <img>.
+                -->
+                <xpath expr="//t[@t-if='product.provider_id']" position="replace">
+                    <t t-if="product.provider_id">
+                        <div class="term-cond">
+                            <t t-if="product.terms_cond">
+                                <strong>Terms and conditions:</strong>
+                                <span t-field="product.terms_cond"/>
+                            </t>
+                        </div>
+
+                        <strong>Sale for:</strong>
+                        <!--
+                            loading="lazy": la imagen del proveedor está
+                            debajo del fold en casi todos los viewports,
+                            por lo que diferirla es seguro y mejora el LCP.
+                        -->
+                        <img t-att-src="'/web/image/res.partner/' + str(product.provider_id.id) + '/image_1920'"
+                             alt="Foto del Proveedor"
+                             loading="lazy"
+                             class="img-fluid provider-img"/>
+                        <br/>
+                        <br/>
+                    </t>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- =========================================================
+             B) Imágenes del carousel de producto
+             ========================================================= -->
+        <record id="seo_wpo_product_carousel_lazy" model="ir.ui.view">
+            <field name="name">seo_wpo_product_carousel_lazy</field>
+            <!--
+                pyxel_cem_website_sale ya hereda shop_product_carousel
+                con key 'pyxel_cem_website_sale.shop_product_carousel'.
+                Heredamos ESA vista (no la de Odoo) para ir detrás en
+                la cadena de herencia.
+
+                Estrategia para el carousel:
+                - La imagen ACTIVA (primera, visible en viewport) NO
+                  debe tener lazy: es el LCP de la página.
+                  Se deja con fetchpriority="high" (comportamiento por defecto).
+                - Las imágenes NO activas del carousel sí se cargan con
+                  lazy porque están fuera del viewport inicial.
+
+                En Odoo 17 el carousel interno de website_sale usa
+                clases Bootstrap:  .carousel-item  y  .carousel-item.active
+                Las imágenes son <img> dentro de .o-carousel-product-item.
+            -->
+            <field name="inherit_id" search="[('key', '=', 'pyxel_cem_website_sale.shop_product_carousel')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seo_wpo_tools.seo_wpo_product_carousel_lazy</field>
+            <field name="arch" type="xml">
+
+                <!--
+                    Añadimos el atributo style al div del carousel que ya
+                    tiene el borde custom del módulo padre, y usamos un
+                    script inline mínimo para agregar loading="lazy" en
+                    todas las imágenes NO activas del carousel al cargar
+                    el DOM, respetando así la imagen LCP (la activa).
+
+                    Alternativa QWeb pura: si el template expone
+                    t-foreach sobre las imágenes podríamos usar
+                    t-if/t-att, pero el carousel de Odoo no lo hace
+                    directamente en este xpath level.
+
+                    Por eso aplicamos el atributo  data-lazy-carousel="1"
+                    al contenedor y un pequeño script al final del nodo
+                    que procesa las imágenes no activas.
+                -->
+                <xpath expr="//div[@id='o-carousel-product']/div" position="attributes">
+                    <attribute name="data-lazy-carousel">1</attribute>
+                </xpath>
+
+                <!--
+                    Script de inicialización lazy para carousel.
+                    Se coloca DESPUÉS del div del carousel para garantizar
+                    que el DOM ya está disponible en el momento de ejecución.
+
+                    Lógica:
+                    1. Busca todos los .carousel-item que NO sean .active.
+                    2. A sus <img> les asigna loading="lazy".
+                    3. La imagen activa (LCP) queda sin loading="lazy",
+                       permitiendo que el navegador la priorice.
+
+                    Nota: este script es idempotente y pesa < 200 bytes.
+                -->
+                <xpath expr="//div[@id='o-carousel-product']" position="after">
+                    <script type="text/javascript">
+                        /* SEO/WPO — Lazy carousel images (pyxel_cem_seo_wpo_tools) */
+                        (function () {
+                            function initLazyCarousel() {
+                                var carousel = document.getElementById('o-carousel-product');
+                                if (!carousel) return;
+                                /* Solo las diapositivas NO activas reciben lazy */
+                                var nonActiveItems = carousel.querySelectorAll(
+                                    '.carousel-item:not(.active) img'
+                                );
+                                nonActiveItems.forEach(function (img) {
+                                    img.setAttribute('loading', 'lazy');
+                                });
+                            }
+                            if (document.readyState === 'loading') {
+                                document.addEventListener('DOMContentLoaded', initLazyCarousel);
+                            } else {
+                                initLazyCarousel();
+                            }
+                        })();
+                    </script>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

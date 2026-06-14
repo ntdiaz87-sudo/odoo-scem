@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Products -->
+    <record id="mk_seller_delivery" model="product.product">
+        <field name="name">Seller delivery</field>
+        <field name="default_code">Seller_Delivery</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="delivery.product_category_deliveries"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+        <field name="invoice_policy">order</field>
+    </record>
+
+    <!-- <record id="mk_express_delivery" model="product.product">
+        <field name="name">Envío Express</field>
+        <field name="default_code">Express_Delivery</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="delivery.product_category_deliveries"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+        <field name="invoice_policy">order</field>
+    </record> -->
+
+     <!-- <record id="mk_pick_up_delivery" model="product.product">
+        <field name="name">Recogida en tienda</field>
+        <field name="default_code">Pick_Up_Delivery</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="delivery.product_category_deliveries"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+        <field name="invoice_policy">order</field>
+    </record> -->
+
+    <record id="mk_flash_delivery" model="product.product">
+        <field name="name">Envío Flash</field>
+        <field name="default_code">Flash_Delivery</field>
+        <field name="type">service</field>
+        <field name="categ_id" ref="delivery.product_category_deliveries"/>
+        <field name="sale_ok" eval="False"/>
+        <field name="purchase_ok" eval="False"/>
+        <field name="list_price">0.0</field>
+        <field name="invoice_policy">order</field>
+    </record>
+
+    <!-- Delivery Methods -->
+    <record id="free_dyeliver_carrier" model="delivery.carrier">
+        <field name="name">Entrega estándar</field>
+        <field name="fixed_price">0.0</field>
+        <field name="sequence">1</field>
+        <field name="delivery_type">based_on_seller</field>
+        <field name="product_id" ref="pyxel_cem_delivery_methods.mk_seller_delivery"/>
+    </record>
+
+    <!-- <record id="free_dyeliver_express" model="delivery.carrier">
+        <field name="name">Envío Express</field>
+        <field name="fixed_price">0.0</field>
+        <field name="sequence">2</field>
+        <field name="delivery_type">base_on_calculation_seller</field>
+        <field name="product_id" ref="pyxel_cem_delivery_methods.mk_express_delivery"/>
+    </record> -->
+
+    <!-- <record id="free_dyeliver_pick_up" model="delivery.carrier">
+        <field name="name">Recogida en tienda</field>
+        <field name="fixed_price">0.0</field>
+        <field name="sequence">3</field>
+        <field name="delivery_type">fixed</field>
+        <field name="product_id" ref="pyxel_cem_delivery_methods.mk_pick_up_delivery"/>
+    </record> -->
+
+
+</odoo>
+

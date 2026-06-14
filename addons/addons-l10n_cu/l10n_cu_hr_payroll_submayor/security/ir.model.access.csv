@@ -1,0 +1,4 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_submayor_manager,hr_submayor_manager,model_hr_submayor,,1,1,1,1
+access_hr_submayor_report_manager,hr_submayor_report_manager,model_hr_submayor_report,,1,1,1,1
+access_hr_payroll_vacaciones_manager,hr_payroll_vacaciones_manager,model_hr_payroll_vacaciones,,1,1,1,1

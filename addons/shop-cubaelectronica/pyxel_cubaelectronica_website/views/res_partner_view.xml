@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <record id="view_partner_form_id_cliente" model="ir.ui.view">
+            <field name="name">res.partner.form.id_cliente</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="category_id" position="after">
+                    <field name="etapa_compra" invisible="1"/>
+                    <field name="seq_code_id_client"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_partner_form_inherit_cubaelec" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.user_type</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="pyxel_cem_website_account.view_partner_form_inherit_user_type"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='social_object']" position="after">
+                    <field name="ci_number"/>
+                </xpath>
+
+            </field>
+        </record>
+</odoo>

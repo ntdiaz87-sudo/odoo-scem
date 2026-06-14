@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="inherit_website_confirmation_pay" inherit_id="website_sale.confirmation" customize_show="true">
+        <xpath expr="//h4" position="replace">
+        </xpath>
+
+        <xpath expr="//table" position="replace">
+            <h4>Order <span t-esc="order.name"/></h4>
+        </xpath>
+    </template>
+
+    <template id="inherit_website_payment_confirmation_status" inherit_id="website_sale.payment_confirmation_status" customize_show="true">
+        <xpath expr="//div[contains(@class, 'oe_website_sale_tx_status')]" position="replace">
+            <div>
+            </div>
+        </xpath>
+    </template>
+
+    <record id="scem_checkout_layout_inherit" model="ir.ui.view">
+            <field name="name">scem_checkout_layout_inherit</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.checkout_layout')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_checkout_layout_inherit</field>
+            <field name="arch" type="xml">
+                <xpath expr="//div[contains(@class, 'o_cta_navigation_container')]" position="before">
+                    <t t-if="request.httprequest.path == '/shop/payment' and order and order.amount_total > 2500">
+                        <div id="order-continue" class="text-center">
+                            <!-- <br/> -->
+                            <a t-attf-href="/shop/confirm/order" class="btn btn-primary">
+                                Order
+                            </a>
+                        </div>
+                    </t>
+                </xpath>
+            </field>
+    </record>
+
+    <record id="scem_payment_inherit" model="ir.ui.view">
+            <field name="name">scem_payment_inherit</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.payment')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_scem_validation_amount.scem_payment_inherit</field>
+            <field name="arch" type="xml">
+                <xpath expr="//div[contains(@class, 'alert-warning')]" position="replace">
+                    <div t-else="" class="alert alert-warning mt-4 pay-message">
+                        <t t-set="hide_payment_button" t-value="True"/>
+                        <!-- <strong>No suitable payment option could be found.</strong><br/> -->
+                        <strong>Orders over $2,500 must be paid by bank transfer upon receiving the payment link.</strong><br/>
+                        <!-- <div t-if="not request.env.is_admin()">
+                            If you believe that it is an error, please contact the website administrator.
+                        </div> -->
+                        <div class="mt-2" groups="base.group_system">
+                            <!-- <a t-if="request.env.company.country_id.is_stripe_supported_country"
+                                t-attf-href="/web#action=#{action_activate_stripe_id}"
+                                role="button"
+                                class="btn btn-primary"
+                                t-out="'ACTIVATE STRIPE'"
+                            />
+                            <div t-else=""
+                                    class="d-inline"
+                                    title="Stripe Connect is not available in your country, please use another payment provider."
+                            >
+                                <button t-out="'ACTIVATE STRIPE'" class="btn btn-primary" disabled="true"/>
+                            </div>
+                            <a role="button"
+                                class="btn-link alert-warning ps-2"
+                                t-attf-href="/web#action=#{payment_action_id}"
+                            >
+                                <strong><i class="oi oi-arrow-right"></i> View alternatives</strong>
+                            </a> -->
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+    </record>
+
+
+</odoo>

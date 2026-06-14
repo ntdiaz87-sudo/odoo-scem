@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record id="view_partner_wholesale_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.wholesale.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="website" position="before">
+                    <field name="is_provider"/>
+                </field>
+                 <xpath expr="//field[@name='bank_ids']" position="attributes">
+                    <attribute name="invisible">is_provider == 0</attribute>
+                </xpath>
+
+
+
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
+
+

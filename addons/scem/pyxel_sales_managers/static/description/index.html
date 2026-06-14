@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pyxel Sales Managers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.2em;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .section h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .screenshot {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Pyxel Sales Managers</h1>
+        <p>Gestión Completa de Gestores de Ventas para Odoo 17</p>
+        <div>
+            <span class="badge">v17.0.1.0.0</span>
+            <span class="badge">Community & Enterprise</span>
+            <span class="badge">LGPL-3</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📋 Descripción</h2>
+        <p>
+            <strong>Pyxel Sales Managers</strong> es un módulo completo para la gestión de gestores de ventas en Odoo 17. 
+            Permite registrar, organizar y analizar el desempeño de los gestores de ventas con integración completa 
+            en los módulos de Contactos, Ventas y Facturación.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>✨ Características Principales</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>👤 Gestión de Gestores</h3>
+                <ul>
+                    <li>Registro completo de información</li>
+                    <li>Código único autogenerado</li>
+                    <li>Tasa de comisión configurable</li>
+                    <li>Jerarquía de gestores</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📞 Integración Contactos</h3>
+                <ul>
+                    <li>Gestor principal por contacto</li>
+                    <li>Múltiples gestores asignados</li>
+                    <li>Estadísticas integradas</li>
+                    <li>Búsqueda avanzada</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>💰 Integración Ventas</h3>
+                <ul>
+                    <li>Campo de gestor en órdenes</li>
+                    <li>Cálculo automático de comisiones</li>
+                    <li>Asignación automática</li>
+                    <li>Análisis por gestor</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📊 Reportes y Análisis</h3>
+                <ul>
+                    <li>Reporte de análisis completo</li>
+                    <li>Vistas gráficas y pivot</li>
+                    <li>Métricas de rendimiento</li>
+                    <li>Filtros personalizables</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔧 Funcionalidades Detalladas</h2>
+        
+        <h3>1. Gestión de Gestores de Ventas</h3>
+        <ul>
+            <li>Registro completo de información del gestor</li>
+            <li>Código único autogenerado (formato: SM00001, SM00002, etc.)</li>
+            <li>Tasa de comisión configurable por gestor (0-100%)</li>
+            <li>Jerarquía de gestores (definición de gestor superior)</li>
+            <li>Relación con usuarios de Odoo</li>
+            <li>Asignación de clientes específicos a cada gestor</li>
+            <li>Integración con equipos de ventas y CRM</li>
+            <li>Control de fechas de inicio y fin</li>
+            <li>Sistema de seguimiento (chatter) integrado</li>
+        </ul>
+
+        <h3>2. Integración con Contactos</h3>
+        <ul>
+            <li>Campo de gestor de ventas principal en contactos</li>
+            <li>Posibilidad de asignar múltiples gestores por contacto</li>
+            <li>Vista de estadísticas de gestores en la ficha del contacto</li>
+            <li>Búsqueda y filtrado por gestor en el listado de contactos</li>
+            <li>Agrupación de contactos por gestor de ventas</li>
+        </ul>
+
+        <h3>3. Integración con Ventas</h3>
+        <ul>
+            <li>Campo de gestor de ventas en órdenes de venta</li>
+            <li>Cálculo automático de comisiones basado en la tasa del gestor</li>
+            <li>Asignación automática del gestor desde el cliente (configurable)</li>
+            <li>Vista de comisión en la orden de venta</li>
+            <li>Análisis de ventas agrupado por gestor</li>
+            <li>Filtros y búsquedas por gestor en órdenes</li>
+        </ul>
+
+        <h3>4. Integración con Facturación</h3>
+        <ul>
+            <li>Campo de gestor en facturas de cliente</li>
+            <li>Cálculo de comisiones en facturas</li>
+            <li>Herencia automática del gestor en notas de crédito</li>
+            <li>Análisis de facturación por gestor</li>
+            <li>Filtros y agrupaciones disponibles</li>
+        </ul>
+
+        <h3>5. Reportes y Análisis</h3>
+        <ul>
+            <li>Reporte de análisis de gestores con múltiples vistas</li>
+            <li>Vista de tabla con totales y subtotales</li>
+            <li>Gráficos de barras para comparativas visuales</li>
+            <li>Tabla dinámica (pivot) para análisis multidimensional</li>
+            <li>Métricas: total ventas, facturado, comisiones, órdenes, facturas</li>
+            <li>Filtrado por fechas, gestores, equipos y clientes</li>
+            <li>Agrupación flexible por múltiples dimensiones</li>
+        </ul>
+
+        <h3>6. Configuración</h3>
+        <ul>
+            <li>Panel de configuración en Ajustes > Ventas</li>
+            <li>Opción de asignación automática de gestor</li>
+            <li>Hacer gestor requerido en órdenes de venta</li>
+            <li>Habilitar/deshabilitar jerarquía de gestores</li>
+            <li>Configurar tasa de comisión por defecto</li>
+        </ul>
+
+        <h3>7. Seguridad</h3>
+        <ul>
+            <li>Sistema de permisos por roles (Usuario, Gestor, Administrador)</li>
+            <li>Reglas de acceso a nivel de registro</li>
+            <li>Soporte multi-compañía</li>
+            <li>Control granular de permisos (lectura, escritura, creación, eliminación)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📦 Instalación</h2>
+        <ol>
+            <li>Copiar el módulo en la carpeta <code>addons</code> de Odoo</li>
+            <li>Actualizar la lista de aplicaciones</li>
+            <li>Buscar "Pyxel Sales Managers"</li>
+            <li>Hacer clic en "Instalar"</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>⚙️ Configuración Inicial</h2>
+        <ol>
+            <li>Ir a <strong>Ventas > Configuración > Ajustes</strong></li>
+            <li>Buscar la sección <strong>"Gestores de Ventas"</strong></li>
+            <li>Configurar según necesidades:
+                <ul>
+                    <li>✓ Asignación automática de gestor</li>
+                    <li>✓ Hacer gestor requerido</li>
+                    <li>✓ Habilitar jerarquía</li>
+                    <li>✓ Tasa de comisión por defecto</li>
+                </ul>
+            </li>
+            <li>Guardar cambios</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>🚀 Uso Rápido</h2>
+        
+        <h3>Crear un Gestor de Ventas</h3>
+        <p><strong>Ventas > Gestores de Ventas > Gestores</strong></p>
+        <ol>
+            <li>Hacer clic en "Crear"</li>
+            <li>Ingresar nombre y seleccionar contacto</li>
+            <li>Definir tasa de comisión</li>
+            <li>Asignar equipo de ventas y gestor superior (opcional)</li>
+            <li>Agregar clientes en la pestaña "Clientes Asignados"</li>
+            <li>Guardar</li>
+        </ol>
+
+        <h3>Asignar Gestor a un Cliente</h3>
+        <p><strong>Contactos</strong></p>
+        <ol>
+            <li>Abrir contacto cliente</li>
+            <li>Ir a pestaña "Ventas y Compras"</li>
+            <li>Seleccionar "Gestor de Ventas Principal"</li>
+            <li>Opcionalmente agregar gestores adicionales</li>
+            <li>Guardar</li>
+        </ol>
+
+        <h3>Ver Reportes</h3>
+        <p><strong>Ventas > Gestores de Ventas > Análisis de Gestores</strong></p>
+        <ol>
+            <li>Seleccionar vista (Gráfico, Pivot o Lista)</li>
+            <li>Aplicar filtros por fecha, gestor, etc.</li>
+            <li>Analizar métricas de rendimiento</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>🔌 Dependencias</h2>
+        <ul>
+            <li><strong>base</strong> - Módulo base de Odoo</li>
+            <li><strong>contacts</strong> - Gestión de contactos</li>
+            <li><strong>sale_management</strong> - Gestión de ventas</li>
+            <li><strong>account</strong> - Contabilidad y facturación</li>
+            <li><strong>crm</strong> - CRM</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📄 Licencia</h2>
+        <p>Este módulo está licenciado bajo <strong>LGPL-3</strong>.</p>
+    </div>
+
+    <div class="section">
+        <h2>👨‍💻 Autor</h2>
+        <p><strong>Pyxel</strong><br>
+        Website: <a href="https://www.pyxel.com">https://www.pyxel.com</a></p>
+    </div>
+
+    <div class="section">
+        <h2>📞 Soporte</h2>
+        <p>Para reportar problemas o solicitar nuevas funcionalidades, contactar al equipo de desarrollo de Pyxel.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="my_cart_lines_packaging_data" model="ir.ui.view">
+        <field name="name">my_cart_lines_packaging_data</field>
+        <field name="inherit_id" ref="pyxel_cem_website_sale.scem_cart_lines"/>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <!-- Agregar data-packaging-uom-min SIN tocar data-uom-min (ese se usa para step/min del módulo original) -->
+            <xpath expr="//input[contains(concat(' ', normalize-space(@class), ' '), ' js_quantity ')]" position="attributes">
+                <attribute name="t-att-data-packaging-uom-min">
+                    (line._get_packaging_ptav() and line._get_packaging_ptav().uom_min) or 1
+                </attribute>
+                <!-- opcional: para debug / UX si lo quieres -->
+                <attribute name="t-att-data-packaging-name">
+                    (line._get_packaging_ptav() and line._get_packaging_ptav().name) or ''
+                </attribute>
+            </xpath>
+
+            <xpath expr="//div[contains(@class, 'text-muted small info')]" position="replace"/>
+
+            <xpath expr="//h6[@t-field='line.name_short']" position="after">
+                <div>
+                    <span class="text-muted small"><t t-esc="line.product_id.product_tmpl_id.full_description"/></span>
+                </div>
+            </xpath>  
+
+            <xpath expr="//div[@name='website_sale_cart_line_price']/span[@id='cart_lines_price']" position="after">
+              <t t-set="ref_ptav" t-value="line._get_packaging_reference_ptav()"/>
+
+                <t t-if="ref_ptav">
+                    <!-- fecha para conversión: usa la del pedido -->
+                    <t t-set="conv_date" t-value="(website_sale_order.date_order or website_sale_order.create_date)"/>
+
+                    <t t-set="ref_unit_price"
+                    t-value="line.product_id.currency_id._convert(
+                                    line.product_id.product_tmpl_id.list_price,
+                                    website_sale_order.currency_id,
+                                    request.env.company,
+                                    conv_date,
+                                    round=True
+                                )"/>
+
+                    <small class="d-block text-muted" style="white-space: nowrap; margin-top: 10px;">
+                        (
+                        <t t-out="ref_unit_price"
+                        t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                        /
+                        <t t-esc="ref_ptav.name"/>
+                        )
+                    </small>
+                </t>
+
+
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="pyxel_cem_website_sale.scem_custom_cart" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+
+
+</odoo>

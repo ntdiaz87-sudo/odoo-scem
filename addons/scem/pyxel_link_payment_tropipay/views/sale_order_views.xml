@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_order_form_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.pyxel.payment.tpp</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_confirm']" position="after">
+                    <field name="pay_by_tpp" invisible="1"/>
+                    <field name="is_fully_paid" invisible="1"/>
+                    <button name="%(pyxel_link_payment_tropipay.action_generate_tpp_link)d"
+                            type="action"
+                            class="oe_stat_button"
+                            invisible="not pay_by_tpp or state != 'sale' or is_fully_paid"
+                            string="Link Pay by Tropipay"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

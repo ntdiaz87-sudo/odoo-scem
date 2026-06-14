@@ -1,0 +1,380 @@
+<odoo>
+    <data>
+        <record id="scem_custom_cart" model="ir.ui.view">
+            <field name="name">scem_custom_cart</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.cart')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_custom_cart</field>
+            <field name="arch" type="xml">
+                <xpath expr="//h3" position="replace">
+                    <h3 class="mb-4"
+                        style="color: #595959; font-weight: bold;border-bottom: 1px solid black !important;">
+                        Product information
+                    </h3>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="scem_cart_lines" model="ir.ui.view">
+            <field name="name">scem_cart_lines</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.cart_lines')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_cart_lines</field>
+            <field name="arch" type="xml">
+                <xpath expr="//h6[@t-field='line.name_short']" position="after">
+                    <div class="text-muted small info" t-if="line.product_no_variant_attribute_value_ids">
+                        <span>(The quantity is based on the minimum purchase unit.)</span>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[@name='website_sale_cart_line_quantity']" position="replace">
+                    <div t-attf-class="css_quantity input-group mb-2" name="website_sale_cart_line_quantity">
+                        <t t-if="not line._is_not_sellable_line()">
+                            <t t-if="show_qty">
+                                <a href="#"
+                                   class="js_add_cart_json btn btn-link d-inline-block border-end-0"
+                                   aria-label="Remove one"
+                                   title="Remove one">
+                                    <i class="position-relative z-index-1 fa fa-minus"/>
+                                </a>
+                                <input type="text"
+                                       class="js_quantity quantity form-control border-start-0 border-end-0"
+                                       t-att-data-line-id="line.id"
+                                       t-att-data-product-id="line.product_id.id"
+                                       t-att-data-qty-available="line.product_id.qty_available"
+                                       t-att-data-uom-name="line.product_id.sudo().uom_id.name"
+                                       t-att-min="line.uom_min_line"
+                                       t-att-data-uom-min="line.uom_min_line"
+                                       t-att-data-is-uom-min="line.is_uom_min_line and 'true' or 'false'"
+                                       t-att-value="int(line.product_uom_qty) == line.product_uom_qty and int(line.product_uom_qty) or line.product_uom_qty"/>
+                                <t t-if="line._get_shop_warning(clear=False)">
+                                    <a href="#" class="btn btn-link">
+                                        <i class='fa fa-warning text-warning'
+                                           t-att-title="line._get_shop_warning()"
+                                           role="img"
+                                           aria-label="Warning"/>
+                                    </a>
+                                </t>
+                                <a t-else=""
+                                   href="#"
+                                   class="js_add_cart_json d-inline-block float_left btn btn-link border-start-0"
+                                   aria-label="Add one"
+                                   title="Add one">
+                                    <i class="fa fa-plus position-relative z-index-1"/>
+                                </a>
+                            </t>
+                            <t t-else="">
+                                <input type="hidden"
+                                       class="js_quantity form-control quantity"
+                                       t-att-data-line-id="line.id"
+                                       t-att-data-product-id="line.product_id.id"
+                                       t-att-data-qty-available="line.product_id.qty_available"
+                                       t-att-data-uom-name="line.product_id.sudo().uom_id.name"
+                                       t-att-value="int(line.product_uom_qty) == line.product_uom_qty and int(line.product_uom_qty) or line.product_uom_qty"/>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <span class="w-100 text-muted" t-esc="int(line.product_uom_qty)"/>
+                            <input type="hidden"
+                                   class="js_quantity quantity form-control"
+                                   t-att-data-line-id="line.id"
+                                   t-att-data-product-id="line.product_id.id"
+                                   t-att-data-qty-available="line.product_id.qty_available"
+                                   t-att-data-uom-name="line.product_id.sudo().uom_id.name"
+                                   t-att-value="line.product_uom_qty"/>
+                        </t>
+                    </div>
+                </xpath>
+
+                <xpath expr="//div[@name='website_sale_cart_line_price']" position="replace">
+                    <div class="mb-0 h6 fw-bold text-end" name="website_sale_cart_line_price">
+                        <t t-if="line.discount">
+                            <del t-attf-class="#{'text-danger mr8'}"
+                                 style="white-space: nowrap;"
+                                 t-out="line._get_displayed_unit_price() * line.product_uom_qty"
+                                 t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                        </t>
+                        <t t-if="website.show_line_subtotals_tax_selection == 'tax_excluded'"
+                           t-set='product_price'
+                           t-value='line.price_subtotal'/>
+                        <t t-else=""
+                           t-set='product_price'
+                           t-value='line.price_total'/>
+                        <span id="cart_lines_price" t-out="product_price" style="white-space: nowrap;"
+                              t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                        <small t-if="not line._is_not_sellable_line() and line.product_id.base_unit_price"
+                               class="cart_product_base_unit_price d-block text-muted"
+                               groups="website_sale.group_show_uom_price">
+                            <t t-call='website_sale.base_unit_price'>
+                                <t t-set='product' t-value='line.product_id'/>
+                                <t t-set='combination_info'
+                                   t-value="{'base_unit_price': product._get_base_unit_price(product_price/line.product_uom_qty)}"/>
+                            </t>
+                        </small>
+                    </div>
+                </xpath>
+
+                <xpath expr="//button[contains(@class, 'js_delete_product')]" position="replace">
+                    <button class="js_delete_product btn btn-light d-inline-block d-md-none"
+                            title="remove">
+                        <img src="/pyxel_cem_website_sale/static/img/trash.svg" class="trash-icon"/>
+
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="scem_custom_total" model="ir.ui.view">
+            <field name="name">scem_custom_total</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.total')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_custom_total</field>
+            <field name="arch" type="xml">
+                <xpath expr="//tr[@id='order_total']" position="replace">
+                </xpath>
+
+                <xpath expr="//table" position="after">
+                    <div id="order_total" class="border-top">
+                        <p class="text-end border-0 px-0 pt-3">
+                            <strong t-field="website_sale_order.amount_total"
+                                    class="monetary_field text-end p-0"
+                                    t-options="{'widget': 'monetary', 'display_currency': website_sale_order.currency_id}"/>
+                        </p>
+                        <p class="text-end" style="font-weight: 200; color: #595959;">
+                            <strong>Total</strong>
+                        </p>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="scem_navigation_buttons" model="ir.ui.view">
+            <field name="name">scem_navigation_buttons</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.navigation_buttons')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_navigation_buttons</field>
+            <field name="arch" type="xml">
+                <xpath expr="//a[@name='website_sale_main_button']" position="replace">
+                    <t t-if="request.httprequest.path == '/shop/cart' and not request.env.user.has_group('base.group_public')">
+                        <a role="button"
+                           id="order_request_btn"
+                           name="conf_delivery_button"
+                           class="s_website_form_send btn btn-primary w-100 w-lg-auto"
+                           href="/shop/order_request"
+                           onclick="if(this.getAttribute('data-clicked')) { return false; } else { this.setAttribute('data-clicked', true); this.style.opacity = '0.6'; }">
+                            Cotizar
+                            <i class="fa fa-angle-right ms-2 fw-light"/>
+                        </a>
+
+                    </t>
+                </xpath>
+
+                <!-- <xpath expr="//a" position="replace">
+                    <a t-att-href="step_specific_values['back_button_href']" class="text-center">
+                        «
+                        <t t-out="step_specific_values['back_button']"/>
+                    </a>
+                </xpath> -->
+
+            </field>
+        </record>
+
+        <!-- Vista de métodos de pago para orden de solicitud -->
+        <template id="order_request_payment" name="Order Request Payment">
+            <t t-call="website.layout">
+                <t t-set="title">Seleccionar Método de Pago</t>
+                <div id="wrap" class="oe_structure">
+                    <div class="container py-5">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <!-- Encabezado -->
+                                <div class="card mb-4">
+                                    <div class="card-body text-center">
+                                        <h1 class="h3 mb-3">Seleccionar Método de Pago</h1>
+                                        <p class="text-muted mb-0">
+                                            Por favor seleccione su método de pago preferido para continuar con la
+                                            solicitud.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Resumen del pedido -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h2 class="h5 mb-0">Resumen de su pedido</h2>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p>
+                                                    <strong>Número de pedido:</strong>
+                                                    <span t-esc="order.name"/>
+                                                </p>
+                                                <p>
+                                                    <strong>Fecha:</strong>
+                                                    <span t-esc="order.date_order"/>
+                                                </p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p>
+                                                    <strong>Total:</strong>
+                                                    <span t-esc="order.amount_total"
+                                                          t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                </p>
+                                                <p>
+                                                    <strong>Artículos:</strong>
+                                                    <span t-esc="len(order.order_line)"/>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Formulario de métodos de pago -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2 class="h5 mb-0">Métodos de pago disponibles</h2>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="payment-method-form" method="POST"
+                                              action="/shop/order_request/payment">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                            <div class="mb-4">
+                                                <p class="text-muted">
+                                                    Seleccione cómo desea realizar el pago. Esta información será usada
+                                                    para procesar su solicitud.
+                                                </p>
+                                            </div>
+
+                                            <!-- Lista de métodos de pago -->
+                                            <div class="row">
+                                                <t t-foreach="payment_methods" t-as="provider">
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="payment-method-card">
+                                                            <input type="radio"
+                                                                   name="payment_method_id"
+                                                                   t-att-id="'payment_method_' + str(provider.id)"
+                                                                   t-att-value="provider.id"
+                                                                   class="btn-check"
+                                                                   required="required"/>
+                                                            <label t-att-for="'payment_method_' + str(provider.id)"
+                                                                   class="btn btn-outline-primary w-100 text-start p-3">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="flex-grow-1">
+                                                                        <h6 class="mb-1" t-esc="provider.name"/>
+                                                                        <small class="text-muted">
+                                                                            <!-- Mostrar código del proveedor -->
+                                                                            <t t-if="provider.code">
+                                                                                <t t-esc="provider.code"/>
+                                                                            </t>
+                                                                        </small>
+                                                                        <!-- Indicadores -->
+                                                                        <div class="mt-1">
+                                                                            <t t-if="provider.state == 'test'">
+                                                                                <span class="badge bg-warning text-dark small me-1">
+                                                                                    Prueba
+                                                                                </span>
+                                                                            </t>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="ms-3">
+                                                                        <!-- Mostrar icono genérico ya que no hay campo image -->
+                                                                        <div style="width: 60px; text-align: center;">
+                                                                            <i class="fa fa-credit-card fa-lg text-muted"/>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+
+                                            <!-- Mensaje si no hay métodos de pago -->
+                                            <t t-if="not payment_methods">
+                                                <div class="alert alert-warning">
+                                                    <i class="fa fa-exclamation-triangle me-2"></i>
+                                                    No hay métodos de pago configurados en este momento.
+                                                    <br/>
+                                                    <small>Por favor contacte al administrador o continúe sin
+                                                        seleccionar un método.
+                                                    </small>
+                                                </div>
+
+                                                <!-- Campo oculto para permitir continuar -->
+                                                <input type="hidden" name="payment_method_id" value="0"/>
+                                            </t>
+
+                                            <!-- Botones -->
+                                            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                                                <a href="/shop/cart" class="btn btn-outline-secondary">
+                                                    <i class="fa fa-arrow-left me-2"></i>
+                                                    Volver al carrito
+                                                </a>
+
+                                                <button type="submit"
+                                                        class="btn btn-primary"
+                                                        t-att-disabled="not payment_methods">
+                                                    <i class="fa fa-check me-2"></i>
+                                                    Continuar con la solicitud
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Información adicional -->
+                                <div class="mt-4 text-center text-muted small">
+                                    <p>
+                                        Al continuar, acepta nuestros
+                                        <a href="/terms" target="_blank">Términos y Condiciones</a>
+                                        y la
+                                        <a href="/privacy" target="_blank">Política de Privacidad</a>.
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fa fa-lock me-1"></i>
+                                        Su información de pago es segura y encriptada
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Template for stores that have shipping -->
+        <!-- <record id="scem_navigation_buttons" model="ir.ui.view">
+            <field name="name">scem_navigation_buttons</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.navigation_buttons')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_website_sale.scem_navigation_buttons</field>
+            <field name="arch" type="xml">
+                <xpath expr="//a[@name='website_sale_main_button']" position="replace">
+                    <t t-if="request.httprequest.path == '/shop/cart'">
+                        <a role="button"
+                            name="conf_delivery_button"
+                            class="s_website_form_send btn btn-primary w-100 w-lg-auto"
+                            href="/shop/checkout">
+                                Continuar solicitud
+                            <i class="fa fa-angle-right ms-2 fw-light"/>
+                        </a>
+                    </t>
+                    <t t-if="request.httprequest.path == '/shop/checkout'">
+                        <a role="button"
+                            name="conf_delivery_button"
+                            class="s_website_form_send btn btn-primary w-100 w-lg-auto"
+                            href="/shop/order_request">
+                                Cotizar
+                            <i class="fa fa-angle-right ms-2 fw-light"/>
+                        </a>
+                    </t>
+                </xpath>
+            </field>
+        </record> -->
+
+
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem name="Reportes" id="cem_reports_root_menu"
+              web_icon="pyxel_cem_seller_payment/static/img/icon.png"/>
+
+    <menuitem name="Reportes" id="cem_reports_menu"  parent="cem_reports_root_menu"/>
+
+    <menuitem name="Reporte Compañía-PCT"
+              id="company_pct_menu"
+              parent="cem_reports_menu"
+              action="company_pct_act_window"/>
+
+    <menuitem name="Conciliación de la Plataforma con Proveedores"
+              id="provider_report_menu"
+              parent="cem_reports_menu"
+              action="provider_report_act_window"/>
+
+    <menuitem id="report_config_menu"
+          name="Configuración"
+          parent="cem_reports_root_menu"
+          action="report_config_act_window"/>
+
+</odoo>

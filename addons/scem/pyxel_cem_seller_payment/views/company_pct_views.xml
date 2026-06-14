@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+        <record id="action_create_pyxel_pct" model="ir.actions.act_window">
+            <field name="name">Nueva Conciliación Pyxel-PCT</field>
+            <field name="res_model">pyxel.pct.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'default_company_pct_report_id': active_id}</field>
+        </record>
+
+        
+        <record id="view_company_pct_form" model="ir.ui.view">
+            <field name="name">company.pct.form</field>
+            <field name="model">company.pct.report</field>
+            <field name="arch" type="xml">
+                <form string="Formulario de Reporte Compañía-PCT">
+                    <sheet>
+                       <div class="row">
+                            <div class="col-6">
+                                <button string="Recalcular" type="object" name="action_debug_recompute" class="btn btn-secondary"/>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <button string="Imprimir Reporte" type="object" name="action_print_report" class="btn btn-primary" style="min-width: 200px !important; white-space: nowrap;"/>
+                            </div>
+                            <div class="col-6">
+                                <button name="%(action_create_pyxel_pct)d" string="Nueva Conciliación Pyxel-PCT" type="action" class="btn btn-primary" style="min-width: 250px !important; white-space: nowrap;"/>
+                            </div>
+                        </div>
+
+                        <br/>
+                        <br/>
+                        <group>
+                            <group>
+                                <field name="start_date" required="True"/>
+                            </group>
+                            <group>
+                                <field name="end_date" required="True"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="provider_id" required="True"/>
+                            </group>
+                            <group>
+                                <field name="seller_id" required="True"/>
+                            </group>
+
+                        </group>
+                        <group>
+                            <field name="service" required="True"/>
+                        </group>
+
+                        <br/>
+                        <br/>
+                       
+                        <group string="Costos Detallados" col="2">
+                            <h4>Total CIF:</h4>
+                            <group>
+                                <field name="amount_commodity" readonly="1"/>
+                                <field name="beneficiary_commodity" required="True"/>
+                                <br/>
+                            </group>
+                            <br/>
+
+                            <h4>Costo Servicio de Importación:</h4>
+                            <group>
+                                <field name="amount_import" readonly="1"/>
+                                <field name="beneficiary_import" required="True"/>
+                                <br/>
+
+                            </group>
+                            <br/>
+
+                            <h4>Servicios de Importación:</h4>
+                            <group>
+                                <field name="amount_import_services" readonly="1"/>
+                                <field name="beneficiary_import_services" required="True"/>
+                                <br/>
+
+                            </group>
+                            <br/>
+
+
+                            <h4>Costo Servicio de TPTE Mariel:</h4>
+                            <group>
+                                <field name="amount_tpte" required="True"/>
+                                <field name="beneficiary_tpte" required="True"/>
+                                <br/>
+
+                            </group>
+                            <br/>
+
+                            <h4>Costo Plataforma Software:</h4>
+                            <group>
+                                <field name="amount_software" readonly="1"/>
+                                <field name="beneficiary_software" required="True"/>
+                                <br/>
+
+                            </group>
+                            <br/>
+
+                            <h4>Gastos Operación Logística:</h4>
+                            <group>
+                                <field name="amount_logistics" readonly="1"/>
+                                <field name="beneficiary_logistics" required="True"/>
+                                <br/>
+
+                            </group>
+                            <br/>
+
+                            <h4>Gastos Aduanales:</h4>
+                            <group>
+                                <field name="amount_import_intern" readonly="1"/>
+                                <field name="beneficiary_import_intern" required="True"/>
+                                <br/>
+
+                            </group>
+                        </group> 
+
+
+                        <group>
+                            <field name="financy_expenses"/>
+                            <field name="total_expenses"/>
+                            <field name="utility"/>
+                            <field name="company_utility" readonly="1"/>
+                            <field name="pct_utility" readonly="1"/>
+                        </group>
+                        <br/>
+                        <br/>
+
+
+
+                        <notebook>
+                            <page string="Conciliaciones Pyxel-PCT">
+                                <field name="pyxel_pct_reports" mode="tree,form">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="provider_id"/>
+                                        <field name="seller_id"/>
+                                        <field name="service_1"/>
+                                        <field name="service_2"/>
+                                        <field name="invoiced"/>
+                                        <field name="financial_cost"/>
+                                        <field name="amount_distributed"/>
+                                        <field name="to_pct"/>
+                                        <field name="to_pyxel"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <page string="Productos asociados">
+                                <!-- <group>
+                                    <field name="debug_info" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="debug_product_ids" widget="many2many_tags" readonly="1"/>
+                                </group> -->
+                                <group>
+                                    <field name="debug_line_ids" readonly="1" context="{'create': 0, 'delete': 0}">
+                                        <tree>
+                                            <field name="move_id"/>
+                                            <field name="product_id"/>
+                                            <field name="quantity"/>
+                                            <field name="price_subtotal"/>
+                                            <field name="cif_value"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                        </notebook>
+
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_company_pct_tree" model="ir.ui.view">
+            <field name="name">company.pct.tree</field>
+            <field name="model">company.pct.report</field>
+            <field name="arch" type="xml">
+             <tree string="Lista de Reportes Compañía-PCT">
+                    <field name="provider_id"/>
+                    <field name="seller_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                </tree>
+            </field>
+        </record>
+        
+
+        <record id="company_pct_act_window" model="ir.actions.act_window">
+            <field name="name">Compañía-PCT</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">company.pct.report</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    No existen reportes(Compañía-PCT)
+                </p>
+            </field>
+        </record>
+
+
+        <record id="view_company_pct_config_form" model="ir.ui.view">
+            <field name="name">company.pct.config.form</field>
+            <field name="model">company.pct.config</field>
+            <field name="arch" type="xml">
+                <form string="Configuración"  create="0" delete="0" edit="1" duplicate="0">
+                    <sheet>
+                        <group col="2">
+                            <field name="company_profit"/>
+                            <field name="pct_profit"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="report_config_act_window" model="ir.actions.act_window">
+            <field name="name">Configuración</field>
+            <field name="res_model">company.pct.config</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_company_pct_config_form"/>
+            <field name="res_id" ref="company_pct_config_singleton"/>
+            <field name="target">current</field>
+            <field name="context">{'create': False, 'duplicate': False}</field>
+        </record>
+
+
+    </data>
+</odoo>

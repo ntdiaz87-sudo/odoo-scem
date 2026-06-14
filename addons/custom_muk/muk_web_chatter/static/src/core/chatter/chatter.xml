@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates xml:space="preserve">
+    <t
+        t-name="muk_web_chatter.Chatter"
+        t-inherit="mail.Chatter"
+        t-inherit-mode="extension"
+    >
+        <!-- First, remove the original "Send message" button -->
+        <xpath expr="//button[hasclass('o-mail-Chatter-sendMessage')]" position="replace">
+        </xpath>
+
+        <!-- Then, replace the "Log note" button with our modified version -->
+        <xpath expr="//button[hasclass('o-mail-Chatter-logNote')]" position="replace">
+            <!-- Add the Log note button first -->
+            <button
+                t-if="props.hasMessageList"
+                class="o-mail-Chatter-logNote btn text-nowrap me-2"
+                t-att-class="{
+                    'btn-primary': true,
+                    'active': state.composerType === 'note' || !state.composerType,
+                    'my-2': !props.compactHeight
+                }"
+                data-hotkey="shift+m"
+                t-on-click="() => this.toggleComposer('note')"
+            >
+                <i class="fa fa-sticky-note me-sm-1" />
+                <span class="d-none d-sm-inline">Log note</span>
+            </button>
+
+            <!-- Then add the Send message button -->
+            <button
+                t-if="props.hasMessageList"
+                class="o-mail-Chatter-sendMessage btn text-nowrap me-2"
+                t-att-class="{
+                    'btn-secondary': true,
+                    'active': state.composerType === 'message',
+                    'my-2': !props.compactHeight
+                }"
+                t-att-disabled="!state.thread.hasWriteAccess and !(state.thread.hasReadAccess and state.thread.canPostOnReadonly) and props.threadId"
+                data-hotkey="m"
+                t-on-click="() => this.toggleComposer('message')"
+            >
+                <i class="fa fa-envelope me-sm-1" />
+                <span class="d-none d-sm-inline">Send message</span>
+            </button>
+        </xpath>
+
+        <!-- Add a script to set note as default when the component loads -->
+        <xpath expr="." position="attributes">
+            <attribute name="t-extend-js">
+                setup() {
+                    super.setup();
+                    const originalOnMounted = this.onMounted;
+                    this.onMounted = () => {
+                        originalOnMounted?.call(this);
+                        // Set note as the default composer type
+                        if (!this.state.composerType) {
+                            this.toggleComposer('note');
+                        }
+                    };
+                }
+            </attribute>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_salem_vc_exp_doc" model="mail.template">
+            <field name="name">CEM Sending of Expired Virtual Contract Notification to Salesmans</field>
+            <field name="model_id" ref="pyxel_cem_virtual_contract.model_cem_virtual_contract"/>
+            <field name="subject">{{ object.company_id.name }}: Restricción de compras para cliente con contrato vencido</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to"></field>
+            <field name="description">Sent to salesman when virtual contract expire</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+                        Estimado/a comercial:<br/>
+                        <br/>
+                        Te informo que el cliente <span style="font-weight:bold;" t-out="object.partner_id.name or ''"/> no podrá realizar nuevas compras en la tienda, dado que su contrato comercial <span style="font-weight:bold;" t-out="object.code or ''"/> venció el <span style="font-weight:bold;" t-out="object.expiry_date" t-options='{"widget": "date"}'/> y aún no ha sido renovado.
+                        <br/>
+                        Por favor, asegúrate de que no se procesen pedidos ni se aprueben cotizaciones hasta tanto se regularice su situación contractual. En caso de que el cliente solicite información, puedes remitirlo directamente al equipo de administración para gestionar la renovación.
+                        <br/>
+                        Gracias por tu colaboración.<br/>
+                        <br/>
+                        Saludos cordiales,
+                        <br/>
+                        <t t-out="object.company_id.name or ''">YourCompany</t>
+                        <br/>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

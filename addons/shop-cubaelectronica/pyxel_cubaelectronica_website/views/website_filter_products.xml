@@ -1,0 +1,12 @@
+<odoo>
+
+    <template id="custom_scem_filter_products" inherit_id="pyxel_cem_website_sale.scem_filter_products">
+        <!-- Opción 1: Eliminar solo el filtro de proveedores -->
+        <xpath expr="//div[contains(@class, 'tp-providers-filter')]" position="replace"/>
+
+        <!-- Opción 2: Eliminar la línea anterior (ajusta según estructura real) -->
+        <xpath expr="//div[contains(@class, 'extra-filters')]/div[@class='line'][2]" position="replace"/>
+    </template>
+
+
+</odoo>

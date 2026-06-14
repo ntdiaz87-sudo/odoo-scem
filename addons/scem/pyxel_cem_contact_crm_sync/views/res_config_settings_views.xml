@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.crm.pyxel.contact.sync</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="crm.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='crm']" position="inside">
+                <block title="Contact synchronization Settings" id="cem_contact_symc_settings"
+                       name="cem_contact_symc_settings">
+                    <setting id="data_origin" string="Data Origin">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="cem_crm_origin_url_server" class="col-lg-3"/>
+                                <field name="cem_crm_origin_url_server" required="True"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="cem_crm_origin_db" class="col-lg-3"/>
+                                <field name="cem_crm_origin_db" required="True"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="cem_crm_origin_username" class="col-lg-3"/>
+                                <field name="cem_crm_origin_username" required="True"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="cem_crm_origin_password" class="col-lg-3"/>
+                                <field name="cem_crm_origin_password" password="True"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="cem_crm_origin_lang" class="col-lg-3"/>
+                                <field name="cem_crm_origin_lang" required="True"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="cem_crm_origin_stage" class="col-lg-3"/>
+                                <field name="cem_crm_origin_stage" required="True"/>
+                            </div>
+                            <div class="row mt16">
+                                <label for="cem_crm_origin_company" class="col-lg-3"/>
+                                <field name="cem_crm_origin_company"/>
+                            </div>
+                        </div>
+
+                    </setting>
+                    <setting id="data_end" string="Data End">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="stage_cem_crm_end_id" class="col-lg-3"/>
+                                <field name="stage_cem_crm_end_id" required="True"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting id="frecuency" string="Frecuency">
+                        <div class="mt16">
+                            <field name="cem_sync_id" invisible="True"/>
+                            <label for="cem_crm_sync_interval_number" string="Synchronize every"/>
+                            <field name="cem_crm_sync_interval_number" class="text-center" style="width: 5rem;"/>
+                            <field name="cem_crm_sync_interval_type" class="oe_inline" required="True"/>
+                            <br/>
+                            <label for="cem_crm_sync_nextcall" string="Next synchronization on" class="col-lg-3 o_light_label"/>
+                            <field name="cem_crm_sync_nextcall" class="oe_inline"/>
+                        </div>
+                        <br/>
+                        <div class="text-muted">
+                            This can be used to synchronize at this moment the contacts.
+                        </div>
+                        <div class="mt16">
+                            <button name="do_contacts_sync" type="object" string="Synchronize Now" class="btn-primary"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

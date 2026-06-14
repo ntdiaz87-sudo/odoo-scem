@@ -1,0 +1,97 @@
+<odoo>
+    <data noupdate="1">
+
+        <!-- Habilitar Variantes y Atributos en Configuración General -->
+        <record id="config_settings" model="res.config.settings">
+            <field name="group_product_variant" eval="True"/>
+        </record>
+
+        <!-- Atributo: Formato -->
+        <record id="attribute_formato" model="product.attribute">
+            <field name="name">Formato</field>
+            <field name="create_variant">always</field>
+        </record>
+
+        <record id="formato_caja" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_formato"/>
+            <field name="name">Caja</field>
+        </record>
+
+        <record id="formato_saco" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_formato"/>
+            <field name="name">Saco</field>
+        </record>
+
+        <record id="formato_parle" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_formato"/>
+            <field name="name">Parle</field>
+        </record>
+
+        <record id="formato_contenedor" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_formato"/>
+            <field name="name">Contenedor</field>
+        </record>
+
+        <!-- Atributo: Color -->
+        <record id="attribute_color" model="product.attribute">
+            <field name="name">Color</field>
+           <field name="create_variant">always</field>
+        </record>
+
+        <record id="color_rojo" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Rojo</field>
+        </record>
+
+        <record id="color_negro" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Negro</field>
+        </record>
+
+        <record id="color_blanco" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Blanco</field>
+        </record>
+
+        <record id="color_azul" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Azul</field>
+        </record>
+
+        <record id="color_amarillo" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Amarillo</field>
+        </record>
+
+        <record id="color_verde" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Verde</field>
+        </record>
+
+        <record id="color_rosado" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Rosado</field>
+        </record>
+
+        <record id="color_morado" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Morado</field>
+        </record>
+
+        <record id="color_carmelita" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Carmelita</field>
+        </record>
+
+        <record id="color_anaranjado" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Anaranjado</field>
+        </record>
+
+        <record id="color_gris" model="product.attribute.value">
+            <field name="attribute_id" ref="attribute_color"/>
+            <field name="name">Gris</field>
+        </record>
+
+    </data>
+</odoo>

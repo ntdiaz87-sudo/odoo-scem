@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista Form de Account Move - Heredar -->
+        <record id="view_move_form_sales_manager" model="ir.ui.view">
+            <field name="name">account.move.form.sales.manager</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                
+                <!-- Campo invisible para controlar visibilidad -->
+                <xpath expr="//field[@name='invoice_user_id']" position="before">
+                    <field name="show_sales_manager" invisible="1"/>
+                    <field name="show_sales_manager" invisible="1"/>
+                </xpath>
+
+                <!-- Agregar campo de gestor de ventas interno -->
+                <xpath expr="//field[@name='invoice_user_id']" position="after">
+                    <field name="sales_manager_id"
+                           invisible="not show_sales_manager or move_type not in ['out_invoice', 'out_refund']"
+                           options="{'no_create': True}"/>
+                </xpath>
+
+                <!-- Agregar campos de gestor externo -->
+                <xpath expr="//field[@name='invoice_user_id']" position="after">
+                    <field name="sales_manager_code_char"
+                           invisible="not show_sales_manager or move_type not in ('out_invoice', 'out_refund')"
+                           options="{'no_create': True, 'no_open': True}"
+                           placeholder="Código del gestor..."/>
+
+                    <field name="sales_manager_name_char"
+                           invisible="not show_sales_manager or move_type not in ('out_invoice', 'out_refund')"
+                           options="{'no_create': True, 'no_open': True}"
+                           placeholder="Nombre del gestor..."/>
+                </xpath>
+
+                <!-- Agregar pestaña de Gestor Externo -->
+                <xpath expr="//page[@name='other_info']" position="after">
+                    <page string="Gestor de Ventas Externo"
+                          name="external_sales_manager"
+                          invisible="not show_sales_manager or move_type not in ('out_invoice', 'out_refund')">
+                        <group>
+
+                            <group string="Información del Gestor">
+                                 <field name="sales_manager_id"
+                                       options="{'no_create': True, 'no_open': True}"
+                                />
+                                <field name="sales_manager_code_char"
+                                       options="{'no_create': True, 'no_open': True}"
+                                       placeholder="Seleccione el código del gestor..."/>
+                                <field name="commission_amount"
+                                       readonly="1"
+                                       widget="monetary"/>
+                            </group>
+
+                            <group string="Comprobante de Venta">
+                                <field name="sales_proof"
+                                       filename="sales_proof_filename"
+                                       widget="binary"/>
+
+                                <field name="sales_proof_filename" invisible="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Vista de líneas dentro de la factura - registro separado -->
+        <record id="view_move_form_lines_commission" model="ir.ui.view">
+            <field name="name">account.move.form.lines.commission</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+
+                <!-- Agregar columnas de comisión en las líneas de factura -->
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="commission_rate_snapshot"
+                           string="% Com."
+                           optional="hide"
+                           readonly="1"
+                           widget="percentage"/>
+
+                    <field name="commission_amount"
+                           string="Comisión"
+                           optional="hide"
+                           readonly="1"
+                           sum="Total Comisión"
+                           widget="monetary"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Vista Tree de Account Move - Heredar -->
+        <record id="view_invoice_tree_sales_manager" model="ir.ui.view">
+            <field name="name">account.move.tree.sales.manager</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_user_id']" position="before">
+                    <field name="show_sales_manager" column_invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_user_id']" position="after">
+                    <field name="sales_manager_id"
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+
+                    <field name="sales_manager_code_char"
+                           string="Código Gestor Ext."
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+
+                    <field name="sales_manager_name_char"
+                           string="Gestor Externo"
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+
+                    <field name="commission_amount"
+                           string="Comisión"
+                           optional="hide"
+                           widget="monetary"
+                           column_invisible="not parent.show_sales_manager"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vista Search de Account Move - Heredar -->
+        <record id="view_account_invoice_filter_sales_manager" model="ir.ui.view">
+            <field name="name">account.move.search.sales.manager</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_user_id']" position="after">
+                    <field name="sales_manager_id"/>
+                    <field name="sales_manager_code_char" string="Código Gestor Externo"/>
+                    <field name="sales_manager_name_char" string="Gestor Externo"/>
+                </xpath>
+
+                <xpath expr="//filter[@name='salesperson']" position="after">
+                    <filter string="Gestor de Ventas"
+                            name="sales_manager"
+                            context="{'group_by': 'sales_manager_id'}"/>
+
+                    <filter string="Gestor Externo"
+                            name="external_sales_manager"
+                            context="{'group_by': 'sales_manager_code_char'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vista de líneas de factura independiente (tree) -->
+        <record id="view_move_line_tree_commission" model="ir.ui.view">
+            <field name="name">account.move.line.tree.commission</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_tree"/>
+            <field name="arch" type="xml">
+
+                <!-- Agregar después de balance -->
+                <xpath expr="//field[@name='balance']" position="after">
+                    <field name="commission_rate_snapshot"
+                           string="% Comisión"
+                           optional="hide"
+                           readonly="1"
+                           widget="percentage"/>
+
+                    <field name="commission_amount"
+                           string="Comisión"
+                           optional="hide"
+                           readonly="1"
+                           widget="monetary"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Vista de formulario de línea de factura -->
+        <record id="view_move_line_form_commission" model="ir.ui.view">
+            <field name="name">account.move.line.form.commission</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Agregar en el notebook después de la pestaña analítica -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Comisión"
+                          name="commission_info"
+                          invisible="commission_rate_snapshot == 0">
+                        <group>
+                            <group>
+                                <field name="commission_rate_snapshot"
+                                       string="Tasa de Comisión"
+                                       readonly="1"
+                                       widget="percentage"/>
+
+                                <field name="commission_amount"
+                                       string="Monto de Comisión"
+                                       readonly="1"
+                                       widget="monetary"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+                
+            </field>
+        </record>
+
+    </data>
+</odoo>

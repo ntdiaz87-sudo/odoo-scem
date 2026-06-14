@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="select_delivery_zone" inherit_id="website.option_header_brand_logo">
+        <xpath expr="//a" position="after">
+            <div class="input-group-append delivery_modal_div desktop_delivery_button">
+                <t t-nocache="">
+                    <div class="input-group-append">
+                        <t t-set="delivery_ctx" t-value="website.sudo().ensure_valid_delivery_session()"/>
+                        <t t-set="current_city_name" t-value="delivery_ctx['city_name']"/>
+                            <a role="button" href="#"
+                            class="btn input-group-append delivery_button"
+                            data-bs-toggle="modal" data-bs-target="#delivery_modal">
+                                <i class="delivery_pin"/>
+                                <label style="margin-bottom: 7px !important">
+                                    <t t-if="current_city_name"><t t-esc="current_city_name"/></t>
+                                    <t t-else="">Seleccione dirección de envío</t>
+                                </label>
+                            </a>
+                    </div>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="layout" name="Floating WhatsApp Icon" inherit_id="website.layout">
+        <xpath expr="//body" position="inside">
+            <t t-nocache="">
+                <div class="input-group-append">
+                    <t t-call="pyxel_cem_delivery_methods.delivery_modal"/>
+                    <t t-call="pyxel_cem_delivery_methods.seller_no_delivery_modal_tpl"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+
+
+    <template id="delivery_modal">
+        <t t-set="has_delivery_points"
+            t-value="request.env['warehouse.delivery'].sudo().search_count([]) > 0"/>
+        <t t-set="delivery_ctx" t-value="website.sudo().ensure_valid_delivery_session()"/>
+        <t t-set="current_state" t-value="delivery_ctx['state_id']"/>
+        <t t-set="current_city"  t-value="delivery_ctx['municipality_id']"/>
+        <t t-set="need_open"
+             t-value="has_delivery_points and ((not current_state) or (not current_city) or request.session.get('force_delivery_modal'))" />
+
+
+        <!-- Modal -->
+        <t t-nocache="">
+            <div class="modal fade text-left delivery_modal"
+                id="delivery_modal" name="delivery_modal" role="dialog" tabindex="-1">
+
+                <div class="modal-dialog">
+                    <div class="modal-content delivery_modal_content" style="width: auto !important;">
+                        <!-- Logo / título -->
+                        <!-- <img t-att-src="'/pyxel_cem_delivery_methods/static/src/img/delivery_icon.png'"
+                            alt="Logo"
+                            style="width:128px;display:block;margin-left:auto;margin-right:auto;margin-top:1rem;"/> -->
+                        <hr class="modal_hr"/>
+                        <span style="color:black;font-weight:bolder;display:block;text-align:center;">
+                            Seleccione dirección de envío
+                        </span>
+
+                        <div class="modal-body">
+                            <div role="tabpanel">
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane active">
+                                        <form name="set_delivery_address_form"
+                                            role="form"
+                                            method="post"
+                                            t-attf-action="/set_delivery_address"
+                                            id="form_delivery_modal"
+                                            novalidate="novalidate">
+
+                                            <!-- (Opcional) mantener seller si venía por query -->
+                                            <t t-set="current_seller_id" t-value="request.params.get('seller_id')"/>
+                                            <input t-if="current_seller_id" type="hidden" name="current_seller_id"
+                                                t-att-value="current_seller_id"/>
+
+                                            <!-- Provincia -->
+                                            <div class="form-group field-state">
+                                                <label for="state_modal_id"
+                                                    style="color:#495057 !important;margin-bottom:0.2px;font-weight:600;">
+                                                    <span>Provincia:</span>
+                                                </label>
+                                                <div>
+                                                    <!-- ===== PROVINCIA ===== -->
+                                                    <select id="state_modal_id" name="state_modal_id"  t-att-required="has_delivery_points and 'required' or None" class="modal_select form-control">
+                                                        <!-- 1) principal -->
+                                                        <t t-set="states_ids" t-value="website.sudo().get_states_ids()"/>
+
+                                                        <t t-if="not current_state">
+                                                            <option value="" selected="selected" disabled="disabled" hidden="hidden">Seleccione provincia...</option>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <option t-att-value="current_state" selected="selected">
+                                                                <t t-esc="states_ids.filtered(lambda s: s.id == current_state).name or ''"/>
+                                                            </option>
+                                                        </t>
+
+                                                        <t t-if="states_ids">
+                                                            <t t-foreach="states_ids.filtered(lambda s: s.id != current_state if current_state else True)" t-as="state">
+                                                                <option t-att-value="state.id"><t t-esc="state.name"/></option>
+                                                            </t>
+                                                        </t>
+                                                    </select>
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Municipio -->
+                                            <div id="field-city" class="form-group field-city">
+                                                <t t-set="municipality_ids" t-value="website.sudo().get_all_delivery_municipality_ids()"/>
+                                                <label for="city_modal_id"
+                                                    style="color:#495057 !important;margin-bottom:0.2px;font-weight:600;">
+                                                    <span>Municipio:</span>
+                                                </label>
+                                                <div>
+                                                <!-- ===== MUNICIPIO ===== -->
+                                                <select id="city_modal_id" name="city_modal_id" t-att-required="has_delivery_points and 'required' or None" class="modal_select form-control">
+                                                    <!-- Traemos TODAS las ciudades con warehouse.delivery -->
+                                                    <t t-set="municipality_ids" t-value="website.sudo().get_all_delivery_municipality_ids()"/>
+
+                                                    <!-- Placeholder -->
+                                                    <option value=""
+                                                            disabled="disabled"
+                                                            hidden="hidden"
+                                                            t-att-selected="not current_city and 'selected' or None">
+                                                        Seleccione municipio...
+                                                    </option>
+
+                                                    <!-- Pintamos TODAS las ciudades, sin filtrar por current_state -->
+                                                    <t t-if="municipality_ids">
+                                                        <t t-foreach="municipality_ids" t-as="city">
+                                                            <option t-att-value="city.id"
+                                                                    t-att-state-id="city.state_id.id"
+                                                                    t-att-selected="current_city and city.id == current_city and 'selected' or None">
+                                                                <t t-esc="city.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </t>
+                                                </select>
+
+
+                                                </div>
+
+                                                <!-- Aviso si hay carrito con líneas -->
+                                                <t t-set="website_sale_order_id" t-value="website.sale_get_order()"/>
+                                                <div id="warning-cart-zone"
+                                                    t-att-style="'display:%s;'% ('block' if website_sale_order_id and website_sale_order_id.website_order_line else 'none')">
+                                                    <h7 style="color:#dc3545;">*Esto afectará el contenido del carrito</h7>
+                                                </div>
+                                            </div>
+
+                                            <!-- Botones -->
+                                            <div class="modal_buttons_delivery clearfix d-flex text-center mb-1 pt-3"
+                                                style="float:inline-end;">
+                                                <button type="submit"
+                                                        class="btn ml-auto list-inline-item btn-primary btn-block te_theme_button delivery_modal_button submit_delivery_modal">
+                                                    Confirmar
+                                                </button>
+
+                                                <!-- Solo permitir cerrar si ya hay ciudad en sesión -->
+                                                <t t-if="current_city">
+                                                    <button type="button"
+                                                            class="btn list-inline-item btn-secondary btn-block te_theme_button delivery_modal_button"
+                                                            data-bs-dismiss="modal">
+                                                        Cancelar
+                                                    </button>
+                                                </t>
+                                            </div>
+                                        </form>
+                                    </div> <!-- tab-pane -->
+                                </div> <!-- tab-content -->
+                            </div> <!-- role=tabpanel -->
+                        </div> <!-- modal-body -->
+                    </div> <!-- modal-content -->
+                </div> <!-- modal-dialog -->
+            </div> <!-- modal -->
+        </t>
+        <!-- JS embebido: auto-abrir + validación + filtro ciudades -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('btn-close-delivery-modal');
+            const modalEl = document.getElementById('delivery_modal');
+            if (!btn || !modalEl) return;
+
+            btn.addEventListener('click', function () {
+                if (window.bootstrap &amp;&amp; bootstrap.Modal) {
+                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                } else {
+                    modalEl.classList.remove('show');
+                    modalEl.style.display = 'none';
+                    document.body.classList.remove('modal-open');
+                    const bd = document.querySelector('.modal-backdrop');
+                    if (bd) bd.remove();
+                }
+                // limpiar bandera si estaba activa
+                fetch('/dismiss_seller_no_delivery', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: '{}'
+                });
+            });
+        });
+        </script>
+
+
+        <script>
+        (function () {
+
+            function hasDeliveryPointsDOM() {
+                var citySel = document.getElementById('city_modal_id');
+                if (!citySel) {
+                    return false;
+                }
+                for (var i = 0; i &lt; citySel.options.length; i++) {
+                    var opt = citySel.options[i];
+                    if (opt.value &amp;&amp; !isNaN(opt.value)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function reallyShowModal() {
+                var el = document.getElementById('delivery_modal');
+                if (!el) return;
+                if (window.bootstrap &amp;&amp; bootstrap.Modal) {
+                    bootstrap.Modal.getOrCreateInstance(el, { backdrop: 'static', keyboard: false }).show();
+                    return;
+                }
+                el.classList.add('show');
+                el.style.display = 'block';
+                el.removeAttribute('aria-hidden');
+                el.setAttribute('aria-modal', 'true');
+                if (!document.querySelector('.modal-backdrop')) {
+                    var bd = document.createElement('div');
+                    bd.className = 'modal-backdrop fade show';
+                    document.body.appendChild(bd);
+                }
+                document.body.classList.add('modal-open');
+            }
+
+            function isEmpty(v) {
+                return v === null || v === undefined || v === '' || v === '-1';
+            }
+
+            function mustOpenNow() {
+                var el = document.getElementById('delivery_modal');
+                if (!el) return false;
+
+                if (!hasDeliveryPointsDOM()) {
+                    return false;
+                }
+
+                var st = document.getElementById('state_modal_id');
+                var ct = document.getElementById('city_modal_id');
+
+                var stateEmpty = !st || isEmpty(st.value);
+                var cityEmpty  = !ct || isEmpty(ct.value);
+
+                return stateEmpty || cityEmpty;
+            }
+
+            window.addEventListener('load', function () {
+                if (mustOpenNow()) {
+                    reallyShowModal();
+                    setTimeout(function () {
+                        if (mustOpenNow()) {
+                            reallyShowModal();
+                        }
+                    }, 120);
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var form = document.getElementById('form_delivery_modal');
+                if (!form) {
+                    return;
+                }
+
+                form.addEventListener('submit', function (e) {
+                    if (!hasDeliveryPointsDOM()) {
+                        return;
+                    }
+
+                    var stateSel = document.getElementById('state_modal_id');
+                    var citySel  = document.getElementById('city_modal_id');
+
+                    var stateOk = stateSel &amp;&amp; !isEmpty(stateSel.value);
+                    var cityOk  = citySel &amp;&amp; !isEmpty(citySel.value) &amp;&amp; !isNaN(citySel.value);
+
+                    if (!stateOk || !cityOk) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.classList.add('was-validated');
+                        reallyShowModal();
+                        return false;
+                    }
+                }, true);
+            });
+
+            document.addEventListener('change', function (ev) {
+                if (!ev.target || ev.target.id !== 'state_modal_id') return;
+                var stateId = ev.target.value || '';
+                var citySel = document.getElementById('city_modal_id');
+                if (!citySel) return;
+
+                Array.prototype.forEach.call(citySel.options, function (opt) {
+                    if (opt.value === '') {
+                        opt.style.display = '';
+                        opt.selected = true;
+                        return;
+                    }
+                    var sid = opt.getAttribute('state-id');
+                    var show = (!stateId) || (sid === stateId);
+                    opt.style.display = show ? '' : 'none';
+                    if (!show) opt.selected = false;
+                });
+                citySel.value = ''; 
+            });
+
+        })();
+        </script>
+
+
+    </template>
+
+
+    <template id="user_navbar_132" inherit_id="website_sale.header_cart_link" name="User Navbar">
+        <xpath expr="/t[1]/t[1]/li[2]" position="before">
+            <li t-attf-class="delivery_modal_div mobile_delivery_button #{_item_class}">
+                <a href="#" t-attf-class="#{_link_class} delivery_button">
+                    <i class="delivery_pin"/>
+                </a>
+            </li>
+        </xpath>
+    </template>
+
+
+    <template id="seller_no_delivery_modal_tpl">
+        <div class="modal fade" id="seller_no_delivery_modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content p-3" style="padding-top: 2rem !important;">
+                    <div class="modal-body">
+                        <t t-set="info" t-value="request.session.get('seller_no_delivery') or {}"/>
+                        <p>
+                            <t t-if="info.get('seller_name')">
+                                <b t-esc="info['seller_name']"/> no tiene productos disponibles para la ubicación seleccionada.
+                            </t>
+                            <t t-else="">
+                                Este vendedor no tiene productos disponibles para la ubicación seleccionada.
+                            </t>
+                        </p>
+                    </div>
+                    <div class="modal-footer" style="border: navajowhite;">
+                        <!-- Mantener nueva ubicación y abrir /sellers -->
+                        <a href="/go_sellers_keep_location" class="btn btn-primary">Ver otros vendedores</a>
+
+                        <!-- Volver a la ubicación anterior y cerrar modal -->
+                        <button type="button" class="btn btn-secondary" id="btn-close-seller-no-delivery">Cerrar</button>
+                    </div>
+
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var closeBtn = document.getElementById('btn-close-seller-no-delivery');
+                        var modalEl  = document.getElementById('seller_no_delivery_modal');
+
+                        if (closeBtn &amp;&amp; modalEl) {
+                            closeBtn.addEventListener('click', function () {
+                                // Revertir ubicación
+                                fetch('/revert_delivery_change', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/json'},
+                                    body: JSON.stringify({})
+                                }).then(function () {
+                                    // Cerrar modal y recargar la página donde estaba el usuario
+                                    if (window.bootstrap &amp;&amp; bootstrap.Modal) {
+                                        var m = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                                        m.hide();
+                                    } else {
+                                        modalEl.classList.remove('show');
+                                        modalEl.style.display = 'none';
+                                        var bd = document.querySelector('.modal-backdrop');
+                                        if (bd) bd.remove();
+                                    }
+                                    // recargar para que se apliquen los valores previos
+                                    window.location.reload();
+                                }).catch(function () {
+                                    // fallback: recargar igual
+                                    window.location.reload();
+                                });
+                            });
+                        }
+                    });
+                    </script>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-apertura cuando exista la bandera y limpiarla -->
+        <t t-nocache="">
+            <t t-set="__seller_no_delivery" t-value="request.session.pop('seller_no_delivery', False)"/>
+            <t t-if="__seller_no_delivery">
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    if (window.location &amp;&amp;  window.location.pathname.indexOf('/sellers') === 0) {
+                        return;
+                    }
+                    var modalEl = document.getElementById('seller_no_delivery_modal');
+                    if (!modalEl) return;
+
+                    if (window.bootstrap &amp;&amp; bootstrap.Modal) {
+                        var modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+                        modal.show();
+                    } else {
+                        modalEl.classList.add('show');
+                        modalEl.style.display = 'block';
+                        modalEl.removeAttribute('aria-hidden');
+                        modalEl.setAttribute('aria-modal', 'true');
+                        var backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        document.body.appendChild(backdrop);
+                    }
+                });
+                </script>
+            </t>
+        </t>
+
+   
+
+    </template>
+
+
+</odoo>

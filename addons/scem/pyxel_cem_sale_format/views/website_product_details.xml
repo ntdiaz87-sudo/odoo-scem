@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+        <record id="cem_product_details" model="ir.ui.view">
+            <field name="name">cem_product_details</field>
+            <field name="inherit_id" search="[('key', '=', 'product_extended.product')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_sale_format.cem_product_details</field>
+            <field name="arch" type="xml">
+                <xpath expr="//p[contains(@class,'text-muted')]" position="after">
+                    <div class="js_uom_reference_wrapper d-none">
+                        <strong>Referencia de la cantidad:</strong>
+                        <span class="js_uom_reference_value">1</span>
+                        <br/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        
+
+        <record id="cem_variants_packaging_flag" model="ir.ui.view">
+            <field name="name">variants - packaging flag</field>
+            <field name="inherit_id" ref="website_sale.variants"/>
+            <field name="type">qweb</field>
+            <field name="arch" type="xml">
+
+                <!-- SELECT options -->
+                <xpath expr="//option" position="attributes">
+                    <attribute name="t-att-data-is_packaging">ptav.attribute_id.is_packaging_attribute and '1' or '0'</attribute>
+                    <attribute name="t-att-data-uom_min">ptav.uom_min</attribute>
+                    <attribute name="t-att-data-is_uom_min">ptav.is_uom_min and 'true' or 'false'</attribute>
+                    <attribute name="t-att-data-value_name">ptav.name</attribute>
+                </xpath>
+
+
+            </field>
+        </record>
+
+</odoo>

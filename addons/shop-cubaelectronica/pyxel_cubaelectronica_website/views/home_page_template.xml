@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="home_template" name="Home Page">
+    <t t-call="website.layout">
+      <t t-set="company" t-value="request.env.company"/>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"/>
+
+      <div class="cv-home">
+
+        <!-- ══════════ HERO SPLIT B2C / B2B ══════════ -->
+        <section class="cv-hero">
+          <div class="cv-container">
+            <div class="cv-hero__grid">
+
+              <!-- B2C minorista -->
+              <div class="cv-hero__panel cv-hero__panel--b2c"
+                   style="background-image:url('/pyxel_cubaelectronica_website/static/src/img/hero_b2c.jpg');">
+                <div class="cv-hero__kicker">Compra Minorista</div>
+                <h1 class="cv-hero__title">Todo para tu hogar,<br/><span class="accent">al mejor precio</span></h1>
+                <ul class="cv-hero__list">
+                  <li><span class="cv-check">✓</span> Productos 100% originales</li>
+                  <li><span class="cv-check">✓</span> Garantía oficial</li>
+                  <li><span class="cv-check">✓</span> Envíos rápidos a toda Cuba</li>
+                  <li><span class="cv-check">✓</span> Pagos seguros</li>
+                </ul>
+                <div class="cv-hero__cta">
+                  <a href="/shop?tipo=retail" class="cv-btn cv-btn--light">
+                    <i class="fa fa-shopping-cart"/> Comprar como minorista
+                  </a>
+                  <a href="/shop" class="cv-link-arrow">Ver productos →</a>
+                </div>
+                <div class="cv-hero__features">
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-snowflake-o"/></div>Refrigeración</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-tint"/></div>Lavado</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-fire"/></div>Cocción</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-television"/></div>Pequeños Electro.</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-thermometer-half"/></div>Climatización</div>
+                </div>
+              </div>
+
+              <!-- B2B mayorista -->
+              <div class="cv-hero__panel cv-hero__panel--b2b"
+                   style="background-image:url('/pyxel_cubaelectronica_website/static/src/img/hero_b2b.jpg');">
+                <div class="cv-hero__kicker">Compra Mayorista</div>
+                <h1 class="cv-hero__title">Más volumen,<br/><span class="accent">más beneficios</span></h1>
+                <ul class="cv-hero__list">
+                  <li><span class="cv-check">✓</span> Precios exclusivos por volumen</li>
+                  <li><span class="cv-check">✓</span> Asesoramiento especializado</li>
+                  <li><span class="cv-check">✓</span> Crédito y financiamiento</li>
+                  <li><span class="cv-check">✓</span> Facturación a empresas</li>
+                  <li><span class="cv-check">✓</span> Envíos y logística garantizada</li>
+                </ul>
+                <div class="cv-hero__cta">
+                  <a href="/shop?tipo=wholesale" class="cv-btn cv-btn--turq">
+                    <i class="fa fa-cubes"/> Comprar como mayorista
+                  </a>
+                  <a href="/shop?tipo=wholesale" class="cv-link-arrow">Ver beneficios →</a>
+                </div>
+                <div class="cv-hero__features">
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-tags"/></div>Precios por volumen</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-list-alt"/></div>Lista de precios</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-check-circle"/></div>Cotiza en línea</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-truck"/></div>Carga masiva</div>
+                  <div class="cv-hero__feature"><div class="ic"><i class="fa fa-headphones"/></div>Atención personalizada</div>
+                </div>
+              </div>
+
+              <div class="cv-hero__center">
+                <div class="cv-hero__badge"><span><b>O</b>ELIGE TU<br/>EXPERIENCIA</span></div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════ PRODUCTOS DESTACADOS (datos reales) ══════════ -->
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <div class="cv-row-head">
+              <h2>Productos destacados para ti</h2>
+              <a href="/shop" class="cv-seeall">Ver todos los productos →</a>
+            </div>
+            <t t-if="vendidos">
+              <div class="cv-products">
+                <t t-foreach="vendidos[:10]" t-as="product">
+                  <div class="cv-card">
+                    <t t-if="product.sale_type in ('wholesale', 'both')">
+                      <span class="cv-card__tag cv-tag cv-tag--new">Mayorista</span>
+                    </t>
+                    <t t-if="product.product_variant_id">
+                      <button type="button" class="cv-card__fav o_add_wishlist_dyn"
+                              data-action="o_wishlist"
+                              t-att-data-product-template-id="product.id"
+                              t-att-data-product-product-id="product.product_variant_id.id">
+                        <i class="fa fa-heart-o"/>
+                      </button>
+                    </t>
+                    <a t-att-href="'/shop/product/' + slug(product)" class="cv-card__img">
+                      <img t-att-src="'/web/image/product.template/%s/image_1920' % product.id"
+                           t-att-alt="product.name" loading="lazy"/>
+                    </a>
+                    <div class="cv-card__name">
+                      <a t-att-href="'/shop/product/' + slug(product)" t-esc="product.name"/>
+                    </div>
+                    <div class="cv-card__foot">
+                      <span class="cv-card__price">$<t t-esc="format_price(product.list_price)"/></span>
+                      <t t-if="product.product_variant_id and product.product_variant_count == 1">
+                        <button type="button" class="cv-card__add cv-add-to-cart" title="Añadir al carrito"
+                                t-att-data-product-id="product.product_variant_id.id"
+                                t-att-data-qty="product.sale_min_qty or 1">
+                          <i class="fa fa-shopping-cart"/>
+                        </button>
+                      </t>
+                      <t t-else="">
+                        <a t-att-href="'/shop/product/' + slug(product)" class="cv-card__add" title="Ver opciones">
+                          <i class="fa fa-shopping-cart"/>
+                        </a>
+                      </t>
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </t>
+            <t t-else="">
+              <p style="text-align:center;color:#64748B;padding:30px;">
+                No hay productos destacados. Crea la categoría <strong>Más vendidos</strong> y asigna productos.
+              </p>
+            </t>
+          </div>
+        </section>
+
+        <!-- ══════════ SOLUCIONES ══════════ -->
+        <section class="cv-section">
+          <div class="cv-container">
+            <div class="cv-section__head"><h2 class="cv-section__title">Explora nuestras soluciones</h2></div>
+            <div class="cv-solutions">
+              <div class="cv-sol">
+                <div class="cv-sol__img">
+                  <img src="/pyxel_cubaelectronica_website/static/src/img/products/sol_electrodomesticos.jpg?v=2" alt="Electrodomésticos" loading="lazy"/>
+                </div>
+                <h3>Electrodomésticos</h3>
+                <p>Equipos modernos para tu hogar.</p>
+                <a href="/shop" class="cv-seeall">Ver más →</a>
+              </div>
+              <div class="cv-sol">
+                <div class="cv-sol__img">
+                  <img src="/pyxel_cubaelectronica_website/static/src/img/products/sol_energia_solar.jpg" alt="Energía Solar" loading="lazy"/>
+                </div>
+                <h3>Energía Solar</h3>
+                <p>Ahorra, genera tu propia energía y cuida el planeta.</p>
+                <a href="/shop" class="cv-seeall">Ver más →</a>
+              </div>
+              <div class="cv-sol">
+                <div class="cv-sol__img">
+                  <img src="/pyxel_cubaelectronica_website/static/src/img/products/sol_kit_solar.png" alt="Kits Solares" loading="lazy"/>
+                </div>
+                <h3>Kits Solares</h3>
+                <p>Soluciones completas para cada necesidad.</p>
+                <a href="/shop" class="cv-seeall">Ver más →</a>
+              </div>
+              <div class="cv-sol">
+                <div class="cv-sol__img">
+                  <img src="/pyxel_cubaelectronica_website/static/src/img/products/sol_empresas.jpg?v=2" alt="Empresas" loading="lazy"/>
+                </div>
+                <h3>Empresas</h3>
+                <p>Soluciones energéticas para negocios e industrias.</p>
+                <a href="/shop?tipo=wholesale" class="cv-seeall">Ver más →</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════ CALCULADORA SOLAR ══════════ -->
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <div class="cv-solar">
+              <!-- Panel izquierdo: imagen de fondo + título + badge -->
+              <div class="cv-solar__hero"
+                   style="background-image:url('/pyxel_cubaelectronica_website/static/src/img/products/casapanel.jpg');">
+                <div class="cv-solar__hero-overlay"/>
+                <div class="cv-solar__hero-content">
+                  <div class="cv-solar__hero-top">
+                    <span class="cv-solar__sun"><i class="fa fa-sun-o"/></span>
+                    <h2>Calcula tu<br/>sistema solar</h2>
+                    <p>Descubre cuántos paneles necesitas y cuánto puedes ahorrar.</p>
+                  </div>
+                  <div class="cv-solar__badge">
+                    <i class="fa fa-leaf"/> Energía limpia para un futuro sostenible
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel derecho: formulario + métricas + beneficios -->
+              <div class="cv-solar__panel">
+                <div class="cv-solar__input-row">
+                  <input type="number" class="cv-solar__consumo" placeholder="Ingresa tu consumo mensual"/>
+                  <button type="button" class="cv-solar__calc">
+                    <i class="fa fa-bolt"/> Calcular ahora
+                  </button>
+                </div>
+                <div class="cv-solar__metrics">
+                  <div class="cv-metric">
+                    <div class="cv-metric__icon"><i class="fa fa-bolt"/></div>
+                    <div class="cv-metric__body">
+                      <small>Consumo mensual</small>
+                      <b class="cv-solar__consumo-out">350 kWh</b>
+                    </div>
+                  </div>
+                  <div class="cv-metric">
+                    <div class="cv-metric__icon"><i class="fa fa-th"/></div>
+                    <div class="cv-metric__body">
+                      <small>Paneles recomendados</small>
+                      <b class="cv-solar__panels-out">6 unidades</b>
+                    </div>
+                  </div>
+                  <div class="cv-metric">
+                    <div class="cv-metric__icon"><i class="fa fa-money"/></div>
+                    <div class="cv-metric__body">
+                      <small>Ahorro estimado anual</small>
+                      <b class="cv-solar__saving-out">1,245 USD</b>
+                    </div>
+                  </div>
+                </div>
+                <div class="cv-solar__benefits">
+                  <div class="cv-solar__benefit"><div class="ic"><i class="fa fa-lightbulb-o"/></div>Ahorra hasta 80% en tu factura</div>
+                  <div class="cv-solar__benefit"><div class="ic"><i class="fa fa-leaf"/></div>Energía limpia y sostenible</div>
+                  <div class="cv-solar__benefit"><div class="ic"><i class="fa fa-line-chart"/></div>Retorno de inversión 3-5 años</div>
+                  <div class="cv-solar__benefit"><div class="ic"><i class="fa fa-wrench"/></div>Instalación profesional garantizada</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════ BLOQUE MAYORISTA ══════════ -->
+        <section class="cv-section">
+          <div class="cv-container">
+            <div class="cv-wholesale-block">
+              <div>
+                <h2>¿Eres mayorista?</h2>
+                <p>Accede a precios exclusivos y beneficios diseñados para tu negocio.</p>
+                <ul class="cv-wb-benefits">
+                  <li><span class="cv-check">✓</span> Precios por volumen</li>
+                  <li><span class="cv-check">✓</span> Facturación a empresas</li>
+                  <li><span class="cv-check">✓</span> Crédito y financiamiento</li>
+                  <li><span class="cv-check">✓</span> Envíos a todo el país</li>
+                  <li><span class="cv-check">✓</span> Asesoramiento especializado</li>
+                  <li><span class="cv-check">✓</span> Atención personalizada</li>
+                </ul>
+                <div class="cv-wb-actions">
+                  <a href="/web/signup" class="cv-btn cv-btn--turq">Crear cuenta mayorista</a>
+                  <a href="/shop?tipo=wholesale" class="cv-link-arrow">Conoce todos los beneficios →</a>
+                </div>
+              </div>
+              <div class="cv-wb-quick" id="cvWbQuick">
+                <h3>Compra rápida (Mayoristas)</h3>
+                <div class="cv-wb-tabs">
+                  <button type="button" class="cv-wb-tab is-active" data-wbtab="sku">Por código (SKU)</button>
+                  <button type="button" class="cv-wb-tab" data-wbtab="csv">Subir archivo CSV</button>
+                </div>
+                <div class="cv-wb-form" data-wbpanel="sku">
+                  <input placeholder="Código del producto (SKU)"/>
+                  <input placeholder="Cantidad" style="max-width:110px"/>
+                </div>
+                <div class="cv-wb-form" data-wbpanel="csv" style="display:none">
+                  <input type="file" accept=".csv"/>
+                </div>
+                <a href="/shop?tipo=wholesale" class="cv-btn cv-btn--turq" style="width:100%;justify-content:center">
+                  <i class="fa fa-plus"/> Agregar
+                </a>
+                <p style="margin-top:14px;font-size:12px;color:rgba(255,255,255,.7)">
+                  Agrega varios productos y genera tu pedido al instante.
+                </p>
+              </div>
+              <div class="cv-wb-illu">
+                <div class="cv-wb-illu__box"><i class="fa fa-cubes"/></div>
+                <b>Grandes compras,<br/>grandes ventajas.</b>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════ CASOS + MARCAS ══════════ -->
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <div class="cv-cases-wrap">
+              <div>
+                <h2 class="cv-cases__title">Casos reales, resultados reales</h2>
+                <p class="cv-cases__sub">Proyectos que generan ahorro y un futuro más sostenible.</p>
+                <div class="cv-cases">
+                  <div class="cv-case">
+                    <div class="cv-case__img" style="background-image:url('/pyxel_cubaelectronica_website/static/src/img/products/caso_hogar.jpg');"/>
+                    <div class="cv-case__body">
+                      <h4><span class="cv-case__ic"><i class="fa fa-home"/></span> Hogar en La Habana</h4>
+                      <p class="cv-case__detail">Sistema de 6 paneles</p>
+                      <p class="cv-case__eco"><i class="fa fa-check-circle"/> Energía limpia y garantizada</p>
+                    </div>
+                    <div class="cv-case__saving">
+                      <small>Ahorro anual</small>
+                      <b>1,180 USD</b>
+                    </div>
+                  </div>
+                  <div class="cv-case">
+                    <div class="cv-case__img" style="background-image:url('/pyxel_cubaelectronica_website/static/src/img/products/caso_restaurante.jpg');"/>
+                    <div class="cv-case__body">
+                      <h4><span class="cv-case__ic"><i class="fa fa-cutlery"/></span> Restaurante en Varadero</h4>
+                      <p class="cv-case__detail">Sistema de 18 paneles</p>
+                      <p class="cv-case__eco"><i class="fa fa-check-circle"/> Energía limpia y garantizada</p>
+                    </div>
+                    <div class="cv-case__saving">
+                      <small>Ahorro anual</small>
+                      <b>3,650 USD</b>
+                    </div>
+                  </div>
+                  <div class="cv-case">
+                    <div class="cv-case__img" style="background-image:url('/pyxel_cubaelectronica_website/static/src/img/products/caso_hotel.jpg');"/>
+                    <div class="cv-case__body">
+                      <h4><span class="cv-case__ic"><i class="fa fa-building"/></span> Hotel en Trinidad</h4>
+                      <p class="cv-case__detail">Sistema de 36 paneles</p>
+                      <p class="cv-case__eco"><i class="fa fa-check-circle"/> Energía limpia y garantizada</p>
+                    </div>
+                    <div class="cv-case__saving">
+                      <small>Ahorro anual</small>
+                      <b>7,600 USD</b>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h2 class="cv-cases__title cv-cases__title--sm">Marcas que trabajamos</h2>
+                <p class="cv-cases__sub">Equipos de calidad de marcas líderes en el mercado.</p>
+                <t t-if="brands">
+                  <div class="cv-brands">
+                    <t t-foreach="brands" t-as="brand">
+                      <div class="cv-brand">
+                        <img t-att-src="'/web/image/product.template.mark/' + str(brand.id) + '/image_1920'"
+                             t-att-alt="brand.name" loading="lazy"/>
+                      </div>
+                    </t>
+                  </div>
+                </t>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════ NEWSLETTER ══════════ -->
+        <section class="cv-section">
+          <div class="cv-container">
+            <div class="cv-newsletter">
+              <div class="cv-newsletter__left">
+                <div class="cv-newsletter__ic"><i class="fa fa-envelope-o"/></div>
+                <div>
+                  <h3>Recibe ofertas y novedades</h3>
+                  <p>Suscríbete a nuestro newsletter y entérate antes que nadie.</p>
+                </div>
+              </div>
+              <form t-att-action="'/subscribe_newsletter'" method="post" class="cv-newsletter__form">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="email" name="email" placeholder="Tu correo electrónico" required="required"/>
+                <button type="submit" class="cv-btn cv-btn--cta"><i class="fa fa-paper-plane"/> Suscribirme</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </t>
+  </template>
+</odoo>

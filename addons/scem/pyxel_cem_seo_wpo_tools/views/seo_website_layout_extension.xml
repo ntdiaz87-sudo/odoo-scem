@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        SEO Meta Tags Extension
+        Inyecta title, meta description, robots y canonical en <head>.
+        Usa main_object (variable estándar de Odoo que siempre lleva el record activo).
+
+        REGLA: en QWeb nunca llamar métodos Python que puedan fallar como
+        expresión de atributo. Se usa t-set + t-if para toda la lógica.
+    -->
+    <template id="seo_meta_tags_extension" name="SEO Meta Tags"
+              inherit_id="website.layout" priority="10">
+        <xpath expr="//head" position="inside">
+
+            <!-- ── Calcular valores SEO una sola vez ── -->
+            <t t-set="seo_custom_title" t-value="''"/>
+            <t t-set="seo_meta_desc"    t-value="''"/>
+            <t t-set="seo_canonical"    t-value="''"/>
+
+            <t t-if="main_object">
+
+                <!-- Producto -->
+                <t t-if="main_object._name == 'product.template'">
+                    <t t-if="main_object.seo_custom_title">
+                        <t t-set="seo_custom_title" t-value="main_object.seo_custom_title"/>
+                    </t>
+                    <t t-if="main_object.seo_meta_description">
+                        <t t-set="seo_meta_desc" t-value="main_object.seo_meta_description"/>
+                    </t>
+                    <t t-if="main_object.seo_canonical_url">
+                        <t t-set="seo_canonical" t-value="main_object.seo_canonical_url"/>
+                    </t>
+                </t>
+
+                <!-- Blog post -->
+                <t t-elif="main_object._name == 'blog.post'">
+                    <t t-if="main_object.seo_custom_title">
+                        <t t-set="seo_custom_title" t-value="main_object.seo_custom_title"/>
+                    </t>
+                    <t t-if="main_object.website_meta_description">
+                        <t t-set="seo_meta_desc" t-value="main_object.website_meta_description"/>
+                    </t>
+                </t>
+
+                <!-- Página -->
+                <t t-elif="main_object._name == 'website.page'">
+                    <t t-if="main_object.seo_custom_title">
+                        <t t-set="seo_custom_title" t-value="main_object.seo_custom_title"/>
+                    </t>
+                    <t t-if="main_object.seo_meta_description">
+                        <t t-set="seo_meta_desc" t-value="main_object.seo_meta_description"/>
+                    </t>
+                    <t t-if="main_object.seo_canonical_url">
+                        <t t-set="seo_canonical" t-value="main_object.seo_canonical_url"/>
+                    </t>
+                </t>
+
+            </t>
+
+            <!-- ── Emitir etiquetas solo si tienen valor ── -->
+
+            <!-- Title personalizado -->
+            <title t-if="seo_custom_title" t-esc="seo_custom_title"/>
+
+            <!-- Meta description -->
+            <meta t-if="seo_meta_desc" name="description" t-att-content="seo_meta_desc"/>
+
+            <!-- Canonical URL -->
+            <link t-if="seo_canonical" rel="canonical" t-att-href="seo_canonical"/>
+
+            <!-- Robots (solo website.page, solo si hay flags activos) -->
+            <t t-if="main_object and main_object._name == 'website.page'">
+                <t t-if="main_object.seo_no_index and main_object.seo_no_follow">
+                    <meta name="robots" content="noindex,nofollow"/>
+                </t>
+                <t t-elif="main_object.seo_no_index">
+                    <meta name="robots" content="noindex,follow"/>
+                </t>
+                <t t-elif="main_object.seo_no_follow">
+                    <meta name="robots" content="index,nofollow"/>
+                </t>
+            </t>
+
+        </xpath>
+    </template>
+
+    <!--
+        H1 Override — inyecta window._seoH1Text para que seo_frontend.js
+        pueda sobreescribir el primer <h1> del DOM.
+        Se usa t-set previo para evitar expresiones complejas en atributos.
+    -->
+    <template id="seo_h1_script" name="SEO H1 Script"
+              inherit_id="website.layout" priority="5">
+        <xpath expr="//head" position="inside">
+
+            <t t-set="seo_h1_value" t-value="''"/>
+            <t t-if="main_object">
+                <t t-if="main_object._name == 'product.template' and main_object.seo_h1_text">
+                    <t t-set="seo_h1_value" t-value="main_object.seo_h1_text"/>
+                </t>
+                <t t-elif="main_object._name == 'blog.post' and main_object.seo_h1_text">
+                    <t t-set="seo_h1_value" t-value="main_object.seo_h1_text"/>
+                </t>
+                <t t-elif="main_object._name == 'website.page' and main_object.seo_h1_text">
+                    <t t-set="seo_h1_value" t-value="main_object.seo_h1_text"/>
+                </t>
+            </t>
+
+            <script t-if="seo_h1_value" type="text/javascript">
+                window._seoH1Text = "<t t-esc="seo_h1_value"/>";
+            </script>
+
+        </xpath>
+    </template>
+
+</odoo>

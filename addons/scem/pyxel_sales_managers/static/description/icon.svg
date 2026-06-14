@@ -1,0 +1,32 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="128" height="128" rx="15" fill="url(#bgGradient)"/>
+  
+  <!-- Manager icon (person with tie) -->
+  <circle cx="64" cy="45" r="18" fill="white" opacity="0.9"/>
+  
+  <!-- Body/Tie -->
+  <path d="M 64 63 L 45 85 Q 45 95 55 95 L 73 95 Q 83 95 83 85 L 64 63 Z" fill="white" opacity="0.9"/>
+  
+  <!-- Tie detail -->
+  <path d="M 64 63 L 58 78 L 64 85 L 70 78 Z" fill="#667eea" opacity="0.7"/>
+  
+  <!-- Chart/Graph icon in corner -->
+  <g transform="translate(85, 85)">
+    <rect x="0" y="15" width="8" height="20" fill="white" opacity="0.8"/>
+    <rect x="10" y="10" width="8" height="25" fill="white" opacity="0.8"/>
+    <rect x="20" y="5" width="8" height="30" fill="white" opacity="0.8"/>
+  </g>
+  
+  <!-- Dollar sign for sales -->
+  <circle cx="30" cy="25" r="12" fill="white" opacity="0.3"/>
+  <text x="30" y="32" font-family="Arial" font-size="20" font-weight="bold" fill="white" text-anchor="middle">$</text>
+</svg>

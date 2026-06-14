@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Heredar el reporte de factura -->
+    <template id="account_report_invoice_document_inherit" inherit_id="account.report_invoice_document">
+        <xpath expr="//table[@class='table-sign']" position="after">
+            <!-- Sección de Garantías - solo se muestra si show_warranty_section es True -->
+            <t t-if="o.show_warranty_section">
+                <!-- Salto de página antes de la sección de garantías -->
+                <div style="page-break-before: always; margin-top: 50px;"></div>
+
+                <div class="container mt-4 warranty-section">
+                    <h2 class="text-center mb-4">GARANTÍAS</h2>
+
+                    <!-- Información adicional -->
+                    <div class="row mt-4 mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <strong>Nota:</strong>
+                                La garantía aplica según las condiciones establecidas por el fabricante/proveedor.
+                                Para hacer válida la garantía, conserve esta factura en buen estado.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de la compañía -->
+                    <div>
+                        <h2 style="color: #000000; margin-bottom: 20px; border-bottom: 1px solid #000; padding-bottom: 10px;">
+                            Condiciones de Garantía
+                        </h2>
+                        <div t-field="o.company_id.company_warranty"
+                             t-options="{'widget': 'html'}"
+                             style="margin-top: 20px;"/>
+                    </div>
+                </div>
+
+                <div t-if="o.show_warranty_section and o.display_warranty"
+                     style="page-break-before: always;"></div>
+
+
+                <!-- Página de Términos y Condiciones -->
+                <div t-if="o.show_terms_conditions_section and o.display_terms_conditions"
+                     class="terms-conditions-page"
+                     style="page-break-after: avoid;">
+                    <div style="margin: 2cm 1.5cm; min-height: 25cm;">
+                        <h2 style="text-align: center; margin-bottom: 30px; font-size: 18px;">
+                            <strong>TÉRMINOS Y CONDICIONES</strong>
+                        </h2>
+                        <div style="text-align: justify; line-height: 1.6; font-size: 11px;">
+                            <t t-raw="o.display_terms_conditions"/>
+                        </div>
+
+                        <!-- Espacio para firmas al final de los términos -->
+                        <div style="margin-top: 50px;">
+                            <div style="border-top: 1px solid #000; width: 200px; margin-top: 30px; padding-top: 5px;">
+                                <small>Firma del Cliente</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_template_mark_user,product_template_mark_user,pyxel_cem_sale.model_product_template_mark,base.group_user,1,0,0,0
+access_product_template_mark_salesman,product_template_mark_salesman,pyxel_cem_sale.model_product_template_mark,sales_team.group_sale_salesman,1,0,0,0
+access_product_template_mark_sale_manager,product_template_mark_sale_manager,pyxel_cem_sale.model_product_template_mark,sales_team.group_sale_manager,1,1,1,1
+access_stock_product_template_mark_public,product_template_mark_public,pyxel_cem_sale.model_product_template_mark,base.group_public,1,0,0,0
+access_stock_product_template_mark_portal,product_template_mark_prtal,pyxel_cem_sale.model_product_template_mark,base.group_portal,1,0,0,0
+access_stock_warehouse_public,stock_warehouse,stock.model_stock_warehouse,base.group_public,1,0,0,0
+access_stock_warehouse_portal,stock_warehouse,stock.model_stock_warehouse,base.group_portal,1,0,0,0
+access_stock_move_public,stock_move,stock.model_stock_move,base.group_public,1,0,0,0
+access_stock_move_portal,stock_move,stock.model_stock_move,base.group_portal,1,0,0,0
+access_stock_quant_public,stock_quant,stock.model_stock_quant,base.group_public,1,0,0,0
+access_stock_quant_portal,stock_quant,stock.model_stock_quant,base.group_portal,1,0,0,0

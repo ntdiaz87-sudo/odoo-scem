@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="signup_juridico_inherit" inherit_id="pyxel_cem_website_account.registration_form"
+              name="Solo Jurídico Signup">
+        <xpath expr="//div[@id='step1']" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='step2_juridico']" position="attributes">
+            <attribute name="style">display: block !important;</attribute>
+        </xpath>
+        <xpath expr="//form[@id='registration_form']" position="inside">
+            <input type="hidden" name="user_type" value="juridico"/>
+        </xpath>
+
+        <xpath expr="//div[@id='step-1']" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
+        </xpath>
+        <!-- Agregar contenido ANTES del h6 existente -->
+        <xpath expr="//div[@id='step5_natural']/div[@class='form-section']/div[@class='form-section-container']/h6"
+               position="before">
+            <h6 class="register-title" style="text-align: initial !important">
+                Estimado(a) usuario(a),
+                <br/><br/>
+                Le informamos que CEVENDE se reserva el derecho de admisión y aprobación de los
+                registros de clientes en nuestra plataforma. En caso de que su solicitud sea
+                aprobada, recibirá una notificación por correo electrónico con la confirmación y los detalles
+                de acceso. En caso contrario, agradecemos su interés y visita a nuestra tienda.
+            </h6>
+        </xpath>
+        <xpath expr="//div[@id='step-2']" position="replace">
+            <div class="stepper-item active" id="step-2">
+                <div class="step-counter "></div>
+                <div class="step-name" style="font-size: 80%;">Datos generales</div>
+            </div>
+        </xpath>
+
+        <xpath expr="//label[@for='social_object']" position="replace">
+            <label for="social_object">Objeto Social</label>
+        </xpath>
+
+        <!-- Nuevas modificaciones para eliminar cuentas bancarias -->
+        <xpath expr="//div[@id='step2_comun']" position="attributes">
+            <attribute name="class">d-none</attribute>
+        </xpath>
+        <xpath expr="//div[@id='step-3']" position="attributes">
+            <attribute name="class">d-none</attribute>
+        </xpath>
+
+    </template>
+</odoo>

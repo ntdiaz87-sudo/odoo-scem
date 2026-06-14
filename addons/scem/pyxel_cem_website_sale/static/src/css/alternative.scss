@@ -1,0 +1,268 @@
+/* ================================================================ */
+/* ESTILOS PARA TARJETAS DE PRODUCTOS ALTERNATIVOS                  */
+/* Replica el diseño de la imagen de referencia                     */
+/* ================================================================ */
+
+/* Contenedor general */
+.alternative-products-section {
+    margin: 50px 0;
+}
+
+/* Tarjeta de producto */
+.alternative-product-card {
+    border-radius: 15px !important;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0 !important;
+    height: 100%;
+}
+
+.alternative-product-card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+    transform: translateY(-5px);
+}
+
+/* Botón WhatsApp (esquina superior derecha) */
+.alternative-product-card .whatsapp-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    background-color: #FF8C00;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+}
+
+
+.alternative-product-card .whatsapp-btn:hover {
+    background-color: #FF6B00;
+    transform: scale(1.1);
+}
+
+.alternative-product-card .whatsapp-btn i {
+    color: white;
+    font-size: 20px;
+}
+
+/* Contenedor de imagen del producto */
+.alternative-product-card .product-image-container {
+    height: 200px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.alternative-product-card .product-image-container img {
+    max-height: 160px;
+    max-width: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.alternative-product-card:hover .product-image-container img {
+    transform: scale(1.05);
+}
+
+/* Nombre del producto */
+.alternative-product-card .product-name {
+    font-size: 14px !important;
+    font-weight: 600;
+    min-height: 40px;
+    color: #333;
+    text-decoration: none !important;
+    display: block;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.alternative-product-card .product-name:hover {
+    color: #DC3545 !important;
+}
+
+/* Precio del producto */
+.alternative-product-card .product-price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+/* Información adicional (orden mínima, stock, entrega) */
+.alternative-product-card .product-info {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.alternative-product-card .product-info .delivery-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.alternative-product-card .product-info .delivery-info i {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Badge/Etiqueta de categoría */
+.alternative-product-card .product-badge {
+    background-color: #FFF3CD;
+    color: #856404;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+/* Contenedor de acciones (cantidad + botón añadir) */
+.alternative-product-card .product-actions {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Selector de cantidad */
+.alternative-product-card .qty-selector {
+    width: 110px;
+}
+
+.alternative-product-card .qty-selector .btn {
+    font-size: 18px;
+    font-weight: 600;
+    border-color: #dee2e6;
+    padding: 4px 10px;
+}
+
+.alternative-product-card .qty-selector .btn-minus {
+    border-radius: 20px 0 0 20px;
+}
+
+.alternative-product-card .qty-selector .btn-plus {
+    border-radius: 0 20px 20px 0;
+}
+
+.alternative-product-card .qty-selector .btn:hover {
+    background-color: #f8f9fa;
+}
+
+.alternative-product-card .qty-selector input {
+    border-left: 0;
+    border-right: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.alternative-product-card .qty-selector input:focus {
+    box-shadow: none;
+    border-color: #dee2e6;
+    outline: none;
+}
+
+/* Botón Añadir al carrito */
+.alternative-product-card .add-to-cart-btn {
+    background-color: #DC3545 !important;
+    color: white !important;
+    border-radius: 20px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+.alternative-product-card .add-to-cart-btn:hover {
+    background-color: #C82333 !important;
+    transform: scale(1.02);
+}
+
+.alternative-product-card .add-to-cart-btn:active {
+    transform: scale(0.98);
+}
+
+.alternative-product-card .add-to-cart-btn i {
+    margin-right: 4px;
+}
+
+/* Cuerpo de la tarjeta */
+.alternative-product-card .card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Responsive design */
+@media (max-width: 767px) {
+    .alternative-product-card .product-image-container {
+        height: 180px;
+    }
+
+    .alternative-product-card .product-image-container img {
+        max-height: 140px;
+    }
+
+    .alternative-product-card .product-price {
+        font-size: 20px;
+    }
+
+    .alternative-product-card .product-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .alternative-product-card .qty-selector {
+        width: 100%;
+    }
+
+    .alternative-product-card .add-to-cart-btn {
+        width: 100%;
+    }
+}
+
+/* Animación de aparición */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alternative-product-card {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.alternative-product-card:nth-child(1) { animation-delay: 0.1s; }
+.alternative-product-card:nth-child(2) { animation-delay: 0.2s; }
+.alternative-product-card:nth-child(3) { animation-delay: 0.3s; }
+.alternative-product-card:nth-child(4) { animation-delay: 0.4s; }
+.alternative-product-card:nth-child(5) { animation-delay: 0.5s; }
+.alternative-product-card:nth-child(6) { animation-delay: 0.6s; }
+.alternative-product-card:nth-child(7) { animation-delay: 0.7s; }
+.alternative-product-card:nth-child(8) { animation-delay: 0.8s; }
+
+/* Título de la sección */
+.alternative-products-title {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+}

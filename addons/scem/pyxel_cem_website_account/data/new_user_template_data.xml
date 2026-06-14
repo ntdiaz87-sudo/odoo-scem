@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('name', '=', 'mail_template_user_signup_account_created'), ('module', '=', 'auth_signup')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+
+    <record id="auth_signup.mail_template_user_signup_account_created" model="mail.template">
+        <field name="body_html" type="html">
+            <p>
+                <strong>Hello</strong>
+                <font style="color: rgb(255, 0, 0);">
+                    <span t-out="object.name">Marc Demo</span>
+                </font>
+            </p>
+            <p>Welcome to <span t-out="object.company_id.name"/>! We are very happy to have you as part of our community
+                of wholesale
+                customers.
+            </p>
+            <p>
+                We want to thank you for choosing us as your supplier of varied products. We are committed to offering
+                you the best quality, variety, and competitive prices to help you boost your business.
+
+            </p>
+            <p>
+                <div style="margin: 16px 0px 16px 0px;">
+                    <a t-att-href="object.signup_url"
+                       style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                        GET STARTED NOW!
+                    </a>
+                </div>
+            </p>
+            <p>
+                Here are a few things you can do to start making the most of your
+                <span t-out="object.company_id.name"/>
+                account:
+            </p>
+            <ul>
+                <li><strong>Explore our catalog: </strong>Discover our wide selection of imported and domestic
+                    fruits, from the classics to the most exotic.
+                </li>
+                <li><strong>Check out our wholesale prices: </strong>Access exclusive rates for registered
+                    customers and take advantage of our special promotions.
+                </li>
+                <li><strong>Place your first order: </strong>Enjoy an easy and secure purchasing process, with
+                    flexible delivery options to suit your needs.
+                </li>
+                <li><strong>Contact our support team: </strong>If you have any questions or need help, please don't
+                    hesitate to contact us. We are here to support you every step of the way.
+                </li>
+            </ul>
+            <p>
+
+            </p>
+            <p>As a new customer, we offer you a [Optional: Include a discount, special offer, or additional benefit for
+                new customers]. Use the code [Discount/Offer Code] when placing your first order.
+            </p>
+            <p>We look forward to building a long-lasting and successful relationship with you. Thank you for joining
+                the
+                <span t-out="object.company_id.name"/>
+                family!
+            </p>
+            <p>Sincerely,</p>
+            <p>
+                <strong>The
+                    <span t-out="object.company_id.name"/>
+                    Team
+                </strong>
+            </p>
+            <div class="o_logo">
+                <img t-attf-src="/web/binary/company_logo?company={{ object.company_id.id }}" alt="Logo"/>
+            </div>
+        </field>
+    </record>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('name', '=', 'mail_template_user_signup_account_created'), ('module', '=', 'auth_signup')]"/>
+        </function>
+        <value eval="{'noupdate': True}"/>
+    </function>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('name', '=', 'set_password_email'), ('module', '=', 'auth_signup')]"/>
+        </function>
+        <value eval="{'noupdate': False}"/>
+    </function>
+
+    <record id="auth_signup.set_password_email" model="mail.template">
+        <field name="body_html" type="html">
+            <p>
+                <strong>Hello</strong>
+                <font style="color: rgb(255, 0, 0);">
+                    <span t-out="object.name">Marc Demo</span>
+                </font>
+            </p>
+            <p>Welcome to <span t-out="object.company_id.name"/>! We are very happy to have you as part of our community
+                of wholesale
+                customers.
+            </p>
+            <p>
+                We want to thank you for choosing us as your supplier of varied products. We are committed to offering
+                you the best quality, variety, and competitive prices to help you boost your business.
+
+            </p>
+            <p>
+                <div style="margin: 16px 0px 16px 0px;">
+                    <a t-att-href="object.signup_url"
+                       style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                        GET STARTED NOW!
+                    </a>
+                </div>
+            </p>
+            <p>
+                Here are a few things you can do to start making the most of your
+                <span t-out="object.company_id.name"/>
+                account:
+            </p>
+            <ul>
+                <li><strong>Explore our catalog:</strong>Discover our wide selection of imported and domestic
+                    fruits, from the classics to the most exotic.
+                </li>
+                <li><strong>Check out our wholesale prices:</strong>Access exclusive rates for registered
+                    customers and take advantage of our special promotions.
+                </li>
+                <li><strong>Place your first order:</strong>Enjoy an easy and secure purchasing process, with
+                    flexible delivery options to suit your needs.
+                </li>
+                <li><strong>Contact our support team:</strong>If you have any questions or need help, please don't
+                    hesitate to contact us. We are here to support you every step of the way.
+                </li>
+            </ul>
+            <p>
+
+            </p>
+            <p>As a new customer, we offer you a [Optional: Include a discount, special offer, or additional benefit for
+                new customers]. Use the code [Discount/Offer Code] when placing your first order.
+            </p>
+            <p>We look forward to building a long-lasting and successful relationship with you. Thank you for joining
+                the
+                <span t-out="object.company_id.name"/>
+                family!
+            </p>
+            <p>Sincerely,</p>
+            <p>
+                <strong>The
+                    <span t-out="object.company_id.name"/>
+                    Team
+                </strong>
+            </p>
+            <div class="o_logo">
+                <img t-attf-src="/web/binary/company_logo?company={{ object.company_id.id }}" alt="object.company_id.name"/>
+            </div>
+        </field>
+    </record>
+
+    <function name="write" model="ir.model.data">
+        <function name="search" model="ir.model.data">
+            <value eval="[('name', '=', 'set_password_email'), ('module', '=', 'auth_signup')]"/>
+        </function>
+        <value eval="{'noupdate': True}"/>
+    </function>
+
+
+</odoo>

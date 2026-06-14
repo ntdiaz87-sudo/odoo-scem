@@ -1,0 +1,366 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+        <template id="portal_my_details_fields_inherit_lastname" inherit_id="portal.portal_my_details_fields" priority="10">
+        <xpath expr="//div[label[@for='company_name']]" position="replace">
+        </xpath>
+        <xpath expr="//div[label[@for='vat']]" position="replace">
+        </xpath>
+        <xpath expr="//div[@class='clearfix'][1]" position="replace"/>
+        <xpath expr="//div[@class='clearfix'][1]" position="replace"/>
+
+        <xpath expr="//div[label[@for='name']]" position="replace">
+            <t t-if="partner.user_type == 'juridico' or user_type == 'juridico'">
+                <div t-attf-class="mb-3 #{error.get('name') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="name">Nombre de la Entidad</label>
+                    <input type="text" name="name"
+                           t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}"
+                           t-att-value="name or partner.name"/>
+                </div>
+                <div t-attf-class="mb-3 #{error.get('name_entity') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="name_entity">Nombre corto</label>
+                    <input type="text" name="name_entity"
+                           t-attf-class="form-control #{error.get('name_entity') and 'is-invalid' or ''}"
+                           t-att-value="name_entity or partner.name_entity"/>
+                </div>
+                <div t-attf-class="mb-3 #{error.get('entity_type') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="entity_type">Tipo de entidad</label>
+                    <select name="entity_type"
+                            t-attf-class="form-select #{error.get('entity_type') and 'is-invalid' or ''}" required="1">
+                        <option value="">Seleccione el tipo de entidad</option>
+                        <option value="estatal" t-att-selected="partner.entity_type == 'estatal'">Estatal</option>
+                        <option value="firma" t-att-selected="partner.entity_type == 'firma'">Firma</option>
+                        <option value="mipime" t-att-selected="partner.entity_type == 'mipime'">MIPYME</option>
+                        <option value="tcp" t-att-selected="partner.entity_type == 'tcp'">TCP</option>
+                    </select>
+                </div>
+                <div t-attf-class="mb-3 #{error.get('vat') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="vat">NIT</label>
+                    <input type="text"
+                           name="vat"
+                           pattern="\d{11}"
+                           title="El NIT debe contener exactamente 11 dígitos numéricos"
+                           t-attf-class="form-control #{error.get('vat') and 'is-invalid' or ''}"
+                           t-att-value="vat or partner.vat"
+                           maxlength="11"
+                           required="required"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)"/>
+                </div>
+                <div t-attf-class="mb-3 #{error.get('reeup') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="reeup">REEUP</label>
+                    <input type="text" name="reeup"
+                           t-attf-class="form-control #{error.get('reeup') and 'is-invalid' or ''}"
+                           t-att-value="reeup or partner.reeup"/>
+                </div>
+            </t>
+            <t t-else="">
+                <div t-attf-class="mb-3 #{error.get('name') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="name">Name</label>
+                    <input type="text" name="name"
+                           t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}"
+                           t-att-value="name or partner.name"/>
+                </div>
+                <div t-attf-class="mb-3 #{error.get('last_name') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="last_name">Apellido</label>
+                    <input type="text" name="last_name"
+                           t-attf-class="form-control #{error.get('last_name') and 'is-invalid' or ''}"
+                           t-att-value="last_name or partner.last_name"/>
+                </div>
+                <div t-attf-class="mb-3 #{error.get('vat') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="vat">CI o Pasaporte</label>
+                    <input type="text" name="vat"
+                           t-attf-class="form-control #{error.get('vat') and 'is-invalid' or ''}"
+                           t-att-value="vat or partner.vat"/>
+                </div>
+                <div t-attf-class="mb-3 #{error.get('date_of_birth') and 'o_has_error' or ''} col-xl-6">
+                    <label class="col-form-label" for="date_of_birth">Fecha de Nacimiento *</label>
+                    <input type="date" name="date_of_birth"
+                           t-attf-class="form-control #{error.get('date_of_birth') and 'is-invalid' or ''}"
+                           t-att-value="partner.date_of_birth" required="1"/>
+                </div>
+            </t>
+        </xpath>
+
+        <xpath expr="//div[label[@for='city']]" position="replace">
+            <div class="mb-3 col-xl-6">
+                <label class="col-form-label" for="city">Municipio *</label>
+                <select name="city" id="city" class="form-select" required="1"
+                        t-att-data-initial-city="partner.city if partner.city else ''">
+                    <option value="">Seleccione municipio...</option>
+                    <t t-if="partner.state_id">
+                        <t t-foreach="request.env['res.municipality'].sudo().search([('state_id','=',partner.state_id.id)], order='name')"
+                           t-as="city">
+                            <option t-att-value="city.name"
+                                    t-att-selected="city.name == partner.city if partner.city else False">
+                                <t t-esc="city.name"/>
+                            </option>
+                        </t>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[label[@for='city']]" position="before">
+            <div class="mb-3 col-xl-6">
+                <label class="col-form-label" for="custom_state_id">Provincia</label>
+                <select id="custom_state_id" name="custom_state_id" class="form-select" required="1">
+                    <option value="">Seleccione provincia...</option>
+                    <t t-set="cuba" t-value="request.env['res.country'].search([('code','=','CU')], limit=1)"/>
+                    <t t-foreach="request.env['res.country.state'].search([('country_id','=',cuba.id)], order='name')"
+                       t-as="state">
+                        <option t-att-value="state.id"
+                                t-att-selected="state.id == (partner.state_id.id if partner.state_id else False)">
+                            <t t-esc="state.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+        <xpath expr="//div[label[@for='zipcode']]" position="replace">
+        </xpath>
+        <xpath expr="//div[label[@for='country_id']]" position="after">
+            <div t-attf-class="mb-3 #{error.get('zip') and 'o_has_error' or ''} col-xl-6">
+                <label class="col-form-label label-optional" for="zipcode">Código Postal</label>
+                <input type="text" name="zipcode" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}"
+                       t-att-value="zipcode or partner.zip"/>
+            </div>
+        </xpath>
+
+
+        <xpath expr="//div[label[@for='zipcode']]" position="after">
+            <t t-if="partner.user_type == 'juridico'">
+                <div t-attf-class="mb-3 #{error.get('social_object') and 'o_has_error' or ''} col-xl-12">
+                    <label class="col-form-label" for="social_object">Objeto Social</label>
+                    <textarea name="social_object"
+                              t-attf-class="form-control #{error.get('social_object') and 'is-invalid' or ''}"
+                              required="1">
+                        <t t-esc="partner.social_object"/>
+                    </textarea>
+                </div>
+            </t>
+
+            <!-- 🔹 SECCIÓN: CUENTAS BANCARIAS -->
+            <hr class="my-4"/>
+            <h4 class="mb-3">Cuentas bancarias</h4>
+            <div class="row g-3">
+
+                <div class="mb-3 col-xl-6">
+                    <label class="col-form-label" for="account_number_corriente">Cuenta corriente (MN)</label>
+                    <input type="text" class="form-control" name="account_number_corriente"
+                           t-att-value="partner_bank_accounts.get('corriente', '') if partner_bank_accounts else ''"
+                           placeholder="Ej: 1234567890"/>
+                </div>
+
+                <div class="mb-3 col-xl-6">
+                    <label class="col-form-label" for="account_number_gastos_cup">Cuenta de gastos (MN)</label>
+                    <input type="text" class="form-control" name="account_number_gastos_cup"
+                           t-att-value="partner_bank_accounts.get('gastos_cup', '') if partner_bank_accounts else '' "
+                           placeholder="Ej: 0987654321"/>
+                </div>
+
+                <div class="mb-3 col-xl-6">
+                    <label class="col-form-label" for="account_number_gastos_mlc">Cuenta de gastos (MLC)</label>
+                    <input type="text" class="form-control" name="account_number_gastos_mlc"
+                           t-att-value="partner_bank_accounts.get('gastos_mlc', '') if partner_bank_accounts else '' "
+                           placeholder="Ej: 1122334455"/>
+                </div>
+
+                <div class="mb-3 col-xl-6">
+                    <label class="col-form-label" for="account_number_cuenta_usd_eur">Cuenta (USD/EUR)</label>
+                    <input type="text" class="form-control" name="account_number_cuenta_usd_eur"
+                           t-att-value="partner_bank_accounts.get('cuenta_usd_eur', '') if partner_bank_accounts else '' "
+                           placeholder="Ej: 5566778899"/>
+                </div>
+
+            </div>
+
+            <!-- 🔹 SECCIÓN: DOCUMENTOS DE LA COMPAÑÍA -->
+            <t t-if="partner.user_type == 'juridico'">
+                <hr class="my-4"/>
+                <h4 class="mb-3">Documentos de la compañía</h4>
+
+                <!-- Mensajes de éxito/error -->
+                <t t-if="request.params.get('success') == 'document_deleted'">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fa fa-check-circle me-2"></i>Documento eliminado correctamente.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </t>
+
+                <t t-if="request.params.get('error') == 'delete_failed'">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fa fa-exclamation-circle me-2"></i>Error al eliminar el documento.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </t>
+
+                <!-- Formulario para subir/actualizar documentos -->
+                <div class="document-upload-form">
+                    <div class="row g-3">
+                        <t t-foreach="[
+                ('documento_constitutivo', 'Documento constitutivo'),
+                ('documento_existencia', 'Documento de existencia legal'),
+                ('documento_registro_mercantil', 'Registro mercantil'),
+                ('documento_registro_contribuyente', 'Registro de contribuyente'),
+                ('documento_licencia_comercio', 'Licencia de Cámara de Comercio'),
+                ('documento_carta_timbrada', 'Carta timbrada'),
+                ('documento_carnet_acorec', 'Carnet de ACOREC'),
+                ('documento_perfil_cliente', 'Perfil del cliente')
+            ]" t-as="doc">
+
+                            <t t-set="doc_type" t-value="doc[0]"/>
+                            <t t-set="doc_name" t-value="doc[1]"/>
+                            <t t-set="docs_for_type" t-value="organized_docs.get(doc_type, []) if organized_docs else []"/>
+                            <t t-set="has_document" t-value="len(docs_for_type) > 0"/>
+                            <t t-set="current_doc" t-value="docs_for_type[0] if has_document else None"/>
+
+                            <div class="mb-3 col-xl-11">
+                                <div class="document-field-container">
+                                    <label class="col-form-label fw-bold">
+                                        <t t-esc="doc_name"/>
+                                        <t t-if="has_document">
+                                            <span class="badge bg-success ms-2">
+                                                <i class="fa fa-check me-1"></i>Subido
+                                            </span>
+                                        </t>
+                                        <!-- Indicador si no hay documento -->
+                                        <t t-if="not has_document">
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fa fa-exclamation-triangle me-1"></i>Pendiente
+                                            </span>
+                                        </t>
+                                    </label>
+
+                                    <div class="d-flex align-items-center gap-3">
+                                        <!-- Campo de archivo -->
+                                        <div class="flex-grow-1">
+                                            <input type="file"
+                                                   class="form-control"
+                                                   t-att-name="doc[0]"
+                                                   t-att-id="doc[0]"
+                                                   accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff"/>
+                                        </div>
+
+                                        <!-- Mostrar documento actual si existe -->
+                                        <t t-if="has_document and current_doc">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-light text-dark document-name-truncated"
+                                                      t-att-title="current_doc.name">
+                                                    <t t-esc="current_doc.name[:20] + ('...' if len(current_doc.name) > 20 else '')"/>
+                                                    <small class="text-muted ms-1">
+                                                        (
+                                                        <t t-esc="(current_doc.file_size or 0) // 1024"/>
+                                                        KB)
+                                                    </small>
+                                                </span>
+
+                                                <!-- Botón Descargar -->
+                                                <a t-att-href="'/my/profile/download_document/%s' % current_doc.id"
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   target="_blank"
+                                                   title="Descargar documento">
+                                                    <i class="fa fa-download"></i>
+                                                </a>
+                                                <!-- onclick="return confirm('¿Estás seguro de que quieres eliminar este documento?');"-->
+                                                <!-- Botón Eliminar -->
+                                                <a t-att-href="'/my/profile/delete_document/%s' % current_doc.id"
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   title="Eliminar documento">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </t>
+                                    </div>
+
+                                    <small class="form-text text-muted">
+                                        Formatos aceptados: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF (Máx. 10MB)
+                                        <t t-if="current_doc and current_doc.create_date">
+                                            <br/>
+                                            <i class="fa fa-calendar me-1"></i>
+                                            Subido el:
+                                            <t t-esc="current_doc.create_date.strftime('%d/%m/%Y %H:%M')"/>
+                                        </t>
+                                    </small>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- 🔹 OTROS DOCUMENTOS -->
+                    <hr class="my-3"/>
+                    <h5 class="mb-3">Otros documentos (varios)</h5>
+
+                    <!-- Mostrar otros documentos existentes -->
+                    <t t-if="other_docs">
+                        <div class="mb-3 ">
+                            <h6 class="fw-bold">Documentos adicionales subidos:</h6>
+                            <div class="row">
+                                <t t-foreach="other_docs" t-as="attachment">
+                                    <div class="col-md-5 mb-2">
+                                        <div class="d-flex align-items-center justify-content-between p-2 border rounded">
+                                            <div class="d-flex align-items-center">
+                                                <t t-if="'.pdf' in attachment.name.lower()">
+                                                    <i class="fa fa-file-pdf me-2 text-danger"></i>
+                                                </t>
+                                                <t t-else="">
+                                                    <i class="fa fa-file-image me-2 text-success"></i>
+                                                </t>
+                                                <div class="other-document-name"
+                                                     style="min-width: 0;"
+                                                     t-att-title="attachment.name">
+                                                    <div class="fw-bold text-ellipsis">
+                                                        <t t-esc="attachment.name[:20] + ('...' if len(attachment.name) > 20 else '')"/>
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        <t t-esc="(attachment.file_size or 0) // 1024"/>
+                                                        KB
+                                                        <t t-if="attachment.create_date">
+                                                            -
+                                                            <t t-esc="attachment.create_date.strftime('%d/%m/%Y')"/>
+                                                        </t>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex gap-1">
+                                                <a t-att-href="'/my/profile/download_document/%s' % attachment.id"
+                                                   class="btn btn-sm btn-outline-primary"
+                                                   target="_blank"
+                                                   title="Descargar">
+                                                    <i class="fa fa-download"></i>
+                                                </a>
+                                                <a t-att-href="'/my/profile/delete_document/%s' % attachment.id"
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   title="Eliminar">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- Campo para subir otros documentos -->
+                    <div class="mb-3">
+                        <label class="col-form-label" for="otros_documentos">
+                            <i class="fa fa-plus me-1"></i>Agregar otros documentos
+                        </label>
+                        <input type="file"
+                               class="form-control"
+                               name="otros_documentos"
+                               id="otros_documentos"
+                               multiple="multiple"
+                               accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff"/>
+                        <small class="form-text text-muted">
+                            Puedes seleccionar múltiples archivos. Formatos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF (Máx.
+                            10MB cada uno)
+                        </small>
+                    </div>
+                </div>
+            </t>
+
+
+        </xpath>
+
+    </template>
+</odoo>

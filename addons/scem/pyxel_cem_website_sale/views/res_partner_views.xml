@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="view_partner_form_custom_type" model="ir.ui.view">
+            <field name="name">res.partner.form.custom.type</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Ubicarlo después del tipo de entidad -->
+                <xpath expr="//field[@name='company_type']" position="after">
+                    <div class="o_row">
+                        <label for="customer_type" string="Tipo de Cliente" class="col-3"/>
+                        <field name="customer_type" widget="radio" class="col-9 oe_inline"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

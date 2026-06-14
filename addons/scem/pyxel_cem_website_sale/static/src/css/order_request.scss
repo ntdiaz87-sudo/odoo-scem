@@ -1,0 +1,333 @@
+//------------------------------------------------------- ORDER REPORT (my/orders)--------------------------------------------------
+// ODOO STYLES
+div#portal_sale_content {
+    box-shadow: 0 0 17px 7px rgba(0, 0, 0, 0.07);
+    padding: 50px;
+    border-radius: 20px;
+    margin-bottom: 50px;
+}
+div#quote_content {
+    width: 100%;
+}
+div#introduction {
+    padding-top: 30px !important;
+    padding-bottom: 30px !important;
+}
+div#sale_info {
+    display: none;
+}
+div#informations {
+    padding: 20px 0;
+}
+div#portal_sale_content h4 {
+    font-size: 15px;
+    font-weight: bold;
+}
+h3#quote_3 {
+    font-size: 1.3rem;
+}
+div#informations h5,
+div#customer_info h5,
+h3#quote_3,
+section#terms h3,
+h3#quote_5 {
+    font-size: 18px;
+    font-weight: bold;
+}
+section#details {
+    padding-bottom: 30px;
+}
+section#terms a {
+    color: #0047FF;
+    font-style: italic;
+}
+section#terms em {
+    font-style: normal;
+}
+
+// MY STYLES
+.order-request-container {
+    margin-bottom: 6rem;
+}
+.notice {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background-color: #DCFFC8;
+    margin: 3rem 0;
+    border-radius: 20px;
+    padding: 30px 200px;
+}
+img.notice-icon {
+    width: 50px;
+    height: 50px;
+}
+.notice p {
+    width: 450px;
+}
+.order-container {
+    box-shadow: 0 0 17px 7px rgba(0, 0, 0, 0.07);
+    border-radius: 20px;
+    margin-top: 40px;
+    }
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    }
+.order-header img {
+    max-width: 200px;
+}
+.order-header p {
+    margin-bottom: 0;
+    }
+.order-container .line {
+    margin: 0 30px;
+    }
+
+//------------------------------------------------------- INVOICE REPORT (my/invoices)--------------------------------------------------
+.o_portal_html_view.shadow.p-3 {
+    border-radius: 20px;
+}
+
+.invoice-container {
+    box-shadow: 0 0 17px 7px rgba(0, 0, 0, 0.07);
+    border-radius: 20px;
+    margin-top: 40px;
+}
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 50px;
+    gap: 10px;
+}
+.invoice-header img {
+    width: 100%;
+}
+.invoice-header p {
+    margin-bottom: 0;
+}
+.invoice-container .line {
+    margin: 0 30px;
+}
+.invoice-body {
+    padding: 50px 100px;
+}
+.invoice-body h1 {
+    font-weight: bolder;
+    margin-bottom: 35px;
+}
+.invoice-content {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    row-gap: 3rem;
+}
+.invoice-content p {
+    margin-bottom: 0;
+}
+.table.invoice-table {
+    margin-top: 50px;
+}
+.table.invoice-table th {
+    padding-left: 5px;
+}
+.invoice-table thead {
+    border: 2px solid white;
+}
+.invoice-table tr{
+    border: 1px solid white;
+}
+.invoice-table td {
+    padding-left: 5px !important;
+}
+.products-description {
+    width: 50%;
+}
+.product-qty {
+    width: 25%;
+}
+.invoice-footer {
+    padding: 50px 100px;
+}
+.invoice-price {
+    display: flex;
+    justify-content: space-between;
+}
+.invoice-price h5 {
+    font-size: 18px;
+    font-weight: bold;
+}
+.invoice-terms {
+    margin-top: 50px;
+}
+.invoice-terms div {
+    display: flex;
+}
+.terms a {
+    color: #0047FF;
+}
+
+
+
+
+//--------------------------------------------------------- RESPONSIVE------------------------------------------------------------------------------
+@media screen and (max-width: 1390px){
+    .invoice-body h1 {
+        font-size: 30px;
+    }
+}
+@media screen and (max-width: 992px){
+    .invoice-header img {
+        width: 20%;
+        position: absolute;
+        bottom: 5rem;
+    }
+    .invoice-header {
+        row-gap: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        position: relative;
+        padding-top: 20px;
+    }
+    .invoice-header .header-container-1 {
+        grid-area: 1 / 2;
+        display: flex;
+        align-items: end;
+        justify-content: end;
+    }
+    .invoice-header .header-container-2 {
+        grid-area: 2 / 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: end;
+
+    }
+    .invoice-content{
+        column-gap: 20px;
+    }
+    .invoice-body h1 {
+        font-size: 30px;
+    }
+}
+@media screen and (max-width: 770px){
+
+    .order-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+    .order-header img {
+        width: 70%;
+    }
+    .header-container-1 {
+        grid-area: 1 / 2;
+    }
+    .header-container-2 {
+        grid-area: 2 / 2;
+    }
+    .header-container-1,
+    .header-container-2 {
+        display: flex;
+        justify-content: end;
+    }
+    div#portal_sale_content h2 {
+        font-size: 25px;
+    }
+    .invoice-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        position: relative;
+    }
+    .invoice-header img {
+        position: absolute;
+        left: 5%;
+        top: 45px;
+        width: 125px;
+    }
+    .invoice-body {
+        padding: 50px;
+    }
+    .invoice-footer {
+        padding: 50px;
+    }
+}
+@media screen and (max-width: 768px){
+    .invoice-header{
+        padding: 20px;
+    }
+    .invoice-container .line {
+        margin: 0 20px;
+    }
+    .invoice-body,
+    .invoice-footer {
+        padding: 30px 20px;
+    }
+    .invoice-body h1{
+        text-align: center;
+    }
+}
+@media screen and (max-width: 550px){
+    .notice p {
+        font-size: 13px;
+    }
+}
+@media screen and (max-width: 495px){
+    .invoice-header{
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+    }
+    .invoice-header img {
+        position: inherit;
+        width: 130px;
+    }
+    .header-container-1,
+    .header-container-2{
+        justify-content: start !important;
+        align-items: start !important;
+    }
+    .header-container-1{
+        margin-top: 25px;
+    }
+    .invoice-body h1 {
+        font-size: 24px;
+    }
+}
+@media screen and (max-width: 430px){
+    div#portal_sale_content h2 {
+        font-size: 21px;
+    }
+    div#introduction {
+        padding-top: 20px !important;
+        padding-bottom: 20px !important;
+    }
+    div#portal_sale_content {
+        padding: 50px 25px;
+    }
+}
+@media screen and (max-width: 368px){
+    .invoice-body h1 {
+        font-size: 20px;
+        text-align: start;
+    }
+    .invoice-content {
+        row-gap: 5px;
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+    }
+    .invoice-content p,
+    .invoice-table td,
+    .invoice-price h5 {
+        font-size: 15px;
+    }
+    .invoice-terms {
+        font-size: 15px;
+        margin-top: 40px;
+    }
+}

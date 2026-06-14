@@ -1,0 +1,70 @@
+<odoo>
+    <!-- 1. Eliminar el grupo original de account_edi_ubl_cii -->
+<!--    <record id="view_partner_property_form_hide_edi_original" model="ir.ui.view">-->
+<!--        <field name="name">res.partner.property.form.hide.edi.original</field>-->
+<!--        <field name="model">res.partner</field>-->
+<!--        <field name="priority">10</field>-->
+<!--        <field name="inherit_id" ref="account_edi_ubl_cii.view_partner_property_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//group[@name='electronic_invoicing_custom']" position="replace"/>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <!-- 2. Vista principal -->
+    <record id="view_partner_property_form_inherit" model="ir.ui.view">
+        <field name="name">res.partner.property.form.inherit.currency.account</field>
+        <field name="model">res.partner</field>
+        <field name="priority">2</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="groups_id" eval="[(5,)]"/>
+        <field name="arch" type="xml">
+
+            <!-- Ancho completo para el group de bancos -->
+            <xpath expr="//group[@name='banks']" position="attributes">
+                <attribute name="colspan">2</attribute>
+            </xpath>
+
+            <!-- Ancho completo para el field bank_ids -->
+
+
+            <!-- Reemplazar el tree completo para evitar duplicados -->
+            <xpath expr="//group[@name='banks']//field[@name='bank_ids']//tree" position="replace">
+                <tree string="Cuentas Bancarias" editable="bottom">
+                    <field name="acc_number" string="Número de Cuenta"/>
+                    <field name="titular_id" string="Titular"/>
+                    <field name="swift_code" string="Código SWIFT"/>
+                    <field name="bank_id" string="Banco"/>
+                    <field name="currency_id" string="Divisa"/>
+                    <field name="account_type" string="Tipo de Cuenta"/>
+                </tree>
+            </xpath>
+
+            <!-- Form dialog para edición completa al hacer clic -->
+            <xpath expr="//group[@name='banks']//field[@name='bank_ids']" position="inside">
+                <form>
+                    <group>
+                        <field name="acc_number" string="Número de Cuenta"/>
+                        <field name="titular_id" string="Titular"/>
+                        <field name="swift_code" string="Código SWIFT"/>
+                        <field name="bank_id" string="Banco"/>
+                        <field name="currency_id" string="Divisa"/>
+                        <field name="account_type" string="Tipo de Cuenta"/>
+                    </group>
+                </form>
+            </xpath>
+
+            <!-- Facturación electrónica debajo de cuentas bancarias -->
+            <xpath expr="//group[@name='banks']" position="after">
+                <group string="Facturación Electrónica" name="electronic_invoicing_custom">
+                    <field name="hide_peppol_fields" invisible="True"/>
+                    <field name="ubl_cii_format" widget="selection"/>
+                    <field name="peppol_eas" widget="selection"
+                           invisible="hide_peppol_fields"/>
+                    <field name="peppol_endpoint"
+                           invisible="hide_peppol_fields"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

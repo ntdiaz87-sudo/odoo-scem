@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3)",
+      "Bash(curl -s \"http://localhost:8269/web/image/carousel.customization/1/image_1920\" -o /dev/null -w \"%{http_code} %{size_download}\")",
+      "Bash(curl -s \"http://localhost:8269/web/image/carousel.customization/2/image_1920\" -o /dev/null -w \"%{http_code} %{size_download}\")",
+      "Bash(curl -s http://localhost:8269/web/assets/1/4f51dab/web.assets_frontend_minimal.min.js)",
+      "Bash(curl -s http://localhost:8269/web/assets/1/2c9038d/web.assets_frontend_lazy.min.js)"
+    ]
+  }
+}

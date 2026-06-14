@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sale_order_view_form_cem_import_int_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.pyxel.cem.import.integration</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="pyxel_cem_sale.sale_order_view_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_draft']" position="attributes">
+                <attribute name="invisible">False</attribute>
+            </xpath>
+
+            <field name="partner_id" position="before">
+                <field name="so_cem_order_type" required="1" readonly="state == 'sale'"/>
+            </field>
+
+            <xpath expr="//field[@name='payment_prov_id']" position="attributes">
+                <attribute name="required">so_cem_order_type=='shop'</attribute>
+                <attribute name="invisible">so_cem_order_type!='shop'</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='payment_meth_id']" position="attributes">
+                <attribute name="required">so_cem_order_type=='shop'</attribute>
+                <attribute name="invisible">so_cem_order_type!='shop'</attribute>
+            </xpath>
+
+
+        </field>
+    </record>
+
+    <record id="view_sales_order_filter_cem_import_int" model="ir.ui.view">
+        <field name="name">sale.order.search.view.inherit.cem.import.integration</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+
+            <field name="order_line" position="after">
+                <field name="so_cem_order_type"/>
+            </field>
+
+            <filter name="my_sale_orders_filter" position="after">
+                <separator/>
+                <filter string="Shop" name="order_type_cem_shop" domain="[('so_cem_order_type', '=', 'shop')]"/>
+                <filter string="Importation" name="order_type_cem_import" domain="[('so_cem_order_type', '=', 'import')]"/>
+                <separator/>
+            </filter>
+        </field>
+    </record>
+
+
+
+</odoo>

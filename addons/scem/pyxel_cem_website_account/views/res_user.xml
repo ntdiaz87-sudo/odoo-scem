@@ -1,0 +1,27 @@
+<odoo>
+    <data noupdate="1">
+        <record id="view_partner_form_inherit_user_type" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.user_type</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="hide_entity_type" invisible="1"/>
+                    <field name="user_type" invisible="1"/>
+                    <field name="entity_type"
+                           invisible="user_type == 'natural' or (user_type == 'juridico' and hide_entity_type)"/>
+                    <field name="social_object" invisible="user_type == 'natural'"/>
+                </xpath>
+
+                <xpath expr="//field[@name='street2']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//div[@name='partner_address_country']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

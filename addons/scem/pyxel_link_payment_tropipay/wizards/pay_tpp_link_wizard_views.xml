@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pay_tpp_link_wizard_view_form" model="ir.ui.view">
+        <field name="name">tropipay.pay.link.wizard.form</field>
+        <field name="model">tropipay.pay.link.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Payment Link">
+                <div role="alert" class="alert alert-danger" invisible="link != 'invalid_url'">
+                    <span class="fw-bold">
+                        <field name="error_msg"/>
+                    </span>
+                </div>
+                <group>
+                    <group colspan="4">
+                        <field name="res_id" invisible="1"/>
+                        <field name="res_model" invisible="1"/>
+                        <field name="partner_id" invisible="1"/>
+                        <field name="partner_email" invisible="1"/>
+                        <field name="amount" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="link" nolabel="1" widget="url" invisible="error_msg"/>
+                    </group>
+                    <group invisible="error_msg">
+                        <label for="link_exp_date" string="Expires at"/>
+                        <field name="link_exp_date" nolabel="1" invisible="error_msg"/>
+                    </group>
+                </group>
+                <footer>
+                    <field name="link"
+                           string="Generate and copy Link"
+                           readonly="1"
+                           invisible="error_msg"
+                           widget="CopyClipboardButton"
+                           data-hotkey="q"/>
+                    <button string="Close"
+                            class="btn btn-secondary rounded-2"
+                            special="cancel"
+                            data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_generate_tpp_link" model="ir.actions.act_window">
+        <field name="name">Link to Pay by Tropipay</field>
+        <field name="res_model">tropipay.pay.link.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <!--        <field name="binding_model_id" ref="sale.model_sale_order"/>-->
+        <!--        <field name="binding_view_types">form</field>-->
+    </record>
+
+
+</odoo>

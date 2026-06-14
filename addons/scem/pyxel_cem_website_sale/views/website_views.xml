@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================
+         Campos extra en el formulario de Website (backend)
+    ============================================================ -->
+    <record id="view_website_form" model="ir.ui.view">
+        <field name="name">website.view.form.inherit.website.floating.whatsapp.icon</field>
+        <field name="model">website</field>
+        <field name="inherit_id" ref="website.view_website_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="immediate_payment"/>
+                <field name="mobile_number" widget="phone"/>
+            </field>
+            <notebook position="inside">
+                <page string="Wholesale Sale" name="acreditation_url" groups="base.group_no_one">
+                    <group>
+                        <field name="acreditation_url"/>
+                        <field name="import_request_url"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Template base del Progress Bar (reutilizable en todos los pasos)
+    ============================================================ -->
+    <template id="checkout_progress_bar" name="Checkout Progress Bar">
+        <div class="o_wsale_checkout_progress_bar">
+            <div class="cpb-track"/>
+            <div class="cpb-track-fill" id="cpb_track_fill"/>
+            <div class="cpb-steps">
+
+                <!-- Paso 1: Carrito -->
+                <div class="cpb-step" data-step="cart">
+                    <a class="cpb-step-inner" href="/shop/cart">
+                        <div class="cpb-icon-wrap">
+                            <span class="cpb-icon">
+                                <i class="fa fa-shopping-cart"/>
+                            </span>
+                            <span class="cpb-check">
+                                <i class="fa fa-check"/>
+                            </span>
+                        </div>
+                        <div class="cpb-label">
+                            <span class="cpb-num">01</span>
+                            <span class="cpb-title">Carrito</span>
+                            <span class="cpb-desc">Revisa tu orden</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Paso 2: Dirección -->
+                <div class="cpb-step" data-step="address">
+                    <a class="cpb-step-inner" href="/shop/checkout">
+                        <div class="cpb-icon-wrap">
+                            <span class="cpb-icon">
+                                <i class="fa fa-map-marker"/>
+                            </span>
+                            <span class="cpb-check">
+                                <i class="fa fa-check"/>
+                            </span>
+                        </div>
+                        <div class="cpb-label">
+                            <span class="cpb-num">02</span>
+                            <span class="cpb-title">Dirección</span>
+                            <span class="cpb-desc">Datos de envío</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Paso 3: Pago (el JS actualizará el href) -->
+                <div class="cpb-step" data-step="payment">
+                    <a class="cpb-step-inner" href="#">
+                        <div class="cpb-icon-wrap">
+                            <span class="cpb-icon">
+                                <i class="fa fa-credit-card"/>
+                            </span>
+                            <span class="cpb-check">
+                                <i class="fa fa-check"/>
+                            </span>
+                        </div>
+                        <div class="cpb-label">
+                            <span class="cpb-num">03</span>
+                            <span class="cpb-title">Pago</span>
+                            <span class="cpb-desc">Método de pago</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Paso 4: Confirmación -->
+                <div class="cpb-step" data-step="confirmation">
+                    <a class="cpb-step-inner" href="#">
+                        <div class="cpb-icon-wrap">
+                            <span class="cpb-icon">
+                                <i class="fa fa-check-circle"/>
+                            </span>
+                            <span class="cpb-check">
+                                <i class="fa fa-check"/>
+                            </span>
+                        </div>
+                        <div class="cpb-label">
+                            <span class="cpb-num">04</span>
+                            <span class="cpb-title">Confirmación</span>
+                            <span class="cpb-desc">¡Listo!</span>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </template>
+
+    <!-- ============================================================
+     HERENCIA PRINCIPAL: checkout_layout
+     Esta es la plantilla base que usan TODAS las páginas del checkout
+     (cart, checkout, payment, confirmation)
+     Agregamos el progress bar UNA SOLA VEZ aquí y aparece en todas
+============================================================ -->
+    <template id="inherit_checkout_layout_progress_bar"
+              inherit_id="website_sale.checkout_layout"
+              name="Add Progress Bar to All Checkout Pages"
+              active="True">
+        <!-- Insertamos el progress bar DENTRO del div#wrap, al principio -->
+        <xpath expr="//div[@id='wrap']" position="before">
+            <div class="container py-2 mt-3">
+                <t t-call="pyxel_cem_website_sale.checkout_progress_bar"/>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- ============================================================
+         ORDER REQUEST (tu template personalizado)
+         Este sí necesita herencia independiente porque es tuyo
+    ============================================================ -->
+    <template id="inherit_order_request_progress_bar"
+              inherit_id="pyxel_cem_website_sale.order_request_payment"
+              name="Add Progress Bar to Order Request"
+              active="True">
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <div class="container py-2">
+                <t t-call="pyxel_cem_website_sale.checkout_progress_bar"/>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Acción del reporte -->
+    <record id="action_provider_report_pdf" model="ir.actions.report">
+        <field name="name">Ventas históricas por producto y proveedor (CIF)</field>
+        <field name="model">provider.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pyxel_cem_seller_payment.provider_report_pdf_template</field>
+        <field name="report_file">pyxel_cem_seller_payment.provider_report_pdf_template</field>
+        <field name="print_report_name">'Ventas históricas por producto y proveedor (CIF) - %s' % (object.provider_id.name if object.provider_id else 'TODOS')</field>
+    </record>
+
+    <!-- Plantilla -->
+    <template id="provider_report_pdf_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="record">
+                <t t-call="web.external_layout">
+
+                    <!-- Company -->
+                    <t t-if="not company">
+                        <t t-set="company" t-value="env.company"/>
+                    </t>
+
+                    <div class="page">
+
+                        <div>
+                            <strong><h2>Ventas históricas por producto y proveedor (CIF)</h2></strong>
+
+                            <strong>Fecha de inicio:</strong>
+                            <t t-esc="record.start_date"/>
+                            <br/>
+
+                            <strong>Fecha de fin:</strong>
+                            <t t-esc="record.end_date"/>
+                            <br/>
+
+                            <!-- <strong>Proveedor:</strong>
+                            <t t-if="record.provider_id">
+                                <t t-esc="record.provider_id.name"/>
+                            </t>
+                            <t t-else="">
+                                All
+                            </t> -->
+                            <br/>
+                        </div>
+
+                        <br/>
+
+                        <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="border:1px solid black; padding:8px;">Proveedor</th>
+                                    <th style="border:1px solid black; padding:8px;">Producto</th>
+                                    <th style="border:1px solid black; padding:8px;">Cantidad vendida</th>
+                                    <th style="border:1px solid black; padding:8px;">Indicador CIF (%)</th>
+                                    <th style="border:1px solid black; padding:8px;">Costo CIF unitario</th>
+                                    <th style="border:1px solid black; padding:8px;">Costo CIF total</th>
+                                    <th style="border:1px solid black; padding:8px;">Valor de venta total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="record.line_ids" t-as="l">
+                                    <tr>
+                                        <td style="border:1px solid black; padding:8px;">
+                                            <t t-if="record.provider_id">
+                                                <t t-esc="record.provider_id.name"/>
+                                            </t>
+                                            <t t-elif="l.provider_id">
+                                                <t t-esc="l.provider_id.name"/>
+                                            </t>
+                                        </td>
+
+                                        <td style="border:1px solid black; padding:8px;">
+                                            <t t-esc="l.product_id.display_name"/>
+                                        </td>
+
+                                        <td style="border:1px solid black; padding:8px;">
+                                            <t t-esc="l.qty_sold" t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+              
+                                        <td style="border:1px solid black; padding:8px;">
+                                            <t t-esc="l.cif_indicator" t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+
+                                        <td style="border:1px solid black; padding:8px;">
+                                            <t t-esc="l.cif_unit" t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+
+                                        <td style="border:1px solid black; padding:8px;">
+                                            <t t-esc="l.cif_total" t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+
+                                        <td style="border:1px solid black; padding:8px;">
+                                            <t t-esc="l.sale_total" t-options='{"widget":"float","precision":2}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" style="border:1px solid black; padding:8px; text-align:right; font-weight:bold;">
+                                        TOTALES:
+                                    </td>
+                                    <td style="border:1px solid black; padding:8px; font-weight:bold;">
+                                        <t t-esc="sum(record.line_ids.mapped('qty_sold'))" t-options='{"widget":"float","precision":2}'/>
+                                    </td>
+                                    <td style="border:1px solid black; padding:8px;"></td>
+                                    <td style="border:1px solid black; padding:8px; font-weight:bold;">
+                                        <t t-esc="sum(record.line_ids.mapped('cif_total'))" t-options='{"widget":"float","precision":2}'/>
+                                    </td>
+                                    <td style="border:1px solid black; padding:8px; font-weight:bold;">
+                                        <t t-esc="sum(record.line_ids.mapped('sale_total'))" t-options='{"widget":"float","precision":2}'/>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+
+                        <div style="overflow:hidden; width:100%;">
+                            <div style="float:left; width:48%; margin-right:4%;">
+                                <p style="padding-top:8px; border-top:1px solid black; width:250px; text-align:center">
+                                    <t t-esc="company.name"/>
+                                </p>
+                            </div>
+                            <div style="float:left; width:48%;">
+                                <p style="padding-top:8px; border-top:1px solid black; width:250px; text-align:center">
+                                    Parque Científico Tecnológico de La Habana
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

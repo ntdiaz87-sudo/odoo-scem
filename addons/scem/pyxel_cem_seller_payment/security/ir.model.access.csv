@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_company_pct_report,access_company_pct_report,model_company_pct_report,,1,1,1,1
+access_pyxel_pct_report,access_pyxel_pct_report,model_pyxel_pct_report,,1,1,1,1
+access_company_pct_config,access_company_pct_config,model_company_pct_config,,1,1,1,1
+access_provider_report,access_provider_report,model_provider_report,,1,1,1,1
+access_provider_report_line,access_provider_report_line,model_provider_report_line,,1,1,1,1
+access_conciliation_report_user,conciliation.report.user,model_conciliation_report,base.group_user,1,1,1,0
+access_conciliation_report_manager,conciliation.report.manager,model_conciliation_report,base.group_system,1,1,1,1

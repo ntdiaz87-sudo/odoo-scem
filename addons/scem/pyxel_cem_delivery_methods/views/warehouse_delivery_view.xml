@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="warehouse_delivery_tree" model="ir.ui.view">
+            <field name="name">warehouse.delivery.tree</field>
+            <field name="model">warehouse.delivery</field>
+            <field name="arch" type="xml">
+                <tree string="warehouse delivery" editable="bottom">
+                    <field name="warehouse_id"/>
+                    <field name="municipality_id" />
+                    <field name="price"/>
+                    <field name="margin_percent"/>
+                    <field name="currency_id"/>
+
+                </tree>
+            </field>
+        </record>
+
+         <record id="warehouse_delivery_view_search" model="ir.ui.view">
+            <field name="name">warehouse.delivery.price.view.search</field>
+            <field name="model">warehouse.delivery</field>
+            <field name="arch" type="xml">
+                <search string="">
+                    <field name="warehouse_id" />
+                    <group expand="0" string="Group By">
+                        <filter name="group_warehouse_delivery"
+                                string="Seller" context="{'group_by': 'warehouse_id'}"/>
+                        <filter name="group_municipios"
+                                string="Municipios" context="{'group_by': 'municipality_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="warehouse_delivery_action" model="ir.actions.act_window">
+            <field name="name">warehouse_delivery.action</field>
+            <field name="res_model">warehouse.delivery</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No delivery price entry!
+                </p>
+            </field>
+        </record>
+
+        <record id="px_seller_form_view" model="ir.ui.view">
+            <field name="name">px_seller_form_view</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet//div[@name='button_box']" position="inside">
+                    <button type="action"
+                            name="%(pyxel_cem_delivery_methods.warehouse_delivery_action)d"
+                            class="oe_stat_button px-delivery-stat"
+                            icon="fa-truck"
+                            context="{
+                                'default_warehouse_id': active_id,         
+                                'search_default_warehouse_id': active_id    
+                            }">
+                        <div class="o_stat_info">
+                            <span class="o_stat_text">Precios de entrega</span>
+                        </div>
+                    </button>
+
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

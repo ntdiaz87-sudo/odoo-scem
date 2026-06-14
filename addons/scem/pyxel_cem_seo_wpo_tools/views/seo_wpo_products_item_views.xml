@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+        ============================================================
+        SEO / WPO — Lazy Loading: Listado de productos (shop grid)
+        ============================================================
+        Objetivo: aplicar loading="lazy" a las imágenes del listado.
+
+        Contexto técnico:
+        -  pyxel_cem_website_sale hereda 'website_sale.products_item'
+           con key  pyxel_cem_website_sale.scem_inherit_products_item.
+        -  La imagen del producto se renderiza con el widget QWeb
+           "image" sobre un <span t-field>, que el motor convierte
+           internamente en una etiqueta <img>.
+        -  Odoo 17 expone la opción  loading  en ese widget, así que
+           basta pasar  'loading': 'lazy'  dentro de t-options.
+        -  La imagen del proveedor (WhatsApp container) no aparece en
+           este template; se trata en seo_wpo_product_detail_views.xml.
+
+        Cómo validar después de instalar:
+        1. Abre /shop en el navegador.
+        2. Inspecciona cualquier tarjeta de producto → elemento <img>.
+        3. Debes ver el atributo  loading="lazy"  en el HTML generado.
+        4. En DevTools → Network → Img: al hacer scroll los recursos
+           se solicitan progresivamente (no todos al inicio de carga).
+        ============================================================
+        -->
+
+        <record id="seo_wpo_products_item_lazy" model="ir.ui.view">
+            <field name="name">seo_wpo_products_item_lazy</field>
+            <!--
+                Heredamos la vista de pyxel_cem_website_sale, no la base
+                de Odoo, para respetar el orden de herencia y no romper
+                los cambios previos del módulo padre.
+            -->
+            <field name="inherit_id" search="[('key', '=', 'pyxel_cem_website_sale.scem_inherit_products_item')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seo_wpo_tools.seo_wpo_products_item_lazy</field>
+            <field name="arch" type="xml">
+
+                <!--
+                    XPath target:
+                    El <span t-field="image_holder.image_1920"> dentro de
+                    .oe_product_image_link  es la imagen principal de cada
+                    tarjeta.  Aplicamos  position="attributes"  para NO
+                    reemplazar el nodo completo, solo añadimos/modificamos
+                    el atributo t-options inyectando 'loading': 'lazy'.
+
+                    Nota: position="attributes" + <attribute> sobreescribe
+                    el valor completo del atributo si ya existe, por eso
+                    copiamos todas las opciones originales y añadimos la nueva.
+                -->
+                <xpath expr="//span[@t-field='image_holder.image_1920']" position="attributes">
+                    <attribute name="t-options">{
+                        'widget': 'image',
+                        'preview_image': image_type,
+                        'itemprop': 'image',
+                        'class': 'h-100 w-100 position-absolute',
+                        'loading': 'lazy'
+                    }</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

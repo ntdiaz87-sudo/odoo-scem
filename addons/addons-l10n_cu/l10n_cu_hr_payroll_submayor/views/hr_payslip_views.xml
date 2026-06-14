@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View hr.payslip form -->
+    <record id="view_hr_payslip_form" model="ir.ui.view">
+        <field name="name">view.hr.payslip.form</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/button[@name='compute_sheet']" position="before">
+                <button string="Calcular Vacaciones" name="compute_vacaciones" type="object" invisible="state != 'draft'" class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//sheet/div[2]" position="before">
+                <field name="dias_vacaciones_acumuladas" invisible='1'/>
+                <h4 style="color: red; text-decoration: underline;" invisible="not dias_vacaciones_acumuladas">
+                    <span> !!!TRABAJADOR CON 20 DÍAS DE VACACIONES ACUMULADAS!!!</span>
+                </h4>
+            </xpath>
+            <xpath expr="//notebook/page/field[@name='input_line_ids']/tree/field[@name='code']" position="after">
+                <field name="days_payment" string='Días'/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

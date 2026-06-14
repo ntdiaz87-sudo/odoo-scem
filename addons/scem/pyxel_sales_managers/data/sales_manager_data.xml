@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Secuencia para código de gestor de ventas -->
+        <record id="seq_sales_manager" model="ir.sequence">
+            <field name="name">Secuencia Gestor de Ventas</field>
+            <field name="code">pyxel.sales.manager</field>
+            <field name="prefix">SM</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Secuencia para código de gestor externo en contactos -->
+        <record id="seq_partner_sales_manager" model="ir.sequence">
+            <field name="name">Secuencia Gestor Externo</field>
+            <field name="code">res.partner.sales.manager</field>
+            <field name="prefix">GV</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

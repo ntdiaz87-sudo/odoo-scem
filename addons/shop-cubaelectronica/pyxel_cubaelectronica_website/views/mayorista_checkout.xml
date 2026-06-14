@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ══════════ MAYORISTA: requiere cuenta de empresa ══════════ -->
+  <template id="cevende_mayorista_no_empresa" name="Mayorista - cuenta de empresa requerida">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section">
+          <div class="cv-container">
+            <div class="cv-done" style="max-width:600px;margin:0 auto;">
+              <div class="cv-done__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="44" height="44"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+              </div>
+              <h1>Compra al por mayor</h1>
+              <p class="cv-done__sub">Para comprar al por mayor necesitas una <strong>cuenta de empresa</strong>.
+                Regístrate como empresa y sube tu documentación: podrás comprar de inmediato mientras la revisamos.</p>
+              <div class="cv-done__actions">
+                <a href="/web/signup" class="cv-btn cv-btn--cta">Registrar empresa</a>
+                <a href="/shop" class="cv-btn cv-btn--outline-dark">Seguir comprando</a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ CHECKOUT MAYORISTA (B2B) ══════════ -->
+  <template id="cevende_mayorista_checkout" name="Checkout Mayorista">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Compra al por mayor</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_steps"><t t-set="active" t-value="3"/></t>
+
+            <t t-if="not accredited">
+              <div class="cv-mayorista-banner">
+                <i class="fa fa-info-circle"/>
+                <span>Tu empresa está <strong>en revisión</strong>. Puedes comprar ahora; si falta algún documento te lo pediremos.</span>
+              </div>
+            </t>
+
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/mayorista/pago" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <!-- 1. Empresa -->
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">1</span> Empresa</h3>
+                  <p class="cv-checkout__name"><t t-esc="company.name"/></p>
+                  <p t-if="company.vat"><i class="fa fa-id-card-o"/> NIT: <t t-esc="company.vat"/></p>
+                  <p t-if="company.email"><i class="fa fa-envelope-o"/> <t t-esc="company.email"/></p>
+                </div>
+
+                <!-- 2. Dirección de facturación -->
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">2</span> Dirección de facturación</h3>
+                  <div class="cv-addr-list">
+                    <t t-foreach="billing_addrs" t-as="addr" t-key="addr.id">
+                      <label class="cv-addr">
+                        <input type="radio" name="billing_id" t-att-value="addr.id" t-att-checked="'checked' if addr_index == 0 else None"/>
+                        <span class="cv-addr__box">
+                          <span class="cv-addr__name"><t t-esc="addr.name"/></span>
+                          <span class="cv-addr__det">
+                            <t t-if="addr.street"><t t-esc="addr.street"/>. </t>
+                            <t t-if="addr.city"><t t-esc="addr.city"/></t><t t-if="addr.state_id">, <t t-esc="addr.state_id.name"/></t>
+                          </span>
+                        </span>
+                      </label>
+                    </t>
+                    <label class="cv-addr cv-addr--new">
+                      <input type="radio" name="billing_id" value="new" class="cv-addr-newtoggle" data-prefix="billing"/>
+                      <span class="cv-addr__box"><span class="cv-addr__name">+ Agregar nueva dirección</span></span>
+                    </label>
+                  </div>
+                  <div class="cv-addr-form" data-prefix="billing">
+                    <p class="cv-docs-note"><i class="fa fa-globe"/> Dirección de facturación internacional (fuera de Cuba).</p>
+                    <div class="cv-form-grid">
+                      <div class="cv-field cv-field--full"><label>Nombre / referencia</label><input type="text" name="billing_name"/></div>
+                      <div class="cv-field cv-field--full"><label>Dirección</label><input type="text" name="billing_street" placeholder="Calle, número…"/></div>
+                      <div class="cv-field"><label>País</label>
+                        <select name="billing_country_id" class="cv-addr-country" data-prefix="billing">
+                          <option value="">Selecciona país...</option>
+                          <t t-foreach="countries" t-as="c" t-key="c.id"><option t-att-value="c.id"><t t-esc="c.name"/></option></t>
+                        </select>
+                      </div>
+                      <div class="cv-field"><label>Estado / Provincia</label>
+                        <select name="billing_state_id" class="cv-addr-istate" data-prefix="billing">
+                          <option value="">Selecciona país primero…</option>
+                        </select>
+                      </div>
+                      <div class="cv-field"><label>Ciudad</label><input type="text" name="billing_city" placeholder="Ciudad"/></div>
+                      <div class="cv-field"><label>Código postal</label><input type="text" name="billing_zip" placeholder="ZIP / Postal"/></div>
+                      <div class="cv-field"><label>Teléfono</label><input type="tel" name="billing_phone" placeholder="+1 …"/></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Dirección de entrega -->
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">3</span> Dirección de entrega</h3>
+                  <div class="cv-addr-list">
+                    <t t-foreach="delivery_addrs" t-as="addr" t-key="addr.id">
+                      <label class="cv-addr">
+                        <input type="radio" name="delivery_id" t-att-value="addr.id" t-att-checked="'checked' if addr_index == 0 else None"/>
+                        <span class="cv-addr__box">
+                          <span class="cv-addr__name"><t t-esc="addr.name"/></span>
+                          <span class="cv-addr__det">
+                            <t t-if="addr.street"><t t-esc="addr.street"/>. </t>
+                            <t t-if="addr.city"><t t-esc="addr.city"/></t><t t-if="addr.state_id">, <t t-esc="addr.state_id.name"/></t>
+                          </span>
+                        </span>
+                      </label>
+                    </t>
+                    <label class="cv-addr cv-addr--new">
+                      <input type="radio" name="delivery_id" value="new" class="cv-addr-newtoggle" data-prefix="delivery"/>
+                      <span class="cv-addr__box"><span class="cv-addr__name">+ Agregar nueva dirección</span></span>
+                    </label>
+                  </div>
+                  <div class="cv-addr-form" data-prefix="delivery">
+                    <div class="cv-form-grid">
+                      <div class="cv-field cv-field--full"><label>Nombre / referencia</label><input type="text" name="delivery_name"/></div>
+                      <div class="cv-field cv-field--full"><label>Dirección</label><input type="text" name="delivery_street" placeholder="Calle, número…"/></div>
+                      <div class="cv-field"><label>Provincia</label>
+                        <select name="delivery_state_id" class="cv-addr-state" data-prefix="delivery">
+                          <option value="">Selecciona...</option>
+                          <t t-foreach="states" t-as="st" t-key="st.id"><option t-att-value="st.id"><t t-esc="st.name"/></option></t>
+                        </select>
+                      </div>
+                      <div class="cv-field"><label>Municipio</label>
+                        <select name="delivery_municipality_id" class="cv-addr-city" data-prefix="delivery">
+                          <option value="">Selecciona provincia primero…</option>
+                        </select>
+                      </div>
+                      <div class="cv-field"><label>Teléfono</label><input type="tel" name="delivery_phone" placeholder="+53 …"/></div>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="cv-checkout__submit">
+                  Continuar al pago
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+              </form>
+
+              <aside class="cv-checkout__summary">
+                <h3>Tu pedido</h3>
+                <div class="cv-checkout__lines">
+                  <t t-foreach="order.website_order_line" t-as="line" t-key="line.id">
+                    <t t-if="not line.display_type">
+                      <div class="cv-checkout__line">
+                        <div class="cv-checkout__line-img">
+                          <img t-att-src="'/web/image/product.product/%s/image_128' % line.product_id.id" alt=""/>
+                          <span class="cv-checkout__line-qty"><t t-esc="int(line.product_uom_qty)"/></span>
+                        </div>
+                        <div class="cv-checkout__line-info">
+                          <span class="cv-checkout__line-name"><t t-esc="line.product_id.display_name"/></span>
+                        </div>
+                        <span class="cv-checkout__line-price">
+                          <t t-esc="order.currency_id.symbol"/><t t-esc="'%.2f' % line.price_subtotal"/>
+                        </span>
+                      </div>
+                    </t>
+                  </t>
+                </div>
+                <div class="cv-checkout__totals">
+                  <div class="cv-checkout__total-row cv-checkout__total-row--grand">
+                    <span>Total</span>
+                    <strong><t t-esc="order.currency_id.symbol"/><t t-esc="'%.2f' % order.amount_total"/></strong>
+                  </div>
+                </div>
+                <a href="/shop" class="cv-checkout__back">← Seguir comprando</a>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ Asistente mayorista: barra de pasos ══════════ -->
+  <template id="cevende_mayorista_steps" name="Mayorista asistente - pasos">
+    <div class="cv-wizard">
+      <div t-attf-class="cv-wizard__step #{'is-active' if active == 1 else ''} #{'is-done' if active &gt; 1 else ''}">
+        <span class="cv-wizard__num"><t t-if="active &gt; 1"><i class="fa fa-check"/></t><t t-else="">1</t></span>
+        <span class="cv-wizard__txt">Empresa</span>
+      </div>
+      <span class="cv-wizard__bar"/>
+      <div t-attf-class="cv-wizard__step #{'is-active' if active == 2 else ''} #{'is-done' if active &gt; 2 else ''}">
+        <span class="cv-wizard__num"><t t-if="active &gt; 2"><i class="fa fa-check"/></t><t t-else="">2</t></span>
+        <span class="cv-wizard__txt">Documentos</span>
+      </div>
+      <span class="cv-wizard__bar"/>
+      <div t-attf-class="cv-wizard__step #{'is-active' if active == 3 else ''} #{'is-done' if active &gt; 3 else ''}">
+        <span class="cv-wizard__num"><t t-if="active &gt; 3"><i class="fa fa-check"/></t><t t-else="">3</t></span>
+        <span class="cv-wizard__txt">Datos</span>
+      </div>
+      <span class="cv-wizard__bar"/>
+      <div t-attf-class="cv-wizard__step #{'is-active' if active == 4 else ''}">
+        <span class="cv-wizard__num">4</span>
+        <span class="cv-wizard__txt">Pago</span>
+      </div>
+    </div>
+  </template>
+
+  <!-- ══════════ Asistente mayorista: resumen del pedido (reutilizable) ══════════ -->
+  <template id="cevende_mayorista_summary" name="Mayorista asistente - resumen">
+    <aside class="cv-checkout__summary">
+      <h3>Tu pedido</h3>
+      <div class="cv-checkout__lines">
+        <t t-foreach="order.website_order_line" t-as="line" t-key="line.id">
+          <t t-if="not line.display_type">
+            <div class="cv-checkout__line">
+              <div class="cv-checkout__line-img">
+                <img t-att-src="'/web/image/product.product/%s/image_128' % line.product_id.id" alt=""/>
+                <span class="cv-checkout__line-qty"><t t-esc="int(line.product_uom_qty)"/></span>
+              </div>
+              <div class="cv-checkout__line-info">
+                <span class="cv-checkout__line-name"><t t-esc="line.product_id.display_name"/></span>
+              </div>
+              <span class="cv-checkout__line-price">
+                <t t-esc="order.currency_id.symbol"/><t t-esc="'%.2f' % line.price_subtotal"/>
+              </span>
+            </div>
+          </t>
+        </t>
+      </div>
+      <div class="cv-checkout__totals">
+        <div class="cv-checkout__total-row cv-checkout__total-row--grand">
+          <span>Total</span>
+          <strong><t t-esc="order.currency_id.symbol"/><t t-esc="'%.2f' % order.amount_total"/></strong>
+        </div>
+      </div>
+      <a href="/shop" class="cv-checkout__back">← Seguir comprando</a>
+    </aside>
+  </template>
+
+  <!-- ══════════ Asistente mayorista · Paso 1: Datos de empresa ══════════ -->
+  <template id="cevende_mayorista_empresa" name="Mayorista - Datos de empresa">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Compra al por mayor</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_steps"><t t-set="active" t-value="1"/></t>
+            <div class="cv-mayorista-banner">
+              <i class="fa fa-building-o"/>
+              <span>Para comprar al por mayor necesitas <strong>acreditar tu empresa</strong>. Completa estos datos; podrás finalizar la compra en cuanto subas la documentación obligatoria.</span>
+            </div>
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/mayorista/empresa" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">1</span> Datos de la empresa</h3>
+                  <t t-if="error"><p class="cv-form-error"><i class="fa fa-exclamation-circle"/> <t t-esc="error"/></p></t>
+                  <div class="cv-form-grid">
+                    <div class="cv-field cv-field--full"><label>Nombre de la entidad *</label>
+                      <input type="text" name="name_entity" required="required" t-att-value="post.get('name_entity')"/></div>
+                    <div class="cv-field"><label>Tipo de entidad *</label>
+                      <select name="entity_type" required="required">
+                        <option value="">Selecciona...</option>
+                        <option value="estatal" t-att-selected="'selected' if post.get('entity_type') == 'estatal' else None">Estatal</option>
+                        <option value="firma" t-att-selected="'selected' if post.get('entity_type') == 'firma' else None">Firma</option>
+                        <option value="mipime" t-att-selected="'selected' if post.get('entity_type') == 'mipime' else None">MIPYME</option>
+                        <option value="tcp" t-att-selected="'selected' if post.get('entity_type') == 'tcp' else None">TCP</option>
+                      </select></div>
+                    <div class="cv-field"><label>NIT *</label>
+                      <input type="text" name="nit" required="required" maxlength="11" t-att-value="post.get('nit')"/></div>
+                    <div class="cv-field"><label>REEUP</label>
+                      <input type="text" name="reeup" t-att-value="post.get('reeup')"/></div>
+                    <div class="cv-field"><label>Teléfono</label>
+                      <input type="tel" name="phone" placeholder="+53 …" t-att-value="post.get('phone')"/></div>
+                    <div class="cv-field cv-field--full"><label>Dirección</label>
+                      <input type="text" name="street" placeholder="Calle, número…" t-att-value="post.get('street')"/></div>
+                    <div class="cv-field"><label>Provincia</label>
+                      <select name="state_id" class="cv-addr-state" data-prefix="company">
+                        <option value="">Selecciona...</option>
+                        <t t-foreach="states" t-as="st" t-key="st.id"><option t-att-value="st.id"><t t-esc="st.name"/></option></t>
+                      </select></div>
+                    <div class="cv-field"><label>Municipio</label>
+                      <select name="municipality_id" class="cv-addr-city" data-prefix="company">
+                        <option value="">Selecciona provincia primero…</option>
+                      </select></div>
+                    <div class="cv-field cv-field--full"><label>Objeto social</label>
+                      <textarea name="social_object" rows="3"><t t-esc="post.get('social_object')"/></textarea></div>
+                  </div>
+                </div>
+                <button type="submit" class="cv-checkout__submit">
+                  Continuar a documentos
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+              </form>
+              <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_summary"/>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ Asistente mayorista · Paso 2: Documentos obligatorios ══════════ -->
+  <template id="cevende_mayorista_documentos" name="Mayorista - Documentos obligatorios">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Compra al por mayor</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_steps"><t t-set="active" t-value="2"/></t>
+            <div class="cv-mayorista-banner">
+              <i class="fa fa-file-text-o"/>
+              <span>Sube los <strong>documentos obligatorios</strong> de <strong><t t-esc="company.name"/></strong>. Cuando estén todos podrás finalizar la compra; la acreditación se revisa en paralelo.</span>
+            </div>
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/mayorista/documentos" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">2</span> Documentos obligatorios</h3>
+                  <p class="cv-docs-note"><i class="fa fa-info-circle"/> Formatos: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF · Máx. 10MB por archivo.</p>
+                  <div class="cv-docs-list">
+                    <t t-foreach="docs" t-as="doc" t-key="doc['key']">
+                      <div t-attf-class="cv-doc #{'cv-doc--done' if doc['done'] else ''}">
+                        <span class="cv-doc__label">
+                          <i t-attf-class="fa #{'fa-check-circle' if doc['done'] else 'fa-circle-o'}"/>
+                          <t t-esc="doc['label']"/>
+                        </span>
+                        <input type="file" t-att-name="doc['key']" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.tif"/>
+                        <t t-if="doc['done']"><span class="cv-doc__status">Subido</span></t>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+                <button type="submit" class="cv-checkout__submit">
+                  <t t-if="faltan">Guardar documentos (<t t-esc="faltan"/> pendientes)</t>
+                  <t t-else="">Continuar a la compra</t>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+              </form>
+              <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_summary"/>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ Asistente mayorista · Paso 4: Selección de pago ══════════ -->
+  <template id="cevende_mayorista_pago" name="Mayorista - Método de pago">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Compra al por mayor</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_steps"><t t-set="active" t-value="4"/></t>
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/mayorista/process" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">4</span> Método de pago</h3>
+                  <p class="cv-checkout__hint">Elige cómo quieres pagar tu pedido.</p>
+                  <t t-call="pyxel_cubaelectronica_website.cevende_pay_methods_fields"/>
+                </div>
+                <button type="submit" class="cv-checkout__submit">
+                  Continuar
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+                <a href="/cevende/mayorista" class="cv-checkout__link">← Volver a los datos</a>
+              </form>
+              <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_summary"/>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ══════════ Asistente mayorista · Paso 4b: Detalle del mecanismo + comprobante ══════════ -->
+  <template id="cevende_mayorista_detalle" name="Mayorista - Detalle de pago">
+    <t t-call="website.layout">
+      <div class="cv-home">
+        <section class="cv-section cv-section--gray">
+          <div class="cv-container">
+            <h1 class="cv-checkout__title">Compra al por mayor</h1>
+            <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_steps"><t t-set="active" t-value="4"/></t>
+            <div class="cv-checkout">
+              <form class="cv-checkout__main" action="/cevende/mayorista/process" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="provider_id" t-att-value="provider.id"/>
+                <input type="hidden" name="cv_confirm" value="1"/>
+                <div class="cv-checkout__card">
+                  <h3><span class="cv-checkout__step">4</span> <t t-esc="provider.cv_display_name or provider.name"/></h3>
+                  <div class="cv-pay-instructions" t-if="provider.cv_instructions">
+                    <t t-out="provider.cv_instructions"/>
+                  </div>
+                  <div class="cv-field cv-field--full cv-pay-proof">
+                    <label>Comprobante de pago <span class="cv-req">*</span></label>
+                    <input type="file" name="comprobante" required="required"
+                           accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.tif"/>
+                    <p class="cv-docs-note"><i class="fa fa-info-circle"/> Sube una foto o PDF del comprobante. Verificaremos tu pago antes de despachar.</p>
+                  </div>
+                </div>
+                <button type="submit" class="cv-checkout__submit">
+                  Confirmar pedido
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+                <a href="/cevende/mayorista/pago" class="cv-checkout__link">← Elegir otro método</a>
+              </form>
+              <t t-call="pyxel_cubaelectronica_website.cevende_mayorista_summary"/>
+            </div>
+          </div>
+        </section>
+      </div>
+    </t>
+  </template>
+
+</odoo>

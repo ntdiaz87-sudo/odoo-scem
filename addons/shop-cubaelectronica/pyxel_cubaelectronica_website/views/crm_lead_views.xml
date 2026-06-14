@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_crm_lead_form_inherit_documents_simple" model="ir.ui.view">
+            <field name="name">crm.lead.form.inherit.documents.simple</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button
+                            name="action_view_documents"
+                            type="object"
+                            class="oe_stat_button"
+                            invisible="not partner_id"
+                            icon="fa-files-o">
+                        <!--                            <i class="fa fa-files-o" role="img"/>-->
+                        <div class="o_stat_info">
+                            <span class="o_stat_value">
+                                <span class="o_stat_text">Documentos</span>
+                                <field name="document_count" string="Documentos"/>
+                            </span>
+                        </div>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

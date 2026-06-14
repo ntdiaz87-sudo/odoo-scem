@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pyxel.virtual.contract</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="crm.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='crm']" position="inside">
+                <block title="Virtual Contract Settings" id="cem_virtual_contract_settings"
+                       name="cem_virtual_contract_settings">
+                    <setting id="duration" string="Duration">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="cem_virtual_contract_duration" class="col-lg-3"/>
+                                <field name="cem_virtual_contract_duration" required="True"/>
+                            </div>
+
+                        </div>
+                    </setting>
+                    <setting id="code_format" string="Code Format">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <label for="cem_vc_code_gen_type" class="col-lg-3"/>
+                                <field name="cem_vc_code_gen_type" required="True"/>
+                            </div>
+                            <div class="row mt16" invisible="cem_vc_code_gen_type != 'auto'">
+                                <label for="cem_vc_prefix_code" class="col-lg-3"/>
+                                <field name="cem_vc_prefix_code" required="cem_vc_code_gen_type == 'auto'"
+                                       invisible="cem_vc_code_gen_type != 'auto'"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

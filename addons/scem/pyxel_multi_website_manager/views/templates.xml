@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template condicional por sitio web -->
+    <record id="site_specific_header_1" model="ir.ui.view">
+        <field name="name">Header Sitio 1</field>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <div class="site-1-header" t-name="pyxel_multi_website_manager.site_specific_header_1" website="1">
+                <h1>Bienvenido al Sitio Web 1</h1>
+            </div>
+        </field>
+    </record>
+
+    <record id="site_specific_header_2" model="ir.ui.view">
+        <field name="name">Header Sitio 2</field>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <div class="site-2-header" t-name="pyxel_multi_website_manager.site_specific_header_2" website="2">
+                <h1>Bienvenido al Sitio Web 2</h1>
+            </div>
+        </field>
+    </record>
+
+    <!-- Template dinámico con configuración -->
+    <record id="dynamic_config_template" model="ir.ui.view">
+        <field name="name">Template Dinámico</field>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <t t-name="pyxel_multi_website_manager.dynamic_config_template">
+                <t t-call="website.layout">
+                    <div id="wrap" class="oe_structure">
+                        <h1 t-esc="website_config.get('company_name', 'Mi Empresa')"/>
+                        <div class="social-media-container" t-if="website_config.get('social_media')">
+                            <t t-foreach="website_config.get('social_media')" t-as="social">
+                                <a t-attf-href="{{ social.url }}"
+                                   t-attf-class="social-icon"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    <span t-esc="social.platform"/>
+                                </a>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </field>
+    </record>
+
+    <!-- Selector de sitio web -->
+    <record id="multi_website_selector" model="ir.ui.view">
+        <field name="name">multi.website.selector</field>
+        <field name="model">ir.ui.view</field>
+        <field name="inherit_id" ref="website.layout"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='wrapwrap']/header" position="inside">
+                <div class="website-selector" t-if="request and request.website and len(request.website.search([])) > 1">
+                    <span class="current-website" t-esc="request.website.name"/>
+                    <div class="website-dropdown">
+                        <t t-foreach="request.website.search([])" t-as="w">
+                            <a t-if="w.id != request.website.id"
+                               t-attf-href="//{{ w.domain or request.httprequest.host }}?switch_website_scope={{ w.id }}"
+                               class="website-link">
+                                <t t-esc="w.name"/>
+                            </a>
+                        </t>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

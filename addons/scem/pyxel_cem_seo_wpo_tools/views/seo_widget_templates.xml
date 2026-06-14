@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="seo_title_validator" name="SEO Title Validator Info">
+        <div class="text-muted small mt-1">
+            <i class="fa fa-info-circle"/> Recomendado: 50-60 caracteres para un SEO óptimo.
+        </div>
+    </template>
+
+    <template id="seo_description_validator" name="SEO Description Validator Info">
+        <div class="text-muted small mt-1">
+            <i class="fa fa-info-circle"/> Recomendado: 50-160 caracteres. Google suele mostrar hasta 160 caracteres.
+        </div>
+    </template>
+</odoo>

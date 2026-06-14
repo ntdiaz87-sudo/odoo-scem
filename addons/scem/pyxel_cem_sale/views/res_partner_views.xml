@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data noupdate="1">
+        <record id="view_partner_wholesale_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.wholesale.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="website" position="before">
+                    <field name="is_provider"/>
+                </field>
+
+
+                <!-- Opción 1: Agregar el país después de la ciudad -->
+                <xpath expr="//field[@name='city']" position="after">
+                    <field name="country_id"
+                           placeholder="País"
+                           options="{'no_open': True, 'no_create': True}"/>
+                </xpath>
+
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
+
+

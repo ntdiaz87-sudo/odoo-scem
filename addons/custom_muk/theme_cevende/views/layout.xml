@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="cevende_header" inherit_id="website.layout" name="CEVENDE Header">
+        <!-- NOTA CLAUDE CODE: portar aquí el <header class="cv-header"> de
+             preview/index.html, adaptando enlaces a rutas reales de Odoo
+             (/shop, /web/login, etc.) y usando t-field donde haya datos de BD. -->
+    </template>
+</odoo>

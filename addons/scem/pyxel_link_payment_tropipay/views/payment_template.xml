@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form_inherit" model="ir.ui.view">
+        <field name="name">Tpp Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position='inside'>
+                <group invisible="code != 'tropipay'">
+                    <field name="client_id"
+                           string="Client Id"
+                           required="code=='tropipay' and state!='disabled'"/>
+                    <field name="client_secret"
+                           string="Client Secret"
+                           required="code=='tropipay' and state!='disabled'"
+                           password="True"
+                    />
+
+                    <button name="test_connection_2_tropipay"
+                            string="Test Connection"
+                            type="object"
+                            class="btn-primary"
+                            modifiers="{'invisible': [('code', '!=', 'tropipay')]}"/>
+                </group>
+            </group>
+        </field>
+    </record>
+
+</odoo>

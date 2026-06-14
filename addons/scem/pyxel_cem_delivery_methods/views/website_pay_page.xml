@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="pyxel_cem_website_sale.scem_navigation_buttons" model="ir.ui.view">
+            <field name="active" eval="False"/>
+    </record>
+ 
+    <record id="pyxel_cem_website_sale.scem_checkout_layout_inherit" model="ir.ui.view">
+            <field name="active" eval="False"/>
+    </record>
+        
+    <record id="checkout_layout_custom" model="ir.ui.view">
+        <field name="name">checkout_layout_custom</field>
+        <field name="inherit_id" search="[('key', '=', 'website_sale.checkout_layout')]"/>
+        <field name="type">qweb</field>
+        <field name="key">pyxel_cem_delivery_methods.checkout_layout_custom</field>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[contains(@class, 'o_cta_navigation_container')]" position="inside">
+
+                <t t-set="order" t-value="request.website.sale_get_order(force_create=False)"/>
+
+                <t t-set="show_order_request_button"
+                t-value="order and order.sudo()._scem_show_order_request_button(request.website)"/>
+
+                <t t-set="show_payment_limit_modal"
+                    t-value="order and order.sudo()._scem_should_show_payment_limit_modal(request.website)"/>
+
+                <!-- Botón Cotizar -->
+                <t t-if="
+                    request.env.context.get('is_real_payment_page')
+                    and not request.env.user.has_group('base.group_public')
+                    and order
+                    and show_order_request_button
+                ">
+                    <a role="button"
+                    id="order_request_btn"
+                    name="conf_delivery_button"
+                    class="s_website_form_send btn btn-primary w-100 w-lg-auto"
+                    href="/shop/order_request"
+                    onclick="if(this.getAttribute('data-clicked')) { return false; } else { this.setAttribute('data-clicked', true); this.style.opacity = '0.6'; }">
+                        Cotizar
+                        <i class="fa fa-angle-right ms-2 fw-light"/>
+                    </a>
+                </t>
+
+                <!-- Modal para persona natural con monto mayor de 2500 EUR -->
+                <t t-if="
+                    request.env.context.get('is_real_payment_page')
+                    and order
+                    and show_payment_limit_modal
+                ">
+
+                    <div class="modal fade"
+                        id="scem_payment_limit_modal"
+                        tabindex="-1"
+                        aria-labelledby="scem_payment_limit_modal_label"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="scem_payment_limit_modal_label">
+                                        Información de pago
+                                    </h5>
+                                    <button type="button"
+                                            class="btn-close scem-payment-limit-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Cerrar"/>
+                                </div>
+
+                                <div class="modal-body">
+                                    Su monto excede los 2500 EUR, un comercial lo contactará para realizar el pago.
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="btn btn-primary scem-payment-limit-close"
+                                            data-bs-dismiss="modal">
+                                        Entendido
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <script type="text/javascript">
+                        (function () {
+                            function showScemPaymentLimitModal() {
+                                var modalEl = document.getElementById('scem_payment_limit_modal');
+
+                                if (!modalEl) {
+                                    return;
+                                }
+
+                                if (window.bootstrap &amp;&amp; window.bootstrap.Modal) {
+                                    var modal = new window.bootstrap.Modal(modalEl);
+                                    modal.show();
+                                    return;
+                                }
+
+                                if (window.$ &amp;&amp; window.$.fn &amp;&amp; window.$.fn.modal) {
+                                    window.$(modalEl).modal('show');
+                                    return;
+                                }
+
+                                // Fallback sin Bootstrap JS
+                                modalEl.classList.add('show');
+                                modalEl.style.display = 'block';
+                                modalEl.removeAttribute('aria-hidden');
+                                modalEl.setAttribute('aria-modal', 'true');
+                                document.body.classList.add('modal-open');
+
+                                var backdrop = document.createElement('div');
+                                backdrop.className = 'modal-backdrop fade show';
+                                backdrop.id = 'scem_payment_limit_modal_backdrop';
+                                document.body.appendChild(backdrop);
+
+                                function closeModal() {
+                                    modalEl.classList.remove('show');
+                                    modalEl.style.display = 'none';
+                                    modalEl.setAttribute('aria-hidden', 'true');
+                                    modalEl.removeAttribute('aria-modal');
+                                    document.body.classList.remove('modal-open');
+
+                                    var existingBackdrop = document.getElementById('scem_payment_limit_modal_backdrop');
+                                    if (existingBackdrop) {
+                                        existingBackdrop.remove();
+                                    }
+                                }
+
+                                var closeButtons = modalEl.querySelectorAll('.scem-payment-limit-close');
+                                closeButtons.forEach(function (button) {
+                                    button.addEventListener('click', closeModal);
+                                });
+                            }
+
+                            if (document.readyState === 'loading') {
+                                document.addEventListener('DOMContentLoaded', showScemPaymentLimitModal);
+                            } else {
+                                showScemPaymentLimitModal();
+                            }
+
+                            setTimeout(showScemPaymentLimitModal, 300);
+                        })();
+                    </script>
+
+                </t>
+
+            </xpath>
+
+        </field>
+    </record>
+
+
+    <template id="checkout_need_delivery" inherit_id="website_sale.checkout">
+        <xpath expr="//t[@t-if='not only_services' and @groups='account.group_delivery_invoice_address']" position="before">
+                <div class="row mb-3" id="delivery_toggle_block">
+                    <div class="col-lg-12">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                class="form-check-input"
+                                id="need_home_delivery"
+                                t-att-checked="'checked' if order.need_home_delivery else None"/>
+                            <input type="hidden"
+                                name="need_home_delivery_value"
+                                id="need_home_delivery_value"
+                                t-att-value="'1' if order.need_home_delivery else '0'"/>
+                            <label class="form-check-label" for="need_home_delivery">
+                                ¿Necesita entrega a domicilio?
+                            </label>
+                        </div>
+                    </div>
+                </div>
+        </xpath>
+    </template>
+
+</odoo>

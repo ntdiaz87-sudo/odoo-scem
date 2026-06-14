@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="cubaElectronica_footer" model="ir.ui.view">
+            <field name="name">cubaElectronica_footer</field>
+            <field name="inherit_id" ref="web.frontend_layout"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cubaelectronica_website.cubaElectronica_footer</field>
+            <field name="arch" type="xml">
+
+                <xpath expr="//footer[@id='bottom']" position="replace">
+                    <footer id="bottom" class="cv-footer">
+                        <t t-set="company" t-value="request.env.company"/>
+                        <div class="cv-container">
+                            <div class="cv-footer__grid">
+
+                                <!-- Marca -->
+                                <div class="cv-footer__brand">
+                                    <img src="/pyxel_cubaelectronica_website/static/src/img/logo_footer.png?v=3"
+                                         alt="CEVENDE" class="cv-footer__logo"/>
+                                    <p>Equipos electrodomésticos y soluciones en energía solar para hogares y negocios. Calidad, garantía y servicio.</p>
+                                    <div class="cv-footer__social">
+                                        <a href="" target="_blank" aria-label="Facebook"><i class="fa fa-facebook"/></a>
+                                        <a href="" target="_blank" aria-label="Instagram"><i class="fa fa-instagram"/></a>
+                                        <a href="" target="_blank" aria-label="YouTube"><i class="fa fa-youtube-play"/></a>
+                                    </div>
+                                </div>
+
+                                <!-- Comprar -->
+                                <div>
+                                    <h5>Comprar</h5>
+                                    <ul>
+                                        <li><a href="/shop?tipo=retail">Minorista</a></li>
+                                        <li><a href="/shop?tipo=wholesale">Mayorista</a></li>
+                                        <li><a href="/shop">Paneles Solares</a></li>
+                                        <li><a href="/shop">Electrodomésticos</a></li>
+                                        <li><a href="/shop">Ofertas</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Información -->
+                                <div>
+                                    <h5>Información</h5>
+                                    <ul>
+                                        <li><a href="/about/cuba_electronica">Sobre nosotros</a></li>
+                                        <li><a href="/about/cuba_electronica#requisitos">Preguntas frecuentes</a></li>
+                                        <li><a href="/about/cuba_electronica#cancelacion">Envíos y devoluciones</a></li>
+                                        <li><a href="/about/cuba_electronica#condiciones">Términos y condiciones</a></li>
+                                        <li><a href="/about/cuba_electronica#privacidad">Política de privacidad</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Contacto -->
+                                <div>
+                                    <h5>Contacto</h5>
+                                    <ul>
+                                        <li t-if="company.phone"><i class="fa fa-phone"/> <span t-esc="company.phone"/></li>
+                                        <li t-if="company.email"><i class="fa fa-envelope-o"/> <span t-esc="company.email"/></li>
+                                        <li t-if="company.city"><i class="fa fa-map-marker"/> <span t-esc="company.city"/></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Métodos de pago -->
+                                <div>
+                                    <h5>Métodos de pago</h5>
+                                    <div class="cv-footer__pay">
+                                        <img src="/pyxel_cubaelectronica_website/static/src/img/pay_meth_1.svg" alt=""/>
+                                        <img src="/pyxel_cubaelectronica_website/static/src/img/pay_meth_2.svg" alt=""/>
+                                        <img src="/pyxel_cubaelectronica_website/static/src/img/pay_meth_3.svg" alt=""/>
+                                        <img src="/pyxel_cubaelectronica_website/static/src/img/pay_meth_4.svg" alt=""/>
+                                        <img src="/pyxel_cubaelectronica_website/static/src/img/pay_meth_5.svg" alt=""/>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="cv-footer__bottom o_footer_copyright_name">
+                                © 2025 CEVENDE. Todos los derechos reservados.
+                            </div>
+                        </div>
+                    </footer>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

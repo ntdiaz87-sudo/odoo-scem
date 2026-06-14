@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="about_cubaElectronica" name="About Us Page">
+        <t t-call="website.layout">
+            <div class="about-cubaElectronica container py-4" style="max-width: 1200px; margin: 0 auto;">
+                <style>
+                    .about-cubaElectronica {
+                    font-family: 'Roboto', sans-serif;
+                    color: #333;
+                    line-height: 1.6;
+                    }
+                    .about-cubaElectronica .header {
+                    text-align: center;
+                    margin-bottom: 2rem;
+                    padding-bottom: 1rem;
+                    border-bottom: 1px solid #eaeaea;
+                    }
+                    .about-cubaElectronica .header h1 {
+                    color: #0087FF;
+                    font-weight: 700;
+                    margin-top: 1rem;
+                    }
+                    .about-us-menu {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 2rem;
+                    position: relative;
+                    }
+                    .menu-wrapper {
+                    overflow: hidden;
+                    width: 100%;
+                    }
+                    .menu-items {
+                    display: flex;
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    transition: transform 0.3s ease;
+                    }
+                    .menu-items li {
+                    padding: 0.75rem 1.5rem;
+                    margin: 0 0.25rem;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    border-radius: 4px;
+                    color: #555;
+                    font-weight: 500;
+                    border: 1px solid transparent;
+                    }
+                    .menu-items li.active,
+                    .menu-items li:hover {
+                    color: #0087FF;
+                    border-color: #0087FF;
+                    background-color: rgba(0, 135, 255, 0.05);
+                    }
+                    #prev-slide, #next-slide {
+                    cursor: pointer;
+                    flex-shrink: 0;
+                    }
+                    #prev-slide[disabled], #next-slide[disabled] {
+                    opacity: 0.3;
+                    cursor: not-allowed;
+                    }
+                    .about-us-content {
+                    background: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                    padding: 2rem;
+                    margin-bottom: 2rem;
+                    }
+                    .section {
+                    display: none;
+                    }
+                    .section.active {
+                    display: block;
+                    width: 70%;
+                    margin-left: auto;
+                    margin-right: auto;
+                    animation: fadeIn 0.5s ease;
+                    }
+                    @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                    }
+                    .section h2 {
+                    color: #0087FF;
+                    margin-bottom: 1.5rem;
+                    padding-bottom: 0.5rem;
+                    border-bottom: 1px solid #eaeaea;
+                    }
+                    .section p, .section li {
+                    margin-bottom: 0.8rem;
+                    }
+                    .section ul, .section ol {
+                    padding-left: 1.5rem;
+                    margin-bottom: 1.5rem;
+                    }
+                    .section strong {
+                    color: #555;
+                    }
+                </style>
+
+                <div class="header">
+                    <img id="logo-image"
+                         t-att-src="'/web/image/website/' + str(request.website.id) + '/logo'"
+                         alt="Logo" style="max-height: 80px;"/>
+                    <h1>Términos y Condiciones</h1>
+                </div>
+
+                <div class="about-us-menu">
+                    <svg id="prev-slide" width="34" height="34" viewBox="0 0 34 34" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.0003 31.1673C9.17629 31.1673 2.83366 24.8247 2.83366 17.0007C2.83366 9.17662 9.17629 2.83398 17.0003 2.83398C24.8244 2.83398 31.167 9.17662 31.167 17.0007C31.167 24.8247 24.8244 31.1673 17.0003 31.1673Z"
+                              stroke="#0087FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 22.6673L11.3333 17.0007L17 11.334" stroke="#0087FF" stroke-width="3"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22.667 17H11.3337" stroke="#0087FF" stroke-width="3" stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                    </svg>
+
+                    <div class="menu-wrapper">
+                        <ul class="menu-items">
+                            <li class="active" data-section="condiciones">Condiciones</li>
+                            <li data-section="servicios">Servicios</li>
+                            <li data-section="requisitos">Requisitos</li>
+                            <li data-section="privacidad">Privacidad</li>
+                            <li data-section="propiedad">Propiedad</li>
+                            <li data-section="clientes">Clientes</li>
+                            <li data-section="pagos">Pagos</li>
+                            <li data-section="cancelacion">Cancelación</li>
+                            <li data-section="ley">Ley Aplicable</li>
+                            <li data-section="contacto">Contacto</li>
+                        </ul>
+                    </div>
+
+                    <svg id="next-slide" width="34" height="34" viewBox="0 0 34 34" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16.9997 31.1673C24.8237 31.1673 31.1663 24.8247 31.1663 17.0007C31.1663 9.17662 24.8237 2.83398 16.9997 2.83398C9.17564 2.83398 2.83301 9.17662 2.83301 17.0007C2.83301 24.8247 9.17564 31.1673 16.9997 31.1673Z"
+                              stroke="#0087FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M17 22.6673L22.6667 17.0007L17 11.334" stroke="#0087FF" stroke-width="3"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M11.333 17H22.6663" stroke="#0087FF" stroke-width="3" stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <div class="about-us-content">
+                    <!-- Sección 1: Condiciones Generales -->
+                    <div id="condiciones" class="section active">
+                        <h2>Condiciones Generales de Uso</h2>
+                        <p>Las presentes Condiciones de uso (“Condiciones”) regulan el acceso o uso que usted haga como
+                            “cliente”, persona jurídica o persona natural empresario (TCP), desde cualquier sitio del
+                            territorio de la República de Cuba que tenga acceso a esta aplicación y los servicios (los
+                            “Servicios”) puestos a disposición por “CEVENDE”.
+                        </p>
+                        <p>
+                            <strong>LEA ESTAS CONDICIONES DETENIDAMENTE ANTES DE ACCEDER O USAR LOS SERVICIOS.</strong>
+                        </p>
+                        <p>Mediante su acceso y uso de los Servicios usted acuerda vincularse jurídicamente por estas
+                            Condiciones.
+                        </p>
+                        <p>Estas condiciones ESTABLECEN un vínculo jurídico con los clientes.
+                        </p>
+                        <p>Esta Plataforma se constituye para facilitar las relaciones entre los clientes con la Empresa
+                            Importadora, Exportadora y Comercializadora de Productos de la Electrónica y las
+                            Comunicaciones CUBAELECTRÓNICA.
+                        </p>
+                        <p>Si usted no acepta estas Condiciones, no podrá acceder o usar los Servicios.
+                        </p>
+                        <p>Los clientes podrán poner fin de inmediato al vínculo jurídico con la Empresa Importadora,
+                            Exportadora y Comercializadora de Productos de la Electrónica y las Comunicaciones
+                            CUBAELECTRÓNICA; por lo que se dejará de ofrecer los Servicios o cualquier parte de ellos.
+                        </p>
+                        <p>La recopilación y el uso que hacemos de la información en relación con los Servicios es
+                            conforme a lo dispuesto en la Ley 149 “De Protección de Datos Personales”, emitida el 25 de
+                            agosto de 2022; y la Resolución 58 de ese propio año del Ministerio de Comunicaciones
+                            “Reglamento para la Seguridad y Protección de los datos personales en soporte electrónico”.
+                        </p>
+                    </div>
+
+                    <!-- Sección 2: Servicios -->
+                    <div id="servicios" class="section">
+                        <h2>Servicios Ofrecidos</h2>
+                        <p>Se constituye en un módulo de una plataforma que permite a los clientes realizar compras a
+                            través de internet, en un sitio de venta universalmente accesible al cliente, para realizar
+                            sus compras de productos y servicios de manera totalmente autónoma; un módulo de proveedores
+                            de la Empresa Importadora, Exportadora y Comercializadora de Productos de la Electrónica y
+                            las Comunicaciones CUBAELECTRÓNICA, reservado a aquellas personas jurídicas registradas como
+                            tal en el sitio, el cual les permite administrar su oferta; y un módulo de administración,
+                            reservado exclusivamente a PYXEL SOLUTIONS SRL como propietario de la tienda virtual.
+                        </p>
+                        <p>Usted se compromete a utilizar la plataforma de manera legal y de acuerdo con estos Términos.
+                        </p>
+                        <p>Está prohibido y es y será responsabilidad del usuario (clientes y proveedores), cuando se
+                            utilice el servicio para actividades ilegales.
+                        </p>
+                        <p>
+                            <strong>Está prohibido utilizar la plataforma para::</strong>
+                        </p>
+                        <ul>
+                            <li>Transmitir virus, malware o cualquier otro código malicioso.</li>
+                            <li>Interferir con la seguridad de la plataforma.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sección 3: Requisitos -->
+                    <div id="requisitos" class="section">
+                        <h2>Requisitos de la Plataforma</h2>
+                        <p>La tienda virtual cumple con los siguientes requisitos:</p>
+                        <ol type="a">
+                            <li>Identificar su nombre y dominio</li>
+                            <li>Visualizar el logo que lo identifique, conforme al manual de identidad, cuando
+                                corresponda
+                            </li>
+                            <li>Utilizar certificado digital para la protección</li>
+                            <li>Cuando el cliente solicite a la Empresa Importadora, Exportadora y Comercializadora de
+                                Productos de la Electrónica y las Comunicaciones CUBAELECTRÓNICA, esta última en la
+                                oferta le enviará las condiciones y los términos de la garantía comercial de la
+                                mercancía en cuestión
+                            </li>
+                            <li>Visualizar el sistema de atención al cliente, que incluye, entre otros aspectos,
+                                horarios, números de teléfonos, dirección de correo electrónico y cualquier otro dato de
+                                contacto del personal designado para la atención al cliente, y la disponibilidad de
+                                medios que faciliten a los clientes hacer llegar sus criterios o sugerencias, y formular
+                                quejas por insatisfacciones
+                            </li>
+                            <li>Pposeer un catálogo con imágenes, videos, las descripciones necesarias de los productos
+                                y servicios que se ofertan y sus precios, expresados en idioma español
+                            </li>
+                            <li>Brindar la opción del registro de los clientes y la modificación de datos personales
+                            </li>
+                            <li>Brindar la posibilidad de selección de productos o servicios, el seguimiento de las
+                                órdenes realizadas, un servicio de pago en línea y la posibilidad de examinar la
+                                transacción antes de ejecutarla
+                            </li>
+                            <li>Brindar la posibilidad de recibir información sobre la compra, notificación de pago y
+                                rastreo del estado de la orden de compra
+                            </li>
+                            <li>Visualizar los términos y condiciones de la tienda en el que incluirá su política de
+                                privacidad
+                            </li>
+                            <li>Brindar la posibilidad de aceptar o rechazar la captación de la información personal en
+                                cualquier momento
+                            </li>
+                        </ol>
+                    </div>
+
+                    <!-- Sección 4: Política de Privacidad -->
+                    <div id="privacidad" class="section">
+                        <h2>Política de Privacidad</h2>
+                        <p>Este módulo garantiza la protección de los datos de nuestros clientes conforme a lo
+                            establecido en la legislación vigente para la República de Cuba
+                        </p>
+                        <p>En el área de usuarias/os, con el objeto de garantizar la seguridad y confidencialidad de los
+                            servicios, es necesaria la previa identificación y autenticación de los clientes en el
+                            sistema, a través de aquellas claves de acceso proporcionadas para tal fin.
+                        </p>
+                        <p>Nuestro módulo recopila y procesa información de los clientes de forma responsable,
+                            siempre con el consentimiento explícito. A continuación, detallamos los tipos de datos y
+                            cómo se gestionan:
+                        </p>
+                        <ul>
+                            <li>Datos personales</li>
+                            <li>Nombre completo: Recogido para personalizar la experiencia del usuario</li>
+                            <li>Correo electrónico: Utilizado para crear la cuenta, recuperar contraseñas y enviar
+                                notificaciones relacionadas con la aplicación
+                            </li>
+                            <li>Número de teléfono: Opcional, usado para verificación de identidad o soporte
+                                técnico
+                            </li>
+                            <li>Datos sensibles (si aplica)</li>
+                            <li>Datos técnicos: Dirección IP, modelo de dispositivo, sistema operativo, y datos de
+                                uso de la aplicación, con fines de diagnóstico y mejora
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Sección 5: Propiedad Intelectual -->
+                    <div id="propiedad" class="section">
+                        <h2>Propiedad Intelectual</h2>
+                        <p>“CEVENDE” se constituye en un módulo para tienda virtual mayorista.
+                        </p>
+                        <p>“CEVENDE” es desarrollada por PYXEL SOLUTIONS SRL, y, no infringe ni vulnera los derechos de
+                            propiedad intelectual o industrial o cualesquiera otros derechos legales o contractuales de
+                            terceros.
+                        </p>
+                        <p>Está prohibida la reproducción, modificación, ingeniería inversa y cualquier otra modalidad
+                            que implique cambios en esta plataforma del punto de vista técnico, visual o de cualquier
+                            otro tipo, sin autorización del autor.
+                        </p>
+                        <p>Cualquier controversia que surja de la interpretación o ejecución de las disposiciones de
+                            este contrato se resolverá por las partes de forma amigable y actuando de buena fe. De no
+                            lograrse acuerdo, las diferencias surgidas entre las partes serán sometidas al fuero de la
+                            sección de lo mercantil del Tribunal competente de la República de Cuba.
+                        </p>
+                    </div>
+
+                    <!-- Sección 6: Obligaciones del Cliente -->
+                    <div id="clientes" class="section">
+                        <h2>Obligaciones del Cliente</h2>
+                        <p>Al acceder e inscribirse en la plataforma, se entiende la aceptación de los términos y
+                            condiciones aquí reflejados.
+                        </p>
+                        <p>El cliente responderá, en cualquier caso, de la veracidad de los datos facilitados,
+                            reservándose el prestador de servicio a excluir de los servicios registrados a todo Usuario
+                            (cliente y/ o proveedor) que haya facilitado datos falsos, sin perjuicio de las demás
+                            acciones que procedan en Derecho; acceder, actualizar y cancelar, en el momento en que estos
+                            lo consideren, los datos personales facilitados para el uso del servicio; que sus datos sean
+                            cancelados cuando así lo estimen conveniente, se haya cumplido el propósito para el cual
+                            fueron recopilados o cuando consideren que se están tratando de forma que vulnere sus
+                            intereses y derechos; y, ser informados sobre las opciones de configuración de privacidad
+                            disponibles que les permita determinar cómo su información es tratada, compartida y
+                            almacenada.
+                        </p>
+                        <h2>Calificaciones y Reseñas</h2>
+                        <p>Los clientes pueden calificar y dejar comentarios sobre los servicios ante la Empresa
+                            Importadora, Exportadora y Comercializadora de Productos de la Electrónica y las
+                            Comunicaciones CUBAELECTRÓNICA.
+                        </p>
+                    </div>
+
+                    <!-- Sección 7: Tarifas y Pagos -->
+                    <div id="pagos" class="section">
+                        <h2>Tarifas y Pagos</h2>
+                        <p>Las tarifas por los Servicios serán enviados en las ofertas de acuerdo a las solicitudes
+                            que realicen los clientes a la Empresa Importadora, Exportadora y Comercializadora de
+                            Productos de la Electrónica y las Comunicaciones CUBAELECTRÓNICA.
+                        </p>
+                    </div>
+
+                    <!-- Sección 8: Política de Cancelación -->
+                    <div id="cancelacion" class="section">
+                        <h2>Política de Cancelación</h2>
+                        <p>Los clientes pueden cancelar cualquier servicio, siempre comunicándose con la Empresa
+                            Importadora, Exportadora y Comercializadora de Productos de la Electrónica y las
+                            Comunicaciones CUBAELECTRÓNICA.
+                        </p>
+                        <h2>Limitación de Responsabilidad</h2>
+                        <p>“CEVENDE” no será responsable por daños directos, indirectos, incidentales o consecuentes que
+                            resulten del uso de la Plataforma o de los Servicios.
+                        </p>
+                        <h2>Modificaciones de los Términos</h2>
+                        <p>PYXEL SOLUTIONS SRL se reserva el derecho de modificar estos Términos en cualquier momento.
+                            Los cambios se publicarán en la plataforma y su uso continuado constituirá su aceptación de
+                            dichos cambios.
+                        </p>
+                    </div>
+
+                    <!-- Sección 11: Ley Aplicable -->
+                    <div id="ley" class="section">
+                        <h2>Ley Aplicable</h2>
+                        <p>Estos Términos se regirán por las leyes cubanas. Cualquier disputa que surja en relación con
+                            estos Términos se resolverá en el tribunal popular competentes
+                        </p>
+                    </div>
+
+                    <!-- Sección 12: Contacto -->
+                    <div id="contacto" class="section">
+                        <h2>Contacto</h2>
+                        <p>Para preguntas sobre estos Términos, puede ponerse en contacto con nosotros en:</p>
+                        <p>Email: </p>
+                        <p>Teléfono: </p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_sale_confirmation_custom" model="mail.template">
+            <field name="name">Tropipay CEM Sales: Order Confirmation and Payment Link</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">{{ object.company_id.name }}: Confirmed Order {{ object.name or 'n/a' }}</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted }}</field>
+            <field name="description">Sent to customers on order confirmation and Tropipay payment link</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+                        Dear <t t-out="object.partner_id.name or ''">Brandon Freeman</t>.
+                        <br/>
+                        <br/>
+                        Your order <span style="font-weight:bold;" t-out="object.name or ''"/> has been confirmed.
+                        <br/>
+                        Thank you for your trust!.
+                        <br/>
+                        <br/>
+                        Do payment by: <span style="font-weight:bold;" t-out="object.payment_meth_id.name or ''"/>.
+                        <br/>
+                        Payment Link: <a t-attf-href="{{object.tpp_link}}" target="_blank"><span style="color:#1A0DAB" t-out="object.tpp_link"/></a>
+                        <br/>
+                        This link expire on: <span style="font-weight:bold;" t-out="object.tpp_link_exp_date_str or ''"/>.
+                    </p>
+                </div>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('sale.action_report_saleorder'))]"/>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

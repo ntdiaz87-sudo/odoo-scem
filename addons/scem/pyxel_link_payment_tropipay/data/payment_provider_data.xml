@@ -1,0 +1,17 @@
+<odoo>
+    <record id="payment_provider_upi" model="payment.provider">
+        <field name="name">Tropipay</field>
+        <field name="code">tropipay</field>
+        <field name="image_128" type="base64"
+               file="pyxel_link_payment_tropipay/static/description/tropipaylogo.png"/>
+        <field name="company_id" ref="base.main_company"/>
+        <!--        <field name="redirect_form_view_id" ref="tpp_payment_gateway.redirect_form"/>-->
+        <field name="payment_method_ids"
+               eval="[Command.set([
+                        ref('payment.payment_method_card'),
+                        ref('pyxel_link_payment_tropipay.payment_method_tropipay')
+                     ])]"
+        />
+    </record>
+
+</odoo>

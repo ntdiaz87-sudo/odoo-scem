@@ -1,0 +1,17 @@
+<odoo>
+    <data noupdate="1">
+
+        <!-- Activar barra de cookies -->
+        <record id="config_setting_cookies_bar" model="ir.config_parameter">
+            <field name="key">website_cookies_bar</field>
+            <field name="value">True</field>
+        </record>
+
+        <!-- Activar precio de referencia del producto -->
+        <record id="config_setting_product_reference_price" model="ir.config_parameter">
+            <field name="key">group_show_uom_price</field>
+            <field name="value">True</field>
+        </record>
+
+    </data>
+</odoo>

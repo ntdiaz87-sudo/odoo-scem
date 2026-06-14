@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista de formulario para configuración multi-sitio -->
+    <record id="multi_website_config_form_view" model="ir.ui.view">
+        <field name="name">multi.website.config.form</field>
+        <field name="model">multi.website.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuración Multi Sitio">
+                <header>
+                    <button name="action_apply_configuration"
+                            type="object"
+                            string="Aplicar Configuración"
+                            class="btn-primary"
+                            confirm="¿Está seguro de aplicar esta configuración al sitio web?"/>
+                    <button name="action_open_website"
+                            type="object"
+                            string="Ver Sitio Web"
+                            class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_website"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-globe">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Ver Sitio</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="website_id" widget="many2one_avatar"/>
+                        </h1>
+                        <h2>
+                            <field name="website_name"/>
+                        </h2>
+                    </div>
+
+                    <group>
+                        <group string="Sitio Web">
+                            <field name="website_id" required="1" widget="many2one" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="website_domain" readonly="1"/>
+                        </group>
+                        <group string="Información General">
+                            <field name="custom_title" placeholder="Título personalizado del sitio"/>
+                            <field name="company_name" placeholder="Nombre de la empresa"/>
+                            <field name="contact_email" widget="email" placeholder="contacto@empresa.com"/>
+                            <field name="contact_phone" widget="phone" placeholder="+34 123 456 789"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Diseño y Estilo">
+                            <group string="Apariencia">
+                                <group string="Favicon">
+                                    <field name="custom_favicon" widget="image" class="oe_avatar"/>
+                                    <div class="text-muted o_form_label">
+                                        <small>Tamaño recomendado: 32x32px o 64x64px (formato .ico o .png)</small>
+                                    </div>
+                                </group>
+                                <group string="Estilos Personalizados">
+                                    <label string="CSS Personalizado" class="o_form_label" for="custom_css"/>
+                                    <field name="custom_css"
+                                           widget="ace"
+                                           mode="css"
+                                           options="{'theme': 'monokai'}"
+                                           nolabel="1"/>
+                                    <div class="text-muted o_form_label">
+                                        <small>CSS personalizado que se aplicará solo a este sitio web</small>
+                                    </div>
+                                </group>
+                                <group string="JavaScript Personalizado">
+                                    <label string="JavaScript Personalizado" class="o_form_label" for="custom_js"/>
+                                    <field name="custom_js"
+                                           widget="ace"
+                                           mode="javascript"
+                                           options="{'theme': 'monokai'}"
+                                           nolabel="1"/>
+                                    <div class="text-muted o_form_label">
+                                        <small>JavaScript personalizado que se ejecutará solo en este sitio web</small>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Analytics y Marketing">
+                            <group string="Herramientas de Análisis">
+                                <group string="Google Analytics">
+                                    <field name="google_analytics_key" placeholder="UA-XXXXXXXXX-X"/>
+                                    <div class="text-muted o_form_label">
+                                        <small>Ejemplo: UA-123456789-1 o G-XXXXXXXXXX</small>
+                                    </div>
+                                </group>
+                                <group string="Facebook Pixel">
+                                    <field name="facebook_pixel_id" placeholder="123456789012345"/>
+                                    <div class="text-muted o_form_label">
+                                        <small>ID numérico de Facebook Pixel (15 dígitos)</small>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Redes Sociales">
+                            <group string="Configuración de Redes Sociales">
+                                <field name="social_media_ids">
+                                    <tree string="Redes Sociales" editable="bottom">
+                                        <field name="sequence" widget="handle"/>
+                                        <field name="platform" widget="selection"/>
+                                        <field name="url" placeholder="https://www.facebook.com/tuempresa"/>
+                                        <field name="is_active" widget="boolean_toggle"/>
+                                        <field name="icon_class" invisible="1"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="platform" required="1"/>
+                                                <field name="url" required="1"/>
+                                                <field name="is_active"/>
+                                            </group>
+                                            <group>
+                                                <field name="sequence"/>
+                                                <field name="icon_class" readonly="1"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de lista CORREGIDA -->
+    <record id="multi_website_config_tree_view" model="ir.ui.view">
+        <field name="name">multi.website.config.tree</field>
+        <field name="model">multi.website.config</field>
+        <field name="arch" type="xml">
+            <tree string="Configuraciones Multi Sitio">
+                <field name="website_id" widget="many2one_avatar"/>
+                <field name="website_name"/>
+                <field name="website_domain"/>
+                <field name="company_name"/>
+                <field name="contact_email"/>
+                <field name="contact_phone"/>
+                <field name="has_custom_config" invisible="1"/>
+                <field name="config_status" widget="badge"
+                       options="{'success': 'Configurado', 'warning': 'Parcial', 'danger': 'Sin configurar'}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de búsqueda -->
+    <record id="multi_website_config_search_view" model="ir.ui.view">
+        <field name="name">multi.website.config.search</field>
+        <field name="model">multi.website.config</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Configuraciones">
+                <field name="website_id"/>
+                <field name="company_name"/>
+                <field name="contact_email"/>
+                <filter string="Configurados" name="has_config" domain="[('has_custom_config', '=', True)]"/>
+                <filter string="Sin Configurar" name="no_config" domain="[('has_custom_config', '=', False)]"/>
+                <separator/>
+                <filter string="Mis Configuraciones" name="my_configs" domain="[]" context="{'search_default_my_configs': 1}"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Sitio Web" name="group_website" context="{'group_by': 'website_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Acciones -->
+    <record id="action_multi_website_config" model="ir.actions.act_window">
+        <field name="name">Configuraciones Multi Sitio</field>
+        <field name="res_model">multi.website.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="multi_website_config_tree_view"/>
+        <field name="search_view_id" ref="multi_website_config_search_view"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configura diferentes sitios web en una sola base de datos Odoo.
+            </p>
+            <p>
+                Desde aquí puede configurar aspectos específicos para cada sitio web,
+                como diseño, analytics, redes sociales y datos de contacto.
+            </p>
+        </field>
+        <field name="context">{'default_has_custom_config': False}</field>
+    </record>
+
+    <!-- Acción para abrir configuración desde website -->
+    <record id="action_open_config_from_website" model="ir.actions.act_window">
+        <field name="name">Configurar Sitio Web</field>
+        <field name="res_model">multi.website.config</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="multi_website_config_form_view"/>
+        <field name="target">current</field>
+        <field name="context">{'form_view_ref': 'pyxel_multi_website_manager.multi_website_config_form_view'}</field>
+    </record>
+</odoo>

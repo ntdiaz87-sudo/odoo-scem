@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_vc_send_doc" model="mail.template">
+            <field name="name">CEM Sending Virtual Contract to Client</field>
+            <field name="model_id" ref="pyxel_cem_virtual_contract.model_cem_virtual_contract"/>
+            <field name="subject">{{ object.company_id.name }}: Confirmación de contrato y pasos para completar el proceso</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted }}</field>
+            <field name="description">Sent to client with virtual contract file</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+                        Estimado/a <span style="font-weight:bold;" t-out="object.partner_id.name or ''"/>:<br/>
+                        <br/>
+                        Le informamos que su contrato ha sido debidamente firmado por nuestra parte y ya se encuentra disponible para su descarga.<br/>
+                        <br/>
+                        A continuación, le indicamos los pasos que debe seguir para completar el proceso:<br/>
+                        <br/>
+                        <p style="font-size: 12px; margin-left: 30px">
+                            1.  Descargue el contrato adjunto en este correo.<br/>
+                            2.  Firme el documento de forma manuscrita.<br/>
+                            3.  Escanee el contrato firmado en formato PDF o imagen legible.<br/>
+                            4.  Acceda nuevamente a su perfil en la tienda.<br/>
+                            5.  Diríjase a la sección correspondiente y suba el archivo del contrato firmado.<br/>
+                            6.  Una vez cargado, haga clic en “Enviar” para confirmar la recepción.<br/>
+                        </p>
+                        Este procedimiento es indispensable para formalizar su vínculo con nosotros y continuar con la activación del servicio.<br/>
+                        <br/>
+                        Quedamos atentos a cualquier duda o asistencia que necesite durante el proceso.<br/>
+                        <br/>
+                        Atentamente.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

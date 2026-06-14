@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="theme_scita_trending_products_snippet" name="Trending Products">
+        <section class="theme_scita_trending_products oe_trending_products_section o_colored_level product_hover" data-disp="multi_product" data-snippet="" data-name="Trending Products" data-cat-slider-id="" contentEditable="false" style="background-image: none;">
+            <div class="retail_trending_products">
+                <div class="container">
+                    <div class="lns-inner latest-trendy-section">
+                        <div class="row">
+                            <div class="lns-post">
+                                <div class="psb-inner">
+                                    <div class="title-block ">
+                                        <h2 class="section-title style1">
+                                            Trending Products
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    <template id="theme_scita_trending_products_option" inherit_id="website.snippet_options" name="Modify Options">
+        <xpath expr="//div" position="after">
+            <div data-js="theme_scita_trending_products" data-selector=".theme_scita_trending_products" data-snippet-option-id="theme_scita_trending_products_snippet">
+                <we-button class="dropdown-item theme_scita_trending_products" tabindex="-1" href="#" data-trending_products="">Modify</we-button>
+            </div>
+        </xpath>
+    </template>
+    <template id="theme_scita_trending_products_view" name="Trending Products">
+        <div class="container">
+            <div class="lns-inner latest-trendy-section">
+                <div class="row">
+                    <div class="lns-post">
+                        <div class="psb-inner">
+                            <div class="title-block ">
+                                <h2 class="section-title style1">
+                                    Trending Products
+                                </h2>
+                            </div>
+                            <div class="trending_prod_inner d-flex flex-wrap justify-content-between">
+                                <ul id="trending_products_categories" class="nav nav-tabs" style="background-image : url(/web/image/theme_scita.sct_trending_product_bg);">
+                                    <t t-set="count" t-value="1"/>
+                                    <t t-foreach="trending_products_categories_details" t-as="trend_product">
+                                        <t t-if="count == 1">
+                                            <li class="trend_prod_tab" t-att-data-category-id="trend_product.id">
+                                                <a data-bs-toggle="tab" class="cat_tab show active" href="#multi-collection1-2-1">
+                                                    <span t-esc="trend_product.name"/>
+                                                </a>
+                                            </li>
+                                        </t>
+                                        <t t-else="">
+                                            <li class="trend_prod_tab" t-att-data-category-id="trend_product.id">
+                                                <a data-bs-toggle="tab" href="#multi-collection2-2-1" class="cat_tab">
+                                                    <t t-esc="trend_product.name"/>
+                                                </a>
+                                            </li>
+                                        </t>
+                                        <t t-set="count" t-value="count+1"/>
+                                    </t>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="active multi_hide tab_content_inner" id="multi-collection1-2-1" data-title="Automotive Parts">
+                                        <div class="owl-carousel owl-loaded owl-drag tab_inner_wrap" id="product_slider">
+                                            <div class="owl-stage-outer">
+                                                <div class="owl-stage" style="transform: translate3d(-1905px, 0px, 0px); transition: all 0.25s ease 0s; width: 3175px;">
+                                                    <t t-foreach="product_details" t-as="product">
+                                                        <t t-set="combination_info" t-value="product._get_combination_info(only_template=True, add_qty=add_qty or 1)"/>
+                                                        <div class="owl-item" t-att-data-product-id="product.id">
+                                                            <div class="cs-product" data-publish="on">
+                                                                <div class="pwp-img">
+                                                                    <a t-att-href="'/shop/product/%s' % slug(product)">
+                                                                        <img class="front" t-att-alt="product.name" t-att-title="product.name" t-att-src="website.image_url(product, 'image_1920')"/>
+                                                                    </a>
+                                                                </div>
+                                                                <div class="pwd-desc">
+                                                                    <div class="pwp-info">
+                                                                        <p class="pwpi-title">
+                                                                            <span t-esc="product.name"/>
+                                                                        </p>
+                                                                        <div class="ratings">
+                                                                            <div class="pink-box" contenteditable="false" t-if="request.website.viewref('theme_scita.theme_scita_rating').active">
+                                                                                <t t-set="rating_val" t-value="product.sudo().rating_get_stats().get('avg')"/>
+                                                                                <div class="ratings">
+                                                                                    <t t-set="prod_curr_rate" t-value="0"/>
+                                                                                    <t t-set="is_half_star" t-value="0"/>
+                                                                                    <t t-foreach="range(0, 5)" t-as="every_prod_rate">
+                                                                                      <t t-set="prod_curr_rate" t-value="prod_curr_rate + 1"/>
+                                                                                      <t t-if="prod_curr_rate &lt;= int(rating_val // 1)">
+                                                                                        <i class="fa fa-star" role="img"/>
+                                                                                      </t>
+                                                                                      <t t-else="">
+                                                                                        <t t-if="rating_val % 1 > 0.01 and rating_val % 1 &lt; 0.99 and is_half_star == 0">
+                                                                                          <i class="fa fa-star-half-o" role="img"/>
+                                                                                          <t t-set="is_half_star" t-value="1"/>
+                                                                                        </t>
+                                                                                        <t t-else="">
+                                                                                          <i class="fa fa-star-o" role="img"/>
+                                                                                        </t>
+                                                                                      </t>
+                                                                                    </t>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <p class="price">
+                                                                            <b>
+                                                                                <t t-if="True">
+                                                                                    <del t-attf-class="text-danger mr8 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+                                                                                </t>
+                                                                                <span t-if="combination_info['price']" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                                                                <span itemprop="price" style="display:none;" t-esc="combination_info['price']" />
+                                                                                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name" />
+                                                                            </b>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="sct-hover-info product_price ajax_cart_template">
+                                                                        <form action="/shop/cart/update" method="post">
+                                                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                            <input name="product_id" t-att-value="product.product_variant_id.id" type="hidden"/>
+                                                                            <button type="button" class="btn scita_cstm_btn quick_view_sct_btn qbtn" title="Quick View" t-att-data-id="product.id">
+                                                                                <span class="fa fa-eye"/>
+                                                                            </button>
+                                                                            <t t-if="request.website.viewref('website_sale_comparison.add_to_compare').active and product.product_variant_ids">
+                                                                               <a class="btn btn-xs o_add_compare" title="Compare" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_comparelist"><span class="fa fa-exchange"></span></a>
+                                                                            </t>
+                                                                            <t t-if="request.website.viewref('website_sale_wishlist.add_to_wishlist').active and product.product_variant_ids">
+                                                                                <t t-set="in_wish" t-value="product.product_variant_ids &amp; request.env['product.wishlist'].current().mapped('product_id')"/>
+                                                                                <a class="btn btn-default btn-xs o_add_wishlist" t-att-disabled='in_wish or None' title="Add to Wishlist" t-att-data-product-product-id="product.product_variant_ids[0].id" data-action="o_wishlist"><span class="fa fa-heart-o"></span></a>
+                                                                            </t>
+                                                                            <t t-if="request.website.viewref('website_sale.products_add_to_cart').active and product.product_variant_ids">
+                                                                                <button class="button btn btn-cart a-submit cart_view_sct_btn" t-att-data-id="product.id">
+                                                                                    <span class="icon-basket"></span>
+                                                                                </button>
+                                                                            </t>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>

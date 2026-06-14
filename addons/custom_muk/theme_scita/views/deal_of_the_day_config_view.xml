@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_banner_image_form" model="ir.ui.view">
+        <field name="name">banner.image.view.form</field>
+        <field name="model">banner.image</field>
+        <field name="arch" type="xml">
+            <form string="Banner Images">
+                <field name="sequence" invisible="1"/>
+                <div class="row o_website_sale_image_modal">
+                    <div class="col-md-6 col-xl-5">
+                        <label for="name" string="Image Name"/>
+                        <h2><field name="name" placeholder="Image Name"/></h2>
+                        <label for="page_link" string="Page Link"/>
+                        <field name="page_link"/>
+                    </div>
+                    <div class="col-md-6 col-xl-7 text-center o_website_sale_image_modal_container">
+                        <div class="row">
+                            <div class="col">
+                                <field name="image_1920" widget="image"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="banner_image_view_kanban" model="ir.ui.view">
+        <field name="name">banner.image.view.kanban</field>
+        <field name="model">banner.image</field>
+        <field name="arch" type="xml">
+            <kanban string="Banner Images" default_order="sequence">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="image_1920"/>
+                <field name="sequence" widget="handle"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="card oe_kanban_global_click p-0">
+                            <div class="o_squared_image">
+                                <img class="card-img-top" t-att-src="kanban_image('banner.image', 'image_1920', record.id.raw_value)" t-att-alt="record.name.value"/>
+                            </div>
+                            <div class="card-body p-0">
+                                <h4 class="card-title p-2 m-0 bg-200">
+                                    <small><field name="name"/></small>
+                                </h4>
+                            </div>
+                            <!-- below 100 Kb: good -->
+                            <t t-if="record.image_1920.raw_value.length &lt; 100*1000">
+                                <t t-set="size_status" t-value="'text-bg-success'"/>
+                                <t t-set="message">Acceptable file size</t>
+                            </t>
+                            <!-- below 1000 Kb: decent -->
+                            <t t-elif="record.image_1920.raw_value.length &lt; 1000*1000">
+                                <t t-set="size_status" t-value="'text-bg-warning'" />
+                                <t t-set="message">Huge file size. The image should be optimized/reduced.</t>
+                            </t>
+                            <!-- above 1000 Kb: bad -->
+                            <t t-else="1">
+                                <t t-set="size_status" t-value="'text-bg-danger'"/>
+                                <t t-set="message">Optimization required! Reduce the image size or increase your compression settings.</t>
+                            </t>
+                            <span t-attf-class="badge #{size_status} o_product_image_size" t-esc="record.image_1920.value" t-att-title="message"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="view_deal_of_the_day_configuration_form_view" model="ir.ui.view">
+        <field name="name">deal.of.the.day.snippet.configuration.form</field>
+        <field name="model">biztech.deal.of.the.day.configuration</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+             <form string="Deal Of The Day Snippet">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                        <field name="img_banner" options="{'preview_image':'img_banner','size': [64, 64]}" widget="image"/>
+                        <field name="banner_text"/>
+                        <field name="banner_btn_text"/>
+                        <field name="banner_btn_url"/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                    </group>
+                    <notebook>
+                        <page string="Deal of Day Banner" name="deal_of_day">
+                            <group>
+                                <group>
+                                    <field name='deal_title'/>
+                                </group>
+                                <group name="banner_image" string="Deal of Day Banners">
+                                    <field name="deal_of_day_banner_ids" class="o_website_sale_image_list" context="{'default_name': name}" mode="kanban" add-label="Add a Media" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_deal_of_the_day_configuration_figma_tree_view" model="ir.ui.view">
+        <field name="name">deal.of.the.day.snippet.configuration.figma.tree</field>
+        <field name="model">biztech.deal.of.the.day.configuration</field>
+        <field name="arch" type="xml">
+            <tree string="Deal Of The Day Snippet">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_deal_of_the_day_snippet_configuration_figma" model="ir.actions.act_window">
+        <field name="name">Deal Of The Day Snippet</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">biztech.deal.of.the.day.configuration</field>
+        <field name="view_mode">tree,form</field>
+        <field eval="False" name="view_id"/>
+    </record>
+
+    <menuitem action="action_deal_of_the_day_snippet_configuration_figma" id="deal_of_day_snippet_configuration_figma" name="Deal of the Day Configuration" parent="theme_scita.scita_menu_slider_config"/>
+</odoo>

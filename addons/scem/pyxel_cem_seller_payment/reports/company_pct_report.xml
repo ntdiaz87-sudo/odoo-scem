@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Definición del reporte -->
+    <record id="action_company_pct_report" model="ir.actions.report">
+        <field name="name">Reporte Compañía-PCT</field>
+        <field name="model">company.pct.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pyxel_cem_seller_payment.company_pct_report_template</field>
+        <field name="report_file">pyxel_cem_seller_payment.company_pct_report_template</field>
+    </record>
+    
+    <!-- Plantilla QWeb para el reporte -->
+    <template id="company_pct_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="record">
+                <t t-call="web.external_layout">
+
+                    <t t-if="not company">
+                        <t t-if="record and 'company_id' in record and record.company_id.sudo()">
+                            <t t-set="company" t-value="record.company_id.sudo()"/>
+                        </t>
+                        <t t-else="else">
+                            <t t-set="company" t-value="env.company"/>
+                        </t>
+                    </t>
+
+                    <div class="page">
+                        <div>
+                            <strong><h2>Conciliación <t t-esc="company.name"/>-PCT</h2></strong>
+                            <strong>Fecha de inicio:</strong> 
+                            <t t-esc="record.start_date"/>
+                            <br/>
+                            <strong>Fecha de fin:</strong> 
+                            <t t-esc="record.end_date"/>
+                            <br/>
+                            <strong>Proveedor:</strong>
+                            <t t-esc="record.provider_id.name"/>
+                            <br/>
+                            <strong>Vendedor:</strong>
+                            <t t-esc="record.seller_id.name"/>
+                            <br/>
+                            <strong>Servicio Plataforma:</strong>
+                            <t t-esc="record.service"/>
+                        </div>
+                        <br/> 
+                       
+                       
+                        <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid black; padding: 8px;">Descripción</th>
+                                    <th style="border: 1px solid black; padding: 8px;">Monto (USD)</th>
+                                    <th style="border: 1px solid black; padding: 8px;">Beneficiario</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">TOTAL DE VENTAS</td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.sales_total" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"></td>
+                                
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">Total CIF</td> 
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.amount_commodity" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.beneficiary_commodity.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">Costo Servicio Importación</td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.amount_import" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.beneficiary_import.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">Servicios Importación</td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.amount_import_services" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.beneficiary_import_services.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">Costo Servicio de TPTE Mariel</td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.amount_tpte" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.beneficiary_tpte.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">Costo Plataforma Software</td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.amount_software" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.beneficiary_software.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">Gastos Operación Logística</td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.amount_logistics" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.beneficiary_logistics.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px;">Gastos Aduanales</td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.amount_import_intern" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"><t t-esc="record.beneficiary_import_intern.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;">Gastos Financieros</td>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;"><t t-esc="record.total_expenses" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;">Gastos Totales</td>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;"><t t-esc="record.total_expenses" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;">Utilidades</td>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;"><t t-esc="record.utility" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;">Utilidad Compañía</td>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;"><t t-esc="record.company_utility" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;">Utilidad PCT</td>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;"><t t-esc="record.pct_utility" t-options='{"widget": "float", "precision": 2}'/></td>
+                                    <td style="border: 1px solid black; padding: 8px;"></td>
+                                </tr>
+                            </tbody>
+                            <!-- <tfoot>
+                                <tr>
+                                    <td colspan="2" style="border: 1px solid black; padding: 8px; text-align: right; font-weight: bold;">TOTAL(USD):</td>
+                                    <td style="border: 1px solid black; padding: 8px; font-weight: bold;"><t t-esc="(record.amount_import_intern or 0.0) + (record.utility or 0.0)" t-options='{"widget": "float", "precision": 2}'/></td>
+                                </tr>
+                            </tfoot> -->
+                        </table>
+
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <div style="overflow: hidden; width:100%;">
+                            <div style="float: left; width: 48%; margin-right: 4%;">
+                                <p style="padding-top:8px; border-top:1px solid black; width:250px;  text-align:center"><t t-esc="company.name"/></p>
+                            </div>
+                            <div style="float: left; width: 48%;">
+                                <p style="padding-top:8px; border-top:1px solid black; width:250px; text-align:center">Parque Científico Tecnológico de La Habana</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

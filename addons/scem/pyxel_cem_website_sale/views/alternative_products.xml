@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="hide_native_alternative"
+              inherit_id="website_sale.alternative_products">
+        <xpath expr="//div[@id='oe_structure_website_sale_recommended_products']"
+               position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+    </template>
+
+    <template id="alternative_products_no_python"
+              name="Alternative Products - No Python Method"
+              inherit_id="pyxel_cem_website_sale.product"
+              active="True">
+
+        <xpath expr="//div[@id='website_description']" position="after">
+
+            <!-- Solo muestra si hay productos alternativos -->
+            <t t-if="product.alternative_product_ids">
+
+                <div class="container mt-5 mb-5">
+
+                    <!-- Título -->
+                    <h2 class="text-center mb-4">Productos Relacionados</h2>
+
+                    <!-- Grid de productos -->
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+                        <!-- Loop DIRECTO por productos alternativos -->
+                        <t t-foreach="product.alternative_product_ids[:8]" t-as="alt_product">
+
+                            <div class="col">
+                                <div class="card alternative-product-card shadow-sm">
+
+                                    <!-- ============================================= -->
+                                    <!-- BOTÓN WHATSAPP - CORREGIDO                    -->
+                                    <!-- ============================================= -->
+                                    <a t-attf-href="https://wa.me/?text=Hola, me interesa: {{ alt_product.name }} - {{ alt_product.currency_id.symbol }}{{ '%.2f' % alt_product.list_price }}"
+                                       target="_blank"
+                                       class="whatsapp-btn"
+                                       title="Contactar por WhatsApp">
+                                        <i class="fa fa-whatsapp"></i>
+                                    </a>
+
+                                    <!-- ============================================= -->
+                                    <!-- IMAGEN DEL PRODUCTO                           -->
+                                    <!-- ============================================= -->
+                                    <div class="product-image-container">
+                                        <a t-att-href="alt_product.website_url">
+                                            <img t-att-src="'/web/image/product.template/%s/image_256' % alt_product.id"
+                                                 t-att-alt="alt_product.name"
+                                                 class="img-fluid"/>
+                                        </a>
+                                    </div>
+
+                                    <!-- ============================================= -->
+                                    <!-- CUERPO DE LA TARJETA                          -->
+                                    <!-- ============================================= -->
+                                    <div class="card-body">
+
+                                        <!-- NOMBRE DEL PRODUCTO -->
+                                        <a t-att-href="alt_product.website_url" class="product-name">
+                                            <t t-esc="alt_product.name"/>
+                                        </a>
+
+                                        <!-- PRECIO -->
+                                        <div class="product-price">
+                                            <t t-esc="alt_product.currency_id.symbol or '$'"/>
+                                            <t t-esc="'{:,.2f}'.format(alt_product.list_price).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
+                                        </div>
+
+                                        <!-- INFORMACIÓN ADICIONAL -->
+                                        <div class="extra-info">
+                                            <!-- Orden mínima -->
+                                            <t t-if="alt_product.sale_min_qty and alt_product.sale_min_qty > 1">
+                                                <span class="product-span">Orden mínima:
+                                                    <t t-esc="int(alt_product.sale_min_qty)"/>
+                                                    <t t-if="alt_product.uom_sale_id">
+                                                        <t t-esc="alt_product.uom_sale_id.name"/>
+                                                    </t>
+                                                </span>
+                                                <br/>
+                                            </t>
+
+                                            <!-- Stock disponible -->
+                                            <t t-set="stock_qty"
+                                               t-value="int(alt_product.qty_available) if alt_product.qty_available > 0 else 0"/>
+                                            <span t-att-class="'product-span stock ' + ('text-success' if stock_qty > 10 else ('text-warning' if stock_qty > 0 else 'text-danger'))">
+                                                <t t-if="stock_qty > 0">
+                                                    <t t-esc="stock_qty"/>
+                                                    <t t-if="alt_product.uom_id">
+                                                        <t t-esc="alt_product.uom_id.name"/>
+                                                    </t>
+                                                    disponibles
+                                                </t>
+                                                <t t-else="">
+                                                    Sin stock
+                                                </t>
+                                            </span>
+                                            <br/>
+
+                                            <!-- Tiempo de entrega del PRODUCTO ALTERNATIVO -->
+
+                                            <p class="product-time-delivery">
+                                                <span class="product-span">
+                                                    <img class="delivery-img"
+                                                         src="/pyxel_cem_website_sale/static/img/truck-1058.png"/>
+                                                    <t t-esc="alt_product.delivery_time"/>
+                                                    <t t-if="alt_product.delivery_time">días</t>
+
+                                                </span>
+                                            </p>
+
+
+                                            <!-- Proveedor del PRODUCTO ALTERNATIVO -->
+                                            <!--                                            <t t-if="alt_product.seller_ids">-->
+                                            <!--                                                <span class="product-span provider">-->
+                                            <!--                                                    <t t-esc="alt_product.seller_ids[0].partner_id.name"/>-->
+                                            <!--                                                </span>-->
+                                            <!--                                            </t>-->
+                                        </div>
+
+                                        <!-- BADGE DE CATEGORÍA DEL PRODUCTO ALTERNATIVO -->
+                                        <!--                                        <div class="mb-3">-->
+                                        <!--                                            <t t-if="alt_product.public_categ_ids">-->
+                                        <!--                                                <span class="badge bg-warning text-dark" style="background-color: #FFF3CD !important;">-->
+                                        <!--                                                    <t t-esc="alt_product.public_categ_ids[0].name"/>-->
+                                        <!--                                                </span>-->
+                                        <!--                                            </t>-->
+                                        <!--                                        </div>-->
+
+                                        <!-- ACCIONES: CANTIDAD + BOTÓN AÑADIR - CORREGIDO -->
+                                        <div class="product-actions mt-2">
+                                            <form action="/shop/cart/update" method="post">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="product_id"
+                                                       t-att-value="alt_product.product_variant_id.id"/>
+
+                                                <div class="input-group">
+                                                    <button type="button"
+                                                            class="btn btn-outline-secondary btn-minus"
+                                                            onclick="let i=this.parentElement.querySelector('input');let m=parseInt(i.min)||1;if(parseInt(i.value)>m)i.value=parseInt(i.value)-1;">
+                                                        -
+                                                    </button>
+                                                    <input type="number"
+                                                           name="add_qty"
+                                                           t-att-value="int(alt_product.sale_min_qty) if alt_product.sale_min_qty and alt_product.sale_min_qty > 1 else 1"
+                                                           t-att-min="int(alt_product.sale_min_qty) if alt_product.sale_min_qty and alt_product.sale_min_qty > 1 else 1"
+                                                           t-att-data-min-qty="int(alt_product.sale_min_qty) if alt_product.sale_min_qty and alt_product.sale_min_qty > 1 else 1"
+                                                           class="form-control text-center"
+                                                           style="max-width:60px; -moz-appearance:textfield;"
+                                                    />
+                                                    <button type="button"
+                                                            class="btn btn-outline-secondary btn-plus"
+                                                            onclick="let i=this.parentElement.querySelector('input');i.value=parseInt(i.value)+1;">
+                                                        +
+                                                    </button>
+                                                    <button type="submit"
+                                                            class="btn btn-primary flex-grow-1 js_add_to_cart"
+                                                            t-att-disabled="'disabled' if alt_product.qty_available &lt;= 0 else None">
+                                                        <t t-if="alt_product.qty_available > 0">
+                                                            Añadir
+                                                            <i class="fa fa-shopping-cart ms-1"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            Sin stock
+                                                            <i class="fa fa-shopping-cart ms-1"/>
+                                                        </t>
+                                                    </button>
+                                                </div>
+
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </t>
+
+                    </div>
+
+                </div>
+
+            </t>
+
+        </xpath>
+    </template>
+</odoo>

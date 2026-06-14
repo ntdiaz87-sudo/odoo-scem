@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="theme_scita.page_industry" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_1_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_2_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_3_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_4_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_6_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_7_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_8_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_9_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_10_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_11_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_12_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_13_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+   <record id="theme_scita.home_option_14_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_15_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_16_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_17_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_18_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_19_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_20_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_21_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_22_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_23_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_24_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_25_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+     <record id="theme_scita.home_option_26_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_27_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_28_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_29_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_30_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_31_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_32_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_33_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_34_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_35_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_36_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_37_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+   <record id="theme_scita.home_option_38_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>    
+
+    <record id="theme_scita.home_option_39_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+    <record id="theme_scita.home_option_40_demo_page" model="website.page">
+        <field name="active">False</field>
+    </record>  
+
+</odoo>

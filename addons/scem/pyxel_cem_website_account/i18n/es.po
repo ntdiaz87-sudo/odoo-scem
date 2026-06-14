@@ -1,0 +1,801 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pyxel_cem_website_account
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-08 13:56+0000\n"
+"PO-Revision-Date: 2025-05-08 13:56+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "53"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "<option value=\"\">Seleccione el municipio</option>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "<option value=\"\">Seleccione la provincia</option>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<select name=\"entity_type\" id=\"entity_type\" required=\"1\" style=\"color: black !important;\">\n"
+"                                        <option value=\"\">Seleccione el tipo de entidad</option>\n"
+"                                        <option value=\"estatal\">Estatal</option>\n"
+"                                        <option value=\"firma\">Firma</option>\n"
+"                                        <option value=\"mipime\">MIPYME</option>\n"
+"                                    </select>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<span class=\"document-label\">Carnet de ACOREC o permiso de trabajo en Cuba del\n"
+"                                        representante de la compañía\n"
+"                                    </span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<span class=\"document-label\">Carta timbrada a nombre de tu compañía con la intención\n"
+"                                        de negocios\n"
+"                                    </span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<span class=\"document-label\">Certificación de inscripción en el Registro de\n"
+"                                        Contribuyente\n"
+"                                    </span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<span class=\"document-label\">Certificación del Registro Mercantil o Registro\n"
+"                                        Público\n"
+"                                    </span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<span class=\"document-label\">Documento constitutivo de la firma o "
+"compañía</span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<span class=\"document-label\">Documento que acredite la existencia legal de la firma\n"
+"                                        o compañía\n"
+"                                    </span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"<span class=\"document-label\">Licencia de la Cámara de Comercio de "
+"Cuba</span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "<span class=\"document-label\">Perfil del cliente</span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "<span>Aceptar</span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "<span>Persona Jurídica</span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "<span>Persona Natural</span>"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__account_details
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__account_details
+msgid "Account Details"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__representative_last_name
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__representative_last_name
+msgid "Apellido del Representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Apellido del Representante *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__last_name
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__last_name
+msgid "Apellidos"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Apellidos *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_partner__attachment_ids
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_users__attachment_ids
+msgid "Attachments related to this partner."
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model,name:pyxel_cem_website_account.model_res_partner_bank
+msgid "Bank Accounts"
+msgstr "Cuentas bancarias"
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__identification_num
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__identification_num
+msgid "CI o Pasaporte"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "CI o Pasaporte *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__representative_identification_num
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__representative_identification_num
+msgid "CI o Pasaporte del Representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "CI o Pasaporte del Representante *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Confirmar Contraseña *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model,name:pyxel_cem_website_account.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Contacto del Representante *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Contacto1(Móvil) *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Contacto2(Móvil)"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Contraseña *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Correo *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__representative_email
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__representative_email
+msgid "Correo del Representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Correo del Representante *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Correo electrónico *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__account_type__corriente
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner_bank__account_type__corriente
+msgid "Corriente"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__account_type__cuenta_usd_eur
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner_bank__account_type__cuenta_usd_eur
+msgid "Cuenta USD/EUR"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__zipcode
+msgid "Código Postal"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Datos bancarios"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Datos generales"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Dirección *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Dirección general *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__address
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__address
+msgid "Dirrección general"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Documentación"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__attachment_ids
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__attachment_ids
+msgid "Documents"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Escriba su dirección"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__entity_type__estatal
+msgid "Estatal"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__date_of_birth
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__date_of_birth
+msgid "Fecha de Nacimiento"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Fecha de Nacimiento *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__entity_type__firma
+msgid "Firma"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__account_type__gastos_cup
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner_bank__account_type__gastos_cup
+msgid "Gastos CUP"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__account_type__gastos_mlc
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner_bank__account_type__gastos_mlc
+msgid "Gastos MLC"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__id
+msgid "ID"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese el NIT"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese el apellido del representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese el nombre"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese el nombre del representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese el número de identificación del representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese el objeto social o propósito de la entidad"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese nombre"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese otro número de móvil"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese su CI o Pasaporte"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese su correo"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese su dirección"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese su nombre"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese su número de móvil"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese sus apellidos"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Ingrese una dirreción de correo electrónico"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Inicio"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__entity_type__mipime
+msgid "MIPYME"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_account_setup_bank_manual_config__currency_id
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__currency_id
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner_bank__currency_id
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__currency_id
+msgid "Moneda"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_account_setup_bank_manual_config__currency_id
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_partner_bank__currency_id
+msgid "Moneda asociada a la cuenta bancaria"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_partner__currency_id
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_users__currency_id
+msgid "Moneda preferida del contacto"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__name
+msgid "Municipio"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Municipio *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model,name:pyxel_cem_website_account.model_res_city
+msgid "Municipios de Cuba"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__nit
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__nit
+msgid "NIT"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "NIT *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Nombre *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Nombre corto"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Nombre de Usuario *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__name_entity
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__name_entity
+msgid "Nombre de la Entidad"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Nombre de la Entidad *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__representative_name
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__representative_name
+msgid "Nombre del Representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Nombre del Representante *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__social_object
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__social_object
+msgid "Objeto Social"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Objeto Social *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Paso anterior"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__country_id
+msgid "País"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__user_type__juridico
+msgid "Persona Jurídica"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields.selection,name:pyxel_cem_website_account.selection__res_partner__user_type__natural
+msgid "Persona Natural"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_city__state_id
+msgid "Provincia"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Provincia *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Seguridad"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Siguiente paso"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_partner__account_details
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_users__account_details
+msgid "Stores multiple account types and their numbers as a serialized string"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"Subir\n"
+"                                        documento"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Subir documento"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Teléfono *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__phone1
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__phone1
+msgid "Teléfono 1"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__phone2
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__phone2
+msgid "Teléfono 2"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__representative_phone
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__representative_phone
+msgid "Teléfono del Representante"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_account_setup_bank_manual_config__account_type
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__account_type
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner_bank__account_type
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__account_type
+msgid "Tipo de Cuenta"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__entity_type
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__entity_type
+msgid "Tipo de FGNE"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "Tipo de FGNE *"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__user_type
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__user_type
+msgid "Tipo de Usuario"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_account_setup_bank_manual_config__account_type
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_partner__account_type
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_partner_bank__account_type
+#: model:ir.model.fields,help:pyxel_cem_website_account.field_res_users__account_type
+msgid "Tipo de cuenta bancaria preferida del contacto"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "¿Desea nombrar un representante?"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid "¿Es usted persona jurídica o natural?"
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_website_account.registration_form
+msgid ""
+"¿Revisaste nuestros términos y condiciones?\n"
+"                                    <br/>\n"
+"                                    Al continuar, estarás aceptando los términos de nuestro contrato virtual."
+msgstr ""
+
+#. module: pyxel_cem_website_account
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_partner__is_representative
+#: model:ir.model.fields,field_description:pyxel_cem_website_account.field_res_users__is_representative
+msgid "¿Tiene Representante?"
+msgstr ""
+
+#. module: auth_signup
+#: model:mail.template,body_html:auth_signup.mail_template_user_signup_account_created
+#: model:mail.template,body_html:auth_signup.set_password_email
+msgid ""
+"<p>\n"
+"                <strong>Hello</strong>\n"
+"                <font style=\"color: rgb(255, 0, 0);\">\n"
+"                    <span t-out=\"object.name\">Marc Demo</span>\n"
+"                </font>\n"
+"            </p>\n"
+"            <p>Welcome to <span t-out=\"object.company_id.name\"></span>! We are very happy to have you as part of our community\n"
+"                of wholesale\n"
+"                customers.\n"
+"            </p>\n"
+"            <p>\n"
+"                We want to thank you for choosing us as your supplier of varied products. We are committed to offering\n"
+"                you the best quality, variety, and competitive prices to help you boost your business.\n"
+"\n"
+"            </p>\n"
+"            <p>\n"
+"                <div style=\"margin: 16px 0px 16px 0px;\">\n"
+"                    <a t-att-href=\"object.signup_url\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                        GET STARTED NOW!\n"
+"                    </a>\n"
+"                </div>\n"
+"            </p>\n"
+"            <p>\n"
+"                Here are a few things you can do to start making the most of your\n"
+"                <span t-out=\"object.company_id.name\"></span>\n"
+"                account:\n"
+"            </p>\n"
+"            <ul>\n"
+"                <li><strong>Explore our catalog: </strong>Discover our wide selection of imported and domestic\n"
+"                    fruits, from the classics to the most exotic.\n"
+"                </li>\n"
+"                <li><strong>Check out our wholesale prices: </strong>Access exclusive rates for registered\n"
+"                    customers and take advantage of our special promotions.\n"
+"                </li>\n"
+"                <li><strong>Place your first order: </strong>Enjoy an easy and secure purchasing process, with\n"
+"                    flexible delivery options to suit your needs.\n"
+"                </li>\n"
+"                <li><strong>Contact our support team: </strong>If you have any questions or need help, please don't\n"
+"                    hesitate to contact us. We are here to support you every step of the way.\n"
+"                </li>\n"
+"            </ul>\n"
+"            <p>\n"
+"\n"
+"            </p>\n"
+"            <p>As a new customer, we offer you a [Optional: Include a discount, special offer, or additional benefit for\n"
+"                new customers]. Use the code [Discount/Offer Code] when placing your first order.\n"
+"            </p>\n"
+"            <p>We look forward to building a long-lasting and successful relationship with you. Thank you for joining\n"
+"                the\n"
+"                <span t-out=\"object.company_id.name\"></span>\n"
+"                family!\n"
+"            </p>\n"
+"            <p>Sincerely,</p>\n"
+"            <p>\n"
+"                <strong>The\n"
+"                    <span t-out=\"object.company_id.name\"></span>\n"
+"                    Team\n"
+"                </strong>\n"
+"            </p>\n"
+"            <div class=\"o_logo\">\n"
+"                <img t-attf-src=\"/web/binary/company_logo?company={{ object.company_id.id }}\" alt=\"object.company_id.name\"/>\n"
+"            </div>\n"
+"        "
+msgstr ""
+"<p>\n"
+"                <strong>Hola</strong>\n"
+"                <font style=\"color: rgb(255, 0, 0);\">\n"
+"                    <span t-out=\"object.name\">Marc Demo</span>\n"
+"                </font>\n"
+"            </p>\n"
+"            <p>Bienvenido/a a <span t-out=\"object.company_id.name\"></span>. Estamos muy contentos de tenerte como parte de nuestra comunidad\n"
+"                de clientes\n"
+"                mayoristas.\n"
+"            </p>\n"
+"            <p>\n"
+"                Queremos agradecerle por elegirnos como su proveedor de diversos productos.\n "
+"                Nos comprometemos a ofrecerle la mejor calidad, variedad y precios competitivos para impulsar su negocio.\n"
+"\n"
+"            </p>\n"
+"            <p>\n"
+"                <div style=\"margin: 16px 0px 16px 0px;\">\n"
+"                    <a t-att-href=\"object.signup_url\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\">\n"
+"                        ¡EMPIEZA AHORA!\n"
+"                    </a>\n"
+"                </div>\n"
+"            </p>\n"
+"            <p>\n"
+"                Aquí hay algunas cosas que puedes hacer para empezar a aprovechar al máximo tu cuenta en \n"
+"                <span t-out=\"object.company_id.name\"></span>:\n"
+"            </p>\n"
+"            <ul>\n"
+"                <li><strong>Explore nuestro catálogo: </strong>Descubra nuestra amplia selección de frutas importadas y nacionales,\n"
+"                    desde las clásicas hasta las más exóticas.\n"
+"                </li>\n"
+"                <li><strong>Consulta nuestros precios mayoristas: </strong>Accede a tarifas exclusivas para clientes registrados y \n"
+"                    aprovecha nuestras promociones especiales.\n"
+"                </li>\n"
+"                <li><strong>Haz tu primer pedido: </strong>Disfrute de un proceso de compra fácil y seguro, \n"
+"                    con opciones de entrega flexibles que se adaptan a sus necesidades.\n"
+"                </li>\n"
+"                <li><strong>Contacta con nuestro equipo de soporte: </strong>Si tiene alguna pregunta o necesita ayuda, no dude en contactarnos. \n"
+"                    Estamos aquí para apoyarle en cada paso del proceso.\n"
+"                </li>\n"
+"            </ul>\n"
+"            <p>\n"
+"\n"
+"            </p>\n"
+"            <p>Como nuevo cliente, te ofrecemos [Opcional: Incluye un descuento, una oferta especial o un beneficio adicional para nuevos clientes]. \n"
+"                Usa el código [Código de descuento/oferta] al realizar tu primer pedido.\n"
+"            </p>\n"
+"            <p>Esperamos construir una relación duradera y exitosa con usted.\n"
+"                 Gracias por unirse a la familia \n"
+"                <span t-out=\"object.company_id.name\">.</span>\n"
+"            </p>\n"
+"            <p>Sinceramente,</p>\n"
+"            <p>\n"
+"                <strong>El Equipo \n"
+"                    <span t-out=\"object.company_id.name\"></span>\n"
+"                </strong>\n"
+"            </p>\n"
+"            <div class=\"o_logo\">\n"
+"                <img t-attf-src=\"/web/binary/company_logo?company={{ object.company_id.id }}\" alt=\"object.company_id.name\"/>\n"
+"            </div>\n"
+"        "

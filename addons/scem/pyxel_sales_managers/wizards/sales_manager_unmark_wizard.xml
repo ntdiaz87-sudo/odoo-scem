@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista del wizard -->
+        <record id="view_sales_manager_unmark_wizard_form" model="ir.ui.view">
+            <field name="name">sales.manager.unmark.wizard.form</field>
+            <field name="model">sales.manager.unmark.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Desvincular/Desactivar Gestor">
+
+                    <field name="validation_result" invisible="1"/>
+
+                    <sheet>
+
+                        <!-- Encabezado con el nombre del contacto -->
+                        <div class="oe_title">
+                            <label for="partner_id" class="oe_edit_only"/>
+                            <h2>
+                                <field name="partner_id" readonly="1" class="oe_inline" options="{'no_open': True}"/>
+                            </h2>
+                        </div>
+
+                        <notebook>
+                            <page string="Confirmación" name="confirmation_page">
+
+                                <!-- Mensaje principal -->
+                                <field name="message"
+                                       nolabel="1"
+                                       widget="html"
+                                       class="oe_read_only"/>
+
+                                <separator/>
+
+                                <!-- Información sobre la acción -->
+
+                                        <div class="alert alert-info" role="alert" style="margin: 0;">
+                                            <p style="margin: 5px 0;">
+                                                <i class="fa fa-check-circle" style="color: #0c5460;"/>
+                                                El campo <strong>"Gestor Activo"</strong> se pondrá en
+                                                <strong style="color: #dc3545;">False</strong>
+                                            </p>
+                                            <p style="margin: 5px 0;" invisible="validation_result != 'allow'">
+                                                <i class="fa fa-check-circle" style="color: #0c5460;"/>
+                                                El campo <strong>"Vendedor Externo/Gestor de Ventas"</strong>
+                                                se desmarcará
+                                            </p>
+                                        </div>
+
+                            </page>
+                        </notebook>
+
+                    </sheet>
+
+                    <!-- Footer con botones -->
+                    <footer>
+                        <button name="action_confirm"
+                                string="Aceptar"
+                                type="object"
+                                class="btn-primary oe_highlight"
+                                data-hotkey="q"/>
+                        <button name="action_cancel"
+                                string="Cancelar"
+                                type="object"
+                                class="btn-secondary"
+                                data-hotkey="x"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

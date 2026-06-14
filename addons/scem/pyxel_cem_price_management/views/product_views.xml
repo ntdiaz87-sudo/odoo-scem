@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="price_management">
+        <field name="name">price.management</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="pyxel_cem_sale.product_template_form_inherit_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sale_margin']" position="after">
+                <field name="use_reference_price"/>
+                <field name="reference_price"
+                    invisible="not use_reference_price"
+                    required="use_reference_price"/>
+
+            </xpath>
+    
+        </field>
+    </record>
+</odoo>

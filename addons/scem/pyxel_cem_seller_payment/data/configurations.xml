@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="company_pct_config_singleton" model="company.pct.config">
+            <field name="name">Configuración</field>
+            <field name="company_profit">0.0</field>
+            <field name="pct_profit">0.0</field>
+        </record>
+    </data>
+</odoo>

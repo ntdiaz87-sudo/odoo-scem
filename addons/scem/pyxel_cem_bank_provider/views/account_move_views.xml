@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_move_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.cem</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                    <field name="is_form_readonly" invisible="1"/>
+                    <group string="Gestión de Pago" name="group_gestion_pago" colspan="4">
+                        <field name="is_supplier_payment"
+                               string="Pago al Proveedor"
+                               readonly="is_form_readonly"
+                               force_save="1"/>
+                        <field name="supplier_partner_id"
+                               invisible="not is_supplier_payment"
+                               required="is_supplier_payment"
+                               readonly="is_form_readonly"
+                               force_save="1"
+                               options="{'no_create': True, 'no_open': True}"/>
+                        <field name="supplier_bank_account_id"
+                               invisible="not is_supplier_payment"
+                               readonly="is_form_readonly"
+                               force_save="1"
+                               widget="selection"
+                               options="{'no_create': True, 'no_open': True}">
+
+                            <tree>
+                                <field name="acc_number"/>
+                                <field name="currency_id"/>
+                                <field name="acc_type"/>
+                            </tree>
+                        </field>
+                        <field name="cem_hide_supplier_data"
+                               invisible="not supplier_bank_account_id or not is_supplier_payment"
+                        />
+                        <field name="supplier_acc_number"
+                               invisible="not supplier_bank_account_id or not is_supplier_payment"
+                               readonly="1"/>
+                        <field name="supplier_currency_id"
+                               invisible="not supplier_bank_account_id or not is_supplier_payment"
+                               readonly="1"/>
+                        <field name="supplier_account_type"
+                               invisible="not supplier_bank_account_id or not is_supplier_payment"
+                               readonly="1"/>
+                        <field name="supplier_titular_id"
+                               invisible="not supplier_bank_account_id or not is_supplier_payment"
+                               readonly="1"/>
+                        <field name="supplier_swift_code"
+                               invisible="not supplier_bank_account_id or not is_supplier_payment"
+                               readonly="1"/>
+                        <field name="supplier_bank_id"
+                               invisible="not supplier_bank_account_id or not is_supplier_payment"
+                               readonly="1"/>
+                    </group>
+
+
+                </xpath>
+
+                  <xpath expr="//field[@name='selected_payment_method_payment_id']" position="attributes">
+                    <attribute name="readonly">is_supplier_payment</attribute>
+                    <attribute name="force_save">1</attribute>
+                    <attribute name="required">not is_supplier_payment and move_type in ('out_invoice', 'out_refund')
+                    </attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

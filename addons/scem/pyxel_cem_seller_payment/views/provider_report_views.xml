@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Action -->
+    <record id="provider_report_act_window" model="ir.actions.act_window">
+        <field name="name">Conciliación de la Plataforma con Proveedores</field>
+        <field name="res_model">provider.report</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>Crea un reporte por rango de fechas y opcionalmente por proveedor. Se toman solo facturas pagadas.</p>
+        </field>
+    </record>
+
+    <!-- Tree -->
+    <record id="view_provider_report_tree" model="ir.ui.view">
+        <field name="name">provider.report.tree</field>
+        <field name="model">provider.report</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="provider_id"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form -->
+    <record id="view_provider_report_form" model="ir.ui.view">
+        <field name="name">provider.report.form</field>
+        <field name="model">provider.report</field>
+        <field name="arch" type="xml">
+            <form string="Conciliación de la Plataforma con Proveedores">
+                <sheet>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <button string="Imprimir Reporte" type="object" name="action_print_report"
+                                    class="btn btn-primary" style="min-width: 320px !important; white-space: nowrap;"/>
+                        </div>
+                        <div class="col-6">
+                            <button string="Recalcular" type="object" name="action_recompute" class="btn btn-secondary"/>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" required="1"/>
+                        </group>
+                        <group>
+                            <field name="provider_id"/>
+                        </group>
+                    </group>
+
+                    <separator string="Productos" />
+
+                    <field name="line_ids" readonly="1" context="{'create': 0, 'delete': 0}">
+                        <tree>
+                            <field name="provider_id" optional="show"/>
+                            <field name="product_id"/>
+                            <field name="qty_sold"/>
+                            <field name="cif_indicator"/>
+                            <field name="cif_unit"/>
+                            <field name="cif_total"/>
+                            <field name="sale_total"/>
+                        </tree>
+                    </field>
+
+                    <!-- <notebook>
+                        <page string="Debug">
+                            <group>
+                                <field name="debug_info" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook> -->
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

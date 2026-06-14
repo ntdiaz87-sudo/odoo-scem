@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SNIPPET: hero_split (B2C / B2B) -->
+    <template id="s_cevende_hero_split" name="CEVENDE Hero Split">
+        <section class="cv-hero s_cevende_hero_split">
+            <div class="cv-container">
+                <div class="cv-hero__grid">
+                    <div class="cv-hero__panel cv-hero__panel--b2c">
+                        <div class="cv-hero__kicker">Compra Minorista</div>
+                        <h1 class="cv-hero__title">Todo para tu hogar,
+                            <span class="accent">al mejor precio</span></h1>
+                        <ul class="cv-hero__list">
+                            <li><span class="cv-check">✓</span> Productos 100% originales</li>
+                            <li><span class="cv-check">✓</span> Garantía oficial</li>
+                            <li><span class="cv-check">✓</span> Envíos rápidos a toda Cuba</li>
+                            <li><span class="cv-check">✓</span> Pagos seguros</li>
+                        </ul>
+                        <a href="/shop" class="cv-btn cv-btn--light">Comprar como minorista</a>
+                    </div>
+                    <div class="cv-hero__panel cv-hero__panel--b2b">
+                        <div class="cv-hero__kicker">Compra Mayorista</div>
+                        <h1 class="cv-hero__title">Más volumen,
+                            <span class="accent">más beneficios</span></h1>
+                        <ul class="cv-hero__list">
+                            <li><span class="cv-check">✓</span> Precios exclusivos por volumen</li>
+                            <li><span class="cv-check">✓</span> Asesoramiento especializado</li>
+                            <li><span class="cv-check">✓</span> Crédito y financiamiento</li>
+                            <li><span class="cv-check">✓</span> Facturación y cotización</li>
+                        </ul>
+                        <a href="/shop?wholesale=1" class="cv-btn cv-btn--turq">Comprar como mayorista</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    <template id="hero_split_snippet_options" inherit_id="website.snippets" name="CEVENDE Hero Snippet">
+        <xpath expr="//snippets[@id='snippet_structure']" position="inside">
+            <t t-snippet="theme_cevende.s_cevende_hero_split"/>
+        </xpath>
+    </template>
+</odoo>

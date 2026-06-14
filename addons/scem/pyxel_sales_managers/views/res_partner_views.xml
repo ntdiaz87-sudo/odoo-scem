@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista Form de Partner - Heredar -->
+        <record id="view_partner_form_sales_manager" model="ir.ui.view">
+            <field name="name">res.partner.form.sales.manager</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Campo invisible para controlar visibilidad -->
+                <xpath expr="//div[@name='button_box']" position="before">
+                    <field name="show_sales_manager" invisible="1"/>
+                </xpath>
+
+                <!-- Agregar botón en el button_box -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_sales_managers"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-user-secret"
+                            invisible="not show_sales_manager or sales_manager_count == 0">
+                        <field name="sales_manager_count" widget="statinfo"
+                               string="Gestores"/>
+                    </button>
+                </xpath>
+
+                <!-- Agregar campos en la página de Ventas y Compras -->
+                <xpath expr="//page[@name='sales_purchases']" position="inside">
+
+                    <!-- Sección: Gestor de Ventas Externo -->
+                    <group string="Gestor de Ventas Externo"
+                           name="external_sales_manager_group"
+                           invisible="not show_sales_manager">
+
+                        <!-- Primera fila: Checkbox -->
+                        <field name="is_sales_manager" widget="boolean"/>
+
+                        <!-- Segunda fila: Código y Gestor Activo en columnas -->
+                        <label for="sales_manager_code" invisible="not is_sales_manager"/>
+                        <div invisible="not is_sales_manager">
+                            <field name="sales_manager_code" readonly="1" class="oe_inline"/>
+                        </div>
+
+                        <label for="active_sales_manager" invisible="not is_sales_manager"/>
+                        <div invisible="not is_sales_manager">
+                            <field name="active_sales_manager" widget="boolean"  readonly='active_sales_manager' class="oe_inline"/>
+                        </div>
+
+                    </group>
+
+                    <!-- Botón de desvinculación - Solo si está ACTIVO -->
+                    <div invisible="not is_sales_manager or not active_sales_manager or not show_sales_manager"
+                         class="alert alert-warning"
+                         style="margin: 10px 0; padding: 10px;">
+                        <i class="fa fa-info-circle"/>
+                        <strong>Desvinculación de Gestor:</strong>
+                        Para desvincular o desactivar este gestor, haga clic en el botón de abajo.
+                        <div style="margin-top: 10px;">
+                            <button name="action_open_unmark_wizard"
+                                    type="object"
+                                    string="Desvincular/Desactivar Gestor"
+                                    class="btn-warning"
+                                    icon="fa-user-times"
+                                    confirm="¿Está seguro que desea continuar con la desvinculación/desactivación del gestor?"/>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Gestión de Ventas (campos existentes) -->
+                    <group string="Gestión de Ventas"
+                           name="sales_management"
+                           invisible="not show_sales_manager">
+                        <field name="sales_manager_id"
+                               domain="[('active', '=', True)]"
+                               context="{'default_partner_id': id}"/>
+                        <field name="sales_manager_ids"
+                               widget="many2many_tags"
+                               domain="[('active', '=', True)]"/>
+                    </group>
+
+                </xpath>
+
+
+<!--                <xpath expr="//field[@name='bank_ids']" position="attributes">-->
+<!--                    <attribute name="invisible">is_provider == 0</attribute>-->
+<!--                </xpath>-->
+
+
+
+            </field>
+        </record>
+
+        <!-- Vista Tree de Partner - Heredar -->
+        <record id="view_partner_tree_sales_manager" model="ir.ui.view">
+            <field name="name">res.partner.tree.sales.manager</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="before">
+                    <field name="show_sales_manager" column_invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="is_sales_manager"
+                           optional="hide"
+                           widget="boolean_toggle"
+                           column_invisible="not parent.show_sales_manager"/>
+                    <field name="sales_manager_code"
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+                    <field name="sales_manager_id"
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vista Search de Partner - Heredar -->
+        <record id="view_partner_search_sales_manager" model="ir.ui.view">
+            <field name="name">res.partner.search.sales.manager</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="sales_manager_code"/>
+                    <field name="sales_manager_id"/>
+                    <field name="sales_manager_ids"/>
+                </xpath>
+
+                <xpath expr="//filter[@name='salesperson']" position="after">
+                    <separator/>
+                    <filter string="Gestores de Ventas Externos"
+                            name="external_sales_managers"
+                            domain="[('is_sales_manager', '=', True)]"/>
+                    <filter string="Gestores Activos"
+                            name="active_sales_managers"
+                            domain="[('is_sales_manager', '=', True), ('active_sales_manager', '=', True)]"/>
+                    <filter string="Gestores Inactivos"
+                            name="inactive_sales_managers"
+                            domain="[('is_sales_manager', '=', True), ('active_sales_manager', '=', False)]"/>
+                    <separator/>
+                    <filter string="Gestor de Ventas Asignado"
+                            name="sales_manager"
+                            context="{'group_by': 'sales_manager_id'}"/>
+                </xpath>
+
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

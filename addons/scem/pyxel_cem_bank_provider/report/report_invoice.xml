@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ================================================================
+             pyxel_cem_bank_provider · report_invoice.xml
+             ================================================================
+             ÚNICO PROPÓSITO: personalizar el bloque de detalles de pago
+             cuando el proveedor tiene cuenta bancaria registrada.
+
+             HERENCIA CORRECTA:
+               Este módulo hereda SOLO de pyxel_cem_sale.invoice_payment_details_block
+               (el sub-template del padre), NO de report_invoice_document_cem_inherit
+               ni de account.report_invoice_document.
+
+             REGLA: ningún hijo toca al abuelo (account.report_invoice_document).
+             ================================================================ -->
+        <template id="invoice_payment_details_block_bank"
+                  inherit_id="pyxel_cem_sale.invoice_payment_details_block">
+
+            <xpath expr="//div[contains(@class, 'payment-details')]"
+                   position="replace">
+
+                <!-- CASO 1: hay datos de cuenta bancaria del proveedor -->
+                <t t-if="not o.cem_hide_supplier_data and o.supplier_bank_account_id">
+                    <div class="payment-details"
+                         style="border: 1px solid #000; padding: 15px; margin-top: 20px;">
+
+                        <h4 style="text-align: center; margin-bottom: 20px;">
+                            Detalles del pago
+                        </h4>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <p>
+                                    <strong>Proveedor:</strong>
+                                    <t t-esc="o.supplier_partner_id.name or ''"/>
+                                </p>
+                                <p>
+                                    <strong>Titular de la Cuenta:</strong>
+                                    <t t-esc="o.supplier_titular_id.name or o.supplier_partner_id.name or ''"/>
+                                </p>
+                                <p>
+                                    <strong>Cuenta Bancaria:</strong>
+                                    <t t-esc="o.supplier_acc_number or ''"/>
+                                </p>
+                                <p>
+                                    <strong>Tipo de Cuenta:</strong>
+                                    <t t-esc="o.supplier_account_type or ''"/>
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p>
+                                    <strong>Banco:</strong>
+                                    <t t-esc="o.supplier_bank_id.name or ''"/>
+                                </p>
+                                <p>
+                                    <strong>Swift / BIC:</strong>
+                                    <t t-esc="o.supplier_swift_code or ''"/>
+                                </p>
+                                <p>
+                                    <strong>Moneda de Pago:</strong>
+                                    <t t-esc="o.currency_id.name or ''"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- CASO 2: sin datos bancarios → bloque genérico de pago extranjero -->
+                <t t-else="">
+                    <div class="payment-details"
+                         style="border: 1px solid #000; padding: 15px; margin-top: 20px;">
+                        <div class="row">
+                            <div class="col-6">
+                                <p>
+                                    <strong>Beneficiario:</strong>
+                                    <span>Proveedor Extranjero</span>
+                                </p>
+                                <p>
+                                    <strong>Método de pago:</strong>
+                                    <span>Transferencia bancaria en el exterior</span>
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p>
+                                    <strong>Moneda de Pago:</strong>
+                                    <t t-esc="o.currency_id.name or ''"/>
+                                </p>
+                                <p>
+                                    <strong>Estado de la mercancía:</strong>
+                                    <span>Consignación</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

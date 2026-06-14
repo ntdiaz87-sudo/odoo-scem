@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <!-- Website Config Settings -->
+    <record id="res_config_settings_view_form_scita" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.mail</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <block id="website_info_settings" position="after">
+                <block title="Website Logo Settings" id="website_logo_settings">
+                    <setting id="website_logo_header">
+                        <label for="header_logo" />
+                        <div>
+                            <field name="header_logo" widget="image"/>
+                        </div>
+                    </setting>
+                    <setting id="website_logo_footer">
+                       <label for="footer_logo" />
+                        <div>
+                            <field name="footer_logo" widget="image"/>
+                        </div>
+                    </setting>
+                </block>
+                <!-- Social Media Icon Block -->
+                <block title="Website Social Media Icon" id="website_social_media_icons">
+                    <setting id="website_social_facebook">
+                        <label for="social_facebook"></label>
+                        <div class="mt16">
+                            <field name="social_facebook" filename="social_facebook"/>
+                        </div>
+                    </setting>
+                    
+                    <setting id="website_social_twitter">
+                        <label for="social_twitter"></label>
+                        <div class="mt16">
+                            <field name="social_twitter" filename="social_twitter"/>
+                        </div>
+                    </setting>
+
+                    <setting id="website_social_linkedin">
+                        <label for="social_linkedin"></label>
+                        <div class="mt16">
+                            <field name="social_linkedin" filename="social_linkedin"/>
+                        </div>
+                    </setting>
+
+                    <setting id="website_social_youtube">
+                        <label for="social_youtube"></label>
+                        <div class="mt16">
+                            <field name="social_youtube" filename="social_youtube"/>
+                        </div>
+                    </setting>
+
+                    <setting id="website_social_instagram">
+                        <label for="social_instagram"></label>
+                        <div class="mt16">
+                            <field name="social_instagram" filename="social_instagram"/>
+                        </div>
+                    </setting>
+                </block>
+                <!-- Multiple Product Image customizations -->
+                <block class="row d-flex flex-column" title="Multiple Product Image Customizations" id="mulitple_product_image_customization">
+                    <setting id="product_no_extra_options">
+                        <field name="no_extra_options"/>
+                    </setting>
+                    <setting id="product_enable_disable_text" invisible="not no_extra_options">
+                        <field name="enable_disable_text"/>
+                    </setting>
+                    <setting class="w-100" id="product_interval_play" invisible="not no_extra_options">
+                        <field name="interval_play"/>
+                    </setting>
+                    <setting class="w-100" id="product_thumbnail_panel_position" invisible="not no_extra_options">
+                        <field name="thumbnail_panel_position"/>
+                    </setting>
+                    <setting class="w-100" id="product_color_opt_thumbnail" invisible="not no_extra_options">
+                        <field name="color_opt_thumbnail"/>
+                    </setting>
+                    <setting id="product_change_thumbnail_size">
+                        <field name="change_thumbnail_size"/>
+                    </setting>
+                    <setting class="w-100" id="product_thumb_height" invisible="not change_thumbnail_size">
+                        <field name="thumb_height"/>
+                    </setting>
+                    <setting class="w-100" id="product_thumb_width" invisible="not change_thumbnail_size">
+                        <field name="thumb_width"/>
+                    </setting>
+                </block>
+                <!-- Product Details Page Setting -->
+                <block class="row d-flex flex-column" title="Product Details Page Setting" id="product_detail_page_setting">
+                    <setting id="website_is_brand_display">
+                        <field name="is_brand_display"/>
+                    </setting>
+                    <setting class="w-100" id="website_brand_display_option" invisible="not is_brand_display">
+                        <field name="brand_display_option"/>
+                    </setting>
+                    <setting id="website_is_default_codey">
+                        <field name="is_default_code"/>
+                    </setting>
+                </block>
+                <!-- AMP Settings -->
+                <block title="AMP Settings" id="amp_setting">
+                    <setting id="website_is_amp_enable">
+                        <field name="is_amp_enable"/>
+                    </setting>
+                </block>
+            </block>
+        </field>
+    </record>
+</odoo>

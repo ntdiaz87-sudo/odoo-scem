@@ -1,0 +1,1833 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="scem_my_account_link" model="ir.ui.view">
+        <field name="name">scem_my_account_link</field>
+        <field name="inherit_id" search="[('key', '=', 'portal.my_account_link')]"/>
+        <field name="type">qweb</field>
+        <field name="key">pyxel_cem_website_sale.scem_my_account_link</field>
+        <field name="arch" type="xml">
+            <xpath expr="//a[contains(@href, '/my/home')]" position="attributes">
+                <attribute name="href">/my/profile</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="scem_portal_breadcrumbs" model="ir.ui.view">
+        <field name="name">scem_portal_breadcrumbs</field>
+        <field name="inherit_id" search="[('key', '=', 'portal.portal_breadcrumbs')]"/>
+        <field name="type">qweb</field>
+        <field name="key">pyxel_cem_website_sale.scem_portal_breadcrumbs</field>
+        <field name="arch" type="xml">
+            <xpath expr="//a[contains(@href, '/my/home')]" position="attributes">
+                <attribute name="href">/my/profile</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="scem_portal_my_security" model="ir.ui.view">
+        <field name="name">scem_portal_my_security</field>
+        <field name="inherit_id" search="[('key', '=', 'portal.portal_my_security')]"/>
+        <field name="type">qweb</field>
+        <field name="key">pyxel_cem_website_sale.scem_portal_my_security</field>
+        <field name="arch" type="xml">
+            <xpath expr="//a[@href='/my/']" position="attributes">
+                <attribute name="href">/my/profile</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="scem_portal_my_details" model="ir.ui.view">
+        <field name="name">scem_portal_my_details</field>
+        <field name="inherit_id" search="[('key', '=', 'portal.portal_my_details')]"/>
+        <field name="type">qweb</field>
+        <field name="key">pyxel_cem_website_sale.scem_portal_my_details</field>
+        <field name="arch" type="xml">
+            <xpath expr="//a[@href='/my/']" position="attributes">
+                <attribute name="href">/my/profile</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <template id="portal_orders_by_state" name="Portal Orders By State">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <t t-esc="title"/>
+                    </h3>
+                    <a href="/my/profile" class="btn btn-secondary btn-sm">Back</a>
+                </div>
+
+                <form method="get" class="mb-3" t-att-action="'/my/orders/by_state/%s' % status_key">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Search by code..."
+                               t-att-value="search"/>
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+
+
+                <t t-if="not orders">
+                    <div class="alert alert-info">There are no orders in this state.</div>
+                </t>
+
+                <t t-if="orders">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Order</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Price</th>
+                                    <!-- <th>Status</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="orders" t-as="order">
+                                    <tr>
+                                        <td>
+                                            <a t-att-href="'/my/orders/%s' % order.id">
+                                                <t t-esc="order.name"/>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <t t-esc="order.date_order"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="order.amount_total"/>
+                                            <t t-esc="order.currency_id.symbol"/>
+                                        </td>
+                                        <!-- <td>
+                                        <t t-esc="order.state"/>
+                                        <t t-if="order.so_cem_state"> / <t t-esc="order.so_cem_state"/></t>
+                                        </td> -->
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_invoices_by_status" name="Portal Invoices By Status">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <div class="container my-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <t t-esc="title"/>
+                    </h3>
+                    <a href="/my/profile" class="btn btn-secondary btn-sm">Back</a>
+                </div>
+
+                <form method="get" class="mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="search" placeholder="Search invoice..."
+                               t-att-value="search"/>
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Invoice</th>
+                                <th>Date</th>
+                                <th class="text-end">Total</th>
+                                <!-- <th>Estado pago</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="invoices">
+                                <t t-foreach="invoices" t-as="inv">
+                                    <tr>
+                                        <td>
+                                            <a t-attf-href="/my/invoices/#{inv.id}" style="text-decoration:none;">
+                                                <t t-esc="inv.name"/>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <t t-esc="(inv.invoice_date and inv.invoice_date.strftime('%d/%m/%Y')) or ''"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="'{:.2f} {}'.format(inv.amount_total, inv.currency_id.name)"/>
+                                        </td>
+                                        <!-- <td>
+                                        <t t-esc="inv.payment_state"/>
+                                        </td> -->
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <tr>
+                                    <td colspan="4" class="text-center">There are no invoices for this filter.</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+    <template id="my_profile" name="My Profile">
+        <t t-call="website.layout">
+            <!-- <div class="container"> -->
+            <div id="my-profile" class="container">
+                <h2>My Profile</h2>
+                <div class="my-profile-container-1 d-flex">
+                    <t t-if="partner.image_1920">
+                        <img t-att-src="'data:image/png;base64,%s' % partner.image_1920.decode('utf-8')"
+                             alt="Profile Image" class="profile-photo"/>
+                    </t>
+                    <t t-else="">
+                        <svg class="profile-photo" width="172" height="172" viewBox="0 0 172 172" fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <rect x="4" y="4" width="164" height="164" rx="82" stroke="currentColor" stroke-width="8"/>
+                            <path d="M104.333 58.6668C104.333 68.792 96.1253 77.0002 86.0001 77.0002C75.8749 77.0002 67.6667 68.792 67.6667 58.6668C67.6667 48.5416 75.8749 40.3335 86.0001 40.3335C96.1253 40.3335 104.333 48.5416 104.333 58.6668Z"
+                                  stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                            <path d="M53.1143 92.5399C54.4049 90.4807 56.7064 89.375 59.1367 89.375H112.863C115.294 89.375 117.595 90.4807 118.886 92.5399C122.057 97.5995 127.601 108.333 127.865 121.871C127.876 122.423 127.427 122.875 126.875 122.875H45.125C44.5727 122.875 44.124 122.423 44.1348 121.871C44.3991 108.333 49.9429 97.5995 53.1143 92.5399Z"
+                                  stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                        </svg>
+                    </t>
+
+
+                    <div class="my-profile-info-container">
+                        <div class="info-profile">
+                            <p class="profile_name">
+                                <t t-esc="request.env.user.partner_id.name"/>
+                            </p>
+                            <!-- ========== NUEVO: Mostrar Tipo de Gestión ========== -->
+                            <t t-if="show_management_type and management_type_name">
+                                <div class="management-type-container d-flex"
+                                     style="gap: 6px; align-items: center; margin-top: 5px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+                                              stroke="#FD6C1D" stroke-width="1.5" fill="none"/>
+                                        <path d="M12 6v6l4 2" stroke="#FD6C1D" stroke-width="1.5" stroke-linecap="round"
+                                              fill="none"/>
+                                        <circle cx="12" cy="12" r="2" fill="#FD6C1D" stroke="none"/>
+                                    </svg>
+                                    <small style="color: #595B61;">
+                                        <strong>Tipo de Gestión:</strong>
+                                        <span style="color: #FD6C1D; font-weight: 500;">
+                                            <t t-esc="management_type_name"/>
+                                        </span>
+                                    </small>
+                                </div>
+                            </t>
+                            <div class="email-container d-flex">
+                                <svg width="14" height="15" viewBox="0 0 14 15" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2.33341 2.8335H11.6667C12.3084 2.8335 12.8334 3.3585 12.8334 4.00016V11.0002C12.8334 11.6418 12.3084 12.1668 11.6667 12.1668H2.33341C1.69175 12.1668 1.16675 11.6418 1.16675 11.0002V4.00016C1.16675 3.3585 1.69175 2.8335 2.33341 2.8335Z"
+                                          stroke="#595B61" stroke-width="1.2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M12.8334 4L7.00008 8.08333L1.16675 4" stroke="#595B61" stroke-width="1.2"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+
+                                <small class="profile_email">
+                                    <t t-esc="request.env.user.partner_id.email"/>
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="procces-order d-flex">
+                            <!-- <div class="d-flex" style="gap:5px"> -->
+                            <a t-att-href="'/my/orders/by_state/quotes'"
+                               class="d-flex text-decoration-none"
+                               style="gap:5px; color: inherit;">
+                                <svg class="order" width="63" height="64" viewBox="0 0 63 64" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <rect y="0.5" width="63" height="63" rx="10" fill="#FFE0CF"/>
+                                    <g clip-path="url(#clip0_1481_7612)">
+                                        <path d="M49.8334 17.9631V18.4998C49.8327 19.7577 49.4254 20.9817 48.6722 21.9892C47.919 22.9967 46.8603 23.7337 45.654 24.0904C44.4477 24.447 43.1585 24.4042 41.9785 23.9683C40.7986 23.5323 39.7911 22.7267 39.1065 21.6714C38.4218 20.6161 38.0966 19.3678 38.1794 18.1126C38.2622 16.8574 38.7485 15.6626 39.5657 14.7064C40.383 13.7502 41.4875 13.0837 42.7145 12.8065C43.9415 12.5293 45.2252 12.6561 46.3743 13.1681"
+                                              stroke="#FD6C1D" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M49.8333 13.8335L44 19.6727L42.25 17.9227" stroke="#FD6C1D"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </g>
+                                    <g clip-path="url(#clip1_1481_7612)">
+                                        <path d="M37.6666 48.8332C38.403 48.8332 38.9999 48.2362 38.9999 47.4998C38.9999 46.7635 38.403 46.1665 37.6666 46.1665C36.9302 46.1665 36.3333 46.7635 36.3333 47.4998C36.3333 48.2362 36.9302 48.8332 37.6666 48.8332Z"
+                                              fill="#2C2E35" stroke="#FD6C1D" stroke-width="2.3" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M23.0001 48.8332C23.7365 48.8332 24.3334 48.2362 24.3334 47.4998C24.3334 46.7635 23.7365 46.1665 23.0001 46.1665C22.2637 46.1665 21.6667 46.7635 21.6667 47.4998C21.6667 48.2362 22.2637 48.8332 23.0001 48.8332Z"
+                                              fill="#2C2E35" stroke="#FD6C1D" stroke-width="2.3" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M12.3333 20.8335H17.6666L21.2399 38.6868C21.3618 39.3007 21.6958 39.8521 22.1833 40.2446C22.6708 40.637 23.2808 40.8455 23.9066 40.8335H36.8666C37.4923 40.8455 38.1023 40.637 38.5899 40.2446C39.0774 39.8521 39.4113 39.3007 39.5332 38.6868L41.6666 27.5002H18.9999"
+                                              stroke="#FD6C1D" stroke-width="2.3" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_1481_7612">
+                                            <rect width="14" height="14" fill="white" transform="translate(37 11.5)"/>
+                                        </clipPath>
+                                        <clipPath id="clip1_1481_7612">
+                                            <rect width="32" height="32" fill="white" transform="translate(11 19.5)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+
+                                <div>
+                                    <b t-esc="new_orders_count"/>
+                                    <!--                                    <p>New Orders</p>-->
+                                    <p class="quotes">Quotes</p>
+                                </div>
+                            </a>
+                            <!-- </div> -->
+                            <!-- <div class="d-flex" style="gap:5px"> -->
+                            <a t-att-href="'/my/orders/by_state/requests'"
+                               class="d-flex text-decoration-none"
+                               style="gap:5px; color: inherit;">
+                                <svg class="order" width="63" height="64" viewBox="0 0 63 64" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <rect y="0.5" width="63" height="63" rx="10" fill="#FFF9DF"/>
+                                    <path d="M31 41.5V47.5" stroke="#FFCF3E" stroke-width="3" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M37.3601 38.8599L41.6051 43.1049" stroke="#FFCF3E" stroke-width="3"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M20.395 43.1049L24.64 38.8599" stroke="#FFCF3E" stroke-width="3"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M40 32.5H46" stroke="#FFCF3E" stroke-width="3" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M16 32.5H22" stroke="#FFCF3E" stroke-width="3" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M37.3601 26.14L41.6051 21.895" stroke="#FFCF3E" stroke-width="3"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M20.395 21.895L24.64 26.14" stroke="#FFCF3E" stroke-width="3"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M31 17.5V23.5" stroke="#FFCF3E" stroke-width="3" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                </svg>
+
+                                <div>
+                                    <b t-esc="orders_in_progress_count"/>
+                                    <!--                                    <p>Orders in progress</p>-->
+                                    <p class="request">Requests</p>
+                                </div>
+                            </a>
+                            <!-- </div> -->
+                            <!-- <div class="d-flex" style="gap:5px"> -->
+                            <a t-att-href="'/my/invoices/status/paid'"
+                               class="d-flex text-decoration-none"
+                               style="gap:5px; color: inherit;">
+                                <svg class="order" width="63" height="64" viewBox="0 0 63 64" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <rect y="0.5" width="63" height="63" rx="10" fill="#E8FFEE"/>
+                                    <g clip-path="url(#clip0_1481_7594)">
+                                        <path d="M51.8334 17.9631V18.4998C51.8327 19.7577 51.4254 20.9817 50.6722 21.9892C49.919 22.9967 48.8603 23.7337 47.654 24.0904C46.4477 24.447 45.1585 24.4042 43.9785 23.9683C42.7986 23.5323 41.7911 22.7267 41.1065 21.6714C40.4218 20.6161 40.0966 19.3678 40.1794 18.1126C40.2622 16.8574 40.7485 15.6626 41.5657 14.7064C42.383 13.7502 43.4875 13.0837 44.7145 12.8065C45.9415 12.5293 47.2252 12.6561 48.3743 13.1681"
+                                              stroke="#2BB82B" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M51.8333 13.8335L46 19.6727L44.25 17.9227" stroke="#2BB82B"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </g>
+                                    <path d="M19 22.1665L15 27.4998V46.1665C15 46.8737 15.281 47.552 15.781 48.0521C16.2811 48.5522 16.9594 48.8332 17.6667 48.8332H36.3333C37.0406 48.8332 37.7189 48.5522 38.219 48.0521C38.719 47.552 39 46.8737 39 46.1665V27.4998L35 22.1665H19Z"
+                                          stroke="#2BB82B" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M32.3334 32.8335C32.3334 34.248 31.7715 35.6045 30.7713 36.6047C29.7711 37.6049 28.4146 38.1668 27.0001 38.1668C25.5856 38.1668 24.229 37.6049 23.2288 36.6047C22.2287 35.6045 21.6667 34.248 21.6667 32.8335"
+                                          stroke="#2BB82B" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M15 27.5H39" stroke="#2BB82B" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <defs>
+                                        <clipPath id="clip0_1481_7594">
+                                            <rect width="14" height="14" fill="white" transform="translate(39 11.5)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+
+                                <div>
+                                    <b t-esc="orders_shipped_count"/>
+                                    <!--                                    <p>Paid orders</p>-->
+                                    <p class="invoices">Invoices</p>
+                                </div>
+                            </a>
+                            <!-- </div> -->
+                            <!-- <div class="d-flex" style="gap:5px"> -->
+                            <a t-att-href="'/my/orders/by_state/cancelled'"
+                               class="d-flex text-decoration-none"
+                               style="gap:5px; color: inherit;">
+                                <svg class="order" width="63" height="64" viewBox="0 0 63 64" fill="none"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <rect y="0.5" width="63" height="63" rx="6" fill="#FFE4E5"/>
+                                    <path d="M38.9791 49C40.9926 49 42.6249 47.3211 42.6249 45.25C42.6249 43.1789 40.9926 41.5 38.9791 41.5C36.9655 41.5 35.3333 43.1789 35.3333 45.25C35.3333 47.3211 36.9655 49 38.9791 49Z"
+                                          stroke="#D02824" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M20.0208 49C22.0344 49 23.6667 47.3211 23.6667 45.25C23.6667 43.1789 22.0344 41.5 20.0208 41.5C18.0073 41.5 16.375 43.1789 16.375 45.25C16.375 47.3211 18.0073 49 20.0208 49Z"
+                                          stroke="#D02824" stroke-width="2" stroke-linecap="round"
+                                          stroke-linejoin="round"/>
+                                    <path d="M35.3333 29.5H41.1666L45.5416 34V41.5H35.3333V29.5Z" stroke="#D02824"
+                                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M35.3333 22H13.4583V41.5H35.3333V22Z" stroke="#D02824" stroke-width="2"
+                                          stroke-linecap="round" stroke-linejoin="round"/>
+                                    <!-- <g clip-path="url(#clip0_1481_7581)">
+                                    <path d="M52.8334 19.9631V20.4998C52.8327 21.7577 52.4254 22.9817 51.6722 23.9892C50.919 24.9967 49.8603 25.7337 48.654 26.0904C47.4477 26.447 46.1585 26.4042 44.9785 25.9683C43.7986 25.5323 42.7911 24.7267 42.1065 23.6714C41.4218 22.6161 41.0966 21.3678 41.1794 20.1126C41.2622 18.8574 41.7485 17.6626 42.5657 16.7064C43.383 15.7502 44.4875 15.0837 45.7145 14.8065C46.9415 14.5293 48.2252 14.6561 49.3743 15.1681" stroke="#D02824" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M52.8333 15.8335L47 21.6727L45.25 19.9227" stroke="#D02824" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </g> -->
+                                    <defs>
+                                        <clipPath id="clip0_1481_7581">
+                                            <rect width="14" height="14" fill="white" transform="translate(40 13.5)"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+
+                                <div>
+                                    <b t-esc="orders_cancelled_count"/>
+                                    <p class="cancel">Cancelled orders</p>
+                                </div>
+                            </a>
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="responsive-header">
+                    <h5>Account configuration</h5>
+
+                    <div class="responsive-menu-container d-flex" style="gap:10px; align-items:center">
+                        <div id="current-icon"></div>
+                        <p id="current-section">My Profile</p>
+                    </div>
+                </div>
+
+                <div class="my-profile-container-2 d-flex">
+                    <div class="conf-account">
+                        <h5>Account configuration</h5>
+                        <div class="cont-account-menu">
+                            <div class="d-flex menu-item" data-target="profile-orders"
+                                 t-attf-class="menu-item #{'active' if active_tab=='profile-orders' else ''}">
+                                <a href="#" class="d-flex">
+                                    <svg width="27" height="27" viewBox="0 0 27 27" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M23.625 15.75H15.75V23.625H23.625V15.75Z" stroke="currentColor"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M11.25 15.75H3.375V23.625H11.25V15.75Z" stroke="currentColor"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M23.625 3.375H15.75V11.25H23.625V3.375Z" stroke="currentColor"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M11.25 3.375H3.375V11.25H11.25V3.375Z" stroke="currentColor"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <p>My Profile</p>
+                                </a>
+                            </div>
+                            <div class="d-flex menu-item" data-target="profile-details"
+                                 t-attf-class="menu-item #{'active' if active_tab=='profile-details' else ''}">
+                                <a href="#" class="d-flex">
+                                    <svg width="27" height="27" viewBox="0 0 27 27" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M22.5 23.625V21.375C22.5 20.1815 22.0259 19.0369 21.182 18.193C20.3381 17.3491 19.1935 16.875 18 16.875H9C7.80653 16.875 6.66193 17.3491 5.81802 18.193C4.97411 19.0369 4.5 20.1815 4.5 21.375V23.625"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M13.5 12.375C15.9853 12.375 18 10.3603 18 7.875C18 5.38972 15.9853 3.375 13.5 3.375C11.0147 3.375 9 5.38972 9 7.875C9 10.3603 11.0147 12.375 13.5 12.375Z"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                    </svg>
+
+                                    <p>Personal Information</p>
+                                </a>
+                            </div>
+                            <div class="d-flex menu-item" data-target="delivery-address"
+                                 t-attf-class="menu-item #{'active' if active_tab=='delivery-address' else ''}">
+                                <a href="#" class="d-flex">
+                                    <svg width="27" height="27" viewBox="0 0 27 27" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3.375 10.125L13.5 2.25L23.625 10.125V22.5C23.625 23.0967 23.3879 23.669 22.966 24.091C22.544 24.5129 21.9717 24.75 21.375 24.75H5.625C5.02826 24.75 4.45597 24.5129 4.03401 24.091C3.61205 23.669 3.375 23.0967 3.375 22.5V10.125Z"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M10.125 24.75V13.5H16.875V24.75"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                    </svg>
+
+                                    <p>Delivery Address</p>
+                                </a>
+                            </div>
+                            <div class="d-flex menu-item" data-target="history-order"
+                                 t-attf-class="menu-item #{'active' if active_tab=='history-order' else ''}">
+                                <a href="#" class="d-flex">
+                                    <svg width="27" height="27" viewBox="0 0 27 27" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 20.25H23.625" stroke="currentColor" stroke-width="2.2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M3.375 20.25H3.38625" stroke="currentColor" stroke-width="2.2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9 13.5H23.625" stroke="currentColor" stroke-width="2.2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M3.375 13.5H3.38625" stroke="currentColor" stroke-width="2.2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9 6.75H23.625" stroke="currentColor" stroke-width="2.2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M3.375 6.75H3.38625" stroke="currentColor" stroke-width="2.2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+
+                                    <p>Order History</p>
+                                </a>
+                            </div>
+                            <!-- <div class="d-flex original-link">
+                                <a href="/my/security" class="d-flex">
+                                    <svg class="account-icon" width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.7917 11.4585H5.20833C4.05774 11.4585 3.125 12.3912 3.125 13.5418V20.8335C3.125 21.9841 4.05774 22.9168 5.20833 22.9168H19.7917C20.9423 22.9168 21.875 21.9841 21.875 20.8335V13.5418C21.875 12.3912 20.9423 11.4585 19.7917 11.4585Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M7.29175 11.4585V7.29183C7.29175 5.91049 7.84048 4.58573 8.81723 3.60898C9.79399 2.63223 11.1187 2.0835 12.5001 2.0835C13.8814 2.0835 15.2062 2.63223 16.1829 3.60898C17.1597 4.58573 17.7084 5.91049 17.7084 7.29183V11.4585" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+
+
+                                    <p>Security</p>
+                                </a>
+                            </div> -->
+
+
+                            <div class="d-flex menu-item" data-target="security-section"
+                                 t-attf-class="menu-item #{ 'active' if active_tab=='security-section' else '' }">
+                                <a href="/my/profile?tab=security" class="d-flex">
+                                    <svg class="account-icon" width="25" height="25" viewBox="0 0 25 25" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.7917 11.4585H5.20833C4.05774 11.4585 3.125 12.3912 3.125 13.5418V20.8335C3.125 21.9841 4.05774 22.9168 5.20833 22.9168H19.7917C20.9423 22.9168 21.875 21.9841 21.875 20.8335V13.5418C21.875 12.3912 20.9423 11.4585 19.7917 11.4585Z"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M7.29175 11.4585V7.29183C7.29175 5.91049 7.84048 4.58573 8.81723 3.60898C9.79399 2.63223 11.1187 2.0835 12.5001 2.0835C13.8814 2.0835 15.2062 2.63223 16.1829 3.60898C17.1597 4.58573 17.7084 5.91049 17.7084 7.29183V11.4585"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                    <p>Security</p>
+                                </a>
+                            </div>
+                            <div class="d-flex menu-item" data-target="contract-section"
+                                 t-attf-class="menu-item #{'active' if active_tab=='contract-section' else ''}">
+                                <a href="#" class="d-flex">
+                                    <svg width="27" height="27" viewBox="0 0 27 27" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.125 4.5H7.875C6.83947 4.5 6 5.33947 6 6.375V20.625C6 21.6605 6.83947 22.5 7.875 22.5H19.125C20.1605 22.5 21 21.6605 21 20.625V6.375C21 5.33947 20.1605 4.5 19.125 4.5Z"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M9 9H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                        <path d="M9 13.5H18" stroke="currentColor" stroke-width="2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9 18H13.5" stroke="currentColor" stroke-width="2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+
+                                    </svg>
+                                    <p>Contract</p>
+                                </a>
+                            </div>
+
+                            <t t-if="request.env['ir.module.module'].sudo().search_count([('name', '=', 'pyxel_import_backend'), ('state', '=', 'installed')])">
+                                <div class="d-flex menu-item">
+                                    <t t-set="website_domain"
+                                       t-value="request.env['website'].get_current_website().domain or ''"/>
+                                    <t t-set="imports_url"
+                                       t-value="'%s/model/imports' % website_domain if website_domain else ''"/>
+                                    <a t-att-href="imports_url" target="_blank" class="d-flex">
+                                        <svg width="27" height="27" viewBox="0 0 27 27" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M19.125 4.5H7.875C6.83947 4.5 6 5.33947 6 6.375V20.625C6 21.6605 6.83947 22.5 7.875 22.5H19.125C20.1605 22.5 21 21.6605 21 20.625V6.375C21 5.33947 20.1605 4.5 19.125 4.5Z"
+                                                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                  stroke-linejoin="round"/>
+                                            <path d="M12 12.375L14.625 15L12 17.625" stroke="currentColor"
+                                                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M14.625 15H9" stroke="currentColor" stroke-width="2"
+                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M18 10.125V9" stroke="currentColor" stroke-width="2"
+                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <p>Importaciones</p>
+                                    </a>
+                                </div>
+                            </t>
+
+                            <div class="d-flex original-link">
+                                <a t-attf-href="/web/session/logout?redirect=/" class="d-flex">
+                                    <svg width="27" height="27" viewBox="0 0 27 27" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 19.125L23.625 13.5L18 7.875" stroke="currentColor" stroke-width="2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M23.625 13.5H10.125" stroke="currentColor" stroke-width="2"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M10.125 23.625H5.625C5.02826 23.625 4.45597 23.3879 4.03401 22.966C3.61205 22.544 3.375 21.9717 3.375 21.375V5.625C3.375 5.02826 3.61205 4.45597 4.03401 4.03401C4.45597 3.61205 5.02826 3.375 5.625 3.375H10.125"
+                                              stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                    <p>Logout</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dinamic-info">
+                        <div id="profile-orders" class="content-section"
+                             t-attf-class="content-section #{'active' if active_tab=='profile-orders' else ''}">
+                            <h5>Current Orders</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped order-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Invoice</th>
+                                            <th>Order date</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            <th>State</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="sent_orders">
+                                            <t t-foreach="sent_orders" t-as="order">
+                                                <tr>
+                                                    <td>
+                                                        <a class="order-link" t-attf-href="/my/orders/#{order.id}"
+                                                           style="text-decoration: none; color: inherit;">
+                                                            <t t-esc="order.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <t t-set="invoices_to_show"
+                                                           t-value="order.invoice_ids.filtered(lambda inv: inv.state != 'draft')"/>
+
+                                                        <t t-if="invoices_to_show">
+                                                            <t t-foreach="invoices_to_show" t-as="inv">
+                                                                <a t-att-href="'/my/invoices/%s' % inv.id"
+                                                                   t-esc="inv.name"/>
+                                                            </t>
+                                                        </t>
+                                                        <t t-else="">
+                                                            —
+                                                        </t>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="order.date_order.strftime('%d/%m/%Y')"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="len(order.order_line)"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="'{:,.2f} {}'.format(order.amount_total, order.currency_id.name).replace(',', ' ')"/>
+                                                    </td>
+                                                    <td>
+                                                        <t>Processing order</t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <t t-if="not sent_orders">
+                                            <tr>
+                                                <td colspan="5" class="text-center">There are no current orders.</td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div id="profile-details" class="content-section profile-details"
+                             t-attf-class="content-section profile-details #{'active' if active_tab=='profile-details' else ''}">
+                            <div class="d-flex" style="justify-content: space-between;">
+                                <h5>Personal Information</h5>
+                                <button id="enable-edit" class="btn btn-secondary mb-3">
+                                    <svg class="edit" width="19" height="19" viewBox="0 0 19 19" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.4752 4.77508C11.3073 4.94644 11.2132 5.17681 11.2132 5.41675C11.2132 5.65669 11.3073 5.88707 11.4752 6.05842L12.9419 7.52508C13.1133 7.69304 13.3436 7.78712 13.5836 7.78712C13.8235 7.78712 14.0539 7.69304 14.2252 7.52508L17.6811 4.06925C18.142 5.08784 18.2816 6.22271 18.0812 7.32263C17.8807 8.42255 17.3499 9.43527 16.5593 10.2258C15.7688 11.0164 14.756 11.5473 13.6561 11.7477C12.5562 11.9481 11.4213 11.8085 10.4027 11.3476L4.06857 17.6817C3.70389 18.0464 3.20929 18.2513 2.69357 18.2513C2.17784 18.2513 1.68324 18.0464 1.31857 17.6817C0.953894 17.3171 0.749023 16.8225 0.749023 16.3067C0.749023 15.791 0.953894 15.2964 1.31857 14.9317L7.65273 8.59758C7.1918 7.57899 7.05224 6.44412 7.25265 5.3442C7.45305 4.24428 7.98391 3.23156 8.77448 2.44099C9.56504 1.65043 10.5778 1.11957 11.6777 0.919164C12.7776 0.718756 13.9125 0.858318 14.9311 1.31925L11.4844 4.76592L11.4752 4.77508Z"
+                                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                    Edit
+                                </button>
+                            </div>
+                            <div id="profile-message">
+                                <t t-if="success_message">
+                                    <div class="alert alert-success" role="alert">
+                                        <t t-esc="success_message"/>
+                                    </div>
+                                </t>
+                                <t t-if="error_message">
+                                    <div class="alert alert-danger" role="alert">
+                                        <t t-foreach="error_message" t-as="msg">
+                                            <p>
+                                                <t t-esc="msg"/>
+                                            </p>
+                                        </t>
+                                    </div>
+                                </t>
+                            </div>
+                            <form id="profile-form" class="row o_portal_details" method="post"
+                                  enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="profile-image mb-3">
+                                    <label for="profile_image" class="col-form-label">Profile photo</label>
+
+                                    <input type="file"
+                                           id="profile_image"
+                                           name="profile_image"
+                                           accept="image/*"
+                                           class="form-control form-control-sm"
+                                           t-att-disabled="active_tab!='profile-details' and 'disabled'"/>
+                                </div>
+
+                                <div class="col-lg-8">
+                                    <div class="row">
+                                        <t t-call="portal.portal_my_details_fields"/>
+                                    </div>
+                                    <div id="action-buttons" class="clearfix text-end mb-5" style="display: none;">
+                                        <button type="button" class="btn btn-secondary me-2 profile-discard">Discard
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="delivery-address" class="content-section"
+                             t-attf-class="content-section #{'active' if active_tab=='delivery-address' else ''}">
+                            <h5>Delivery Addresses</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped address-table">
+                                    <thead>
+                                        <tr>
+                                            <th>State / Province</th>
+                                            <th>City</th>
+                                            <th>Street and Number</th>
+                                            <th>Apartment, Suite, etc.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="addresses" t-as="address">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="address['state_name'] or '-'"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="address['city'] or '-'"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="address['street'] or '-'"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="address['street2'] or '-'"/>
+                                                </td>
+
+                                            </tr>
+                                        </t>
+                                        <t t-if="not addresses">
+                                            <tr>
+                                                <td colspan="4">No addresses registered.</td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="history-order" class="content-section"
+                             t-attf-class="content-section #{'active' if active_tab=='history-order' else ''}">
+                            <div class="d-flex order-history-container"
+                                 style="justify-content:space-between; margin-bottom:20px">
+                                <h5>Order History</h5>
+
+                                <div class="search-traking d-flex">
+                                    <div class="d-flex" style="gap:5px">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                             viewBox="0 0 22 22" fill="none">
+                                            <path d="M0.916504 5.50065V20.1673L7.33317 16.5007L14.6665 20.1673L21.0832 16.5007V1.83398L14.6665 5.50065L7.33317 1.83398L0.916504 5.50065Z"
+                                                  stroke="#9B9C9F" stroke-width="1.5" stroke-linecap="round"
+                                                  stroke-linejoin="round"/>
+                                            <path d="M14.6665 5.5V20.1667" stroke="#9B9C9F" stroke-width="1.5"
+                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M7.3335 1.83398V16.5007" stroke="#9B9C9F" stroke-width="1.5"
+                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <h6>Order tracking</h6>
+                                    </div>
+                                    <form action="/my/profile" method="GET" class="d-flex align-items-center"
+                                          style="gap:10px;">
+                                        <input type="text" name="search" id="search-order" class="form-control pe-5"
+                                               placeholder="Search" t-att-value="request.params.get('search', '')"/>
+
+                                        <button class="btn" type="submit">
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <g clip-path="url(#clip0_1492_12044)">
+                                                    <path d="M5.5 9.5C7.70914 9.5 9.5 7.70914 9.5 5.5C9.5 3.29086 7.70914 1.5 5.5 1.5C3.29086 1.5 1.5 3.29086 1.5 5.5C1.5 7.70914 3.29086 9.5 5.5 9.5Z"
+                                                          stroke="#9B9C9F" stroke-width="1.5" stroke-linecap="round"
+                                                          stroke-linejoin="round"/>
+                                                    <path d="M10.5002 10.4992L8.3252 8.32422" stroke="#9B9C9F"
+                                                          stroke-width="1.5" stroke-linecap="round"
+                                                          stroke-linejoin="round"/>
+                                                </g>
+                                                <defs>
+                                                    <clipPath id="clip0_1492_12044">
+                                                        <rect width="12" height="12" fill="white"/>
+                                                    </clipPath>
+                                                </defs>
+                                            </svg>
+
+                                        </button>
+                                        <t t-if="search">
+                                            <a href="/my/profile" class="btn btn-link clear-tracking-search">
+                                                <!-- Aquí puedes usar un SVG o simplemente la letra "X" -->
+                                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
+                                                    <path d="M1 1L15 15" stroke="#000" stroke-width="2"/>
+                                                    <path d="M15 1L1 15" stroke="#000" stroke-width="2"/>
+                                                </svg> -->
+                                                <i class="fa fa-close"></i>
+                                            </a>
+                                        </t>
+                                    </form>
+                                </div>
+                            </div>
+
+
+                            <div class="table-responsive">
+                                <table class="table table-striped order-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Invoice</th>
+                                            <th>Order date</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            <th>State</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="all_orders">
+                                            <t t-foreach="all_orders" t-as="order">
+                                                <tr>
+                                                    <td>
+                                                        <a class="order-link" t-attf-href="/my/orders/#{order.id}"
+                                                           style="text-decoration: none; color: inherit;">
+                                                            <t t-esc="order.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <t t-set="invoices_to_show"
+                                                           t-value="order.invoice_ids.filtered(lambda inv: inv.state != 'draft')"/>
+
+                                                        <t t-if="invoices_to_show">
+                                                            <t t-foreach="invoices_to_show" t-as="inv">
+                                                                <a t-att-href="'/my/invoices/%s' % inv.id"
+                                                                   t-esc="inv.name"/>
+                                                            </t>
+                                                        </t>
+                                                        <t t-else="">
+                                                            —
+                                                        </t>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="order.date_order.strftime('%d/%m/%Y')"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="len(order.order_line)"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-esc="'{:,.2f} {}'.format(order.amount_total, order.currency_id.name).replace(',', ' ')"/>
+                                                    </td>
+                                                    <td>
+                                                        <t t-set="so_cem_state_options"
+                                                           t-value="order.fields_get(['so_cem_state'])['so_cem_state']['selection']"/>
+                                                        <t t-set="state_options"
+                                                           t-value="order.fields_get(['state'])['state']['selection']"/>
+                                                        <t t-if="order.so_cem_state">
+                                                            <t t-esc="dict(so_cem_state_options).get(order.so_cem_state, order.so_cem_state)"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <t t-esc="dict(state_options).get(order.state, order.state)"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <t t-if="not all_orders">
+                                            <tr>
+                                                <td colspan="5" class="text-center">There are no orders registered.</td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="security-section" class="content-section"
+                             t-attf-class="content-section #{ 'active' if active_tab=='security-section' else '' }">
+                            <h5>Change Password</h5>
+
+                            <!-- <div class="alert alert-danger" role="alert" t-if="password_error_messages">
+                                <t t-foreach="password_error_messages" t-as="msg">
+                                    <div><t t-esc="msg"/></div>
+                                </t>
+                            </div> -->
+
+                            <div class="alert alert-success" role="alert" t-if="success.get('password')">
+                                Password Updated!
+                            </div>
+                            <div class="alert alert-success d-none js-password-success" role="alert">
+                                Password Updated!
+                            </div>
+
+
+                            <form action="/my/profile" method="post" class="oe_reset_password_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="op" value="password"/>
+
+                                <div class="alert alert-danger d-none js-password-form-alert" role="alert"></div>
+
+                                <!-- Current Password -->
+                                <div class="mb-4">
+                                    <label for="current">Current Password:</label>
+
+                                    <div class="input-group input-group-sm">
+                                        <input
+                                                type="password"
+                                                t-att-class="'form-control %s' % ('is-invalid' if errors.get('password.old') else '')"
+                                                id="current" name="old" autocomplete="current-password"
+                                                required="required"
+                                        />
+
+                                        <button class="btn btn-outline-secondary o_toggle_password"
+                                                type="button"
+                                                aria-label="Show password"
+                                                data-target="#current">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="invalid-feedback d-block" t-if="errors.get('password.old')">
+                                        <t t-esc="errors.get('password.old')"/>
+                                    </div>
+                                    <div class="invalid-feedback d-block js-old-feedback js-password-feedback"></div>
+
+                                </div>
+
+
+                                <!-- New Password -->
+                                <div class="mb-4">
+                                    <label for="new">New Password:</label>
+
+                                    <div class="input-group input-group-sm">
+                                        <input
+                                                type="password"
+                                                id="new"
+                                                name="new1"
+                                                autocomplete="new-password"
+                                                required="required"
+                                                minlength="8"
+                                                pattern="^(?=.*[^A-Za-z0-9]).{8,}$"
+                                                title="Minimum 8 characters and at least one special character."
+                                                t-att-class="'form-control %s' % ('is-invalid' if errors.get('password.new1') else '')"
+                                        />
+
+
+                                        <button class="btn btn-outline-secondary o_toggle_password"
+                                                type="button"
+                                                aria-label="Show password"
+                                                data-target="#new">
+                                            <!-- ojo -->
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="invalid-feedback d-block" t-if="errors.get('password.new1')">
+                                        <t t-esc="errors.get('password.new1')"/>
+                                    </div>
+                                    <div class="invalid-feedback d-block js-new1-feedback js-password-feedback"></div>
+
+                                </div>
+
+                                <!-- Verify New Password -->
+                                <div class="mb-4">
+                                    <label for="new2">Verify New Password:</label>
+
+                                    <div class="input-group input-group-sm">
+                                        <input
+                                                type="password"
+                                                t-att-class="'form-control %s' % ('is-invalid' if errors.get('password.new2') else '')"
+                                                id="new2" name="new2" autocomplete="new-password" required="required"
+                                        />
+
+                                        <button class="btn btn-outline-secondary o_toggle_password"
+                                                type="button"
+                                                aria-label="Show password"
+                                                data-target="#new2">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="invalid-feedback d-block" t-if="errors.get('password.new2')">
+                                        <t t-esc="errors.get('password.new2')"/>
+                                    </div>
+                                </div>
+
+                                <div class="invalid-feedback d-block js-new2-feedback js-password-feedback"></div>
+
+                                <button type="submit" class="btn btn-secondary">Change Password</button>
+                            </form>
+                        </div>
+
+                        <div id="contract-section" class="content-section"
+                             t-attf-class="content-section #{'active' if active_tab=='contract-section' else ''}">
+                            <h5>Contract Management</h5>
+
+                            <!-- Mensajes de éxito/error -->
+                            <t t-if="request.params.get('success') == 'contract_uploaded'">
+                                <div class="alert alert-success" role="alert">
+                                    <i class="fa fa-check-circle me-2"></i>Contract uploaded successfully!
+                                </div>
+                            </t>
+
+                            <t t-if="request.params.get('error')">
+                                <div class="alert alert-danger" role="alert">
+                                    <i class="fa fa-exclamation-circle me-2"></i>
+                                    <t t-if="request.params.get('error') == 'no_file'">Please select a file to upload.
+                                    </t>
+                                    <!-- ACTUALIZA ESTA LÍNEA -->
+                                    <t t-if="request.params.get('error') == 'invalid_format'">Invalid file format.
+                                        Please upload PDF or image files (JPG, JPEG, PNG, GIF, BMP, TIFF) only.
+                                    </t>
+                                    <t t-if="request.params.get('error') == 'no_contract'">No contract available for
+                                        upload.
+                                    </t>
+                                    <t t-if="request.params.get('error') == 'upload_error'">Error uploading contract.
+                                        Please try again.
+                                    </t>
+                                    <t t-if="request.params.get('error') == 'file_too_large'">File size exceeds 10MB
+                                        limit.
+                                    </t>
+                                </div>
+                            </t>
+
+                            <div class="card contract-upload-card">
+                                <div class="card-body">
+                                    <h6 class="card-title">Current Contract Status</h6>
+
+                                    <t t-if="contract">
+                                        <div class="contract-upload-info mb-3">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <strong>Contract Code:</strong>
+                                                    <span class="text-primary" t-esc="contract.code"/>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Status:</strong>
+                                                    <span t-attf-class="contract-status status-#{contract.state}">
+                                                        <t t-esc="contract.state"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mt-2">
+                                                <div class="col-md-6">
+                                                    <strong>Sent Date:</strong>
+                                                    <t t-if="contract.upload_date">
+                                                        <span t-esc="contract.upload_date"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Expiry Date:</strong>
+                                                    <t t-if="contract.expiry_date">
+                                                        <span t-esc="contract.expiry_date"/>
+                                                    </t>
+                                                    <t t-else="">-</t>
+                                                </div>
+
+                                                <!--                                        <t t-if="contract.state == 'sent'">-->
+                                                <!--                                            <a href="/my/contract/upload" class="btn btn-primary">-->
+                                                <!--                                                <i class="fa fa-upload me-2"></i>Upload Signed Contract-->
+                                                <!--                                            </a>-->
+                                                <!--                                        </t>-->
+                                            </div>
+                                        </div>
+
+                                        <!-- FORMULARIO DE SUBIDA INTEGRADO -->
+                                        <t t-if="contract.state == 'sent'">
+                                            <form method="post" action="/my/contract/do_upload"
+                                                  enctype="multipart/form-data" class="mb-3">
+                                                <input type="hidden" name="csrf_token"
+                                                       t-att-value="request.csrf_token()"/>
+
+                                                <div class="mb-3">
+                                                    <label for="contract_file" class="form-label">
+                                                        <i class="fa fa-file-upload me-1"></i>Upload Signed Contract
+                                                    </label>
+                                                    <input type="file" class="form-control" id="contract_file"
+                                                           name="contract_file"
+                                                           accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.tif"
+                                                           required="required"/>
+                                                    <div class="form-text">Accepted formats: PDF, JPG, JPEG, PNG, GIF,
+                                                        BMP, TIFF (Max 10MB)
+                                                    </div>
+                                                </div>
+
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fa fa-upload me-2"></i>Upload Contract
+                                                </button>
+                                            </form>
+                                        </t>
+                                        <!--                                        and contract.contract_file-->
+                                        <t t-if="contract.contract_file">
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <a t-att-href="'/my/contract/download/%s' % contract.id"
+                                                   class="btn btn-outline-primary contract-download-btn"
+                                                   target="_blank">
+                                                    <i class="fa fa-download me-2"></i>Download Contract
+                                                </a>
+                                            </div>
+                                            <!--                                            <p class="text-muted mt-2">-->
+                                            <!--                                                <i class="fa fa-calendar me-1"></i>-->
+                                            <!--                                                Uploaded on:-->
+                                            <!--                                                <span t-esc="contract.contract_upload_date"/>-->
+                                            <!--                                            </p>-->
+                                        </t>
+                                    </t>
+
+                                    <t t-if="not contract">
+                                        <p class="text-muted">
+                                            <i class="fa fa-info-circle me-1"></i>
+                                            No active contract found.
+                                        </p>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <script>
+                    <![CDATA[
+                        document.addEventListener('DOMContentLoaded', function () {
+                        const menuItems = document.querySelectorAll('.cont-account-menu .menu-item');
+                        const sections = document.querySelectorAll('.dinamic-info .content-section');
+
+                        // Manejo de clics en el menú
+                        menuItems.forEach(item => {
+                            item.addEventListener('click', function (e) {
+                            // Verificar si es un enlace externo (con target="_blank")
+                                const link = this.querySelector('a');
+                                if (link && link.hasAttribute('target') && link.getAttribute('target') === '_blank') {
+                                    // No hacer nada, dejar que el enlace funcione normalmente
+                                    return;
+                                }
+                                e.preventDefault();
+                                menuItems.forEach(i => i.classList.remove('active'));
+                                sections.forEach(s => s.classList.remove('active'));
+                                this.classList.add('active');
+                                const targetId = this.getAttribute('data-target');
+                                const targetSection = document.getElementById(targetId);
+                                if (targetSection) {
+                                    targetSection.classList.add('active');
+                                }
+                            });
+                        });
+
+                        // Lógica del formulario
+                        const profileForm = document.getElementById('profile-form');
+                        const editButton = document.getElementById('enable-edit');
+                        const actionButtons = document.getElementById('action-buttons');
+                        const discardButton = profileForm.querySelector('.profile-discard');
+                        const profileMessage = document.getElementById('profile-message');
+                        const inputs = profileForm.querySelectorAll('input:not([type="hidden"]), select, textarea');
+                        const profileNameEls = document.querySelectorAll('.profile_name');
+                        const profileEmailEls = document.querySelectorAll('.profile_email');
+
+                        function setProfileHeader({ name = null, email = null }) {
+                            if (name !== null) {
+                                profileNameEls.forEach(el => el.textContent = name);
+                            }
+                            if (email !== null) {
+                                profileEmailEls.forEach(el => el.textContent = email);
+                            }
+                        }
+
+                        // Inicializar formulario en modo solo lectura
+                        inputs.forEach(input => {
+                            input.setAttribute('disabled', 'disabled');
+                        });
+                        editButton.style.display = 'block';
+                        actionButtons.style.display = 'none';
+
+                        // Botón Edit
+                        if (editButton) {
+                            editButton.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                inputs.forEach(input => {
+                                    input.removeAttribute('disabled');
+                                });
+                                editButton.style.display = 'none';
+                                actionButtons.style.display = 'block';
+                                profileMessage.innerHTML = '';
+                            });
+                        }
+
+                        // Botón Discard
+                        if (discardButton) {
+                            discardButton.addEventListener('click', function () {
+                                inputs.forEach(input => {
+                                    input.setAttribute('disabled', 'disabled');
+                                });
+                                editButton.style.display = 'block';
+                                actionButtons.style.display = 'none';
+                                profileMessage.innerHTML = '';
+                                profileForm.reset();
+                            });
+                        }
+
+                        // Función para actualizar visualmente los documentos
+                        function updateDocumentDisplay(docType, documentInfo) {
+                        // Buscar TODOS los contenedores de documentos
+                        const allContainers = document.querySelectorAll('.document-field-container');
+                        let docFieldContainer = null;
+
+                        // Buscar el contenedor que tenga un input con el nombre que coincide con docType
+                        for (const container of allContainers) {
+                            const input = container.querySelector(`input[name="${docType}"]`);
+                            if (input) {
+                                docFieldContainer = container;
+                                break;
+                            }
+                        }
+
+                        // Si no lo encuentra por nombre exacto, intentar buscarlo por el tipo de documento en la respuesta
+                        if (!docFieldContainer && documentInfo.document_type) {
+                            for (const container of allContainers) {
+                                const input = container.querySelector(`input[name="${documentInfo.document_type}"]`);
+                                if (input) {
+                                    docFieldContainer = container;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (docFieldContainer && documentInfo) {
+                            console.log('Actualizando documento:', docType, documentInfo);
+
+                            // Buscar y eliminar cualquier contenedor de acciones existente
+                            const existingActions = docFieldContainer.querySelector('.document-actions-container') ||
+                                                   docFieldContainer.querySelector('.d-flex.align-items-center.gap-2');
+
+                            if (existingActions) {
+                                console.log('Eliminando acciones existentes');
+                                existingActions.remove();
+                            }
+
+                            // Actualizar el badge
+                            const badge = docFieldContainer.querySelector('.badge');
+                            if (badge) {
+                                badge.innerHTML = '<i class="fa fa-check me-1"></i>Subido';
+                                badge.className = 'badge bg-success ms-2';
+                            } else {
+                                // Si no hay badge, crear uno
+                                const label = docFieldContainer.querySelector('.col-form-label.fw-bold');
+                                if (label) {
+                                    const newBadge = document.createElement('span');
+                                    newBadge.className = 'badge bg-success ms-2';
+                                    newBadge.innerHTML = '<i class="fa fa-check me-1"></i>Subido';
+                                    label.appendChild(newBadge);
+                                }
+                            }
+
+                            // Crear nuevo contenedor de acciones CON ESTILOS DE TRUNCADO
+                            const docActions = document.createElement('div');
+                            docActions.className = 'd-flex align-items-center mt-3 gap-2 document-actions-container';
+
+                            // Calcular nombre truncado (máximo 25 caracteres)
+                            const fileName = documentInfo.name || '';
+                            const truncatedName = fileName.length > 25 ? fileName.substring(0, 25) + '...' : fileName;
+
+                            // HTML con estilos de truncado
+                            docActions.innerHTML = `
+                                <span class="badge bg-light text-dark document-name-truncated"
+                                      title="${fileName.replace(/"/g, '&quot;')}"
+                                      style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    ${truncatedName}
+                                    <small class="text-muted ms-1">
+                                        (${Math.floor(documentInfo.file_size / 1024)} KB)
+                                    </small>
+                                </span>
+
+                                <!-- Botón Descargar -->
+                                <a href="/my/profile/download_document/${documentInfo.id}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   target="_blank"
+                                   title="Descargar documento">
+                                    <i class="fa fa-download"></i>
+                                </a>
+
+                                <!-- Botón Eliminar -->
+                                <a href="/my/profile/delete_document/${documentInfo.id}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   title="Eliminar documento">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            `;
+
+                            // Actualizar información adicional
+                            const additionalInfo = docFieldContainer.querySelector('.form-text.text-muted');
+                            if (additionalInfo) {
+                                const dateInfo = documentInfo.create_date ?
+                                    `<br/><i class="fa fa-calendar me-1"></i>Subido el: ${documentInfo.create_date}` : '';
+                                additionalInfo.innerHTML = `Formatos aceptados: PDF, JPG, JPEG, PNG, GIF, BMP, TIFF (Máx. 10MB)${dateInfo}`;
+                            }
+
+                            // Resetear el campo de archivo
+                            const fileInput = docFieldContainer.querySelector('input[type="file"]');
+                            if (fileInput) {
+                                fileInput.value = '';
+                            }
+
+                            // Encontrar el contenedor para insertar las acciones
+                            const inputContainer = docFieldContainer.querySelector('.flex-grow-1');
+                            if (inputContainer && inputContainer.parentNode) {
+                                inputContainer.parentNode.after(docActions);
+                            } else {
+                                // Si no encuentra el contenedor específico, buscar un lugar apropiado
+                                const fileInput = docFieldContainer.querySelector('input[type="file"]');
+                                if (fileInput && fileInput.parentNode) {
+                                    fileInput.parentNode.after(docActions);
+                                } else {
+                                    // Último recurso: agregar al final del contenedor
+                                    docFieldContainer.appendChild(docActions);
+                                }
+                            }
+
+                            console.log('Documento actualizado exitosamente con truncado');
+
+                        } else {
+                            console.error('No se pudo encontrar el contenedor para:', docType, documentInfo);
+                        }
+                    }
+
+                        // Función para agregar otros documentos
+                        function addOtherDocument(documentInfo) {
+                        const otherDocsContainer = document.querySelector('.row:has(.col-md-6.mb-2)');
+
+                        if (otherDocsContainer && documentInfo) {
+                            // Primero, verificar si ya existe un documento con el mismo ID
+                            const existingDoc = otherDocsContainer.querySelector(`a[href*="/my/profile/download_document/${documentInfo.id}"]`);
+                            if (existingDoc) {
+                                // Si ya existe, actualizar la información
+                                const container = existingDoc.closest('.col-md-6.mb-2');
+                                if (container) {
+                                    updateExistingOtherDocument(container, documentInfo);
+                                }
+                                return;
+                            }
+
+                            // Si no existe, crear uno nuevo
+                            const colDiv = document.createElement('div');
+                            colDiv.className = 'col-md-5 mb-2';
+
+                            // Calcular nombre truncado
+                            const fileName = documentInfo.name || '';
+                            const truncatedName = fileName.length > 20 ? fileName.substring(0, 20) + '...' : fileName;
+
+                            const isPdf = fileName.toLowerCase().includes('.pdf');
+                            const iconClass = isPdf ? 'fa-file-pdf text-danger' : 'fa-file-image text-success';
+
+                            colDiv.innerHTML = `
+                                <div class="d-flex align-items-center justify-content-between p-2 border rounded">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa ${iconClass} me-2"></i>
+                                        <div class="other-document-name" title="${fileName.replace(/"/g, '&quot;')}" style="min-width: 0;">
+                                            <div class="fw-bold text-ellipsis" style="max-width: 150px;">
+                                                ${truncatedName}
+                                            </div>
+                                            <small class="text-muted">
+                                                ${Math.floor(documentInfo.file_size / 1024)} KB
+                                                ${documentInfo.create_date ? '- ' + documentInfo.create_date.split(' ')[0] : ''}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-1">
+                                        <a href="/my/profile/download_document/${documentInfo.id}"
+                                           class="btn btn-sm btn-outline-primary"
+                                           target="_blank"
+                                           title="Descargar">
+                                            <i class="fa fa-download"></i>
+                                        </a>
+                                        <a href="/my/profile/delete_document/${documentInfo.id}"
+                                           class="btn btn-sm btn-outline-danger delete-other-document"
+                                           title="Eliminar">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+
+                            otherDocsContainer.appendChild(colDiv);
+                        }
+                    }
+
+                    // Función para actualizar documentos "otros" existentes
+                    function updateExistingOtherDocument(container, documentInfo) {
+                    // Calcular nombre truncado
+                    const fileName = documentInfo.name || '';
+                    const truncatedName = fileName.length > 20 ? fileName.substring(0, 20) + '...' : fileName;
+
+                    const isPdf = fileName.toLowerCase().includes('.pdf');
+                    const iconClass = isPdf ? 'fa-file-pdf text-danger' : 'fa-file-image text-success';
+
+                    container.innerHTML = `
+                        <div class="d-flex align-items-center justify-content-between p-2 border rounded">
+                            <div class="d-flex align-items-center">
+                                <i class="fa ${iconClass} me-2"></i>
+                                <div class="other-document-name" title="${fileName.replace(/"/g, '&quot;')}" style="min-width: 0;">
+                                    <div class="fw-bold text-ellipsis" style="max-width: 150px;">
+                                        ${truncatedName}
+                                    </div>
+                                    <small class="text-muted">
+                                        ${Math.floor(documentInfo.file_size / 1024)} KB
+                                        ${documentInfo.create_date ? '- ' + documentInfo.create_date.split(' ')[0] : ''}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <a href="/my/profile/download_document/${documentInfo.id}"
+                                   class="btn btn-sm btn-outline-primary"
+                                   target="_blank"
+                                   title="Descargar">
+                                    <i class="fa fa-download"></i>
+                                </a>
+                                <a href="/my/profile/delete_document/${documentInfo.id}"
+                                   class="btn btn-sm btn-outline-danger delete-other-document"
+                                   title="Eliminar">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Función para inicializar tooltips en elementos recién creados
+            function initDocumentTooltips() {
+                // Seleccionar todos los elementos con nombres truncados
+                const truncatedElements = document.querySelectorAll('.document-name-truncated, .text-ellipsis');
+
+                truncatedElements.forEach(element => {
+                    // Si el título es diferente del contenido visible, agregar comportamiento de tooltip
+                    const fullName = element.title || element.getAttribute('data-fullname');
+                    const visibleText = element.textContent || element.innerText;
+
+                    if (fullName && fullName.length > 25 && !element.hasAttribute('data-tooltip-initialized')) {
+                        element.setAttribute('data-tooltip-initialized', 'true');
+
+                        // Agregar event listener para tooltip
+                        element.addEventListener('mouseenter', function(e) {
+                            // Crear tooltip si no existe
+                            let tooltip = element.querySelector('.custom-tooltip');
+                            if (!tooltip && this.title) {
+                                tooltip = document.createElement('div');
+                                tooltip.className = 'custom-tooltip';
+                                tooltip.textContent = this.title;
+                                tooltip.style.cssText = `
+                                    position: absolute;
+                                    bottom: 100%;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    background: #333;
+                                    color: white;
+                                    padding: 5px 10px;
+                                    border-radius: 4px;
+                                    font-size: 12px;
+                                    white-space: nowrap;
+                                    z-index: 1000;
+                                    margin-bottom: 5px;
+                                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                                `;
+                                this.style.position = 'relative';
+                                this.appendChild(tooltip);
+                            }
+                        });
+
+                        element.addEventListener('mouseleave', function() {
+                            const tooltip = this.querySelector('.custom-tooltip');
+                            if (tooltip) {
+                                tooltip.remove();
+                            }
+                        });
+                    }
+                });
+            }
+
+                        // Envío del formulario con AJAX
+                        if (profileForm) {
+                            profileForm.addEventListener('submit', async function (e) {
+                                e.preventDefault();
+                                const formData = new FormData(profileForm);
+
+                                try {
+                                    const response = await fetch('/my/profile', {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'Accept': 'application/json',
+                                        },
+                                    });
+
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+
+                                    const result = await response.json();
+
+                                    profileMessage.innerHTML = '';
+                                    if (result.success) {
+                                        profileMessage.innerHTML = '<div class="alert alert-success" role="alert">Profile successfully updated.</div>';
+                                        inputs.forEach(input => {
+                                            input.setAttribute('disabled', 'disabled');
+                                        });
+                                        editButton.style.display = 'block';
+                                        actionButtons.style.display = 'none';
+
+                                        // Actualizar dinámicamente el nombre y el email en el DOM
+                                        if (result.updated_values) {
+                                            if (result.updated_values.name) {
+                                                setProfileHeader({ name: result.updated_values.name });
+                                            }
+                                            if (result.updated_values.email) {
+                                                setProfileHeader({ email: result.updated_values.email });
+                                            }
+                                        }
+
+                                        if (result.updated_values && result.updated_values.image_1920) {
+                                            let imgEl = document.querySelector('img.profile-photo');
+                                            const container = document.querySelector('.my-profile-container-1');
+                                            if (!imgEl) {
+                                                imgEl = document.createElement('img');
+                                                imgEl.className = 'profile-photo';
+                                                container.insertBefore(imgEl, container.firstChild);
+                                                const svgPlaceholder = container.querySelector('svg.profile-photo');
+                                                if (svgPlaceholder) {
+                                                    svgPlaceholder.style.display = 'none';
+                                                }
+                                            }
+                                            imgEl.src = 'data:image/png;base64,' + result.updated_values.image_1920;
+                                        }
+
+                                        // Actualizar documentos subidos dinámicamente
+                                        if (result.uploaded_documents) {
+                                            Object.entries(result.uploaded_documents).forEach(([docType, docInfo]) => {
+                                                updateDocumentDisplay(docType, docInfo);
+                                            });
+                                        }
+
+                                        // Agregar otros documentos dinámicamente
+                                        if (result.other_documents && result.other_documents.length > 0) {
+                                            result.other_documents.forEach(docInfo => {
+                                                addOtherDocument(docInfo);
+                                            });
+                                        }
+
+                                        // Limpiar el campo de otros documentos si se subió algo
+                                        if (result.other_documents && result.other_documents.length > 0) {
+                                            const otrosDocumentosInput = document.getElementById('otros_documentos');
+                                            if (otrosDocumentosInput) {
+                                                otrosDocumentosInput.value = '';
+                                            }
+                                        }
+
+                                    } else {
+                                        const errors = result.error_message || ['An error occurred. Please try again.'];
+                                        profileMessage.innerHTML = errors.map(err => `<div class="alert alert-danger" role="alert">${err}</div>`).join('');
+                                    }
+                                } catch (error) {
+                                    console.error('Error en la solicitud:', error);
+                                    profileMessage.innerHTML = `<div class="alert alert-danger" role="alert">Error: ${error.message}. Please try again.</div>`;
+                                }
+                            });
+                        }
+                    });
+                    ]]>
+                </script>
+
+                <script>
+                    <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function () {
+                        // Selecciona directamente el contenedor header responsive
+                        const responsiveHeader = document.querySelector('.responsive-header');
+                        const confAccount = document.querySelector('.conf-account');
+                        const currentSectionText = document.getElementById('current-section');
+                        const currentIconDiv = document.getElementById('current-icon');
+
+                        // Al hacer clic en el responsiveHeader, se muestra/oculta el menú
+                        if (responsiveHeader && confAccount) {
+                            responsiveHeader.addEventListener('click', function () {
+                                confAccount.classList.toggle('active');
+                            });
+                        }
+
+                        // Actualiza el encabezado responsive cuando se hace clic en un item del menú
+                        const menuItems = document.querySelectorAll('.menu-item');
+                        menuItems.forEach(item => {
+                            item.addEventListener('click', function (e) {
+                            // Verificar si es un enlace externo (con target="_blank")
+                                const link = this.querySelector('a');
+                                if (link && link.hasAttribute('target') && link.getAttribute('target') === '_blank') {
+                                    // No hacer nada, dejar que el enlace funcione normalmente
+                                    return;
+                                }
+                                e.preventDefault();
+                                // Extrae el texto y el SVG de la opción activa
+                                const text = this.querySelector('p')?.innerText || 'Sección';
+                                currentSectionText.textContent = text;
+                                const svgElement = this.querySelector('svg');
+                                if(svgElement && currentIconDiv){
+                                    const iconClone = svgElement.cloneNode(true);
+                                    currentIconDiv.innerHTML = "";
+                                    currentIconDiv.appendChild(iconClone);
+                                }
+                                // Cierra el menú en mobile
+                                confAccount.classList.remove('active');
+                            });
+                        });
+
+                        // Opcional: Inicializa el encabezado con el item que tenga clase 'active'
+                        const activeItem = document.querySelector('.menu-item.active');
+                        if (activeItem) {
+                            const initialText = activeItem.querySelector('p')?.innerText || 'Sección';
+                            currentSectionText.textContent = initialText;
+                            const initialSvg = activeItem.querySelector('svg');
+                            if (initialSvg && currentIconDiv) {
+                                const svgClone = initialSvg.cloneNode(true);
+                                currentIconDiv.innerHTML = "";
+                                currentIconDiv.appendChild(svgClone);
+                            }
+                        }
+                    });
+                ]]>
+                </script>
+                <script>
+                    <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function() {
+                    // Función para eliminar documentos mediante AJAX
+                    function handleDeleteDocument(e) {
+                        // Prevenir el comportamiento predeterminado solo si es un enlace de eliminación
+                        if (this.getAttribute('href') && this.getAttribute('href').includes('delete_document')) {
+                            e.preventDefault();
+
+                            const deleteUrl = this.getAttribute('href');
+                            const deleteButton = this;
+                            const container = this.closest('.document-field-container') || this.closest('.col-md-6.mb-2');
+
+                            // Mostrar confirmación una sola vez
+                            if (!confirm('¿Estás seguro de que quieres eliminar este documento?')) {
+                                return;
+                            }
+
+                            // Guardar referencias para restablecer la UI
+                            const isMainDocument = this.closest('.document-field-container') !== null;
+                            const isOtherDocument = this.closest('.col-md-6.mb-2') !== null;
+
+                            // Mostrar indicador de carga
+                            const originalContent = deleteButton.innerHTML;
+                            deleteButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+                            deleteButton.disabled = true;
+
+                            // Realizar la solicitud AJAX
+                            fetch(deleteUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Mostrar mensaje de éxito
+                                    showAlert('success', data.message);
+
+                                    // Actualizar la interfaz según el tipo de documento
+                                    if (isMainDocument && container) {
+                                        // Para documentos principales
+                                        updateMainDocumentUI(container);
+                                    } else if (isOtherDocument && container) {
+                                        // Para documentos adicionales - eliminar la fila completa
+                                        container.remove();
+                                    }
+                                } else {
+                                    showAlert('danger', data.message || 'Error al eliminar el documento');
+                                    // Restaurar botón
+                                    deleteButton.innerHTML = originalContent;
+                                    deleteButton.disabled = false;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showAlert('danger', 'Error en la solicitud');
+                                deleteButton.innerHTML = originalContent;
+                                deleteButton.disabled = false;
+                            });
+                        }
+                    }
+
+                    // Función para actualizar la UI de documentos principales
+                    function updateMainDocumentUI(container) {
+                    // Encontrar y eliminar el contenedor de acciones del documento
+                    const actionsDiv = container.querySelector('.document-actions-container') ||
+                                       container.querySelector('.d-flex.align-items-center.gap-2');
+
+                    if (actionsDiv) {
+                        actionsDiv.remove();
+                    }
+
+                    // Actualizar el badge a estado "pendiente"
+                    const badge = container.querySelector('.badge.bg-success');
+                    if (badge) {
+                        badge.innerHTML = '<i class="fa fa-exclamation-triangle me-1"></i>Pendiente';
+                        badge.className = 'badge bg-warning text-dark ms-2';
+                    } else {
+                        // Si no hay badge, crear uno
+                        const label = container.querySelector('.col-form-label.fw-bold');
+                        if (label) {
+                            const newBadge = document.createElement('span');
+                            newBadge.className = 'badge bg-warning text-dark ms-2';
+                            newBadge.innerHTML = '<i class="fa fa-exclamation-triangle me-1"></i>Pendiente';
+                            label.appendChild(newBadge);
+                        }
+                    }
+
+                    // Resetear el campo de archivo
+                    const fileInput = container.querySelector('input[type="file"]');
+                    if (fileInput) {
+                        fileInput.value = '';
+                    }
+
+                    // Actualizar la información de fecha
+                    const smallText = container.querySelector('.form-text.text-muted');
+                    if (smallText) {
+                        // Buscar la línea con la fecha y eliminarla
+                        const lines = smallText.innerHTML.split('<br/>');
+                        const filteredLines = lines.filter(line => !line.includes('Subido el:'));
+                        smallText.innerHTML = filteredLines.join('<br/>');
+                    }
+                }
+
+                    // Función para mostrar alertas
+                    function showAlert(type, message) {
+                        // Buscar contenedor de mensajes
+                        let alertContainer = document.querySelector('#profile-message');
+                        if (!alertContainer) {
+                            // Crear contenedor si no existe
+                            alertContainer = document.createElement('div');
+                            alertContainer.id = 'profile-message';
+                            const form = document.querySelector('#profile-form');
+                            if (form) {
+                                form.insertBefore(alertContainer, form.firstChild);
+                            }
+                        }
+
+                        // Crear alerta
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+                        alertDiv.role = 'alert';
+                        alertDiv.innerHTML = `
+                            <i class="fa ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                            ${message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        `;
+
+                        // Limpiar alertas anteriores y agregar nueva
+                        alertContainer.innerHTML = '';
+                        alertContainer.appendChild(alertDiv);
+
+                        // Auto-eliminar después de 5 segundos
+                        setTimeout(() => {
+                            if (alertDiv.parentNode === alertContainer) {
+                                alertDiv.remove();
+                            }
+                        }, 5000);
+                    }
+
+                    // SOLUCIÓN: Usar UN solo mecanismo de event listeners
+                    // Opción 1: Delegación de eventos (recomendado)
+                    document.addEventListener('click', function(e) {
+                        // Verificar si se hizo clic en un enlace de eliminar
+                        const deleteLink = e.target.closest('a[href*="delete_document"]');
+                        if (deleteLink) {
+                            e.preventDefault();
+                            handleDeleteDocument.call(deleteLink, e);
+                        }
+                    });
+
+                    // Validación de archivos en el cliente
+                    document.querySelectorAll('input[type="file"]').forEach(input => {
+                        input.addEventListener('change', function() {
+                            if (this.files.length > 0) {
+                                const file = this.files[0];
+                                const maxSize = 10 * 1024 * 1024; // 10MB
+
+                                // Validar tamaño
+                                if (file.size > maxSize) {
+                                    showAlert('warning', 'El archivo excede el tamaño máximo de 10MB');
+                                    this.value = '';
+                                    return;
+                                }
+
+                                // Validar extensión
+                                const fileName = file.name.toLowerCase();
+                                const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff'];
+                                const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+
+                                if (!hasValidExtension) {
+                                    showAlert('warning', 'Formato de archivo no válido. Solo se permiten PDF e imágenes.');
+                                    this.value = '';
+                                    return;
+                                }
+                            }
+                        });
+                    });
+                });
+                ]]>
+                </script>
+
+                <!--                <script>-->
+                <!--                    <![CDATA[-->
+                <!--                   document.addEventListener('DOMContentLoaded', function() {-->
+                <!--                            const fileInput = document.getElementById('contract_file');-->
+                <!--                            if (fileInput) {-->
+                <!--                                fileInput.addEventListener('change', function(e) {-->
+                <!--                                    const file = e.target.files[0];-->
+                <!--                                    if (!file) return;-->
+
+                <!--                                    const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.tif'];-->
+                <!--                                    const maxSize = 10 * 1024 * 1024; // 10MB-->
+
+                <!--                                    // Validar extensión-->
+                <!--                                    const fileExtension = '.' + file.name.toLowerCase().split('.').pop();-->
+                <!--                                    if (!allowedExtensions.includes(fileExtension)) {-->
+                <!--                                        alert('Formato de archivo no permitido. Solo se aceptan PDF e imágenes (JPG, PNG, GIF, BMP, TIFF).');-->
+                <!--                                        this.value = '';-->
+                <!--                                        return;-->
+                <!--                                    }-->
+
+                <!--                                    // Validar tamaño-->
+                <!--                                    if (file.size > maxSize) {-->
+                <!--                                        alert('El archivo es demasiado grande. El tamaño máximo es 10MB.');-->
+                <!--                                        this.value = '';-->
+                <!--                                        return;-->
+                <!--                                    }-->
+                <!--                                });-->
+                <!--                            }-->
+                <!--                        });-->
+                <!--                    ]]>-->
+                <!--                </script>-->
+
+
+            </div>
+            <!-- </div> -->
+        </t>
+    </template>
+</odoo>
+
+

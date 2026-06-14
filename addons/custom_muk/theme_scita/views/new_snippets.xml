@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+	<template id="deal_seller_multi_product_custom_snippet" name="Multi Deal Product Slider 1">
+        <section class="deal_multi_product_slider" data-multi-cat-slider-type="" data-multi-deal-of-day-type="" contentEditable="false" data-disp="multi_product" data-disp1="deal_days">
+            <div class="container">
+                <div class="row our-categories">
+                    <div class="col-md-12">
+                        <div class="title-block">
+                            <h4 id="snippet-title" class="section-title style1"><span>Multi Deals Slider</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    <template id="deal_seller_slider_option" inherit_id="website.snippet_options" name="Modify Options">
+        <xpath expr="//div" position="after">
+            <div data-js="deal_seller_multi_product_custom_snippet" data-selector=".deal_multi_product_slider" data-snippet-option-id="deal_seller_multi_product_custom_snippet" data-drop-in=".timer_counter_div">
+                <we-button class="dropdown-item deal_multi_product_slider" data-no-preview="true" tabindex="-1" href="#" data-multi_category_slider="">Modify</we-button>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="multi_deal_seller_slider_view" name="Deal Seller Product Snippet">
+        <div class="container">
+            <div class="row deal-wrapper">
+                <div class="col-lg-6 col-xl-7 deal-inner">
+                    <div class="section-title-wrapper d-flex flex-wrap">
+                        <h2 class="section-title style1" t-if="not slider_header">
+                            BestSeller
+                        </h2>
+                        <h2 class="section-title style1" t-if="slider_header">
+                            <t t-esc="slider_header.name"/>
+                        </h2>
+                    </div>
+                    <div class="best-seller-row">
+                        <div class="left-side oe_img_bg" t-att-style="'background-image: url('+ website.image_url(slider_header, 'img_banner') +')'">
+                            <div class="left-disc">
+                                <h3 class="title-30" t-esc='slider_header.banner_text'></h3>
+                                <a t-att-href="slider_header.banner_btn_url" alt-="Shop now" title="Shop now" class='btn btn-primary solid-btn'><t t-esc="slider_header.banner_btn_text"/> <span class="arrow"></span></a>
+                            </div>
+                        </div>
+                        <div class="right-side">
+                            <div class="product-slider owl-carousel owl-theme">
+                                <!-- <t t-set="links" t-value="slider_details.product_ids"/> -->
+                                <t t-as="outer" t-foreach="slider_details">
+                                    <div class="item">
+                                        <t t-as="product" t-foreach="outer">
+                                            <t t-set="combination_info" t-value="product._get_combination_info(only_template=True, add_qty=add_qty or 1)"/>
+                                            <a t-att-href="'/shop/product/%s' % slug(product)" t-att-title="product.name" class="item-inner">
+                                                <div class="product">
+                                                    <div class="image">
+                                                        <img class="img img-fluid" t-att-alt="product.name" t-att-title="product.name" t-att-src="website.image_url(product, 'image_1920','85x85')"/>
+                                                    </div>
+                                                    <div class="disc">
+                                                        <p><span t-esc='product.name'/></p>
+                                                        <div class='ratings' t-if="request.website.viewref('theme_scita.theme_scita_rating').active">
+                                                            <div t-set="rating_val" t-value="product.sudo().rating_get_stats().get('avg')"/>
+                                                            <t t-set="prod_curr_rate" t-value="0"/>
+                                                            <t t-set="is_half_star" t-value="0"/>
+                                                            <t t-foreach="range(0, 5)" t-as="every_prod_rate">
+                                                              <t t-set="prod_curr_rate" t-value="prod_curr_rate + 1"/>
+                                                              <t t-if="prod_curr_rate &lt;= int(rating_val // 1)">
+                                                                <i class="fa fa-star" role="img"/>
+                                                              </t>
+                                                              <t t-else="">
+                                                                <t t-if="rating_val % 1 > 0.01 and rating_val % 1 &lt;0.99 and is_half_star == 0">
+                                                                  <i class="fa fa-star-half-o" role="img"/>
+                                                                  <t t-set="is_half_star" t-value="1"/>
+                                                                </t>
+                                                                <t t-else="">
+                                                                  <i class="fa fa-star-o" role="img"/>
+                                                                </t>
+                                                              </t>
+                                                            </t>
+                                                        </div>
+                                                        <p class="price">
+                                                            <b>
+                                                                <t t-if="True">
+                                                                    <del t-attf-class="text-danger mr8 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+                                                                </t>
+                                                                <span t-if="combination_info['price']" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                                                <span itemprop="price" style="display:none;" t-esc="combination_info['price']" />
+                                                                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name" />
+                                                            </b>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </t>
+                                    </div>
+                                </t>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-xl-5 deal-inner right-side">
+                    <div class="section-title-wrapper d-flex flex-wrap">
+                        <h2 class="section-title" t-esc="slider_header.deal_title"></h2>
+                    </div>
+                <!-- <div class="right-deal-wrapper"> -->
+                    <div class="deal-top-slider">
+                        <div class="deal-slider owl-carousel owl-theme">
+                            <t t-foreach="deals_banners" t-as="banner">
+                                <div class="item">
+                                    <a t-att-href='banner.page_link'>
+                                        <img class="img img-fluid" t-att-alt="banner.name" t-att-title="banner.name" t-att-src="website.image_url(banner, 'image_1920','895x833')"/>
+                                    </a>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="deal-content-wrapper">
+                        <div class="deal-content">
+                            <div class="sct_sub_title">
+                                <p class="sub_title_banner o_default_snippet_text text-center">Hurry Up! Offer end in</p>
+                                <div class='counter_timer_main_div'>
+                                    <div class='counter_timer_div'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="deal_of_day_banner_6" name="Multi Deal Product Snippet 1">
+        <section id="theme_scita_custom_deal_of_the_day" class="oe_deal_of_the_day s_theme_scita_deal_of_the_day" contentEditable="false" data-deal-snippet-id=""  data-disp="multi_product" data-disp1="deal_days">
+            <div class="container">
+                <div class="block-title">
+                    <h2 class="fancy">Deal of the day</h2>
+                </div>
+            </div>
+        </section>
+    </template>
+    <template id="theme_scita_deal_of_the_day_option" inherit_id="website.snippet_options" name="Modify Options">
+        <xpath expr="//div" position="after">
+            <div data-js="oe_deal_of_the_day" data-selector=".oe_deal_of_the_day">
+                <we-button class="dropdown-item oe_deal_of_the_day" tabindex="-1" href="#" data-set_deal_of_the_day_products="">Modify</we-button>
+            </div>
+        </xpath>
+    </template>
+    <template id="theme_scita_deal_of_the_day_view" name="Deal of the day 6">
+        <div class="container">
+            <div class="deal_day_wrap">
+                <div class="deal_day_top_inner">
+                    <div class="title-block">
+                        <h2 class="section-title style1" t-if="deal" t-esc="deal.name"></h2>
+                        <h2 class="section-title style1" t-else="">Deal of the day</h2>
+                    </div>
+                    <div class="deal-content-wrapper timer_counter_div">
+                        <div class="deal-content js_counter_timer">
+                            <div class="sct_sub_title counter_timer_div d-flex flex-wrap align-items-center justify-content-between sct_counter_timer_div">
+                                <span class="col-3 text-center box_degit_wrapper">
+                                     <div class="box_degit">
+                                        <span id="label" class="label_text">End in :</span>
+                                     </div>
+                                </span>
+                                <div class='counter_timer_main_div'>
+                                    <div class='counter_timer_div'/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="deal_day_bottom_inner d-flex flex-wrap justify-content-between">
+                    <t t-foreach="deal.product_ids[:4]" t-as="deal_product">
+                        <t t-set="combination_info" t-value="deal_product._get_combination_info(only_template=True, add_qty=add_qty or 1)"/>
+                        <div class="col-md-3 col-6">
+                            <div class="cs-product" data-publish="on">
+                                <div class="pwp-img">
+                                    <a href="keep(deal_product.website_url)">
+                                        <img class="img img-fluid" t-att-alt="deal_product.name" t-att-title="deal_product.name" t-att-src="image_data_uri(deal_product.image_1920)"/>
+                                    </a>
+                                </div>
+                                <div class="pwd-desc">
+                                    <div class="pwp-info">
+                                        <div class="pink-box" contenteditable="false" t-if="request.website.viewref('theme_scita.theme_scita_rating').active">
+                                            <t t-set="rating_val" t-value="deal_product.sudo().rating_get_stats().get('avg')"/>
+                                            <div class="ratings">
+                                                <t t-set="prod_curr_rate" t-value="0"/>
+                                                <t t-set="is_half_star" t-value="0"/>
+                                                <t t-foreach="range(0, 5)" t-as="every_prod_rate">
+                                                  <t t-set="prod_curr_rate" t-value="prod_curr_rate + 1"/>
+                                                  <t t-if="prod_curr_rate &lt;= int(rating_val // 1)">
+                                                    <i class="fa fa-star" role="img"/>
+                                                  </t>
+                                                  <t t-else="">
+                                                    <t t-if="rating_val % 1 > 0.01 and rating_val % 1 &lt;0.99 and is_half_star == 0">
+                                                      <i class="fa fa-star-half-o" role="img"/>
+                                                      <t t-set="is_half_star" t-value="1"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                      <i class="fa fa-star-o" role="img"/>
+                                                    </t>
+                                                  </t>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        <p class="pwpi-title">
+                                            <span t-esc='deal_product.name'/>
+                                        </p>
+                                        <p class="price">
+                                            <b>
+                                                <t t-if="True">
+                                                    <del t-attf-class="text-danger mr8 {{'' if combination_info['has_discounted_price'] else 'd-none'}}" style="white-space: nowrap;" t-esc="combination_info['list_price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}" />
+                                                </t>
+                                                <span t-if="combination_info['price']" t-esc="combination_info['price']" t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                                                <span itemprop="price" style="display:none;" t-esc="combination_info['price']" />
+                                                <span itemprop="priceCurrency" style="display:none;" t-esc="website.currency_id.name" />
+                                            </b>
+                                        </p>
+                                    </div>
+                                    <div class="sct-hover-info product_price ajax_cart_template">
+                                        <form action="/shop/cart/update" method="post">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input name="product_id" t-att-value="deal_product.product_variant_id.id" type="hidden"/>
+                                            <button type="button" class="btn scita_cstm_btn quick_view_sct_btn qbtn" title="Quick View" t-att-data-id="deal_product.id">
+                                                <span class="fa fa-eye"/>
+                                            </button>
+                                            <t t-if="request.website.viewref('website_sale_comparison.add_to_compare').active and deal_product.product_variant_ids">
+                                               <a class="btn btn-xs o_add_compare" title="Compare" t-att-data-product-product-id="deal_product.product_variant_ids[0].id" data-action="o_comparelist"><span class="fa fa-exchange"></span></a>
+                                            </t>
+                                            <t t-if="request.website.viewref('website_sale_wishlist.add_to_wishlist').active and deal_product.product_variant_ids">
+                                                <t t-set="in_wish" t-value="deal_product.product_variant_ids &amp; request.env['product.wishlist'].current().mapped('product_id')"/>
+                                                <a class="btn btn-default btn-xs o_add_wishlist" t-att-disabled='in_wish or None' title="Add to Wishlist" t-att-data-product-product-id="deal_product.product_variant_ids[0].id" data-action="o_wishlist"><span class="fa fa-heart"></span></a>
+                                            </t>
+                                            <button class="button btn btn-cart a-submit cart_view_sct_btn s_add_to_cart_btn" t-att-data-id="deal_product.id">
+                                                <span class="icon-basket"></span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>

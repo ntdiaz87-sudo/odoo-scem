@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View hr_submayor Tree View -->
+    <record id="view_hr_submayor_tree" model="ir.ui.view">
+        <field name="name">view.hr_submayor.tree</field>
+        <field name="model">hr.submayor</field>
+        <field name="arch" type="xml">
+            <tree string="Hr_submayor" create="0">
+                <field name="name"/>
+                <field name="work_days"/>
+                <field name="amount"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="note"/>
+            </tree>
+        </field>
+    </record>
+
+     <!-- View hr_submayor Pivot View -->
+    <record id="submayor_pivot" model="ir.ui.view">
+        <field name="name">submayor.pivot</field>
+        <field name="model">hr.submayor</field>
+        <field name="arch" type="xml">
+            <pivot string="">
+                <field name="employee_id" type="row"/>
+                <field name="work_days" type="measure"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- View hr_submayor form -->
+    <record id="view_hr_submayor_form" model="ir.ui.view">
+        <field name="name">view.hr_submayor.form</field>
+        <field name="model">hr.submayor</field>
+        <field name="arch" type="xml">
+            <form string="Hr_submayor">
+                <header></header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Name..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"></field>
+                            <field name="payslip_id"></field>
+                        </group>
+                        <group>
+                            <field name="work_days"></field>
+                            <field name="amount"></field>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="date_from"></field>
+                            <field name="date_to"></field>
+                        </group>
+                        <group>
+                            <field name="note"></field>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_submayor_grouped_general" model="ir.ui.view">
+        <field name="name">hr.submayor.tree.grouped.misc</field>
+        <field name="model">hr.submayor</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <tree string="Hr_submayor" create="0">
+                <field name="employee_id" groups="base.group_user" widget="many2one_avatar_user" />
+                <field name="name" />
+                <field name="work_days" sum="Total Work Days" />
+                <field name="amount" sum="Total Amount"/>
+                <field name="date_from" />
+                <field name="date_to"/>
+                <field name="note" />
+
+            </tree>
+        </field>
+    </record>
+    <record id="view_hr_submayor_filter" model="ir.ui.view">
+        <field name="name">hr.submayor.search</field>
+        <field name="model">hr.submayor</field>
+        <field name="arch" type="xml">
+            <search string="Search Submayor">
+                <group expand="0" string="Group By">
+                    <filter string="Empleado" name="group_by_name" domain="[]" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_submayor_general" model="ir.actions.act_window">
+        <field name="name">Submayor de vacaciones</field>
+        <field name="res_model">hr.submayor</field>
+        <field name="view_id" ref="view_hr_submayor_grouped_general"/>
+        <field name="search_view_id" ref="view_hr_submayor_filter"/>
+        <field name="view_mode">tree,pivot,graph</field>
+        <field name="context">{'group_by': 'employee_id'}</field>
+    </record>
+
+    <menuitem id="menu_payslip_submayor" name="Submayor" parent="om_hr_payroll.menu_hr_payroll_root" sequence="99" />
+
+    <menuitem id="menu_hr_payslip_submayor_general" action="action_hr_submayor_general" parent="menu_payslip_submayor" sequence="5"/>
+
+    <!-- View hr_submayor search -->
+    <record id="view_hr_submayor_search" model="ir.ui.view">
+        <field name="name">view.hr_submayor.search</field>
+        <field name="model">hr.submayor</field>
+        <field name="arch" type="xml">
+            <search string="Hr_submayor">
+                <group expand="1" string="Group By">
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action Window hr_submayor -->
+    <record id="action_hr_submayor" model="ir.actions.act_window">
+        <field name="name">Submayor</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.submayor</field>
+        <field name="view_mode">tree,form,pivot</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Acumulados segun submayor.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_hr_salary_rule_submayor" action="action_hr_submayor" parent="om_hr_payroll.menu_hr_payroll_configuration" sequence="7" />
+</odoo>

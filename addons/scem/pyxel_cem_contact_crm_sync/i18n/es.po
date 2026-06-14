@@ -1,0 +1,203 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pyxel_cem_contact_crm_sync
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-23 12:40+0000\n"
+"PO-Revision-Date: 2025-08-23 12:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model,name:pyxel_cem_contact_crm_sync.model_cem_contact_crm_synchronizer
+msgid "CEM Contact CRM Synchronizer"
+msgstr "Syncronización de Contactos CRM para CEM"
+
+#. module: pyxel_cem_contact_crm_sync
+#. odoo-python
+#: code:addons/pyxel_cem_contact_crm_sync/models/res_company.py:0
+#, python-format
+msgid "CRM: CRM Contacts synchronizer to %s"
+msgstr "CRM: Sincronizador Contactos CRM para %s"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model,name:pyxel_cem_contact_crm_sync.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model,name:pyxel_cem_contact_crm_sync.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "Contact synchronization Settings"
+msgstr "Configuración de la sincronización de contactos"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_cem_contact_crm_synchronizer__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_cem_contact_crm_synchronizer__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_crm_origin_db
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_origin_db
+msgid "DB"
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "Data End"
+msgstr "Datos en el destino"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "Data Origin"
+msgstr "Origen de datos"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_cem_contact_crm_synchronizer__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__stage_cem_crm_end_id
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__stage_cem_crm_end_id
+msgid "End Stage"
+msgstr "Etapa destino"
+
+#. module: pyxel_cem_contact_crm_sync
+#. odoo-python
+#: code:addons/pyxel_cem_contact_crm_sync/models/contact_crm_sync.py:0
+#, python-format
+msgid "Failed connection to %s or some value in 'Data Origin' is wrong."
+msgstr ""
+"Conexión fallida hacia %s o algún valor en el 'Origen de datos' es in "
+"correcto."
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "Frecuency"
+msgstr "Frecuencia"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_cem_contact_crm_synchronizer__id
+msgid "ID"
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_sync_interval_number
+msgid "Interval Number"
+msgstr "Intervalo"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_sync_interval_type
+msgid "Interval Unit"
+msgstr "Frecuencia"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_cem_contact_crm_synchronizer__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_cem_contact_crm_synchronizer__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_sync_nextcall
+msgid "Next Execution Date"
+msgstr "Fecha próxima ejecución"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,help:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_sync_nextcall
+msgid "Next planned execution date for this job."
+msgstr "Fecha planeada de la próxima ejecución para esta tarea programada"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "Next synchronization on"
+msgstr "Próxima sincronización el"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_crm_origin_company
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_origin_company
+msgid "Origin Company"
+msgstr "Empresa origen"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_crm_origin_stage
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_origin_stage
+msgid "Origin Stage"
+msgstr "Etapa origen"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_crm_origin_password
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_origin_password
+msgid "Password"
+msgstr "Contraseña"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,help:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_sync_interval_number
+msgid "Repeat every x."
+msgstr ""
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "Synchronize Now"
+msgstr "Sincronizar ahora"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "Synchronize every"
+msgstr "Sincronizar cada"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_sync_id
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_sync_id
+msgid "Syncronizer"
+msgstr "Sincronizador"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_contact_crm_sync.res_config_settings_view_form_inherit
+msgid "This can be used to synchronize at this moment the contacts."
+msgstr "Esto puede ser usado para sincronizar en este momento los contactos."
+
+#. module: pyxel_cem_contact_crm_sync
+#. odoo-python
+#: code:addons/pyxel_cem_contact_crm_sync/models/res_config_settings.py:0
+#, python-format
+msgid "Time interval is invalid."
+msgstr "El intervalo de tiempo es inválido."
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_crm_origin_url_server
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_origin_url_server
+msgid "URL Server Origin"
+msgstr "URL servidor origen"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_crm_origin_username
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_origin_username
+msgid "User"
+msgstr "Usuario"
+
+#. module: pyxel_cem_contact_crm_sync
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_company__cem_crm_origin_lang
+#: model:ir.model.fields,field_description:pyxel_cem_contact_crm_sync.field_res_config_settings__cem_crm_origin_lang
+msgid "User Language in use"
+msgstr "Idioma activo del usuario"

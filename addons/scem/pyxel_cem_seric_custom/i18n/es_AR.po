@@ -1,0 +1,515 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pyxel_cem_seric_custom
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0-20250325\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-06 17:06+0000\n"
+"PO-Revision-Date: 2025-06-06 17:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"<i class=\"icon-basket\"/>\n"
+"                                                            Añadir"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Architecture</strong>"
+msgstr "<strong>Arquitectura</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Construction materials</strong>"
+msgstr "<strong>Materiales de la construcción</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Construction</strong>"
+msgstr "<strong>Construcción</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Contractor</strong>"
+msgstr "<strong>Contratista</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Engineering and projects</strong>"
+msgstr "<strong>Ingeniería y proyectos</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Machinery assembly</strong>"
+msgstr "<strong>Montaje de maquinarias</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Maintenance</strong>"
+msgstr "<strong>Mantenimiento</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "<strong>Metal products</strong>"
+msgstr "<strong>Productos metálicos</strong>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.view_acreditation_url_form
+msgid "Banners del Home"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__url_button_1
+msgid "Button URL (banner 1)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__url_button_2
+msgid "Button URL (banner 2)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__url_button_3
+msgid "Button URL (banner 3)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Buy now"
+msgstr "Comprar ahora"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Complete or partial construction for residential, commercial and industrial "
+"spaces."
+msgstr ""
+"Construcción completa o en partes para espacios residenciales, comerciales e"
+" industriales."
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Comprehensive project development, with technical studies, planning, "
+"management, and supervision for efficient and sustainable results."
+msgstr ""
+"Desarrollo integral de proyectos, con estudios técnicos, planificación, "
+"gestión y supervisión para resultados eficientes y sostenibles."
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Construction maintenance for industrial facilities, homes, office buildings,"
+" warehouses, agri-food facilities, etc."
+msgstr ""
+"Mantenimiento constructivo a instalaciones industriales, viviendas, "
+"edificios de oficinas, almacenes, instalaciones agroalimentarias…"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Construction materials"
+msgstr "Materiales de la construcción"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Contact us"
+msgstr "Contáctanos"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Electricity"
+msgstr "Electricidad"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Email <span class=\"s_website_form_mark\">*</span>"
+msgstr "Correo <span class=\"s_website_form_mark\">*</span>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Functional and aesthetic architectural design, complying with regulations "
+"and adapted to each type of building."
+msgstr ""
+"Diseño arquitectónico funcional y estético, cumpliendo normativas y adaptado"
+" a cada tipo de edificación."
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.view_acreditation_url_form
+msgid "Home Configuration"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Imagen del producto"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Imports"
+msgstr "Importaciones"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Industrial Solutions"
+msgstr "Soluciones Industriales"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Lastname <span class=\"s_website_form_mark\">*</span>"
+msgstr "Apellidos <span class=\"s_website_form_mark\">*</span>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Management and execution of new construction, expansions, and renovations in"
+" residential, commercial, and industrial sectors."
+msgstr ""
+"Gestión y ejecución de obras nuevas, ampliaciones y remodelaciones en "
+"sectores residenciales, comerciales e industriales."
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Message <span class=\"s_website_form_mark\">*</span>"
+msgstr "Mensaje <span class=\"s_website_form_mark\">*</span>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Name <span class=\"s_website_form_mark\">*</span>"
+msgstr "Nombre <span class=\"s_website_form_mark\">*</span>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Orden mínima:"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Our Services"
+msgstr "Nuestros Servicios"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Our customers say"
+msgstr "Nuestros clientes opinan"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Payments"
+msgstr "Pagos"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Personal Affairs"
+msgstr "Asuntos generales"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Phone <span class=\"s_website_form_mark\">*</span>"
+msgstr "Teléfono <span class=\"s_website_form_mark\">*</span>"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Producción y comercialización de materiales de la construcción, materias "
+"primas, productos de ferretería y más..."
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__category_banner_1
+msgid "Product Category (banner 1)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__category_banner_2
+msgid "Product Category (banner 2)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__category_banner_3
+msgid "Product Category (banner 3)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__description_banner_1
+msgid "Product Description (banner 1)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__description_banner_2
+msgid "Product Description (banner 2)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__description_banner_3
+msgid "Product Description (banner 3)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__banner_image_1
+msgid "Product Image (banner 1)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__banner_image_2
+msgid "Product Image (banner 2)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__banner_image_3
+msgid "Product Image (banner 3)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__responsive_banner_image_1
+msgid "Product Responsive Image (banner 1)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__responsive_banner_image_2
+msgid "Product Responsive Image (banner 2)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__responsive_banner_image_3
+msgid "Product Responsive Image (banner 3)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__title_banner_1
+msgid "Product Title (banner 1)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__title_banner_2
+msgid "Product Title (banner 2)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__title_banner_3
+msgid "Product Title (banner 3)"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Production and marketing of metal products for structural use, tanks, "
+"reservoirs and stainless steel containers"
+msgstr ""
+"Producción y comercialización de productos metálicos para uso estructural, "
+"tanques, depósitos y recipientes de acero inoxidable"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Returns"
+msgstr "Devoluciones"
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__date_review_1
+msgid "Review date 1"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__date_review_2
+msgid "Review date 2"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__date_review_3
+msgid "Review date 3"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__date_review_4
+msgid "Review date 4"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Review img profile"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__name_review_1
+msgid "Review name 1"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__name_review_2
+msgid "Review name 2"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__name_review_3
+msgid "Review name 3"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__name_review_4
+msgid "Review name 4"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__img_review_1
+msgid "Review photo 1"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__img_review_2
+msgid "Review photo 2"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__img_review_3
+msgid "Review photo 3"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__img_review_4
+msgid "Review photo 4"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__position_review_1
+msgid "Review position 1"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__position_review_2
+msgid "Review position 2"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__position_review_3
+msgid "Review position 3"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__position_review_4
+msgid "Review position 4"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__text_review_1
+msgid "Review text 1"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__text_review_2
+msgid "Review text 2"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__text_review_3
+msgid "Review text 3"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model.fields,field_description:pyxel_cem_seric_custom.field_website__text_review_4
+msgid "Review text 4"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.view_acreditation_url_form
+msgid "Reviews"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Send message"
+msgstr "Enviar Mensaje"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.view_acreditation_url_form
+msgid "Slide 1"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.view_acreditation_url_form
+msgid "Slide 2"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.view_acreditation_url_form
+msgid "Slide 3"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Some of our products"
+msgstr "Alguno de nuestros productos"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid ""
+"Specialized assembly, repair, and maintenance of industrial plants, "
+"machinery, and equipment in the areas of mechanics, electricity, automation,"
+" and civil engineering."
+msgstr ""
+"Montaje, reparación y mantenimiento especializado de plantas, maquinarias y "
+"equipos industriales, en áreas de mecánica, electricidad, automática y "
+"civil."
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Stainless steel furniture"
+msgstr "Muebles acero inoxidable"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Stainless steel tank"
+msgstr "Tanque acero inoxidable"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Thermodynamic Storage"
+msgstr "Almacenamiento Termodinámico"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Topic"
+msgstr "Asunto"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "View all"
+msgstr "Ver todo"
+
+#. module: pyxel_cem_seric_custom
+#: model:ir.model,name:pyxel_cem_seric_custom.model_website
+msgid "Website"
+msgstr "Sitio web"
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "Write your message.."
+msgstr "Escribe tu mensaje aquí."
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "banner_1"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "contact-us-img"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "disponibles"
+msgstr ""
+
+#. module: pyxel_cem_seric_custom
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_seric_custom.home_template
+msgid "service"
+msgstr ""

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Campos CEVENDE en el formulario del proveedor de pago -->
+    <record id="payment_provider_form_cevende" model="ir.ui.view">
+        <field name="name">payment.provider.form.cevende</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='configuration']" position="after">
+                <page string="Checkout CEVENDE" name="cevende_checkout">
+                    <group>
+                        <group>
+                            <field name="cv_in_checkout"/>
+                            <field name="cv_display_name" placeholder="p. ej. Transferencia bancaria"/>
+                            <field name="cv_sort"/>
+                            <field name="cv_requires_proof"/>
+                        </group>
+                    </group>
+                    <group string="Instrucciones de pago (se muestran al cliente)"
+                           invisible="not cv_requires_proof">
+                        <field name="cv_instructions" nolabel="1"
+                               placeholder="Datos que verá el cliente: nº de cuenta, correo/teléfono Zelle, etc."/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Prepara los mecanismos de pago del checkout (idempotente): marca
+         Transferencia, Tropipay y Pasarela del Parque (Laberinto), y crea el
+         proveedor Zelle copiando el de transferencia si no existe. -->
+    <function model="payment.provider" name="_cevende_setup_payment_methods"/>
+
+</odoo>

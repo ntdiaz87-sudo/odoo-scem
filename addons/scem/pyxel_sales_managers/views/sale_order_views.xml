@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista Form de Sale Order - Heredar -->
+        <record id="view_order_form_sales_manager" model="ir.ui.view">
+            <field name="name">sale.order.form.sales.manager</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Campo invisible para controlar visibilidad -->
+                <xpath expr="//field[@name='user_id']" position="before">
+                    <field name="show_sales_manager" invisible="1"/>
+                </xpath>
+
+                <!-- Agregar campo de gestor de ventas interno -->
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="sales_manager_id"
+                           domain="[('active', '=', True)]"
+                           options="{'no_create': True}"
+                           invisible="not show_sales_manager"/>
+                </xpath>
+
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="domain">[ ('active_sales_manager', '=', True)]
+                    </attribute>
+                </xpath>
+
+                <!-- Agregar sección de Gestor Externo después de la pestaña de Otra Información -->
+                <xpath expr="//page[@name='other_information']" position="after">
+                    <page string="Gestor de Ventas Externo"
+                          name="external_sales_manager"
+                          invisible="not show_sales_manager">
+                        <group>Información del Gestor
+                            <group string="Información del Gestor">
+                                <field name="sales_manager_id"
+                                       options="{'no_create': True, 'no_open': True}"
+                                />
+                                <field name="sales_manager_code_char"
+                                       options="{'no_create': True, 'no_open': True}"
+                                       placeholder="Seleccione el código del gestor..."/>
+
+
+                                <field name="commission_amount"
+                                       readonly="1"
+                                       widget="monetary"/>
+                            </group>
+
+                            <group string="Comprobante de Venta">
+                                <field name="sales_proof"
+                                       filename="sales_proof_filename"
+                                       widget="binary"/>
+
+                                <field name="sales_proof_filename" invisible="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Vista de líneas dentro del pedido - usando form inline -->
+        <record id="view_order_form_lines_commission" model="ir.ui.view">
+            <field name="name">sale.order.form.lines.commission</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="priority">99</field>
+            <field name="arch" type="xml">
+
+                <!-- Método 1: Buscar en el campo order_line -->
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                    <field name="commission_rate_snapshot"
+                           string="% Com."
+                           optional="hide"
+                           readonly="1"
+                           widget="percentage"/>
+
+                    <field name="commission_amount"
+                           string="Comisión"
+                           optional="hide"
+                           readonly="1"
+                           sum="Total Comisión"
+                           widget="monetary"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Vista Tree de Sale Order - Heredar -->
+        <record id="view_order_tree_sales_manager" model="ir.ui.view">
+            <field name="name">sale.order.tree.sales.manager</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="before">
+                    <field name="show_sales_manager" column_invisible="1"/>
+                    <field name="show_sales_manager" column_invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="sales_manager_id"
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+
+                    <field name="sales_manager_code_char"
+                           string="Código Gestor Ext."
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+
+                    <field name="sales_manager_name_char"
+                           string="Gestor Externo"
+                           optional="hide"
+                           column_invisible="not parent.show_sales_manager"/>
+
+                    <field name="commission_amount"
+                           string="Comisión"
+                           optional="hide"
+                           widget="monetary"
+                           column_invisible="not parent.show_sales_manager"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vista Search de Sale Order - Heredar -->
+        <record id="view_sales_order_filter_sales_manager" model="ir.ui.view">
+            <field name="name">sale.order.search.sales.manager</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="sales_manager_id" string="Gestor Externo"/>
+                    <field name="sales_manager_code_char" string="Código Gestor Externo"/>
+                </xpath>
+
+                <xpath expr="//filter[@name='salesperson']" position="after">
+                    <filter string="Gestor de Ventas"
+                            name="sales_manager"
+                            context="{'group_by': 'sales_manager_id'}"/>
+
+                    <filter string="Gestor Externo"
+                            name="external_sales_manager"
+                            context="{'group_by': 'sales_manager_code_char'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Vista de líneas de pedido independiente (tree) -->
+        <record id="view_order_line_tree_commission" model="ir.ui.view">
+            <field name="name">sale.order.line.tree.commission</field>
+            <field name="model">sale.order.line</field>
+            <field name="inherit_id" ref="sale.view_order_line_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='price_subtotal']" position="after">
+                    <field name="commission_rate_snapshot"
+                           string="% Comisión"
+                           optional="hide"
+                           readonly="1"
+                           widget="percentage"/>
+
+                    <field name="commission_amount"
+                           string="Comisión"
+                           optional="hide"
+                           readonly="1"
+                           sum="Total Comisión"
+                           widget="monetary"/>
+                </xpath>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

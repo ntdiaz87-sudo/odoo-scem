@@ -1,0 +1,48 @@
+<odoo>
+    <data>
+        <!-- Heredar la vista tree de sale.order -->
+        <record id="view_order_tree_custom" model="ir.ui.view">
+            <field name="name">sale.order.tree.custom</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+                <!-- Agregar campos personalizados a la vista lista -->
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="customer_id_code" string="ID de Cliente"/>
+                    <field name="reeup_code" string="Código REEUP"/>
+                    <field name="entity_type" string="Tipo de Entidad"/>
+                    <field name="contract_number" string="No. Contrato"/>
+                </xpath>
+            </field>
+        </record>
+
+         <record id="view_order_tree_custom_type" model="ir.ui.view">
+            <field name="name">sale.order.tree.custom.type</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <!-- Agregar campos personalizados a la vista lista -->
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="customer_id_code"  string="ID de Cliente"/>
+                    <field name="reeup_code" string="Código REEUP"/>
+                    <field name="entity_type" string="Tipo de Entidad"/>
+                    <field name="contract_number" string="No. Contrato"/>
+                </xpath>
+            </field>
+        </record>
+
+         <record id="sale_order_view_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.pyxel.cem</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="description_report"/>
+                <field name="observations"/>
+            </xpath>
+
+        </field>
+    </record>
+    </data>
+</odoo>

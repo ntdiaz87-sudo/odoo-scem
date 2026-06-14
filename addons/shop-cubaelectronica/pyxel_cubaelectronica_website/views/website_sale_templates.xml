@@ -1,0 +1,353 @@
+<odoo>
+    <template id="shop_mark_filter_sidebar" inherit_id="website_sale.products"
+              name="Filtro marcas tienda visual integrado">
+        <xpath expr="//div[contains(@class, 'o_wsale_products_grid_before_rail')]" position="before">
+            <t t-if="use_brand_filter">
+                <div class="tp-marks-filter extra-filters mt-3">
+                    <b>Marcas</b>
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <div t-att-data-link-href="keep('/shop', brand=0, category=current_category, provider=current_provider)"
+                                 class="custom-control form-check mb-1 d-inline-block">
+                                <input type="radio" class="form-check-input o_not_editable"
+                                       id="all_marks" name="brand" value="all"
+                                       t-att-checked="'checked' if not current_brand else None"/>
+                                <label class="form-check-label fw-normal" for="all_marks">
+                                    Todas las Marcas
+                                </label>
+                            </div>
+                        </li>
+
+                        <t t-foreach="marks" t-as="mark">
+                            <li class="nav-item">
+                                <div t-att-data-link-href="keep('/shop', brand=mark['id'], category=current_category, provider=current_provider)"
+                                     class="custom-control form-check mb-1 d-inline-block">
+                                    <input type="radio" class="form-check-input o_not_editable"
+                                           t-att-id="'mark_' + str(mark['id'])"
+                                           name="brand"
+                                           t-att-value="mark['id']"
+                                           t-att-checked="'checked' if current_brand == mark['id'] else None"/>
+                                    <label class="form-check-label fw-normal" t-att-for="'mark_' + str(mark['id'])">
+                                        <span t-esc="mark['name']"/>
+                                        <span t-if="mark['product_count']">
+                                            (<t t-esc="mark['product_count']"/>)
+                                        </span>
+                                    </label>
+                                </div>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="add_brand_filter_responsive"
+              inherit_id="pyxel_cem_website_sale.scem_filter_products_responsive"
+              name="Add Brand Filter to Responsive Sidebar">
+
+        <!-- Agregar el filtro de marcas después del filtro de proveedores -->
+        <xpath expr="//div[contains(@class, 'extra-filters-responsive')]/div[contains(@class, 'tp-providers-filter')]"
+               position="after">
+
+            <div class="line" t-if="use_brand_filter"/>
+
+            <div class="tp-marks-filter mt-3" t-if="use_brand_filter">
+                <b>Marcas</b>
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <div t-att-data-link-href="keep('/shop', brand=0, category=current_category, provider=current_provider)"
+                             class="custom-control form-check mb-1 d-inline-block">
+                            <input type="radio" class="form-check-input o_not_editable"
+                                   id="all_marks_responsive" name="brand_responsive" value="all"
+                                   t-att-checked="'checked' if not current_brand else None"/>
+                            <label class="form-check-label fw-normal" for="all_marks_responsive">
+                                Todas las Marcas
+                            </label>
+                        </div>
+                    </li>
+
+                    <t t-foreach="marks" t-as="mark">
+                        <li class="nav-item">
+                            <div t-att-data-link-href="keep('/shop', brand=mark['id'], category=current_category, provider=current_provider)"
+                                 class="custom-control form-check mb-1 d-inline-block">
+                                <input type="radio" class="form-check-input o_not_editable"
+                                       t-att-id="'mark_' + str(mark['id']) + '_responsive'"
+                                       name="brand_responsive"
+                                       t-att-value="mark['id']"
+                                       t-att-checked="'checked' if current_brand == mark['id'] else None"/>
+                                <label class="form-check-label fw-normal"
+                                       t-att-for="'mark_' + str(mark['id']) + '_responsive'">
+                                    <span t-esc="mark['name']"/>
+                                    <span t-if="mark['product_count']">
+                                        (<t t-esc="mark['product_count']"/>)
+                                    </span>
+                                </label>
+                            </div>
+                        </li>
+                    </t>
+                </ul>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="fix_category_filter_with_brand" inherit_id="pyxel_cem_website_sale.scem_filter_products"
+              name="Fix Category Filter to Preserve Brand">
+
+        <!-- Modificar el enlace de "Todas las Categorías" -->
+        <xpath expr="//div[contains(@class, 'tp-categories-filter')]//div[contains(@class, 'custom-control')][./input[@id='all_categories']]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', category=0, provider=current_provider,
+                brand=current_brand)
+            </attribute>
+        </xpath>
+
+        <!-- Modificar los enlaces de categorías padres -->
+        <xpath expr="//div[contains(@class, 'tp-categories-filter')]//li[contains(@class, 'parent-category')]//a[contains(@class, 'custom-control')]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', category=parent_cat.get('id'),
+                provider=current_provider, brand=current_brand)
+            </attribute>
+        </xpath>
+
+        <!-- Modificar los enlaces de categorías hijas -->
+        <xpath expr="//div[contains(@class, 'tp-categories-filter')]//li[contains(@class, 'child-category')]//div[contains(@class, 'custom-control')]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', category=child_cat.get('id'),
+                provider=current_provider, brand=current_brand)
+            </attribute>
+        </xpath>
+
+    </template>
+
+    <!-- También corregir el filtro responsive si es necesario -->
+    <template id="fix_category_filter_responsive_with_brand"
+              inherit_id="pyxel_cem_website_sale.scem_filter_products_responsive"
+              name="Fix Responsive Category Filter to Preserve Brand">
+
+        <!-- Modificar enlace de "Todas las Categorías" en responsive -->
+        <xpath expr="//div[contains(@class, 'extra-filters-responsive')]//div[contains(@class, 'tp-categories-filter')]//div[contains(@class, 'custom-control')][./input[@id='all_categories_responsive']]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', category=0, provider=current_provider,
+                brand=current_brand)
+            </attribute>
+        </xpath>
+
+        <!-- Modificar enlaces de categorías padres en responsive -->
+        <xpath expr="//div[contains(@class, 'extra-filters-responsive')]//li[contains(@class, 'parent-category')]//a[contains(@class, 'custom-control')]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', category=parent_cat.get('id'),
+                provider=current_provider, brand=current_brand)
+            </attribute>
+        </xpath>
+
+        <!-- Modificar enlaces de categorías hijas en responsive -->
+        <xpath expr="//div[contains(@class, 'extra-filters-responsive')]//li[contains(@class, 'child-category')]//div[contains(@class, 'custom-control')]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', category=child_cat.get('id'),
+                provider=current_provider, brand=current_brand)
+            </attribute>
+        </xpath>
+
+    </template>
+
+    <!-- También corregir el filtro de proveedores si no quieres que afecte, pero manteniendo la marca -->
+    <!--<template id="fix_provider_filter_with_brand" inherit_id="pyxel_cem_website_sale.scem_filter_products"
+              name="Fix Provider Filter to Preserve Brand">
+
+        &lt;!&ndash; Modificar enlace de "Todos los Proveedores" &ndash;&gt;
+        <xpath expr="//div[contains(@class, 'tp-providers-filter')]//div[contains(@class, 'custom-control')][./input[@id='all_providers']]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', provider=0, category=current_category,
+                brand=current_brand)
+            </attribute>
+        </xpath>
+
+        &lt;!&ndash; Modificar enlaces de proveedores &ndash;&gt;
+        <xpath expr="//div[contains(@class, 'tp-providers-filter')]//li[not(contains(@class, 'nav-item'))]//div[contains(@class, 'custom-control')]"
+               position="attributes">
+            <attribute name="t-att-data-link-href">keep('/shop', provider=provider.get('id'), category=current_category,
+                brand=current_brand)
+            </attribute>
+        </xpath>
+
+    </template>-->
+
+    <!-- Dirección de entrega del producto en la página de detalle.
+         Sustituye al modal de zona: cada producto muestra su provincia/municipio
+         de entrega. Se inserta arriba de la columna de info del producto. -->
+    <template id="cevende_product_delivery_info"
+              inherit_id="pyxel_cem_website_sale.product"
+              name="CEVENDE entrega del producto (detalle)">
+        <!-- El título usaba 'large_name', que está vacío en algunos productos
+             (un visitante vería el título en blanco / "Product Name"). Se hace
+             fallback al nombre real del producto cuando large_name está vacío. -->
+        <xpath expr="//h1[@itemprop='name']" position="replace">
+            <h1 itemprop="name" t-esc="product.large_name or product.name"/>
+        </xpath>
+        <xpath expr="//div[@id='product_documents']" position="before">
+            <t t-if="product.delivery_state_id or product.delivery_municipality_id">
+                <div class="cv-product-delivery">
+                    <i class="fa fa-map-marker"/>
+                    <span class="cv-product-delivery__label">Entrega en:</span>
+                    <span class="cv-product-delivery__zone">
+                        <t t-if="product.delivery_municipality_id"><t t-esc="product.delivery_municipality_id.name"/>, </t>
+                        <t t-esc="product.delivery_state_id.name"/>
+                    </span>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Tarjetas de info del producto (unidades / código / referencia),
+             antes de la card de precio. Sustituyen al texto plano. -->
+        <xpath expr="//form[@id='add_to_cart_form']" position="before">
+            <div class="cv-prod-stats">
+                <t t-if="product_variant.qty_available">
+                    <div class="cv-prod-stat">
+                        <i class="fa fa-cube"/>
+                        <div class="cv-prod-stat__body">
+                            <div class="cv-prod-stat__val"><t t-esc="int(product_variant.qty_available)"/></div>
+                            <div class="cv-prod-stat__lbl">Unidades disponibles</div>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="product.nom_code">
+                    <div class="cv-prod-stat">
+                        <i class="fa fa-tag"/>
+                        <div class="cv-prod-stat__body">
+                            <div class="cv-prod-stat__val"><t t-esc="product.nom_code"/></div>
+                            <div class="cv-prod-stat__lbl">Código de nomenclatura</div>
+                        </div>
+                    </div>
+                </t>
+                <t t-if="product_variant.uom_id">
+                    <div class="cv-prod-stat">
+                        <i class="fa fa-balance-scale"/>
+                        <div class="cv-prod-stat__body">
+                            <div class="cv-prod-stat__val"><t t-esc="product_variant.sudo().uom_id.name"/></div>
+                            <div class="cv-prod-stat__lbl">Referencia de cantidad</div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </xpath>
+        <!-- Quitar el texto plano (ahora está en las tarjetas de arriba) -->
+        <xpath expr="//div[@id='product-info-container']//div[hasclass('left-product-info')]" position="replace"/>
+
+        <!-- Breadcrumb del producto: que parta de la raíz (Minorista/Mayorista →
+             Tienda → Producto) en vez de "Todos los productos". -->
+        <xpath expr="//ol[hasclass('breadcrumb')]/li[1]" position="replace">
+            <t t-set="cv_mode" t-value="request.session.get('cv_sale_mode') or 'retail'"/>
+            <li class="breadcrumb-item o_not_editable">
+                <a t-attf-href="/shop?tipo=#{cv_mode}"><t t-if="cv_mode == 'wholesale'">Mayorista</t><t t-else="">Minorista</t></a>
+            </li>
+            <li class="breadcrumb-item o_not_editable">
+                <a href="/shop">Tienda</a>
+            </li>
+        </xpath>
+    </template>
+
+    <!-- Breadcrumb en la página de tienda (/shop), arriba de "Categorías".
+         Parte de la raíz (Minorista/Mayorista → Tienda → Categoría). -->
+    <template id="cevende_shop_breadcrumb" inherit_id="website_sale.products"
+              name="CEVENDE breadcrumb tienda">
+        <xpath expr="//div[hasclass('o_wsale_products_main_row')]" position="before">
+            <t t-set="cv_mode" t-value="request.session.get('cv_sale_mode') or 'retail'"/>
+            <ol class="breadcrumb p-0 mb-2 m-lg-0 cv-shopbc">
+                <li class="breadcrumb-item">
+                    <a t-attf-href="/shop?tipo=#{cv_mode}"><t t-if="cv_mode == 'wholesale'">Mayorista</t><t t-else="">Minorista</t></a>
+                </li>
+                <t t-if="category">
+                    <li class="breadcrumb-item"><a href="/shop">Tienda</a></li>
+                    <li class="breadcrumb-item active"><span t-field="category.name"/></li>
+                </t>
+                <t t-else="">
+                    <li class="breadcrumb-item active">Tienda</li>
+                </t>
+            </ol>
+        </xpath>
+    </template>
+
+    <!-- Corregir el botón de reset para que limpie todos los filtros incluyendo marca -->
+    <template id="fix_reset_button_with_brand" inherit_id="pyxel_cem_website_sale.scem_filter_products"
+              name="Fix Reset Button to Clear All Filters">
+        <xpath expr="//a[contains(@class, 'reset-button')]" position="attributes">
+            <attribute name="t-att-href">'/shop'</attribute>
+        </xpath>
+    </template>
+
+    <!-- Fase 5: doble botón en el carrito. El cliente elige el flujo por botón:
+         · "Finalizar compra"   → checkout minorista nuevo (/cevende/checkout)
+         · "Cotizar (mayorista)" → flujo multi-paso existente (/shop/order_request)
+         Se hereda el view ACTIVO estándar (website_sale.navigation_buttons), que
+         comparte el botón principal entre todos los pasos del checkout; por eso
+         los cambios se limitan a la página /shop/cart:
+           1) se oculta el botón estándar "Finalizar compra → /shop/checkout"
+           2) se inyectan los dos botones del flujo CEVENDE. -->
+    <!-- Botón "Añadir al carrito" AJAX en la rejilla de /shop.
+         El template del core (scem_inherit_products_item) mete un <form> ANIDADO
+         dentro del form estándar de Odoo (oe_product_cart); el navegador descarta
+         los forms anidados, por lo que el botón quedaba enganchado al form externo
+         de Odoo con comportamiento roto. Aquí se reemplaza ese bloque por el mismo
+         botón cv-add-to-cart de la home (AJAX + toast + drawer), sin form anidado. -->
+    <template id="cevende_shop_ajax_add"
+              inherit_id="pyxel_cem_website_sale.scem_inherit_products_item"
+              name="CEVENDE botón AJAX añadir al carrito en /shop">
+        <xpath expr="//div[hasclass('counter-btns')]" position="replace">
+            <div class="counter-btns mt-2">
+                <t t-set="cv_variant_id" t-value="in_wish or product._get_first_possible_variant_id()"/>
+                <t t-if="cv_variant_id and product.product_variant_count == 1">
+                    <button type="button"
+                            class="btn btn-primary w-100 cv-shop-add cv-add-to-cart"
+                            t-att-data-product-id="cv_variant_id"
+                            t-att-data-qty="product.sale_min_qty or 1">
+                        <i class="fa fa-shopping-cart me-2"/> Añadir al carrito
+                    </button>
+                </t>
+                <t t-else="">
+                    <a t-att-href="'/shop/product/' + slug(product)"
+                       class="btn btn-outline-primary w-100 cv-shop-add">
+                        <i class="fa fa-shopping-cart me-2"/> Ver opciones
+                    </a>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="cevende_cart_dual_buttons"
+              inherit_id="website_sale.navigation_buttons"
+              name="CEVENDE doble botón carrito (minorista / mayorista)">
+        <!-- 1) ocultar el botón principal estándar SOLO en el carrito -->
+        <xpath expr="//a[@name='website_sale_main_button']" position="attributes">
+            <attribute name="t-attf-class" add="#{request.httprequest.path == '/shop/cart' and 'd-none' or ''}" separator=" "/>
+        </xpath>
+        <!-- 2) inyectar el botón del flujo CEVENDE según el CONTEXTO, solo en el
+                carrito. El flujo mayorista ("Cotizar") solo se ofrece si el cliente
+                entró por la vista mayorista (sesión cv_sale_mode == 'wholesale').
+                En cualquier otro caso (minorista por defecto) → "Finalizar compra". -->
+        <xpath expr="//a[@name='website_sale_main_button']" position="before">
+            <t t-if="request.httprequest.path == '/shop/cart'">
+                <t t-set="cv_mode" t-value="request.session.get('cv_sale_mode') or 'retail'"/>
+                <div class="cv-cart-cta d-flex flex-column flex-lg-row gap-2 w-100 w-lg-auto">
+                    <t t-if="cv_mode == 'wholesale'">
+                        <a role="button"
+                           class="btn btn-primary w-100 w-lg-auto"
+                           href="/cevende/mayorista"
+                           onclick="if(this.getAttribute('data-clicked')) { return false; } else { this.setAttribute('data-clicked', true); this.style.opacity = '0.6'; }">
+                            Comprar (mayorista)
+                            <i class="fa fa-angle-right ms-2 fw-light"/>
+                        </a>
+                    </t>
+                    <t t-else="">
+                        <a role="button"
+                           class="btn btn-primary w-100 w-lg-auto"
+                           href="/cevende/checkout">
+                            Finalizar compra
+                            <i class="fa fa-angle-right ms-2 fw-light"/>
+                        </a>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,1091 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pyxel_cem_sale
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-10 16:15+0000\n"
+"PO-Revision-Date: 2026-04-10 16:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,body_html:pyxel_cem_sale.mail_template_sale_canceled
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Dear\n"
+"                        <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Your order\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">SUB003</span>\n"
+"                        amounting in\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 143,750.00\n"
+"                        </span>\n"
+"                        from <t t-out=\"object.company_id.name or ''\">YourCompany</t> has been canceled.\n"
+"                        <br>\n"
+"                        The invoice has been canceled too.\n"
+"\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a\n"
+"                        <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Su order\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">SUB003</span>\n"
+"                        con monto de \n"
+"                        <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 143,750.00\n"
+"                        </span>\n"
+"                        de <t t-out=\"object.company_id.name or ''\">YourCompany</t> ha sido cancelado.\n"
+"                        <br>\n"
+"                        La factura fue cancelada igualmente.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: pyxel_cem_sale
+#: model:mail.template,body_html:pyxel_cem_sale.mail_template_sale_delivered
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Dear\n"
+"                        <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Your order\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">SUB003</span>\n"
+"                        amounting in\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 143,750.00\n"
+"                        </span>\n"
+"                        from <t t-out=\"object.company_id.name or ''\">YourCompany</t> has been fully delivered.\n"
+"                        <br>\n"
+"                        It has been a pleasure serving you.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Estimado/a\n"
+"                        <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Su pedido\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">SUB003</span>\n"
+"                        con monto de \n"
+"                        <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 143,750.00\n"
+"                        </span>\n"
+"                        de <t t-out=\"object.company_id.name or ''\">YourCompany</t> ha sido completamente entregado.\n"
+"                        <br>\n"
+"                        Ha sido un placer servirle.\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: pyxel_cem_sale
+#: model:mail.template,body_html:pyxel_cem_sale.mail_template_sale_confirmation_custom
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Hello <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Your order <span style=\"font-weight:bold;\" t-out=\"object.name or ''\"></span> has been confirmed.\n"
+"                        <br>\n"
+"                        Thank you for your trust!\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        <t t-if=\"object.payment_meth_id.name\">\n"
+"                            Do payment by: <span style=\"font-weight:bold;\" t-out=\"object.payment_meth_id.name or ''\"></span>\n"
+"                        </t>\n"
+"                        <br>\n"
+"                        <br>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 12px;\">\n"
+"                        Saludos <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        Su pedido <span style=\"font-weight:bold;\" t-out=\"object.name or ''\"></span> ha sido confirmado.\n"
+"                        <br>\n"
+"                        Agradecemos su confianza.\n"
+"                        <br>\n"
+"                        <br>\n"
+"                        <t t-if=\"object.payment_meth_id.name\">"
+"                           Realice el pago por: <span style=\"font-weight:bold;\" t-out=\"object.payment_meth_id.name or ''\"></span>\n"
+"                        </t>"
+"                        <br>\n"
+"                        <br>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: pyxel_cem_sale
+#: model:mail.template,body_html:pyxel_cem_sale.email_template_invoice_confirmation
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Estimado comercial,\n"
+"                        <br><br>\n"
+"                        La factura <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">INV/0001</span> ha sido confirmada.\n"
+"                        <br><br>\n"
+"                        <strong>Cliente:</strong> <t t-out=\"object.partner_id.name or ''\">Cliente</t><br>\n"
+"                        <strong>Total:</strong> <t t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$1,000.00</t><br>\n"
+"                        <strong>Fecha:</strong> <t t-out=\"object.invoice_date or ''\">2024-01-01</t><br><br>\n"
+"                        Saludos cordiales,<br>\n"
+"                        <t t-out=\"object.company_id.name or ''\">Tu Empresa</t>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:mail.template,body_html:pyxel_cem_sale.mail_template_invoice_confirmation_custom
+msgid ""
+"<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                    Dear\n"
+"                    <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                    <br>\n"
+"                    <br>\n"
+"                    Here is your invoice\n"
+"                    <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">INV/2021/05/0005</span>\n"
+"                    <t t-if=\"object.invoice_origin\">\n"
+"                        (with reference: <span style=\"font-weight:bold;\" t-out=\"object.invoice_origin or ''\">SUB003</span>)\n"
+"                    </t>\n"
+"                    amounting in\n"
+"                    <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 143,750.00\n"
+"                    </span>\n"
+"                    from <t t-out=\"object.company_id.name or ''\">YourCompany</t>.\n"
+"                    <t t-if=\"object.payment_state in ('paid', 'in_payment')\">\n"
+"                        This invoice is already paid.\n"
+"                    </t>\n"
+"\n"
+"                </p>\n"
+"            "
+msgstr ""
+"<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                    Estimado/a\n"
+"                    <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>.\n"
+"                    <br>\n"
+"                    <br>\n"
+"                    Aquí está su factura\n"
+"                    <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">INV/2021/05/0005</span>\n"
+"                    <t t-if=\"object.invoice_origin\">\n"
+"                        (pedido: <span style=\"font-weight:bold;\" t-out=\"object.invoice_origin or ''\">SUB003</span>)\n"
+"                    </t>\n"
+"                    con monto de\n"
+"                    <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 143,750.00\n"
+"                    </span>\n"
+"                    desde <t t-out=\"object.company_id.name or ''\">YourCompany</t>.\n"
+"                    <t t-if=\"object.payment_state in ('paid', 'in_payment')\">\n"
+"                        Esta factura ya está pagada.\n"
+"                    </t>\n"
+"\n"
+"                </p>\n"
+"            "
+
+#. module: pyxel_cem_sale
+#: model:mail.template,body_html:pyxel_cem_sale.mail_template_delivery_confirmation_custom
+msgid ""
+"<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                    Dear <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>, the transfer\n"
+"                    <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">INV/OUT</span>\n"
+"                    <t t-if=\"object.sale_id\">\n"
+"                        with origin sale order: <t t-out=\"object.sale_id.name or ''\">SUB003</t>)\n"
+"                    </t>\n"
+"                    amounting in\n"
+"                    <span style=\"font-weight:bold;\" t-out=\"format_amount(object.sale_id.amount_total, object.sale_id.currency_id) or ''\">$ 143,750.00\n"
+"                    </span>\n"
+"                    is ready to delivery\n"
+"                    from <t t-out=\"object.company_id.name or ''\">YourCompany</t>.\n"
+"                    The invoice\n"
+"                    <t t-set=\"invoice\" t-value=\"object.env.context.get('invoice_origin_name')\"></t>\n"
+"                    <t t-if=\"invoice\">\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"invoice\"></span>\n"
+"                    </t>\n"
+"                    is already paid.\n"
+"                </p>\n"
+"            "
+msgstr ""
+"<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                    Estimado/a <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>, la entrega\n"
+"                    <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">INV/OUT</span>\n"
+"                    <t t-if=\"object.sale_id\">\n"
+"                        asociada al pedido: <t t-out=\"object.sale_id.name or ''\">SUB003</t>)\n"
+"                    </t>\n"
+"                    con monto de \n"
+"                    <span style=\"font-weight:bold;\" t-out=\"format_amount(object.sale_id.amount_total, object.sale_id.currency_id) or ''\">$ 143,750.00\n"
+"                    </span>\n"
+"                    está lista para realizarse\n"
+"                    desde <t t-out=\"object.company_id.name or ''\">YourCompany</t>.\n"
+"                    La factura\n"
+"                    <t t-set=\"invoice\" t-value=\"object.env.context.get('invoice_origin_name')\"></t>\n"
+"                    <t t-if=\"invoice\">\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"invoice\"></span>\n"
+"                    </t>\n"
+"                    está pagada.\n"
+"                </p>\n"
+"            "
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_saleorder_document_cem_inherit
+msgid ""
+"<span style=\"-webkit-transform:rotate(-45deg); color:red; font-size:12em; text-align:center; position:absolute; opacity:0.2;\">\n"
+"                        Canceled\n"
+"                    </span>"
+msgstr ""
+"<span style=\"-webkit-transform:rotate(-45deg); color:red; font-size:12em; text-align:center; position:absolute; opacity:0.2;\">\n"
+"                        Cancelado\n"
+"                    </span>"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<span>Importe</span>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<span>Taxes</span>"
+msgstr "Impuestos"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong style=\"width: 120px;\">Cliente:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong style=\"width: 120px;\">Dirección:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Aprobada por:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Banco:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Beneficiario:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Contabilizada por:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.external_layout_standard_inherit
+msgid "<strong>Fecha:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Moneda de pago:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.external_layout_standard_inherit
+msgid "<strong>NIT:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.external_layout_standard_inherit
+msgid "<strong>No. Factura:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Número de cuenta:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.external_layout_standard_inherit
+msgid "<strong>REEUP:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Realizada por:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Revisada por:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "<strong>Swift:</strong>"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__account_number
+#, python-format
+msgid "Account Number"
+msgstr "Número de cuenta"
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#, python-format
+msgid "Account Number is invalid."
+msgstr "Número de cuenta es inválido."
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__available2sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__available2sale
+msgid "Available to Sale"
+msgstr "Disponible para la venta"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__bank
+msgid "Bank"
+msgstr "Banco"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__beneficiary
+msgid "Beneficiary"
+msgstr "Beneficiario"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,name:pyxel_cem_sale.mail_template_delivery_confirmation_custom
+msgid "CEM Delivery: Delivery Confirmation"
+msgstr "CEM Entrega: Confirmación de la entrega"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,name:pyxel_cem_sale.mail_template_invoice_confirmation_custom
+msgid "CEM Invoice: Invoice Confirmation"
+msgstr "CEM Factura: Confirmación de factura"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,name:pyxel_cem_sale.mail_template_sale_canceled
+msgid "CEM Sales: Order Canceled Confirmation"
+msgstr "CEM Ventas: Confirmación de Pedido Cancelado"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,name:pyxel_cem_sale.mail_template_sale_confirmation_custom
+msgid "CEM Sales: Order Confirmation and Payment Method"
+msgstr "CEM Ventas: Confirmación del pedido y método de pago"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,name:pyxel_cem_sale.mail_template_sale_delivered
+msgid "CEM Sales: Order Delivered Confirmation"
+msgstr "CEM Ventas: Confirmación de entrega de la orden"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_sale_order__so_cem_state
+msgid "CEM State"
+msgstr "Estado CEM"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields.selection,name:pyxel_cem_sale.selection__product_template__product_wsale_type__cfi
+msgid "CFI"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_crm_stage
+msgid "CRM Stages"
+msgstr "Etapas del CRM"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_crm_stage__is_cancelled
+msgid "Cancelado"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "Canceled"
+msgstr "Cancelado"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.sale_order_view_form_inherit
+msgid "Confirm/Notify"
+msgstr "Confirmar/Notificar"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.view_move_form_inherit
+msgid "Confirm/Pay"
+msgstr "Confirmar/Pagar"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,name:pyxel_cem_sale.email_template_invoice_confirmation
+msgid "Confirmación de Factura a Comerciales"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields.selection,name:pyxel_cem_sale.selection__product_template__product_wsale_type__con
+msgid "Consigned"
+msgstr "Consignado"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,help:pyxel_cem_sale.field_res_partner__is_provider
+#: model:ir.model.fields,help:pyxel_cem_sale.field_res_users__is_provider
+msgid "Convert the contact into a provider for the Wholesale Store"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__origin_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__origin_id
+msgid "Country Origin"
+msgstr "País"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields.selection,name:pyxel_cem_sale.selection__sale_order__so_cem_state__delivered
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.sale_order_view_form_inherit
+msgid "Delivered"
+msgstr "Entregado"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__delivery_time
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__delivery_time
+msgid "Delivery Time"
+msgstr "Tiempo de entrega"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "Detalles del pago"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.sale_order_view_form_inherit
+msgid "Dispatch Order"
+msgstr "Orden de despacho"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "Email:"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:mail.template,description:pyxel_cem_sale.email_template_invoice_confirmation
+msgid "Enviado a los comerciales al confirmar una factura cliente"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__full_description
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__full_description
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_template_form_inherit_view
+msgid "Full Description"
+msgstr "Descripción completa"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__company_warranty
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.view_company_form_inherit
+msgid "Garantía"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:res.groups,name:pyxel_cem_sale.group_stock_grocer_cem
+msgid "Grocer"
+msgstr "Almacenero"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__id
+msgid "ID"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__image_1920
+msgid "Image"
+msgstr "Imagen"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__image_1024
+msgid "Image 1024"
+msgstr "Imagen 1024"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__image_128
+msgid "Image 128"
+msgstr "Imagen 128"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__image_256
+msgid "Image 256"
+msgstr "Imagen 256"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__image_512
+msgid "Image 512"
+msgstr "Imagen 512"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields.selection,name:pyxel_cem_sale.selection__product_template__product_wsale_type__in
+msgid "In-bond"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/sale_order.py:0
+#, python-format
+msgid "Invalid Payment Method Mail Notification."
+msgstr "Notificación de método de pago por correo electrónico inválida."
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#, python-format
+msgid "Invalid Value"
+msgstr "Valor inválido"
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/sale_order.py:0
+#, python-format
+msgid "Invoice: %s"
+msgstr "Factura: %s"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__is_default
+msgid "Is Default"
+msgstr "Es la principal"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_partner__is_provider
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_users__is_provider
+msgid "Is a provider?"
+msgstr "Es un Proveedor?"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_sale_order_line__is_uom_min_line
+msgid "Is minimum order step?"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__is_uom_min
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_attribute_value__is_uom_min
+msgid "Is minimum order?"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__is_relevant
+msgid "Is relevant"
+msgstr "Es relevante"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__large_name
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__large_name
+msgid "Large Name"
+msgstr "Nombre completo"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__write_uid
+msgid "Last Updated by"
+msgstr "Última modificación por"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__write_date
+msgid "Last Updated on"
+msgstr "Última modificación el"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_crm_lead
+msgid "Lead/Opportunity"
+msgstr "Lead/Oportunidad"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__list_price
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__list_price
+msgid "List price"
+msgstr "Precio de venta"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.external_layout_standard_inherit
+msgid "Logo"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__sale_margin
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__sale_margin
+msgid "Margen comercial (%)"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__mark_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__mark_id
+msgid "Mark"
+msgstr "Marca"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.sale_order_view_form_inherit
+msgid "Mark as delivered"
+msgstr "Terminar"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.account_res_config_settings_view_form_inherit
+msgid "Mark this option to print a 'Paid' watermark in invoice document."
+msgstr ""
+"Marque esta opción para imprimir la marca de agua 'Pagado' en el documento "
+"de factura."
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.account_res_config_settings_view_form_inherit
+msgid "Mark this option to show taxes data in invoice document."
+msgstr ""
+"Marque esta opción para mostrar los impuestos en el documento de factura"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__uom_min
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_attribute_value__uom_min
+msgid "Minimum order number"
+msgstr "Número minimo de compra"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_sale_order_line__uom_min_line
+msgid "Minimum qty for this line"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__nit
+#, python-format
+msgid "NIT"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#, python-format
+msgid "NIT is invalid."
+msgstr "NIT es inválido."
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template_mark__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields.selection,name:pyxel_cem_sale.selection__product_template__product_wsale_type__nac
+msgid "Nationalized"
+msgstr "Nacionalizado"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields.selection,name:pyxel_cem_sale.selection__sale_order__so_cem_state__no_paid
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.sale_order_view_form_inherit
+msgid "No Paid"
+msgstr "No pagado"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__nom_code
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__nom_code
+msgid "Nomenclator Code"
+msgstr "Código de nomenclador"
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#, python-format
+msgid "Only is allowed numbers in the value in this fields: %s"
+msgstr "Solo se permiten números en el valor de estos campos: %s"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_template_form_inherit_view
+msgid "Origin"
+msgstr "Origen"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields.selection,name:pyxel_cem_sale.selection__sale_order__so_cem_state__paid
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.sale_order_view_form_inherit
+msgid "Paid"
+msgstr "Pagado"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.view_company_form_inherit
+msgid "Payment Dateils"
+msgstr "Detalles del Pago"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_account_bank_statement_line__selected_payment_method_payment_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_account_move__selected_payment_method_payment_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_account_payment__selected_payment_method_payment_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_sale_order__payment_meth_id
+msgid "Payment Method"
+msgstr "Método de pago"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_sale_order__payment_meth_ids_comp
+msgid "Payment Methods"
+msgstr "Métodos de pago"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_sale_order__payment_prov_id
+msgid "Payment Provider"
+msgstr "Proveedor de pago"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,help:pyxel_cem_sale.field_product_product__list_price
+#: model:ir.model.fields,help:pyxel_cem_sale.field_product_template__list_price
+msgid "Price at which the product is sold to customers."
+msgstr "Precio al que se vende el producto a los clientes."
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__cem_print_paid_waterm
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_config_settings__cem_print_paid_waterm
+msgid "Print 'Paid' watermark in invoice document"
+msgstr "Imprimir marca de agua 'Pagado' en el documento de factura"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_product_template
+msgid "Product"
+msgstr "Producto"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_product_template_attribute_value
+msgid "Product Template Attribute Value"
+msgstr "Valor del atributo de la plantilla de producto"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_product_template_mark
+msgid "Product Template Mark"
+msgstr "Marca del producto"
+
+#. module: pyxel_cem_sale
+#: model:ir.actions.act_window,name:pyxel_cem_sale.product_temp_mark_action
+#: model:ir.ui.menu,name:pyxel_cem_sale.menu_product_temp_mark
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_temp_mark_search_view
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_temp_mark_tree_view
+msgid "Product Template Marks"
+msgstr "Marcas de producto"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__product_wsale_type
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__product_wsale_type
+msgid "Product Type"
+msgstr "Tipo de producto"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_product_product
+msgid "Product Variant"
+msgstr "Variante de producto"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__provider_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__provider_id
+msgid "Provider"
+msgstr "Proveedor"
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__reeup
+#, python-format
+msgid "REEUP"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/res_company.py:0
+#, python-format
+msgid "REEUP is invalid."
+msgstr "REEUP es inválido."
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__uom_reference
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__uom_reference
+msgid "Reference of the quantity"
+msgstr "Referencia de la cantidad"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__sale_min_qty
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__sale_min_qty
+msgid "Sale Minimum Quantity"
+msgstr "Cantidad mínima venta"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_account_bank_statement_line__sale_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_account_move__sale_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_account_payment__sale_id
+msgid "Sale Order Origin"
+msgstr "Pedido origen"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__uom_sale_id
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__uom_sale_id
+msgid "Sale Uom"
+msgstr "Unidad de medida venta"
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/stock_picking.py:0
+#, python-format
+msgid "Sale order must be paid."
+msgstr "El pedido de venta correspondiente debe estar pagado"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_sale_order
+msgid "Sales Order"
+msgstr "Pedido de venta"
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Línea de pedido de venta"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,description:pyxel_cem_sale.mail_template_invoice_confirmation_custom
+msgid ""
+"Sent to customers on invoices confirmation and with invoices in the "
+"attachment in the email"
+msgstr ""
+"Enviado a los clientes durante la confirmación de la factura y con ésta "
+"adjuntada en el correo"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,description:pyxel_cem_sale.mail_template_sale_confirmation_custom
+msgid "Sent to customers on order confirmation and payment method"
+msgstr "Enviado a los clientes al confirmar un pedido y el método de pago"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,description:pyxel_cem_sale.mail_template_sale_canceled
+msgid "Sent to customers when order has been canceled"
+msgstr "Enviado a los clientes cuando el pedido ha sido cancelado"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,description:pyxel_cem_sale.mail_template_sale_delivered
+msgid "Sent to customers when order has been fully delivered"
+msgstr "Enviado a los clientes cuando el pedido ha sido totalmente entregado"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,description:pyxel_cem_sale.mail_template_delivery_confirmation_custom
+msgid "Sent to grocer on invoice confirmation and it´s payment"
+msgstr "Enviado al almacenero cuando se confirma la factura y se paga"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_template_form_inherit_view
+msgid "Setting"
+msgstr "Configuración"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.account_res_config_settings_view_form_inherit
+msgid "Invoice Document Setting"
+msgstr "Configuración Documento Factura"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__cem_show_invoice_taxes
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_config_settings__cem_show_invoice_taxes
+msgid "Show Taxes"
+msgstr "Mostrar impuestos"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_template_form_inherit_view
+msgid "Specify Product Terms and Conditions."
+msgstr "Especificar términos y condiciones del producto"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_template_form_inherit_view
+msgid "Specify full description"
+msgstr "Especificar descripción"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_res_company__swift_code
+msgid "Swift Code"
+msgstr "Código Swift"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "Tax 15%"
+msgstr "Impuesto 15%"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.report_invoice_document_cem_inherit
+msgid "Tel:"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__attribute_value_ids
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__attribute_value_ids
+msgid "Template Attribute Values"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_template_form_inherit_view
+msgid "Terms & Conditions"
+msgstr "Términos y condiciones"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__terms_cond
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__terms_cond
+msgid "Terms and conditions"
+msgstr "Términos y condiciones"
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/account_move.py:0
+#, python-format
+msgid ""
+"The invoice was confirmed and has been successfully sent to customer in "
+"email."
+msgstr ""
+"La factura fue confirmada y enviada al cliente por correo electrónico."
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/sale_order.py:0
+#, python-format
+msgid "The sale order was canceled and notified via email."
+msgstr "EL pedido fue cancelado y notificado via email."
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/sale_order.py:0
+#, python-format
+msgid "The sale order was confirmed and notified to customer via email."
+msgstr ""
+"La orden de venta fue confirmada y notificada al cliente vía correo "
+"electrónico."
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/sale_order.py:0
+#, python-format
+msgid "The sale order was fully delivered to customer and notified via email."
+msgstr ""
+"La orden de venta fue entregada íntegramente al cliente y notificada vía "
+"correo electrónico."
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/pyxel_cem_sale/models/sale_order.py:0
+#, python-format
+msgid "There is transfers in warehouse that must be delivered or canceled."
+msgstr ""
+"Existen transferencias en almacén que deben ser entregadas o canceladas."
+
+#. module: pyxel_cem_sale
+#: model:ir.model.constraint,message:pyxel_cem_sale.constraint_product_template_unique_nom_code
+msgid "This code already exists"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:ir.model,name:pyxel_cem_sale.model_stock_picking
+msgid "Transfer"
+msgstr "Traslado"
+
+#. module: pyxel_cem_sale
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_product__wholesale_price
+#: model:ir.model.fields,field_description:pyxel_cem_sale.field_product_template__wholesale_price
+msgid "Wholesale Price"
+msgstr "Precio mayorista"
+
+#. module: pyxel_cem_sale
+#: model_terms:ir.ui.view,arch_db:pyxel_cem_sale.product_template_form_inherit_view
+msgid "Wholesale Sale"
+msgstr "Venta mayorista"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,subject:pyxel_cem_sale.email_template_invoice_confirmation
+msgid ""
+"{{ object.company_id.name }} - Confirmación de Factura {{ object.name }}"
+msgstr ""
+
+#. module: pyxel_cem_sale
+#: model:mail.template,subject:pyxel_cem_sale.mail_template_sale_delivered
+msgid ""
+"{{ object.company_id.name }}: (Order Fully Delivered {{ object.name or 'n/a'"
+" }})"
+msgstr ""
+"{{ object.company_id.name }} (Pedido Totalmente Entregado {{ object.name or "
+"'n/a' }})"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,subject:pyxel_cem_sale.mail_template_sale_confirmation_custom
+msgid ""
+"{{ object.company_id.name }}: Confirmed Order {{ object.name or 'n/a' }}"
+msgstr ""
+"{{ object.company_id.name }} (Pedido Confirmado {{ object.name or 'n/a' }})"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,subject:pyxel_cem_sale.mail_template_invoice_confirmation_custom
+msgid ""
+"{{ object.company_id.name }}: Confirmed and Paid Invoice {{ object.name or "
+"'n/a' }} / Origin Order {{object.invoice_origin or 'n/a'}}"
+msgstr ""
+"{{ object.company_id.name }} (Factura Confirmada y Pagada {{ object.name or "
+"'n/a' }})"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,subject:pyxel_cem_sale.mail_template_sale_canceled
+msgid ""
+"{{ object.company_id.name }}: Order Canceled {{ object.name or 'n/a' }} / "
+"Invoice canceled too"
+msgstr ""
+"{{ object.company_id.name }} (Pedido Cancelado {{ object.name or 'n/a' "
+"}})Factura canceleda igualmente"
+
+#. module: pyxel_cem_sale
+#: model:mail.template,subject:pyxel_cem_sale.mail_template_delivery_confirmation_custom
+msgid ""
+"{{ object.company_id.name }}: Ready Delivery {{ object.name or 'n/a' }} / "
+"Origin Order {{object.sale_id.name or 'n/a'}} / Invoice "
+"{{object.env.context.get('invoice_origin_name')}}"
+msgstr ""
+"{{ object.company_id.name }} (Entrega Lista {{ object.name or 'n/a' }}) / "
+"Pedido Origen{{object.sale_id.name or 'n/a'}} / Factura "
+"{{object.env.context.get('invoice_origin_name')}}"
+
+#. module: pyxel_cem_sale
+#. odoo-python
+#: code:addons/sale/models/sale_order.py:0
+#: model:ir.model.fields.selection,name:sale.selection__sale_order__state__draft
+#, python-format
+msgid "Quotation"
+msgstr "Solicitud/Cotización"

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Menú Principal en Ventas -->
+<!--        <menuitem id="menu_sales_managers_root"-->
+<!--                  name="Gestores de Ventas"-->
+<!--                  parent="sale.sale_menu_root"-->
+<!--                  sequence="10"-->
+<!--                  groups="group_sales_manager_user"/>-->
+
+<!--        &lt;!&ndash; Submenú: Gestores &ndash;&gt;-->
+<!--        <menuitem id="menu_sales_managers"-->
+<!--                  name="Gestores"-->
+<!--                  parent="menu_sales_managers_root"-->
+<!--                  action="action_sales_manager"-->
+<!--                  sequence="10"/>-->
+
+        <!-- Menú en CRM -->
+        <menuitem id="menu_crm_sales_managers"
+                  name="Gestores de Ventas"
+                  parent="sale.sale_order_menu"
+                  action="action_sales_manager"
+                  sequence="99"
+                  groups="group_sales_manager_user"/>
+
+    </data>
+</odoo>

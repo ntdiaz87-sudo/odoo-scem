@@ -1,0 +1,47 @@
+// ============================================================
+// CEVENDE - Variables del tema
+// Paleta y tokens definidos en la especificación maestra
+// ============================================================
+
+// --- Colores corporativos ---
+$cv-dark:        #071B3A; // Azul oscuro (fondos hero, footer)
+$cv-turquoise:   #19D3C5; // Turquesa corporativo (acentos, B2B)
+$cv-cta:         #2563EB; // Azul CTA (botones primarios)
+$cv-white:       #FFFFFF;
+$cv-bg:          #F8FAFC; // Gris fondo de secciones
+
+// --- Derivados / apoyo ---
+$cv-dark-soft:   #0E2A52; // Azul oscuro algo más claro para degradados
+$cv-text:        #1E293B; // Texto principal sobre fondo claro
+$cv-text-muted:  #64748B; // Texto secundario / gris
+$cv-border:      #E2E8F0; // Bordes suaves
+$cv-success:     #16A34A; // Verde (mayorista / checks)
+$cv-success-2:   #22C55E;
+$cv-hot:         #EF4444; // Etiqueta "HOT"
+$cv-new:         #19D3C5; // Etiqueta "NUEVO"
+
+// --- Tipografía ---
+$cv-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+$cv-fw-regular:  400;
+$cv-fw-medium:   500;
+$cv-fw-semibold: 600;
+$cv-fw-bold:     700;
+
+// --- Radios y sombras ---
+$cv-radius-sm:   8px;
+$cv-radius:      14px;
+$cv-radius-lg:   20px;
+$cv-radius-pill: 999px;
+
+$cv-shadow-sm:   0 1px 3px rgba(7, 27, 58, 0.08);
+$cv-shadow:      0 6px 24px rgba(7, 27, 58, 0.10);
+$cv-shadow-lg:   0 18px 48px rgba(7, 27, 58, 0.16);
+
+// --- Layout ---
+$cv-container:   1240px;
+$cv-gap:         24px;
+
+// --- Breakpoints (segun especificacion) ---
+$cv-bp-mobile:   767px;
+$cv-bp-tablet:   1024px;
+$cv-bp-desktop:  1440px;

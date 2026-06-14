@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="header_cart_icon" model="ir.ui.view">
+            <field name="name">header_cart_icon</field>
+            <field name="inherit_id" search="[('key', '=', 'website_sale.header_cart_link')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seric_custom.header_cart_icon</field>
+           <field name="arch" type="xml">
+                <xpath expr="//span" position="replace">
+                    <span>
+                       <img src="/pyxel_cem_seric_custom/static/src/img/cart_icon.svg" alt="logo"/>
+                    </span>
+
+                </xpath>
+            </field>
+    </record> 
+
+    
+    <record id="header_user_dropdown_icon" model="ir.ui.view">
+            <field name="name">header_user_dropdown_icon</field>
+            <field name="inherit_id" search="[('key', '=', 'portal.user_dropdown')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seric_custom.header_user_dropdown_icon</field>
+            <field name="arch" type="xml">
+                <xpath expr="//span" position="replace">
+                   <span>
+                        <img src="/pyxel_cem_seric_custom/static/src/img/user_icon.svg" alt="logo"/>
+                   </span>
+                </xpath>
+            </field>
+    </record> 
+
+    <record id="header_search_box_icon" model="ir.ui.view">
+            <field name="name">header_search_box_icon</field>
+            <field name="inherit_id" search="[('key', '=', 'website.header_search_box')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seric_custom.header_search_box_icon</field>
+            <field name="arch" type="xml">
+                <xpath expr="//i" position="after">
+                   <span>
+                        <img src="/pyxel_cem_seric_custom/static/src/img/search_icon.svg" alt="logo"/>
+                   </span>
+                </xpath>
+            </field>
+    </record> 
+
+    <record id="header_social_links_icon" model="ir.ui.view">
+            <field name="name">header_social_links_icon</field>
+            <field name="inherit_id" search="[('key', '=', 'website.header_social_links')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cem_seric_custom.header_social_links_icon</field>
+            <field name="arch" type="xml">
+                <xpath expr="//i[contains(@class, 'fa-facebook')]" position="replace">
+                   <span>
+                        <img src="/pyxel_cem_seric_custom/static/src/img/nav_facebook.svg" alt="facebook"/>
+                   </span>
+                </xpath>
+                <xpath expr="//i[contains(@class, 'fa-instagram')]" position="replace">
+                   <span>
+                        <img src="/pyxel_cem_seric_custom/static/src/img/nav_instagram.svg" alt="instagram"/>
+                   </span>
+                </xpath>
+            </field>
+    </record> 
+   
+</odoo>

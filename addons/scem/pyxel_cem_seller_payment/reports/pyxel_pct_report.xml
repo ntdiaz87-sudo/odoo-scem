@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+        <record id="action_pyxel_pct_report" model="ir.actions.report">
+            <field name="name">Reporte Pyxel-PCT</field>
+            <field name="model">pyxel.pct.report</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pyxel_cem_seller_payment.pyxel_pct_report_template</field>
+            <field name="report_file">pyxel_cem_seller_payment.pyxel_pct_report_template</field>
+        </record>
+
+        <template id="pyxel_pct_report_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="record">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2>Conciliación Pyxel - PCT</h2>
+                            <strong>Fecha de Creación:</strong> 
+                            <t t-esc="record.date"/>
+                            <br/>
+                            <strong>Proveedor:</strong>
+                            <t t-esc="record.provider_id.name"/>
+                            <br/>
+                            <strong>Vendedor:</strong>
+                            <t t-esc="record.seller_id.name"/>
+                            <br/>
+                            <strong>Servicio:</strong>
+                            <t t-esc="record.service_1"/>  
+                            <br/>
+                            <strong>Servicio:</strong>
+                            <t t-esc="record.service_2"/>
+                            <br/>
+                            <br/>
+                            <br/>
+
+                            <table class="table table-sm o_main_table">
+                                <thead>
+                                    <tr>
+                                        <th>Descripción</th>
+                                        <th>Monto (USD)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Facturado</td>
+                                        <td><t t-esc="record.invoiced"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Costo Financiero</td>
+                                        <td><t t-esc="record.financial_cost"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Monto a repartir</td>
+                                        <td><t t-esc="record.amount_distributed"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Monto para PCT</td>
+                                        <td><t t-esc="record.to_pct"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Monto para Pyxel</td>
+                                        <td><t t-esc="record.to_pyxel"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                        <br/><br/>
+                            <div style="overflow: hidden; width:100%;">
+                                <div style="float: left; width: 48%; margin-right: 4%;">
+                                    <p style="padding-top:8px; border-top:1px solid black; width:250px;  text-align:center">Parque Científico Tecnológico de La Habana</p>
+                                </div>
+                                <div style="float: left; width: 48%;">
+                                    <p style="padding-top:8px; border-top:1px solid black; width:250px; text-align:center">Pyxel Solutions SRL</p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+</odoo>

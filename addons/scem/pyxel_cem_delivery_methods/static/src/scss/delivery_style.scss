@@ -1,0 +1,63 @@
+.delivery_pin{
+ content:  url("/pyxel_cem_delivery_methods/static/src/img/ubicacion.svg");
+  height: 20px;
+  width: 20px;
+  margin-right: 3px;
+}
+
+li.delivery_modal_div.mobile_delivery_button {
+    display: none;
+}
+
+/* Styles for the toast */
+.toast-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #FFFF;
+    color: #212529;
+    padding: 15px 15px 0 15px;
+    border-radius: 4px;
+    box-shadow: 0px 4px 8px #98a1a8f3;
+    font-size: 14px;
+    z-index: 100000000;
+    animation: fadeInOut 4s ease-in-out;
+}
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+    }
+
+
+
+//BOTONES DE PAGO
+// div#o_payment_methods,
+// .o_cta_navigation_container.position-absolute.position-lg-static.start-0.bottom-0.col-12 button.btn.btn-primary.w-100.w-md-auto.ms-auto.px-5 {
+//     display: none;
+// }
+.o_cta_navigation_container.position-absolute.position-lg-static.start-0.bottom-0.col-12 .btn.btn-primary.w-100.w-md-auto.ms-auto.px-5 {
+  border-radius: 20px;
+}
+.o_cta_navigation_container.position-absolute.position-lg-static.start-0.bottom-0.col-12 .d-flex.flex-column.mb-5.mb-lg-0.pt-4 {
+    padding: 0 !important;
+}
+a#order_request_btn {
+    margin-top: 15px;
+}
+.o_cta_navigation_container.position-absolute.position-lg-static.start-0.bottom-0.col-12 {
+        display: flex;
+        flex-direction: column-reverse;
+}
+div#o_cart_summary a.btn.btn-primary.w-100,
+div#o_wsale_total_accordion_item a.btn.btn-primary.w-100 {
+    border-radius: 100px;
+    padding: 10px;
+}
+.pay-message{
+    display: none;
+}
+a#order_request_btn {
+    margin-bottom: 20px;
+}

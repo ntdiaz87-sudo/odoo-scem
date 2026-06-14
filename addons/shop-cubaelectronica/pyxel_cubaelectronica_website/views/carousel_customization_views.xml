@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_carousel_customization_form" model="ir.ui.view">
+        <field name="name">carousel.customization.form</field>
+        <field name="model">carousel.customization</field>
+        <field name="arch" type="xml">
+            <form string="Personalización del Carrusel">
+                <header>
+                </header>
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_left">
+                        <group>
+                            <field name="description"/>
+                            <field name="active" widget="boolean_toggle" />
+                        </group>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_carousel_customization_tree" model="ir.ui.view">
+        <field name="name">carousel.customization.tree</field>
+        <field name="model">carousel.customization</field>
+        <field name="arch" type="xml">
+            <tree string="Personalización del Carrusel" sample="1" multi_edit="1">
+                <field name="image_1920"/>
+                <field name="description"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_carousel_customization" model="ir.actions.act_window">
+        <field name="name">Configuración Carruseles</field>
+        <field name="res_model">carousel.customization</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_carousel_customization" name="Personalización Carruseles"
+              parent="website.menu_website_global_configuration"
+              action="action_carousel_customization"/>
+</odoo>
+

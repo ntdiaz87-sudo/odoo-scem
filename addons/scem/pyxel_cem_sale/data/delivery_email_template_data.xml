@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_delivery_confirmation_custom" model="mail.template">
+            <field name="name">CEM Delivery: Delivery Confirmation</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="subject">{{ object.company_id.name }}: Ready Delivery {{ object.name or 'n/a' }} / Origin Order {{object.sale_id.name or 'n/a'}} / Invoice {{object.env.context.get('invoice_origin_name')}}</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to"></field>
+            <field name="description">Sent to grocer on invoice confirmation and it´s payment</field>
+            <field name="body_html" type="html">
+                <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Dear <t t-out="object.partner_id.name or ''">Brandon Freeman</t>, the transfer
+                    <span style="font-weight:bold;" t-out="object.name or ''">INV/OUT</span>
+                    <t t-if="object.sale_id">
+                        with origin sale order: <t t-out="object.sale_id.name or ''">SUB003</t>)
+                    </t>
+                    amounting in
+                    <span style="font-weight:bold;"
+                          t-out="format_amount(object.sale_id.amount_total, object.sale_id.currency_id) or ''">$ 143,750.00
+                    </span>
+                    is ready to delivery
+                    from <t t-out="object.company_id.name or ''">YourCompany</t>.
+                    The invoice
+                    <t t-set="invoice" t-value="object.env.context.get('invoice_origin_name')"/>
+                    <t t-if="invoice">
+                        <span  style="font-weight:bold;" t-out="invoice"/>
+                    </t>
+                    is already paid.
+                </p>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('stock.action_report_delivery'))]"/>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

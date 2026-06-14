@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+   <template id="registration_form_divep" inherit_id="pyxel_cem_website_account.registration_form">
+
+        <!-- Agregar enctype al formulario para permitir subida de archivos -->
+        <xpath expr="//form" position="attributes">
+            <attribute name="enctype">multipart/form-data</attribute>
+        </xpath>
+
+        <!-- AGREGAR nuestra sección de documentos específicos DESPUÉS de los documentos generales -->
+        <xpath expr="//div[@id='step3_juridico']//div[@class='form-section-container']" position="after">
+
+            <!-- Sección de documentos específicos por tipo de entidad -->
+            <div class="form-section documentos-especificos" style="width: 100%; margin-top: 20px; display: none;">
+                <h6 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">
+                    Documentos Específicos Requeridos
+                </h6>
+
+                <div class="alert alert-info" style="margin: 10px 0; font-size: 12px;">
+                    <strong>Nota:</strong>
+                    Los documentos requeridos varían según el tipo de entidad seleccionado.
+                </div>
+
+                <div id="documentos_requeridos_list"
+                     style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                    <p style="margin: 0; font-size: 12px; color: #6c757d;">
+                        Seleccione un tipo de entidad para ver los documentos requeridos.
+                    </p>
+                </div>
+
+                <div class="form-section-container" id="documentos_especificos_container" style="display: none;">
+                    <!-- Los documentos se generarán dinámicamente desde JS -->
+                </div>
+            </div>
+
+        </xpath>
+
+    </template>
+
+    <!-- Fase A — Registro básico.
+         Se desactiva el formulario multi-paso de empresa (y sus herencias).
+         Al quedar inactivas estas vistas, Odoo muestra el formulario estándar
+         de auth_signup.signup: correo (= usuario) · nombre · contraseña ·
+         repetir contraseña. La acreditación de empresa (datos + documentos
+         obligatorios) se realiza como un paso a paso dentro del checkout
+         mayorista, no en el registro. -->
+    <record id="pyxel_cem_website_account.registration_form" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="pyxel_cubaelectronica_website.signup_juridico_inherit" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+    <record id="pyxel_cubaelectronica_website.registration_form_divep" model="ir.ui.view">
+        <field name="active" eval="False"/>
+    </record>
+
+</odoo>

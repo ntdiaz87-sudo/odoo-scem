@@ -1,0 +1,459 @@
+/* General form styling */
+.register-form {
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    color: #000000;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.register-step {
+    margin-top: 10px;
+}
+
+/* Logo styling */
+.register-logo {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+/* Title styling */
+.register-title {
+    padding-top: 10px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Selection box container */
+.selection-box {
+    border-radius: 15px;
+    margin-bottom: 20px;
+    background-color: transparent;
+    margin-left: 10%;
+    margin-right: 10%;
+    padding: 10px;
+}
+
+/* Radio buttons styling */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.register-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Cambia color al pasar el cursor */
+.register-option:hover span {
+    background-color: #4367b5;
+    color: #ffffff;
+}
+
+.register-option input {
+    display: none;
+}
+
+.register-option span {
+    font-size: 18px;
+    color: #000000;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #f0f0f0; /* fondo por defecto */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Estilo cuando está seleccionado */
+.register-option input:checked + span {
+    background-color: #003366; /* o el color que prefieras */
+    color: #ffffff;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+/* Button styles */
+.register-button {
+    border: 1px solid #888;
+    border-radius: 20px;
+    padding: 6px 12px;
+    background-color: white;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0 5px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.register-button:disabled {
+    color: #007bff;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Stepper styles */
+/* Contenedor del stepper */
+.stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+/* Paso individual */
+.stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+/* Círculo del paso */
+.stepper-item .step-counter {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1; /* Para estar sobre la línea */
+}
+
+/* Nombre del paso */
+.stepper-item .step-name {
+    margin-top: 8px;
+    font-size: 80%;
+    text-align: center;
+}
+
+/* Paso activo */
+.stepper-item.active .step-counter {
+    background-color: #042262;
+}
+
+/* Paso completado */
+.stepper-item.completed .step-counter {
+    background-color: #4367b5;
+}
+
+/* Línea de conexión entre pasos (solo hacia el siguiente) */
+.stepper-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 10px; /* Centrado vertical respecto al círculo */
+    left: calc(50% + 10px); /* Empieza justo al lado derecho del círculo */
+    width: calc(100% - 20px); /* Resta el ancho del círculo para que termine antes */
+    height: 2px;
+    background-color: #ccc; /* Línea base (gris) */
+    z-index: 0; /* Detrás de los círculos */
+}
+
+/* Línea azul para los pasos completados */
+.stepper-item.completed:not(:last-child)::after {
+    background-color: #4367b5;
+}
+
+
+/* Form sections */
+.form-section {
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    border: 2px solid #4367b5;
+    margin-bottom: 20px;
+}
+
+.form-section-container {
+    margin: 5%;
+}
+
+/* Estilos específicos para los pasos del registro */
+.register-step label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #000000;
+    text-align: left;
+}
+
+.register-step input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    font-size: 14px;
+}
+
+.register-step input:focus {
+    border-color: #4367b5;
+    outline: none;
+}
+
+/* Dropdowns dentro de la clase */
+.register-step select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #d0d0d0;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    font-size: 14px;
+    color: #000000;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%234b372e" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+}
+
+/* Ajuste adicional para botones dentro del registro */
+.register-step button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    background-color: #4367b5;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.register-step button:hover {
+    background-color: #36518f;
+}
+
+.form-container {
+    width: 80%;
+    max-width: 800px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.document-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.document-row:last-child {
+    border-bottom: none;
+}
+
+.upload-btn {
+    background-color: #0d6efd;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.upload-btn:hover {
+    background-color: #0b5ed7;
+}
+
+.document-label {
+    flex: 1;
+}
+
+/* Por defecto en pantallas grandes */
+.step-natural {
+    width: 50%;
+    margin-left: 25%;
+}
+
+.step-juridico {
+    width: 80%;
+    margin-left: 10%;
+}
+
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    .register-form {
+        max-width: 90%;
+    }
+
+    .selection-box {
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+
+    .register-logo {
+        width: 90px;
+    }
+
+    .register-button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .register-title {
+        font-size: 12px;
+    }
+
+    .form-navigation {
+        /*flex-direction: column;*/
+        gap: 10px;
+    }
+
+    .selection-box {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .stepper-item .step-counter {
+        width: 16px;
+        height: 16px;
+    }
+
+    input {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .register-option span {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+
+    .stepper-wrapper {
+        padding: 10px 0;
+        gap: 0;
+    }
+
+    .stepper-item {
+        flex: 1;
+        padding: 0 2px;
+    }
+
+    .stepper-item .step-counter {
+        width: 12px;
+        height: 12px;
+    }
+
+    .stepper-item .step-name {
+        display: none; /* Oculta el nombre de los pasos */
+    }
+
+    .stepper-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 6px; /* mejor alineación vertical con círculos más chicos */
+        left: calc(50% + 6px);
+        width: calc(100% - 12px);
+        height: 2px;
+        background-color: #ccc;
+        transform: translateX(50%); /* centra horizontalmente */
+        z-index: 0;
+    }
+
+    .stepper-item.completed:not(:last-child)::after {
+        background-color: #4367b5;
+    }
+
+    .step-natural {
+        width: 80%;
+        margin-left: 10%;
+    }
+
+    .step-juridico {
+        width: 95%;
+        margin-left: 2.5%;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-title {
+        font-size: 10px;
+    }
+
+    .selection-box {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .register-logo {
+        width: 60px;
+    }
+
+    .register-button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .stepper-wrapper {
+        /*flex-direction: column;*/
+        gap: 15px;
+    }
+
+    .form-section {
+        display: block;
+    }
+
+    .form-section-container {
+        margin: 5%;
+    }
+
+    .register-option span {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .button-container {
+        gap: 10px;
+    }
+
+    .stepper-item:not(:last-child)::after {
+        width: 0;         /* Quita las líneas conectores horizontales */
+        background: none;
+        content: none;
+    }
+
+    .stepper-wrapper {
+        padding: 10px 5px;
+        gap: 0;
+    }
+
+    .stepper-item .step-counter {
+        width: 12px;
+        height: 12px;
+    }
+
+    .step-natural {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    .step-juridico {
+        width: 98%;
+        margin-left: 1%;
+    }
+}

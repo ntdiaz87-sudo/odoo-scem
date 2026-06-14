@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="custom_invoice_report" model="ir.ui.view">
+            <field name="name">custom_invoice_report</field>
+            <field name="inherit_id" search="[('key', '=', 'pyxel_cem_website_sale.invoice_report')]"/>
+            <field name="type">qweb</field>
+            <field name="key">pyxel_cubaelectronica_website.custom_invoice_report</field>
+            <field name="arch" type="xml">
+                <xpath expr="//h1" position="after">
+                    <strong>Cliente: </strong>
+                    <br/>
+                    <t t-esc="invoice.partner_id.name"/>
+                    <br/>
+                </xpath>
+
+                <xpath expr="//div[contains(@class, 'invoice-body')]" position="inside">
+                    <div class="payment-details">
+                        <h5>Detalles del pago</h5>
+                        <div class="d-flex" style="justify-content: space-between; gap: 15px;">
+                            <div>
+                                <strong>Beneficiario:  </strong>
+                                <t t-esc="invoice.company_id.beneficiary"/>
+                                <br/>
+                                <strong>Número de cuenta:  </strong>
+                                <t t-esc="invoice.company_id.account_number"/>
+                                <br/>
+                            </div>
+                            <div>
+                                <strong>Banco: </strong>
+                                <t t-esc="invoice.company_id.bank"/>
+                                <br/>
+                                <strong>Swift: </strong>
+                                <t t-esc="invoice.company_id.swift_code"/>
+                                <br/>
+                                <strong>Moneda de pago:  </strong>
+                                <t t-esc="invoice.currency_id.name"/>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+
+            </field>
+    </record>
+</odoo>

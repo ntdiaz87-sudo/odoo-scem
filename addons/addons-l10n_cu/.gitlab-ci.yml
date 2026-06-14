@@ -1,0 +1,7 @@
+variables:
+  VERSIONS: '17'
+
+include:
+  - project: 'devops/templates'
+    file: 'odoo/gitlab-ci-multi-env.yml'
+    

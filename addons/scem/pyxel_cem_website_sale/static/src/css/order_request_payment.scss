@@ -1,0 +1,21 @@
+.payment-method-card .btn-check:checked + label {
+background-color: #e8f4ff;
+border-color: #0d6efd;
+color: #0d6efd;
+}
+
+.payment-method-card .btn-outline-primary:hover {
+background-color: #f8f9fa;
+}
+
+.payment-method-card label {
+transition: all 0.2s ease;
+}
+
+.payment-method-card .btn-check:checked + label .fa-chevron-right {
+transform: translateX(3px);
+}
+
+.container.py-5 {
+ min-height: 70vh;
+}

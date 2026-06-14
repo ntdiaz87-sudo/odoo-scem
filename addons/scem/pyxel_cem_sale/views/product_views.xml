@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="product_template_form_inherit_view">
+        <field name="name">product.template.form.inherit.cem</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='description']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <page name="invoicing" position="after">
+                <page string="Wholesale Sale" name="wholesale_sale">
+                    <group>
+                        <group>
+                            <field name="nom_code" required="detailed_type!='service'"/>
+                            <field name="large_name" required="detailed_type!='service'"/>
+                            <field name="mark_id"/>
+                            <field name="product_wsale_type"/>
+                        </group>
+                        <group string="Origin">
+                            <field name="origin_id"/>
+                            <field name="provider_id" required="detailed_type!='service'"/>
+                        </group>
+                        <group string="Setting" colspan="4">
+                            <group>
+                                <field name="uom_sale_id"/>
+                                <field name="sale_min_qty"/>
+                                <field name="wholesale_price"/>
+                                <field name="sale_margin"/>
+
+                                <field name="uom_reference"/>
+                            </group>
+                            <group>
+                                <field name="available2sale"/>
+                                <field name="delivery_time"/>
+                                <!-- Campo oculto necesario para el modificador -->
+                                <field name="show_warranty_field" invisible="1"/>
+                                <!-- Campo de garantía con visibilidad condicional -->
+                                <field name="has_warranty"
+                                       invisible="not show_warranty_field"/>
+                                <field name="warranty_time"
+                                       invisible ="not has_warranty" required = "has_warranty"/>
+                            </group>
+                        </group>
+                        <group string="Full Description" colspan="4">
+                            <field colspan="2" name="full_description" nolabel="1"
+                                   placeholder="Specify full description"/>
+                            <!-- <field name="website_description"/> -->
+                        </group>
+                        <group string="Terms &amp; Conditions" colspan="4">
+                            <field name="terms_cond" nolabel="1" colspan="2"
+                                   placeholder="Specify Product Terms and Conditions."/>
+                        </group>
+
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

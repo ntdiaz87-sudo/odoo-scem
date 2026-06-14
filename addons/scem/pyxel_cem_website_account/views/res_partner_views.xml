@@ -1,0 +1,24 @@
+<odoo>
+    <data noupdate="1">
+        <record id="view_partner_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="reeup" required="entity_type == 'estatal'"/>
+                </xpath>
+
+                <field name="email" position="attributes">
+                    <attribute name="required">1</attribute>
+                </field>
+                <field name="vat" position="attributes">
+                    <attribute name="required">1</attribute>
+                </field>
+                <field name="phone" position="attributes">
+                    <attribute name="required">1</attribute>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View hr_payroll_vaciones form -->
+    <record id="view_hr_payroll_vacaciones_form" model="ir.ui.view">
+        <field name="name">view.hr_payroll_vacaciones.form</field>
+        <field name="model">hr.payroll.vacaciones</field>
+        <field name="arch" type="xml">
+            <form string="Hr_payroll_vacaciones">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="employee_id"/>
+                        <h2>
+                            <field name="employee_id" readonly="1" />
+                        </h2>
+                    </div>
+                    <group class="d-flex text-nowrap" string="INFORMACIÓN ACUMULADA">
+                        <group>
+                            <field name="submayor_days"/>
+                            <field name="submayor_amount"/>
+                        </group>
+                        <group>
+                            <field name="days" required="1"/>
+                            <field name="payment"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="add" type="object" string="Generar" class="oe_highlight"/>
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

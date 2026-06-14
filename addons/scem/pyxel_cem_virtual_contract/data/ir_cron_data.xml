@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_update_vc_validity" model="ir.cron">
+        <field name="name">Virtual Contract: update validity state</field>
+        <field name="interval_number">8</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_cem_virtual_contract"/>
+        <field name="code">model._update_vc_validity()</field>
+        <field name="state">code</field>
+    </record>
+</odoo>

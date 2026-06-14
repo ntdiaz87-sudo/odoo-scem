@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="email_template_invoice_confirmation" model="mail.template">
+            <field name="name">Confirmación de Factura a Comerciales</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">{{ object.company_id.name }} - Confirmación de Factura {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to">{{ ctx.get('email_to') }}</field>
+            <field name="description">Enviado a los comerciales al confirmar una factura cliente</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Estimado comercial,
+                        <br/><br/>
+                        La factura <span style="font-weight:bold;" t-out="object.name or ''">INV/0001</span> ha sido confirmada.
+                        <br/><br/>
+                        <strong>Cliente:</strong> <t t-out="object.partner_id.name or ''">Cliente</t><br/>
+                        <strong>Total:</strong> <t t-out="format_amount(object.amount_total, object.currency_id) or ''">$1,000.00</t><br/>
+                        <strong>Fecha:</strong> <t t-out="object.invoice_date or ''">2024-01-01</t><br/><br/>
+                        Saludos cordiales,<br/>
+                        <t t-out="object.company_id.name or ''">Tu Empresa</t>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

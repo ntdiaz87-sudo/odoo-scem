@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista Tree del Reporte -->
+        <record id="view_sales_manager_report_tree" model="ir.ui.view">
+            <field name="name">pyxel.sales.manager.report.tree</field>
+            <field name="model">pyxel.sales.manager.report</field>
+            <field name="arch" type="xml">
+                <tree string="Reporte de Gestores" 
+                      create="false" 
+                      delete="false" 
+                      edit="false">
+                    <field name="sales_manager_id"/>
+                    <field name="partner_id"/>
+                    <field name="sales_team_id"/>
+                    <field name="order_count" sum="Total Órdenes"/>
+                    <field name="invoice_count" sum="Total Facturas"/>
+                    <field name="total_sales" sum="Total Ventas"/>
+                    <field name="total_invoiced" sum="Total Facturado"/>
+                    <field name="total_commission" sum="Total Comisión"/>
+                    <field name="date_order"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista Graph del Reporte -->
+        <record id="view_sales_manager_report_graph" model="ir.ui.view">
+            <field name="name">pyxel.sales.manager.report.graph</field>
+            <field name="model">pyxel.sales.manager.report</field>
+            <field name="arch" type="xml">
+                <graph string="Análisis de Gestores" 
+                       type="bar" 
+                       sample="1">
+                    <field name="sales_manager_id"/>
+                    <field name="total_sales" type="measure"/>
+                    <field name="total_invoiced" type="measure"/>
+                    <field name="total_commission" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Vista Pivot del Reporte -->
+        <record id="view_sales_manager_report_pivot" model="ir.ui.view">
+            <field name="name">pyxel.sales.manager.report.pivot</field>
+            <field name="model">pyxel.sales.manager.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Análisis de Gestores" 
+                       sample="1">
+                    <field name="sales_manager_id" type="row"/>
+                    <field name="total_sales" type="measure"/>
+                    <field name="total_invoiced" type="measure"/>
+                    <field name="total_commission" type="measure"/>
+                    <field name="order_count" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Vista Search del Reporte -->
+        <record id="view_sales_manager_report_search" model="ir.ui.view">
+            <field name="name">pyxel.sales.manager.report.search</field>
+            <field name="model">pyxel.sales.manager.report</field>
+            <field name="arch" type="xml">
+                <search string="Buscar Reporte">
+                    <field name="sales_manager_id"/>
+                    <field name="partner_id"/>
+                    <field name="sales_team_id"/>
+                    
+                    <filter string="Fecha Orden" name="date_order" 
+                            date="date_order"/>
+                    
+                    <group expand="1" string="Agrupar Por">
+                        <filter string="Gestor de Ventas" name="group_sales_manager" 
+                                context="{'group_by': 'sales_manager_id'}"/>
+                        <filter string="Cliente" name="group_partner" 
+                                context="{'group_by': 'partner_id'}"/>
+                        <filter string="Equipo de Ventas" name="group_sales_team" 
+                                context="{'group_by': 'sales_team_id'}"/>
+                        <filter string="Fecha Orden" name="group_date_order" 
+                                context="{'group_by': 'date_order:month'}"/>
+                        <filter string="Compañía" name="group_company" 
+                                context="{'group_by': 'company_id'}" 
+                                groups="base.group_multi_company"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Window del Reporte -->
+        <record id="action_sales_manager_report" model="ir.actions.act_window">
+            <field name="name">Análisis de Gestores</field>
+            <field name="res_model">pyxel.sales.manager.report</field>
+            <field name="view_mode">graph,pivot,tree</field>
+            <field name="search_view_id" ref="view_sales_manager_report_search"/>
+            <field name="context">{
+                'search_default_group_sales_manager': 1,
+                'search_default_date_order': 1
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay datos para mostrar
+                </p>
+                <p>
+                    Este reporte muestra el análisis de rendimiento de los gestores de ventas.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menú del Reporte -->
+        <menuitem id="menu_sales_manager_report"
+                  name="Análisis de Gestores"
+                  parent="menu_sales_managers_root"
+                  action="action_sales_manager_report"
+                  sequence="20"
+                  groups="group_sales_manager_manager"/>
+
+    </data>
+</odoo>

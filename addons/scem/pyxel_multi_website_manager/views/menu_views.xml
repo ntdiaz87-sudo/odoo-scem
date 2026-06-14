@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú principal en Website/Configuración -->
+    <menuitem id="menu_multi_website_main"
+              name="Multi Sitio"
+              parent="website.menu_website_configuration"
+              sequence="10"/>
+
+    <menuitem id="menu_multi_website_config"
+              name="Configuraciones de Sitios"
+              parent="menu_multi_website_main"
+              action="action_multi_website_config"
+              sequence="10"/>
+
+    <!-- Acción contextual para website -->
+    <record id="website_action_multi_config" model="ir.actions.server">
+        <field name="name">Configurar Multi Sitio</field>
+        <field name="model_id" ref="model_website"/>
+        <field name="binding_model_id" ref="model_website"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+if records:
+    config = env['multi.website.config'].search([('website_id', '=', records.id)], limit=1)
+    if not config:
+        config = env['multi.website.config'].create({'website_id': records.id})
+    action = env.ref('pyxel_multi_website_manager.action_open_config_from_website').read()[0]
+    action['res_id'] = config.id
+else:
+    action = {'type': 'ir.actions.act_window_close'}
+        ]]></field>
+    </record>
+</odoo>

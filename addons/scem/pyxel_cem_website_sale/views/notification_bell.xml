@@ -1,0 +1,40 @@
+<odoo>
+    <!-- Versión Escritorio -->
+    <template id="notification_bell" inherit_id="website_sale.header_cart_link">
+        <xpath expr="//t[@t-nocache]" position="inside">
+             <t t-if="request.env.user and not request.env.user.has_group('base.group_public')">
+                <li id="notification-bell-desktop" class="nav-item o_notification_bell">
+                    <!-- El contenido será insertado por JavaScript -->
+                    <!--                    <i class="fa fa-spinner fa-spin"/>-->
+                </li>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Versión Movil -->
+    <template id="notification_bell_mobile" inherit_id="website_sale.header_cart_link">
+        <xpath expr="//t[@t-nocache]" position="inside">
+             <t t-if="request.env.user and not request.env.user.has_group('base.group_public')">
+                <li id="notification-bell-mobile" class="o_notification_bell">
+                    <!-- OWL se montará aquí -->
+                </li>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Versión Móvil -->
+    <!--<template id="notification_bell_mobile" inherit_id="website.template_header_mobile">
+        <xpath expr="//ul[hasclass('o_header_mobile_buttons_wrap')]//li" position="before">
+            <li class="o_wsale_my_notifications o_notification_bell_container" t-if="user_id">
+                <a href="/my/notifications" aria-label="Notificaciones"
+                   class="o_navlink_background_hover btn position-relative rounded-circle p-1 text-center text-reset">
+                    <i class="fa fa-bell fa-stack"></i>
+                    <span t-if="notifications_count and notifications_count > 0"
+                          class="notification-counter badge text-bg-primary position-absolute top-0 end-0 mt-n1 me-n1 rounded-pill">
+                        <t t-esc="notifications_count"/>
+                    </span>
+                </a>
+            </li>
+        </xpath>
+    </template>-->
+</odoo>

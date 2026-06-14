@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sales_manager_user,pyxel.sales.manager.user,model_pyxel_sales_manager,group_sales_manager_user,1,0,0,0
+access_sales_manager_manager,pyxel.sales.manager.manager,model_pyxel_sales_manager,group_sales_manager_manager,1,1,1,0
+access_sales_manager_admin,pyxel.sales.manager.admin,model_pyxel_sales_manager,group_sales_manager_admin,1,1,1,1
+access_sales_manager_sales_user,pyxel.sales.manager.sales.user,model_pyxel_sales_manager,sales_team.group_sale_salesman,1,1,0,0
+access_sales_manager_sales_manager,pyxel.sales.manager.sales.manager,model_pyxel_sales_manager,sales_team.group_sale_manager,1,1,1,0
+access_sales_manager_reconciliation_wizard_user,access.sales.manager.reconciliation.wizard.user,model_sales_manager_reconciliation_wizard,sales_team.group_sale_salesman,1,1,1,1
+access_sales_manager_reconciliation_wizard_manager,access.sales.manager.reconciliation.wizard.manager,model_sales_manager_reconciliation_wizard,sales_team.group_sale_manager,1,1,1,1
+access_sales_manager_unmark_wizard_user,access.sales.manager.unmark.wizard.user,model_sales_manager_unmark_wizard,base.group_user,1,1,1,1
+access_sales_manager_unmark_wizard_manager,access.sales.manager.unmark.wizard.manager,model_sales_manager_unmark_wizard,sales_team.group_sale_manager,1,1,1,1
+access_report_pyxel_sm_reconciliation,access_report_pyxel_sm_reconciliation,model_report_pyxel_sm_reconciliation,,1,0,0,0
+access_report_pyxel_sm_reconciliation_xlsx,access_report_pyxel_sm_reconciliation_xlsx,model_report_pyxel_sm_reconciliation_xlsx,,1,0,0,0

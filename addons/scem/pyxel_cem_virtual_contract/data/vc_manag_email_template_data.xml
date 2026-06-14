@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_vc_manag_notify" model="mail.template">
+            <field name="name">CEM Notification for Virtual Contract Management</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="subject">{{ object.company_id.name }}: Acción requerida: Enviar contrato firmado al cliente
+            </field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}
+            </field>
+            <field name="email_to"></field>
+            <field name="description">Sent to salesmans when lead go to a stage that allows management of virtual contract</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+
+                        Estimado,<br/>
+                        Esto es una notificación para indicarle que el contrato del cliente <span style="font-weight:bold;" t-out="object.partner_id.name or ''"/> ya ha sido firmado por nuestra parte. Por favor, comunícale lo siguiente:<br/>
+                        <p style="font-size: 12px; margin-left: 30px">
+                            1.  Que el contrato está disponible para descarga.<br/>
+                            2.  Que debe descargarlo, firmarlo manualmente y escanearlo.<br/>
+                            3.  Luego, debe acceder a su perfil en la tienda, subir el contrato firmado y hacer clic en “Enviar” para completar el proceso.<br/>
+                        </p>
+                        Una vez que el cliente haya realizado estos pasos, podremos avanzar con la activación del servicio.<br/>
+                        Gracias por tu gestión. Ante cualquier duda por favor comunicárnosla.<br/>
+                        Saludos.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_temp_mark_tree_view" model="ir.ui.view">
+        <field name="name">product.template.mark.tree</field>
+        <field name="model">product.template.mark</field>
+        <field eval="7" name="priority"/>
+        <field name="arch" type="xml">
+            <tree string="Product Template Marks" editable="bottom">
+                <field name="name"/>
+                <field name="is_relevant"/>
+                <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_temp_mark_search_view" model="ir.ui.view">
+        <field name="name">product.template.mark.search</field>
+        <field name="model">product.template.mark</field>
+        <field name="arch" type="xml">
+            <search string="Product Template Marks">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="product_temp_mark_action" model="ir.actions.act_window">
+        <field name="name">Product Template Marks</field>
+        <field name="res_model">product.template.mark</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="product_temp_mark_search_view"/>
+    </record>
+
+    <menuitem id="menu_product_temp_mark"
+                action="pyxel_cem_sale.product_temp_mark_action"
+                sequence="20" parent="sale.product_menu_catalog"/>
+
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record id="crm_stage_form_inherit" model="ir.ui.view">
+            <field name="name">crm.stage.form.cem.virtual.contract.inherit</field>
+            <field name="model">crm.stage</field>
+            <field name="inherit_id" ref="crm.crm_stage_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group" position="inside">
+                    <group>
+                        <field name="cem_manag_contract"/>
+                        <field name="cem_vcontract_expired"/>
+                        <field name="cem_vcontract_approved_hiring_process"
+                            string="Aprobado/Contratación"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
+
+

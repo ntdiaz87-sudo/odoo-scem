@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+pyxel_link_payment_tropipay.access_tropipay_pay_link_wizard,access_tropipay_pay_link_wizard,pyxel_link_payment_tropipay.model_tropipay_pay_link_wizard,base.group_user,1,0,0,0

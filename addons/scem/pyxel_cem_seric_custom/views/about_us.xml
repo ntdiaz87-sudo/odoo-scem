@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="about_seric" name="About Us Page">
+        <t t-call="website.layout">
+            <div class="about-seric">
+                    <div class="header">
+                        <img src="/pyxel_cem_seric_custom/static/src/img/logo_header.svg" alt="logo"/>
+
+                        <h1>Acerca de nosotros</h1>
+                    </div>
+
+                    <div class="about-us-menu">
+                        <!-- <img id="prev-slide" src="/pyxel_marketplace_extension/static/src/img/left-arrow.svg" alt="left" style="cursor: pointer;"/> -->
+                        <svg id="prev-slide" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.0003 31.1673C9.17629 31.1673 2.83366 24.8247 2.83366 17.0007C2.83366 9.17662 9.17629 2.83398 17.0003 2.83398C24.8244 2.83398 31.167 9.17662 31.167 17.0007C31.167 24.8247 24.8244 31.1673 17.0003 31.1673Z" stroke="#124054" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 22.6673L11.3333 17.0007L17 11.334" stroke="#124054" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22.667 17H11.3337" stroke="#124054" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+
+                        <div class="menu-wrapper">
+                            <ul class="menu-items">
+                                <li class="active" data-section="who">¿Quiénes Somos?</li>
+                                <li data-section="services">Nuestros Servicios</li>
+                                <li data-section="vision">Visión General y Compromiso</li>
+                                <li data-section="terms">Política y Términos</li>
+                                <li data-section="help">Ayuda</li>
+                                <!-- <li data-section="reviews">Testimonio de Clientes</li> -->
+                            </ul>
+                        </div>
+                        <!-- <img id="next-slide" src="/pyxel_marketplace_extension/static/src/img/right-arrow.svg" alt="right" style="cursor: pointer;"/> -->
+                       
+                        <svg id="next-slide" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.9997 31.1673C24.8237 31.1673 31.1663 24.8247 31.1663 17.0007C31.1663 9.17662 24.8237 2.83398 16.9997 2.83398C9.17564 2.83398 2.83301 9.17662 2.83301 17.0007C2.83301 24.8247 9.17564 31.1673 16.9997 31.1673Z" stroke="#124054" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M17 22.6673L22.6667 17.0007L17 11.334" stroke="#124054" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M11.333 17H22.6663" stroke="#124054" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+
+                    </div>
+
+                    <div class="about-us-content">
+                        <div class="who active">
+                            <div class="one" >
+                                <h5>Sobre Nosotros</h5>
+                               
+                            </div>
+
+                            <div class="two">
+                                <h5>¿Por qué confiar en nosotros?</h5>
+                               
+                            </div>
+
+                            <div class="three">
+                                <strong>¿Alguna Propuesta?</strong>
+                                <h6>ACERCA DE NOSOTROS</h6>
+                                <p style="font-size: 14px;">Si no encontraste lo que buscabas no dudes en contactar con nosotros</p>
+                                <a href="/contactus">Contactar</a>
+                            </div>
+                        </div>
+                       
+                       
+                        <div class="services">
+                            <div class="one">
+                                <h5>¿Qué hacemos?</h5>
+                               
+                            </div>
+
+                            
+                            <div class="two">
+                                <h5>¿Cuáles son nuestras líneas de productos?</h5>
+                            </div>
+
+                            <div class="three">
+                                <h5>¿Qué debes saber?</h5>
+                            </div>
+
+                        </div>
+                       
+                       
+                        <div class="vision">
+                         
+                            <div class="one">
+                                <h5>Alcance</h5>
+                              
+                            </div>
+
+
+                            <div class="three">
+                                <h5>Eficiencia</h5>
+                            </div>
+
+
+                            <div class="four">
+                                <h5>Variedad</h5>
+                               
+                            </div>
+                        </div>
+
+
+                        <div id="terms" class="terms">
+                            <div id="conditions"  data-section="priv" class="one">
+                                <h5>Términos y Condiciones de Uso</h5>
+                              
+                            </div>
+
+                            <div id="web_use" data-section="priv" class="two">
+                                <h5>Uso del Sitio</h5>
+                               
+                            </div>
+
+                            <div class="three">
+                                <h5>Entregas y Garantías</h5>
+                              
+                                
+                            </div>
+
+                            <div id="priv" data-section="priv" class="two">
+                                <h5>Política de Privacidad</h5>
+                              
+                            </div>
+
+                            <div class="two">
+                                <h5>Política de Devolución</h5>
+                            </div>
+
+                            <div id="delivery" class="two">
+                                <h5>Política de entrega</h5>
+                             
+                            </div>
+
+
+                           
+
+                            <div class="four">
+                                <h5>Seguridad en el Registro de Pagos</h5>
+                             
+                            </div>
+                        </div>
+
+
+                        <div class="help">
+                           
+
+                            <div class="one">
+                                <h5>Métodos de Pago </h5>
+                               
+                            </div>
+                           
+                            <div id="tracking" class="five">
+                                <h5>Rastreo del Pedido</h5>
+                                <p>
+                                    <!-- <br/> -->
+                                    1- Inicia sesión en tu cuenta dentro de nuestra plataforma.
+                                    <br/>
+                                    2- Navega hasta la sección "Mi Cuenta" .
+                                    <br/>
+                                    3- Encontrarás las siguientes categorías:
+                                    <br/>
+                                    <strong>● Nuevos Pedidos: </strong> Ordenes recién confirmadas y en proceso de preparación.
+                                    <br/>
+                                    <strong>● Pedidos en Progreso: </strong> Compras que están en tránsito o en etapa de logística.
+                                    <br/>
+                                    <strong>● Productos ya retirados del almacén: </strong> Productos ya retirados del almacén.
+                                    <br/>
+                                    <strong>● Pedidos Cancelados: </strong> Operaciones que no llegaron a concretarse.
+                                    <br/> <br/>
+                                    Dentro de "Mi Cuenta", también tienes acceso en tiempo real al historial completo de tus órdenes, lo que te permite rastrear el estado actual de cada pedido de forma inmediata.
+                                    <br/>
+                                    Si necesitas más información o tienes dudas, visita nuestra sección de Ayuda o contáctanos a través de nuestro soporte en línea.
+                                    <br/>
+                                    ● Puedes verificar en tiempo real si un producto se encuentra disponible en nuestro inventario a través de nuestra página web.
+                                    <br/>
+                                    ● Una vez que hayas realizado y confirmado el pago de tu pedido, te notificaremos por correo electrónico cuando esté listo para recoger en almacén.
+                                    <br/>
+                                    ● El tiempo promedio desde la cotización hasta la disponibilidad en almacén es de 5 a 10 días hábiles , dependiendo del volumen de pedidos y la disponibilidad de stock
+                                </p>
+                            </div>
+                            <!-- <div class="six">
+                                <h5>Tiempos y tarifas de Entrega</h5>
+                               
+                            </div> -->
+                            <div id="time" class="six">
+                                <h5>Tiempo Entrega</h5>
+                                <p>
+                                Actualmente, todos nuestros productos deben ser recogidos directamente en nuestro almacén, ubicado en Calle Palmar S/N e/ Ave Independencia y Boyeros Rpto, Martí, municipio Cerro, La Habana, Cuba. 
+                                <br/>
+                                <strong>No realizamos entregas a domicilio.</strong>
+                                </p>
+                              
+                            </div>
+                            <div id="tarifa" class="two">
+                                <h5>¿Quién puede vender en SERIC?</h5>
+                                <p>
+                                SERIC está abierto a colaborar con proveedores, fabricantes, distribuidores y mayoristas que deseen ofrecer sus productos a través de nuestra tienda mayorista. Si tienes productos que se alinean con nuestros segmentos comerciales y cuentas con disponibilidad para venta al por mayor, puedes postularte como vendedor.
+                                </p>
+                                <p>
+                                Para más información sobre los requisitos y el proceso de registro como proveedor, contáctanos a través del formulario de contacto o escribe a nuestro equipo de soporte comercial.
+                                </p>
+                               
+                            </div>
+
+                            <div id="contact" class="seven">
+                                <h5>¿Cómo contactar con un comercial de SERIC?</h5>
+                                <p>
+                                Estamos aquí para ayudarte con consultas técnicas, precios por volumen, disponibilidad de productos y cualquier otra inquietud relacionada con tu compra mayorista.
+                                <br/>
+                                Puedes comunicarte con nuestro equipo comercial a través de los siguientes canales:
+                                <br/>
+                                <strong>Teléfono:</strong>  (+53) 52049569 
+                                <br/>
+                                <strong>Correo:</strong> scem.test@gmail.com
+                                <br/>
+                                <strong>Chat en línea:</strong> Haz clic en el ícono de chat ubicado en la esquina inferior derecha de la pantalla para hablar en tiempo real con uno de nuestros representantes.
+                                </p>
+                            </div>
+
+
+                        </div>
+                    </div>
+            </div>
+        </t>
+    </template>
+</odoo>

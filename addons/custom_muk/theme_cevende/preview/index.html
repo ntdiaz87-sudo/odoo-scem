@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEVENDE — Maqueta de referencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CEVENDE — Maqueta de referencia (pixel-faithful)
+   Esta hoja de estilos refleja los tokens de _variables.scss
+   Para integrar en Odoo, ver README.md y snippets/
+   ============================================================ */
+
+:root{
+  --cv-dark:#071B3A;
+  --cv-dark-soft:#0E2A52;
+  --cv-turquoise:#19D3C5;
+  --cv-cta:#2563EB;
+  --cv-white:#FFFFFF;
+  --cv-bg:#F8FAFC;
+  --cv-text:#1E293B;
+  --cv-text-muted:#64748B;
+  --cv-border:#E2E8F0;
+  --cv-success:#16A34A;
+  --cv-success-2:#22C55E;
+  --cv-hot:#EF4444;
+  --cv-radius-sm:8px;
+  --cv-radius:14px;
+  --cv-radius-lg:20px;
+  --cv-radius-pill:999px;
+  --cv-shadow-sm:0 1px 3px rgba(7,27,58,.08);
+  --cv-shadow:0 6px 24px rgba(7,27,58,.10);
+  --cv-shadow-lg:0 18px 48px rgba(7,27,58,.16);
+  --cv-container:1240px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  color:var(--cv-text);
+  background:var(--cv-white);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+a{text-decoration:none;color:inherit;}
+ul{list-style:none;}
+.cv-container{max-width:var(--cv-container);margin:0 auto;padding:0 24px;}
+
+/* --- Botones --- */
+.cv-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-weight:600;font-size:15px;border:none;cursor:pointer;
+  padding:13px 22px;border-radius:var(--cv-radius-sm);
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.cv-btn:hover{transform:translateY(-1px);}
+.cv-btn--cta{background:var(--cv-cta);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.35);}
+.cv-btn--cta:hover{background:#1D4FD8;}
+.cv-btn--turq{background:var(--cv-turquoise);color:var(--cv-dark);box-shadow:0 4px 14px rgba(25,211,197,.35);}
+.cv-btn--turq:hover{background:#15BCB0;}
+.cv-btn--ghost{background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.25);}
+.cv-btn--ghost:hover{background:rgba(255,255,255,.18);}
+.cv-btn--light{background:#fff;color:var(--cv-dark);}
+
+/* --- Etiquetas --- */
+.cv-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.4px;text-transform:uppercase;}
+.cv-tag--new{background:var(--cv-turquoise);color:var(--cv-dark);}
+.cv-tag--hot{background:var(--cv-hot);color:#fff;}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.cv-topbar{background:var(--cv-dark);color:rgba(255,255,255,.85);font-size:13px;}
+.cv-topbar .cv-container{display:flex;align-items:center;justify-content:space-between;height:42px;}
+.cv-topbar__left{display:flex;gap:28px;}
+.cv-topbar__left span{display:inline-flex;align-items:center;gap:7px;}
+.cv-topbar__right{display:flex;gap:24px;align-items:center;}
+.cv-dot{width:15px;height:15px;border-radius:50%;display:inline-block;background:rgba(255,255,255,.25);}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.cv-header{background:#fff;border-bottom:1px solid var(--cv-border);position:sticky;top:0;z-index:50;}
+.cv-header__main{display:flex;align-items:center;gap:24px;height:78px;}
+.cv-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:24px;color:var(--cv-dark);}
+.cv-logo__mark{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--cv-turquoise),var(--cv-cta));display:grid;place-items:center;color:#fff;font-size:18px;}
+.cv-search{flex:1;display:flex;border:1px solid var(--cv-border);border-radius:var(--cv-radius-sm);overflow:hidden;max-width:620px;}
+.cv-search input{flex:1;border:none;padding:12px 16px;font-size:14px;outline:none;font-family:inherit;}
+.cv-search__cat{border:none;border-left:1px solid var(--cv-border);background:#fff;padding:0 14px;font-size:13px;color:var(--cv-text-muted);outline:none;font-family:inherit;}
+.cv-search__btn{background:var(--cv-cta);border:none;color:#fff;width:52px;display:grid;place-items:center;cursor:pointer;}
+.cv-header__actions{display:flex;align-items:center;gap:20px;}
+.cv-account{display:flex;align-items:center;gap:8px;font-size:13px;}
+.cv-account small{display:block;color:var(--cv-text-muted);font-size:11px;}
+.cv-wholesale{display:flex;align-items:center;gap:9px;background:var(--cv-dark);color:#fff;padding:10px 16px;border-radius:var(--cv-radius-sm);}
+.cv-wholesale small{display:block;color:rgba(255,255,255,.7);font-size:11px;}
+.cv-cart{position:relative;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--cv-bg);}
+.cv-cart__badge{position:absolute;top:-3px;right:-3px;background:var(--cv-cta);color:#fff;font-size:11px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;}
+.cv-nav{border-top:1px solid var(--cv-border);}
+.cv-nav ul{display:flex;gap:30px;height:50px;align-items:center;font-size:14px;font-weight:500;}
+.cv-nav a{color:var(--cv-text);display:inline-flex;align-items:center;gap:7px;}
+.cv-nav a.is-active{color:var(--cv-cta);font-weight:600;border-bottom:2px solid var(--cv-cta);height:50px;display:inline-flex;align-items:center;}
+
+/* ============================================================
+   HERO SPLIT (B2C / B2B)
+   ============================================================ */
+.cv-hero{padding:28px 0;}
+.cv-hero__grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;position:relative;}
+.cv-hero__panel{border-radius:var(--cv-radius-lg);padding:44px;color:#fff;position:relative;overflow:hidden;min-height:430px;}
+.cv-hero__panel--b2c{background:linear-gradient(150deg,#10306A 0%, var(--cv-dark) 60%);}
+.cv-hero__panel--b2b{background:linear-gradient(150deg,#0C3B3A 0%, #07261F 70%);}
+.cv-hero__kicker{font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:14px;}
+.cv-hero__title{font-size:42px;font-weight:700;line-height:1.1;margin-bottom:8px;}
+.cv-hero__title .accent{color:var(--cv-turquoise);}
+.cv-hero__title .accent--blue{color:#60A5FA;}
+.cv-hero__list{margin:22px 0 28px;display:flex;flex-direction:column;gap:11px;}
+.cv-hero__list li{display:flex;align-items:center;gap:10px;font-size:15px;color:rgba(255,255,255,.92);}
+.cv-check{width:20px;height:20px;border-radius:50%;background:var(--cv-success-2);display:grid;place-items:center;font-size:11px;color:#fff;flex:none;}
+.cv-hero__features{display:flex;gap:8px;flex-wrap:wrap;margin-top:30px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);}
+.cv-hero__feature{flex:1;min-width:84px;text-align:center;font-size:11px;color:rgba(255,255,255,.8);}
+.cv-hero__feature .ic{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.10);display:grid;place-items:center;margin:0 auto 8px;font-size:16px;}
+.cv-hero__center{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);z-index:5;}
+.cv-hero__badge{width:64px;height:64px;border-radius:50%;background:#fff;color:var(--cv-dark);display:grid;place-items:center;text-align:center;font-size:9px;font-weight:600;box-shadow:var(--cv-shadow-lg);line-height:1.2;}
+.cv-hero__badge b{font-size:18px;display:block;}
+.cv-link-arrow{display:inline-flex;align-items:center;gap:7px;color:#fff;font-weight:600;font-size:14px;}
+
+/* ============================================================
+   SECCIONES GENERICAS
+   ============================================================ */
+.cv-section{padding:56px 0;}
+.cv-section--gray{background:var(--cv-bg);}
+.cv-section__head{text-align:center;margin-bottom:38px;}
+.cv-section__title{font-size:30px;font-weight:700;color:var(--cv-dark);}
+.cv-section__title--left{text-align:left;}
+.cv-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;}
+.cv-row-head h2{font-size:26px;font-weight:700;color:var(--cv-dark);}
+.cv-seeall{color:var(--cv-cta);font-weight:600;font-size:14px;display:inline-flex;gap:6px;align-items:center;}
+
+/* --- Soluciones --- */
+.cv-solutions{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+.cv-sol{background:#fff;border:1px solid var(--cv-border);border-radius:var(--cv-radius);padding:26px;box-shadow:var(--cv-shadow-sm);transition:transform .18s, box-shadow .18s;}
+.cv-sol:hover{transform:translateY(-4px);box-shadow:var(--cv-shadow);}
+.cv-sol h3{font-size:18px;margin-bottom:8px;color:var(--cv-dark);}
+.cv-sol p{font-size:14px;color:var(--cv-text-muted);margin-bottom:18px;}
+.cv-sol__img{height:120px;border-radius:var(--cv-radius-sm);background:var(--cv-bg);margin-bottom:18px;display:grid;place-items:center;color:var(--cv-text-muted);font-size:13px;}
+
+/* --- Calculadora solar --- */
+.cv-solar{display:grid;grid-template-columns:1fr 1.3fr;gap:28px;align-items:center;background:#fff;border:1px solid var(--cv-border);border-radius:var(--cv-radius-lg);padding:32px;box-shadow:var(--cv-shadow-sm);}
+.cv-solar__left h2{font-size:26px;color:var(--cv-dark);margin-bottom:10px;}
+.cv-solar__left p{color:var(--cv-text-muted);font-size:15px;margin-bottom:20px;}
+.cv-solar__visual{height:150px;border-radius:var(--cv-radius);background:linear-gradient(135deg,#DBEAFE,#CFFAFE);margin-bottom:20px;display:grid;place-items:center;color:#0369A1;font-size:13px;}
+.cv-solar__panel{background:var(--cv-bg);border-radius:var(--cv-radius);padding:24px;}
+.cv-solar__metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px;}
+.cv-metric{background:#fff;border:1px solid var(--cv-border);border-radius:var(--cv-radius-sm);padding:16px;}
+.cv-metric small{color:var(--cv-text-muted);font-size:12px;}
+.cv-metric b{font-size:24px;color:var(--cv-dark);display:block;margin:4px 0;}
+.cv-metric a{color:var(--cv-cta);font-size:12px;font-weight:600;}
+.cv-solar__benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-top:18px;border-top:1px solid var(--cv-border);}
+.cv-solar__benefit{font-size:12px;color:var(--cv-text-muted);text-align:center;}
+.cv-solar__benefit .ic{width:32px;height:32px;border-radius:8px;background:#fff;border:1px solid var(--cv-border);display:grid;place-items:center;margin:0 auto 7px;}
+
+/* --- Productos destacados --- */
+.cv-products{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;}
+.cv-card{background:#fff;border:1px solid var(--cv-border);border-radius:var(--cv-radius);padding:16px;position:relative;transition:transform .18s, box-shadow .18s;}
+.cv-card:hover{transform:translateY(-4px);box-shadow:var(--cv-shadow);}
+.cv-card__tag{position:absolute;top:14px;left:14px;}
+.cv-card__fav{position:absolute;top:14px;right:14px;color:var(--cv-text-muted);}
+.cv-card__img{height:150px;background:var(--cv-bg);border-radius:var(--cv-radius-sm);margin-bottom:14px;display:grid;place-items:center;color:var(--cv-text-muted);font-size:12px;}
+.cv-card__name{font-size:14px;color:var(--cv-text);margin-bottom:10px;min-height:38px;}
+.cv-card__foot{display:flex;align-items:center;justify-content:space-between;}
+.cv-card__price{font-size:18px;font-weight:700;color:var(--cv-dark);}
+.cv-card__add{width:38px;height:38px;border-radius:var(--cv-radius-sm);background:var(--cv-dark);color:#fff;display:grid;place-items:center;border:none;cursor:pointer;}
+
+/* --- Bloque mayorista --- */
+.cv-wholesale-block{background:var(--cv-dark);border-radius:var(--cv-radius-lg);padding:40px;color:#fff;display:grid;grid-template-columns:1fr 1fr auto;gap:36px;align-items:center;}
+.cv-wholesale-block h2{font-size:26px;margin-bottom:10px;}
+.cv-wholesale-block p{color:rgba(255,255,255,.7);margin-bottom:18px;font-size:14px;}
+.cv-wb-benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.cv-wb-benefits li{display:flex;align-items:center;gap:9px;font-size:13px;color:rgba(255,255,255,.9);}
+.cv-wb-actions{display:flex;gap:14px;margin-top:22px;}
+.cv-wb-quick h3{font-size:18px;margin-bottom:16px;}
+.cv-wb-tabs{display:flex;gap:8px;margin-bottom:14px;}
+.cv-wb-tab{flex:1;text-align:center;padding:11px;border-radius:var(--cv-radius-sm);font-size:13px;font-weight:600;cursor:pointer;}
+.cv-wb-tab.is-active{background:#fff;color:var(--cv-dark);}
+.cv-wb-tab:not(.is-active){background:rgba(255,255,255,.10);color:#fff;}
+.cv-wb-form{display:flex;gap:10px;margin-bottom:12px;}
+.cv-wb-form input{flex:1;border:none;border-radius:var(--cv-radius-sm);padding:12px 14px;font-size:14px;font-family:inherit;}
+.cv-wb-illu{text-align:center;}
+.cv-wb-illu__box{width:180px;height:140px;border-radius:var(--cv-radius);background:rgba(255,255,255,.06);display:grid;place-items:center;color:rgba(255,255,255,.5);font-size:12px;margin-bottom:14px;}
+
+/* --- Casos + marcas --- */
+.cv-cases-wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:30px;}
+.cv-cases{display:flex;flex-direction:column;gap:16px;}
+.cv-case{display:flex;gap:16px;align-items:center;background:#fff;border:1px solid var(--cv-border);border-radius:var(--cv-radius);padding:16px;box-shadow:var(--cv-shadow-sm);}
+.cv-case__img{width:120px;height:80px;border-radius:var(--cv-radius-sm);background:var(--cv-bg);flex:none;display:grid;place-items:center;color:var(--cv-text-muted);font-size:11px;}
+.cv-case h4{font-size:15px;color:var(--cv-dark);margin-bottom:4px;}
+.cv-case p{font-size:12px;color:var(--cv-text-muted);}
+.cv-case a{font-size:12px;color:var(--cv-cta);font-weight:600;}
+.cv-brands{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-content:start;}
+.cv-brand{background:#fff;border:1px solid var(--cv-border);border-radius:var(--cv-radius-sm);height:70px;display:grid;place-items:center;color:var(--cv-text-muted);font-weight:700;font-size:15px;}
+
+/* --- Newsletter --- */
+.cv-newsletter{background:linear-gradient(135deg,#10306A,var(--cv-dark));border-radius:var(--cv-radius-lg);padding:36px 44px;display:flex;align-items:center;justify-content:space-between;gap:30px;color:#fff;}
+.cv-newsletter__left{display:flex;align-items:center;gap:18px;}
+.cv-newsletter__ic{width:52px;height:52px;border-radius:50%;background:rgba(25,211,197,.18);display:grid;place-items:center;color:var(--cv-turquoise);font-size:22px;flex:none;}
+.cv-newsletter h3{font-size:20px;margin-bottom:4px;}
+.cv-newsletter p{font-size:13px;color:rgba(255,255,255,.7);}
+.cv-newsletter__form{display:flex;gap:12px;flex:1;max-width:520px;}
+.cv-newsletter__form input{flex:1;border:none;border-radius:var(--cv-radius-sm);padding:14px 16px;font-size:14px;font-family:inherit;}
+
+/* --- Footer --- */
+.cv-footer{background:var(--cv-dark);color:rgba(255,255,255,.7);padding:54px 0 30px;}
+.cv-footer__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:30px;}
+.cv-footer__brand .cv-logo{color:#fff;margin-bottom:16px;}
+.cv-footer__brand p{font-size:13px;line-height:1.6;margin-bottom:18px;}
+.cv-footer__social{display:flex;gap:10px;}
+.cv-footer__social a{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:grid;place-items:center;color:#fff;}
+.cv-footer h5{color:#fff;font-size:14px;margin-bottom:16px;}
+.cv-footer li{margin-bottom:10px;font-size:13px;}
+.cv-footer li a:hover{color:var(--cv-turquoise);}
+.cv-footer__pay{display:flex;gap:8px;flex-wrap:wrap;}
+.cv-pay{background:#fff;border-radius:6px;height:30px;padding:0 10px;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--cv-dark);}
+.cv-footer__bottom{border-top:1px solid rgba(255,255,255,.10);margin-top:38px;padding-top:22px;font-size:12px;text-align:center;}
+.cv-wa{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:#22C55E;display:grid;place-items:center;color:#fff;font-size:26px;box-shadow:var(--cv-shadow-lg);z-index:99;}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:1024px){
+  .cv-products{grid-template-columns:repeat(3,1fr);}
+  .cv-solutions{grid-template-columns:repeat(2,1fr);}
+  .cv-wholesale-block{grid-template-columns:1fr;}
+  .cv-solar{grid-template-columns:1fr;}
+  .cv-cases-wrap{grid-template-columns:1fr;}
+  .cv-footer__grid{grid-template-columns:1fr 1fr 1fr;}
+}
+@media (max-width:767px){
+  .cv-hero__grid{grid-template-columns:1fr;}
+  .cv-hero__center{display:none;}
+  .cv-hero__title{font-size:32px;}
+  .cv-products{grid-template-columns:repeat(2,1fr);}
+  .cv-solutions{grid-template-columns:1fr;}
+  .cv-search,.cv-account,.cv-topbar__left{display:none;}
+  .cv-newsletter{flex-direction:column;align-items:flex-start;}
+  .cv-newsletter__form{max-width:none;width:100%;}
+  .cv-footer__grid{grid-template-columns:1fr 1fr;}
+  .cv-solar__metrics{grid-template-columns:1fr;}
+  .cv-solar__benefits{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<!-- ============ TOPBAR ============ -->
+<div class="cv-topbar">
+  <div class="cv-container">
+    <div class="cv-topbar__left">
+      <span><i class="cv-dot"></i> Envíos a toda Cuba</span>
+      <span><i class="cv-dot"></i> Garantía oficial</span>
+      <span><i class="cv-dot"></i> Pagos seguros</span>
+      <span><i class="cv-dot"></i> Soporte 24/7</span>
+    </div>
+    <div class="cv-topbar__right">
+      <span>Tiendas</span><span>Ayuda</span><span>🇨🇺 CUP ▾</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="cv-header">
+  <div class="cv-container">
+    <div class="cv-header__main">
+      <a href="#" class="cv-logo"><span class="cv-logo__mark">CE</span> VENDE</a>
+      <div class="cv-search">
+        <input type="text" placeholder="Buscar productos, categorías o marcas...">
+        <select class="cv-search__cat"><option>Todas las categorías</option></select>
+        <button class="cv-search__btn">🔍</button>
+      </div>
+      <div class="cv-header__actions">
+        <a href="#" class="cv-account">👤 <span>Iniciar sesión<small>Minorista</small></span></a>
+        <a href="#" class="cv-wholesale">👥 <span>Acceso Mayorista<small>Precios por volumen</small></span></a>
+        <a href="#" class="cv-cart">🛒<span class="cv-cart__badge">0</span></a>
+      </div>
+    </div>
+  </div>
+  <nav class="cv-nav">
+    <div class="cv-container">
+      <ul>
+        <li><a href="#" class="is-active">Inicio</a></li>
+        <li><a href="#">Electrodomésticos</a></li>
+        <li><a href="#">Paneles Solares</a></li>
+        <li><a href="#">Energía Solar <span class="cv-tag cv-tag--new">Nuevo</span></a></li>
+        <li><a href="#">Ofertas <span class="cv-tag cv-tag--hot">Hot</span></a></li>
+        <li><a href="#">Marcas</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<!-- ============ HERO SPLIT ============ -->
+<section class="cv-hero">
+  <div class="cv-container">
+    <div class="cv-hero__grid">
+      <!-- B2C -->
+      <div class="cv-hero__panel cv-hero__panel--b2c">
+        <div class="cv-hero__kicker">Compra Minorista</div>
+        <h1 class="cv-hero__title">Todo para<br>tu hogar,<br><span class="accent">al mejor precio</span></h1>
+        <ul class="cv-hero__list">
+          <li><span class="cv-check">✓</span> Productos 100% originales</li>
+          <li><span class="cv-check">✓</span> Garantía oficial</li>
+          <li><span class="cv-check">✓</span> Envíos rápidos a toda Cuba</li>
+          <li><span class="cv-check">✓</span> Pagos seguros</li>
+        </ul>
+        <a href="#" class="cv-btn cv-btn--light">🛒 Comprar como minorista</a>
+        <div style="margin-top:18px"><a href="#" class="cv-link-arrow">Ver productos →</a></div>
+        <div class="cv-hero__features">
+          <div class="cv-hero__feature"><div class="ic">❄️</div>Refrigeración</div>
+          <div class="cv-hero__feature"><div class="ic">🌀</div>Lavado</div>
+          <div class="cv-hero__feature"><div class="ic">🍳</div>Cocción</div>
+          <div class="cv-hero__feature"><div class="ic">📺</div>Pequeños Electro.</div>
+          <div class="cv-hero__feature"><div class="ic">🌡️</div>Climatización</div>
+        </div>
+      </div>
+      <!-- B2B -->
+      <div class="cv-hero__panel cv-hero__panel--b2b">
+        <div class="cv-hero__kicker">Compra Mayorista</div>
+        <h1 class="cv-hero__title">Más volumen,<br><span class="accent">más beneficios</span></h1>
+        <ul class="cv-hero__list">
+          <li><span class="cv-check">✓</span> Precios exclusivos por volumen</li>
+          <li><span class="cv-check">✓</span> Asesoramiento especializado</li>
+          <li><span class="cv-check">✓</span> Crédito y financiamiento</li>
+          <li><span class="cv-check">✓</span> Facturación y cotización</li>
+          <li><span class="cv-check">✓</span> Envíos y logística garantizada</li>
+        </ul>
+        <a href="#" class="cv-btn cv-btn--turq">📦 Comprar como mayorista</a>
+        <div style="margin-top:18px"><a href="#" class="cv-link-arrow">Ver beneficios →</a></div>
+        <div class="cv-hero__features">
+          <div class="cv-hero__feature"><div class="ic">🏷️</div>Precios por volumen</div>
+          <div class="cv-hero__feature"><div class="ic">📋</div>Lista de precios</div>
+          <div class="cv-hero__feature"><div class="ic">✅</div>Cotiza en línea</div>
+          <div class="cv-hero__feature"><div class="ic">📦</div>Carga masiva</div>
+          <div class="cv-hero__feature"><div class="ic">🎧</div>Atención personalizada</div>
+        </div>
+      </div>
+      <div class="cv-hero__center"><div class="cv-hero__badge"><span><b>O</b>ELIGE TU<br>EXPERIENCIA</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOLUCIONES ============ -->
+<section class="cv-section">
+  <div class="cv-container">
+    <div class="cv-section__head"><h2 class="cv-section__title">Explora nuestras soluciones</h2></div>
+    <div class="cv-solutions">
+      <div class="cv-sol"><div class="cv-sol__img">[ Electrodomésticos ]</div><h3>Electrodomésticos</h3><p>Equipos modernos para tu hogar.</p><a href="#" class="cv-seeall">Ver más →</a></div>
+      <div class="cv-sol"><div class="cv-sol__img">[ Energía Solar ]</div><h3>Energía Solar</h3><p>Ahorra, genera tu propia energía y cuida el planeta.</p><a href="#" class="cv-seeall">Ver más →</a></div>
+      <div class="cv-sol"><div class="cv-sol__img">[ Kits Solares ]</div><h3>Kits Solares</h3><p>Soluciones completas para cada necesidad.</p><a href="#" class="cv-seeall">Ver más →</a></div>
+      <div class="cv-sol"><div class="cv-sol__img">[ Empresas ]</div><h3>Empresas</h3><p>Soluciones energéticas para negocios e industrias.</p><a href="#" class="cv-seeall">Ver más →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CALCULADORA SOLAR ============ -->
+<section class="cv-section cv-section--gray">
+  <div class="cv-container">
+    <div class="cv-solar">
+      <div class="cv-solar__left">
+        <div class="cv-solar__visual">[ Casa con paneles solares ]</div>
+        <h2>Calcula tu sistema solar</h2>
+        <p>Descubre cuántos paneles necesitas y cuánto puedes ahorrar.</p>
+        <a href="#" class="cv-btn cv-btn--cta">Calcular ahora</a>
+      </div>
+      <div class="cv-solar__panel">
+        <div class="cv-solar__metrics">
+          <div class="cv-metric"><small>Consumo mensual</small><b>350 kWh</b><a href="#">Editar ✎</a></div>
+          <div class="cv-metric"><small>Paneles recomendados</small><b>6 unidades</b><a href="#">Ver detalle →</a></div>
+          <div class="cv-metric"><small>Ahorro estimado anual</small><b>1,245 USD</b><a href="#">Ver proyección →</a></div>
+        </div>
+        <div class="cv-solar__benefits">
+          <div class="cv-solar__benefit"><div class="ic">💡</div>Ahorra hasta 80% en tu factura</div>
+          <div class="cv-solar__benefit"><div class="ic">🌱</div>Energía limpia y sostenible</div>
+          <div class="cv-solar__benefit"><div class="ic">📈</div>Retorno de inversión 3-5 años</div>
+          <div class="cv-solar__benefit"><div class="ic">🔧</div>Instalación profesional garantizada</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCTOS DESTACADOS ============ -->
+<section class="cv-section">
+  <div class="cv-container">
+    <div class="cv-row-head"><h2>Productos destacados para ti</h2><a href="#" class="cv-seeall">Ver todos los productos →</a></div>
+    <div class="cv-products">
+      <div class="cv-card"><span class="cv-card__tag cv-tag cv-tag--new">Nuevo</span><span class="cv-card__fav">♡</span><div class="cv-card__img">[ Refrigerador ]</div><div class="cv-card__name">Refrigerador No Frost Samsung 310L</div><div class="cv-card__foot"><span class="cv-card__price">USD 720.00</span><button class="cv-card__add">🛒</button></div></div>
+      <div class="cv-card"><span class="cv-card__fav">♡</span><div class="cv-card__img">[ Lavadora ]</div><div class="cv-card__name">Lavadora LG Inverter 10.5Kg</div><div class="cv-card__foot"><span class="cv-card__price">USD 560.00</span><button class="cv-card__add">🛒</button></div></div>
+      <div class="cv-card"><span class="cv-card__fav">♡</span><div class="cv-card__img">[ Cocina ]</div><div class="cv-card__name">Cocina Mabe 4 Hornillas Encendido Eléctrico</div><div class="cv-card__foot"><span class="cv-card__price">USD 320.00</span><button class="cv-card__add">🛒</button></div></div>
+      <div class="cv-card"><span class="cv-card__fav">♡</span><div class="cv-card__img">[ Panel Solar ]</div><div class="cv-card__name">Panel Solar Monocristalino 550W</div><div class="cv-card__foot"><span class="cv-card__price">USD 210.00</span><button class="cv-card__add">🛒</button></div></div>
+      <div class="cv-card"><span class="cv-card__fav">♡</span><div class="cv-card__img">[ Inversor ]</div><div class="cv-card__name">Inversor Híbrido 3000W 24V</div><div class="cv-card__foot"><span class="cv-card__price">USD 480.00</span><button class="cv-card__add">🛒</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAYORISTA ============ -->
+<section class="cv-section">
+  <div class="cv-container">
+    <div class="cv-wholesale-block">
+      <div>
+        <h2>¿Eres mayorista?</h2>
+        <p>Accede a precios exclusivos y beneficios diseñados para tu negocio.</p>
+        <ul class="cv-wb-benefits">
+          <li><span class="cv-check">✓</span> Precios por volumen</li>
+          <li><span class="cv-check">✓</span> Facturación y cotización</li>
+          <li><span class="cv-check">✓</span> Crédito y financiamiento</li>
+          <li><span class="cv-check">✓</span> Envíos a todo el país</li>
+          <li><span class="cv-check">✓</span> Asesoramiento especializado</li>
+          <li><span class="cv-check">✓</span> Atención personalizada</li>
+        </ul>
+        <div class="cv-wb-actions"><a href="#" class="cv-btn cv-btn--turq">Crear cuenta mayorista</a><a href="#" class="cv-link-arrow">Conoce todos los beneficios →</a></div>
+      </div>
+      <div class="cv-wb-quick">
+        <h3>Compra rápida (Mayoristas)</h3>
+        <div class="cv-wb-tabs"><div class="cv-wb-tab is-active">Por código (SKU)</div><div class="cv-wb-tab">Subir archivo CSV</div></div>
+        <div class="cv-wb-form"><input placeholder="Código del producto (SKU)"><input placeholder="Cantidad" style="max-width:110px"></div>
+        <a href="#" class="cv-btn cv-btn--turq" style="width:100%;justify-content:center">➕ Agregar</a>
+        <p style="margin-top:14px;font-size:12px">Agrega varios productos y genera tu pedido al instante.<br><a href="#" style="color:var(--cv-turquoise);font-weight:600">Ver guía de compra mayorista →</a></p>
+      </div>
+      <div class="cv-wb-illu"><div class="cv-wb-illu__box">[ Cajas CEVENDE ]</div><b>Grandes compras,<br>grandes ventajas.</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASOS + MARCAS ============ -->
+<section class="cv-section cv-section--gray">
+  <div class="cv-container">
+    <div class="cv-cases-wrap">
+      <div>
+        <div class="cv-row-head"><h2>Casos reales, resultados reales</h2><a href="#" class="cv-seeall">Ver todos los casos →</a></div>
+        <div class="cv-cases">
+          <div class="cv-case"><div class="cv-case__img">[ Hogar ]</div><div><h4>Hogar en La Habana</h4><p>Sistema de 6 paneles · Ahorro anual: 1,180 USD</p><a href="#">Ver caso completo →</a></div></div>
+          <div class="cv-case"><div class="cv-case__img">[ Restaurante ]</div><div><h4>Restaurante en Varadero</h4><p>Sistema de 18 paneles · Ahorro anual: 3,650 USD</p><a href="#">Ver caso completo →</a></div></div>
+          <div class="cv-case"><div class="cv-case__img">[ Hotel ]</div><div><h4>Hotel en Trinidad</h4><p>Sistema de 36 paneles · Ahorro anual: 7,600 USD</p><a href="#">Ver caso completo →</a></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="cv-row-head"><h2 style="font-size:22px">Marcas que trabajamos</h2><a href="#" class="cv-seeall">Ver todas →</a></div>
+        <div class="cv-brands">
+          <div class="cv-brand">SAMSUNG</div><div class="cv-brand">LG</div>
+          <div class="cv-brand">Midea</div><div class="cv-brand">GREE</div>
+          <div class="cv-brand">CanadianSolar</div><div class="cv-brand">Growatt</div>
+          <div class="cv-brand">JA SOLAR</div><div class="cv-brand">BYD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER ============ -->
+<section class="cv-section">
+  <div class="cv-container">
+    <div class="cv-newsletter">
+      <div class="cv-newsletter__left">
+        <div class="cv-newsletter__ic">✉️</div>
+        <div><h3>Recibe ofertas y novedades</h3><p>Suscríbete a nuestro newsletter y entérate antes que nadie.</p></div>
+      </div>
+      <div class="cv-newsletter__form"><input placeholder="Tu correo electrónico"><a href="#" class="cv-btn cv-btn--cta">↗ Suscribirme</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="cv-footer">
+  <div class="cv-container">
+    <div class="cv-footer__grid">
+      <div class="cv-footer__brand">
+        <a href="#" class="cv-logo"><span class="cv-logo__mark">CE</span> VENDE</a>
+        <p>Equipos electrodomésticos y soluciones en energía solar para hogares y negocios. Calidad, garantía y servicio.</p>
+        <div class="cv-footer__social"><a href="#">f</a><a href="#">in</a><a href="#">◎</a><a href="#">▶</a></div>
+      </div>
+      <div><h5>Comprar</h5><ul><li><a href="#">Minorista</a></li><li><a href="#">Mayorista</a></li><li><a href="#">Paneles Solares</a></li><li><a href="#">Electrodomésticos</a></li><li><a href="#">Ofertas</a></li><li><a href="#">Kits Solares</a></li></ul></div>
+      <div><h5>Información</h5><ul><li><a href="#">Sobre nosotros</a></li><li><a href="#">Preguntas frecuentes</a></li><li><a href="#">Envíos y devoluciones</a></li><li><a href="#">Términos y condiciones</a></li><li><a href="#">Política de privacidad</a></li></ul></div>
+      <div><h5>Contacto</h5><ul><li>📞 +53 5 123 4567</li><li>✉️ info@cevende.com</li><li>📍 La Habana, Cuba</li></ul></div>
+      <div><h5>Métodos de pago</h5><div class="cv-footer__pay"><span class="cv-pay">Transfermóvil</span><span class="cv-pay">Zelle</span><span class="cv-pay">VISA</span><span class="cv-pay">MC</span><span class="cv-pay">MLC</span></div></div>
+    </div>
+    <div class="cv-footer__bottom">© 2025 CEVENDE. Todos los derechos reservados.</div>
+  </div>
+</footer>
+<a href="#" class="cv-wa">🟢</a>
+
+</body>
+</html>

@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_website_seo_form" model="ir.ui.view">
+        <field name="name">website.seo.form.extension</field>
+        <field name="model">website</field>
+        <field name="inherit_id" ref="website.view_website_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page name="seo" string="Configuración SEO">
+                    <notebook colspan="4">
+
+                        <!-- ══════════════════════════════════════════
+                             PESTAÑA: SITEMAP
+                        ══════════════════════════════════════════ -->
+                        <page name="sitemap_config" string="Sitemap">
+                            <div style="max-width: 860px; margin: 0 auto; padding: 24px 8px;">
+
+                                <!-- Banner informativo superior -->
+                                <div style="
+                                    background: #f0fdf4;
+                                    border: 1px solid #bbf7d0;
+                                    border-left: 5px solid #22c55e;
+                                    border-radius: 8px;
+                                    padding: 20px 24px;
+                                    margin-bottom: 28px;
+                                    display: flex;
+                                    align-items: flex-start;
+                                    gap: 14px;
+                                ">
+                                    <i class="fa fa-check-circle fa-2x" style="color: #16a34a; margin-top: 2px; flex-shrink: 0;"/>
+                                    <div>
+                                        <strong style="font-size: 14px; color: #15803d; display: block; margin-bottom: 6px;">
+                                            Sitemap automático activado
+                                        </strong>
+                                        <span style="font-size: 13px; color: #166534; line-height: 1.6;">
+                                            Tu sitemap estará disponible públicamente en
+                                            <code style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 0 4px;">/sitemap.xml</code>
+                                            — los motores de búsqueda lo usarán para descubrir e indexar todo tu contenido automáticamente.
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Campos de configuración -->
+                                <div style="
+                                    background: #ffffff;
+                                    border: 1px solid #e5e7eb;
+                                    border-radius: 8px;
+                                    padding: 24px 28px;
+                                    margin-bottom: 20px;
+                                ">
+                                    <div style="font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #f3f4f6;">
+                                        <i class="fa fa-map" style="margin-right: 8px; color: #6366f1;"/>
+                                        Configuración del mapa del sitio
+                                    </div>
+                                    <group>
+                                        <group>
+                                            <field name="seo_enable_sitemap"/>
+                                            <field name="seo_sitemap_priority"/>
+                                        </group>
+                                        <group>
+                                            <field name="seo_sitemap_changefreq"/>
+                                            <field name="seo_last_sitemap_generation" readonly="1"/>
+                                        </group>
+                                    </group>
+                                </div>
+
+                                <!-- Tip de uso -->
+                                <div style="
+                                    background: #eff6ff;
+                                    border: 1px solid #bfdbfe;
+                                    border-radius: 8px;
+                                    padding: 16px 20px;
+                                    display: flex;
+                                    gap: 12px;
+                                    align-items: flex-start;
+                                ">
+                                    <i class="fa fa-lightbulb-o" style="color: #3b82f6; margin-top: 2px; font-size: 16px; flex-shrink: 0;"/>
+                                    <span style="font-size: 13px; color: #1e40af; line-height: 1.7;">
+                                        <strong>Consejo:</strong> Registra tu sitemap en
+                                        <strong>Google Search Console</strong> y
+                                        <strong>Bing Webmaster Tools</strong> para acelerar la indexación
+                                        de nuevas páginas y productos.
+                                    </span>
+                                </div>
+
+                            </div>
+                        </page>
+
+                        <!-- ══════════════════════════════════════════
+                             PESTAÑA: ROBOTS.TXT
+                        ══════════════════════════════════════════ -->
+                        <page name="robots_config" string="Robots.txt">
+                            <div style="max-width: 860px; margin: 0 auto; padding: 24px 8px;">
+
+                                <!-- ¿Qué es robots.txt? -->
+                                <div style="
+                                    background: #eff6ff;
+                                    border: 1px solid #bfdbfe;
+                                    border-left: 5px solid #3b82f6;
+                                    border-radius: 8px;
+                                    padding: 20px 24px;
+                                    margin-bottom: 28px;
+                                    display: flex;
+                                    align-items: flex-start;
+                                    gap: 14px;
+                                ">
+                                    <i class="fa fa-info-circle fa-2x" style="color: #3b82f6; margin-top: 2px; flex-shrink: 0;"/>
+                                    <div>
+                                        <strong style="font-size: 14px; color: #1d4ed8; display: block; margin-bottom: 8px;">
+                                            ¿Qué es robots.txt?
+                                        </strong>
+                                        <span style="font-size: 13px; color: #1e40af; line-height: 1.7; display: block;">
+                                            El archivo <code style="background: #dbeafe; color: #1d4ed8; padding: 2px 7px; border-radius: 4px; font-size: 12px;">robots.txt</code>
+                                            le indica a los rastreadores de los motores de búsqueda qué secciones de tu
+                                            sitio pueden visitar y cuáles deben ignorar. Es la primera línea de control
+                                            sobre cómo Google y Bing exploran tu tienda.
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Editor robots.txt -->
+                                <div style="
+                                    background: #ffffff;
+                                    border: 1px solid #e5e7eb;
+                                    border-radius: 8px;
+                                    padding: 24px 28px;
+                                    margin-bottom: 24px;
+                                ">
+                                    <div style="font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f3f4f6;">
+                                        <i class="fa fa-code" style="margin-right: 8px; color: #6366f1;"/>
+                                        Editor de reglas robots.txt
+                                    </div>
+                                    <field name="seo_custom_robots"
+                                           nolabel="1"
+                                           widget="text"
+                                           placeholder="User-agent: *
+Allow: /$
+Allow: /shop$
+Allow: /shop/product/
+Allow: /shop/category/
+Allow: /blog/
+Allow: /page/
+
+Disallow: /web/
+Disallow: /website/
+Disallow: /web/dataset/
+Disallow: /web/action/
+Disallow: /web/session/
+Disallow: /web/login/
+Disallow: /mail/
+
+Disallow: /*?*
+Disallow: /*page=
+Disallow: /*limit=
+Disallow: /*sort=
+
+Crawl-delay: 1
+
+Sitemap: /sitemap.xml"
+                                           style="
+                                               min-height: 380px;
+                                               font-family: 'Courier New', 'Lucida Console', monospace;
+                                               font-size: 12.5px;
+                                               line-height: 1.8;
+                                               background: #f8fafc;
+                                               border: 1px solid #e2e8f0;
+                                               border-radius: 6px;
+                                               padding: 16px;
+                                               color: #1e293b;
+                                               width: 100%;
+                                           "/>
+                                </div>
+
+                                <!-- Guía rápida de directivas -->
+                                <div style="
+                                    background: #fffbeb;
+                                    border: 1px solid #fde68a;
+                                    border-left: 5px solid #f59e0b;
+                                    border-radius: 8px;
+                                    padding: 20px 24px;
+                                    margin-bottom: 24px;
+                                ">
+                                    <div style="display: flex; align-items: flex-start; gap: 14px;">
+                                        <i class="fa fa-exclamation-triangle fa-2x" style="color: #d97706; margin-top: 2px; flex-shrink: 0;"/>
+                                        <div style="width: 100%;">
+                                            <strong style="font-size: 14px; color: #92400e; display: block; margin-bottom: 14px;">
+                                                Guía rápida de directivas
+                                            </strong>
+                                            <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+                                                <tr style="background: #fef3c7;">
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; border-radius: 4px; font-family: monospace; color: #92400e; font-weight: 600; white-space: nowrap;">Allow:</td>
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; color: #78350f; line-height: 1.5;">Permite el rastreo de una ruta específica</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; font-family: monospace; color: #92400e; font-weight: 600; white-space: nowrap;">Disallow:</td>
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; color: #78350f; line-height: 1.5;">Bloquea el rastreo de una ruta</td>
+                                                </tr>
+                                                <tr style="background: #fef3c7;">
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; font-family: monospace; color: #92400e; font-weight: 600; white-space: nowrap;">Crawl-delay:</td>
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; color: #78350f; line-height: 1.5;">Segundos de espera entre peticiones del robot</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; font-family: monospace; color: #92400e; font-weight: 600; white-space: nowrap;">Sitemap:</td>
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; color: #78350f; line-height: 1.5;">URL completa del sitemap — obligatorio para Google</td>
+                                                </tr>
+                                                <tr style="background: #fef3c7;">
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; font-family: monospace; color: #92400e; font-weight: 600; white-space: nowrap;"># comentario</td>
+                                                    <td style="padding: 8px 12px; border: 1px solid #fde68a; color: #78350f; line-height: 1.5;">Las líneas que empiezan con # son ignoradas</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botón ver robots.txt -->
+                                <div style="
+                                    background: #f0fdf4;
+                                    border: 1px solid #bbf7d0;
+                                    border-left: 5px solid #22c55e;
+                                    border-radius: 8px;
+                                    padding: 18px 24px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    gap: 16px;
+                                ">
+                                    <div style="display: flex; align-items: center; gap: 14px;">
+                                        <i class="fa fa-globe fa-2x" style="color: #16a34a; flex-shrink: 0;"/>
+                                        <div>
+                                            <strong style="font-size: 13px; color: #15803d; display: block; margin-bottom: 4px;">
+                                                Archivo disponible públicamente
+                                            </strong>
+                                            <span style="font-size: 12.5px; color: #166534;">
+                                                Tu robots.txt se sirve en
+                                                <code style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin: 0 4px;">/robots.txt</code>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <a href="/robots.txt" target="_blank"
+                                       style="
+                                           background: #16a34a;
+                                           color: #ffffff;
+                                           padding: 9px 18px;
+                                           border-radius: 6px;
+                                           text-decoration: none;
+                                           font-size: 13px;
+                                           font-weight: 600;
+                                           white-space: nowrap;
+                                           display: inline-flex;
+                                           align-items: center;
+                                           gap: 6px;
+                                       ">
+                                        <i class="fa fa-external-link"/>
+                                        Ver robots.txt
+                                    </a>
+                                </div>
+
+                            </div>
+                        </page>
+                    </notebook>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         FORMULARIO: WEBSITE.PAGE — Pestaña SEO
+    ══════════════════════════════════════════════════════════════ -->
+    <record id="view_website_page_seo_form" model="ir.ui.view">
+        <field name="name">website.page.seo.form.extension</field>
+        <field name="model">website.page</field>
+        <field name="inherit_id" ref="website.website_pages_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <div style="margin-top: 24px;">
+
+                    <!-- Cabecera de sección -->
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin-bottom: 20px;
+                        padding-bottom: 12px;
+                        border-bottom: 2px solid #e0e7ff;
+                    ">
+                        <i class="fa fa-search fa-lg" style="color: #6366f1;"/>
+                        <span style="font-size: 15px; font-weight: 600; color: #3730a3;">
+                            Optimización SEO
+                        </span>
+                    </div>
+
+                    <!-- Banner informativo -->
+                    <div style="
+                        background: #eff6ff;
+                        border: 1px solid #bfdbfe;
+                        border-left: 5px solid #3b82f6;
+                        border-radius: 8px;
+                        padding: 16px 20px;
+                        margin-bottom: 24px;
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 12px;
+                    ">
+                        <i class="fa fa-info-circle fa-lg" style="color: #3b82f6; margin-top: 2px; flex-shrink: 0;"/>
+                        <span style="font-size: 13px; color: #1e40af; line-height: 1.7;">
+                            <strong>Consejos SEO:</strong>
+                            El título debe tener entre <strong>50 y 60 caracteres</strong> y la meta
+                            descripción entre <strong>50 y 160 caracteres</strong> para una visualización
+                            óptima en los resultados de Google.
+                        </span>
+                    </div>
+
+                    <notebook>
+                        <!-- ── SEO Básico ── -->
+                        <page name="basic_seo" string="SEO Básico">
+                            <div style="padding: 20px 4px;">
+                                <div style="
+                                    background: #ffffff;
+                                    border: 1px solid #e5e7eb;
+                                    border-radius: 8px;
+                                    padding: 24px 28px;
+                                    margin-bottom: 20px;
+                                ">
+                                    <div style="font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #f3f4f6;">
+                                        <i class="fa fa-tag" style="margin-right: 8px; color: #6366f1;"/>
+                                        Meta tags
+                                    </div>
+                                    <group>
+                                        <group>
+                                            <field name="seo_custom_title"
+                                                   placeholder="Título SEO (50-60 caracteres)"
+                                                   help="Título que aparecerá en los resultados de búsqueda. Recomendado: 50-60 caracteres."/>
+                                            <field name="seo_meta_description"
+                                                   placeholder="Meta descripción (50-160 caracteres)"
+                                                   help="Descripción que aparecerá bajo el título en Google. Recomendado: 120-160 caracteres."/>
+                                        </group>
+                                        <group>
+                                            <field name="seo_h1_text"
+                                                   placeholder="Texto H1 personalizado"
+                                                   help="Título principal visible en la página. Debe haber solo uno por página."/>
+                                            <field name="seo_focus_keyword"
+                                                   placeholder="Ej: triciclos eléctricos Cuba"
+                                                   help="La palabra o frase clave principal que quieres posicionar en buscadores."/>
+                                        </group>
+                                    </group>
+                                </div>
+                            </div>
+                        </page>
+
+                        <!-- ── SEO Avanzado ── -->
+                        <page name="advanced_seo" string="SEO Avanzado">
+                            <div style="padding: 20px 4px;">
+
+                                <div style="
+                                    background: #ffffff;
+                                    border: 1px solid #e5e7eb;
+                                    border-radius: 8px;
+                                    padding: 24px 28px;
+                                    margin-bottom: 20px;
+                                ">
+                                    <div style="font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #f3f4f6;">
+                                        <i class="fa fa-link" style="margin-right: 8px; color: #6366f1;"/>
+                                        URLs y canonicalización
+                                    </div>
+                                    <group>
+                                        <field name="seo_canonical_url"
+                                               placeholder="https://tu-sitio.com/pagina-principal"
+                                               help="Indica la URL 'oficial' de esta página para evitar penalizaciones por contenido duplicado."/>
+                                    </group>
+                                </div>
+
+                                <div style="
+                                    background: #ffffff;
+                                    border: 1px solid #e5e7eb;
+                                    border-radius: 8px;
+                                    padding: 24px 28px;
+                                    margin-bottom: 20px;
+                                ">
+                                    <div style="font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid #f3f4f6;">
+                                        <i class="fa fa-eye-slash" style="margin-right: 8px; color: #6366f1;"/>
+                                        Control de indexación
+                                    </div>
+                                    <group>
+                                        <group>
+                                            <field name="seo_no_index"/>
+                                        </group>
+                                        <group>
+                                            <field name="seo_no_follow"/>
+                                        </group>
+                                    </group>
+                                </div>
+
+                                <!-- Advertencia no-index -->
+                                <div style="
+                                    background: #fff7ed;
+                                    border: 1px solid #fed7aa;
+                                    border-left: 5px solid #f97316;
+                                    border-radius: 8px;
+                                    padding: 18px 22px;
+                                    display: flex;
+                                    align-items: flex-start;
+                                    gap: 14px;
+                                ">
+                                    <i class="fa fa-exclamation-triangle fa-lg" style="color: #ea580c; margin-top: 2px; flex-shrink: 0;"/>
+                                    <div style="font-size: 13px; color: #7c2d12; line-height: 1.7;">
+                                        <strong style="display: block; margin-bottom: 6px;">Precaución con estas opciones</strong>
+                                        <ul style="margin: 0; padding-left: 18px; line-height: 1.9;">
+                                            <li><strong>No Index:</strong> Google no mostrará esta página en sus resultados de búsqueda.</li>
+                                            <li><strong>No Follow:</strong> Los rastreadores no seguirán los enlaces de esta página.</li>
+                                            <li>Estas opciones también excluyen la página del <strong>sitemap.xml</strong> automáticamente.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </page>
+                    </notebook>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

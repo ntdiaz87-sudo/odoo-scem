@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_template_invoice_confirmation_custom" model="mail.template">
+            <field name="name">CEM Invoice: Invoice Confirmation</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">{{ object.company_id.name }}: Confirmed and Paid Invoice {{ object.name or 'n/a' }} / Origin Order {{object.invoice_origin or 'n/a'}}</field>
+            <field name="email_from">{{ (object.company_id or object.company_id.partner_id or user).email_formatted }}</field>
+            <field name="email_to">{{ object.partner_id.email_formatted }}</field>
+            <field name="description">Sent to customers on invoices confirmation and with invoices in the attachment in the email</field>
+            <field name="body_html" type="html">
+                <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    Dear
+                    <t t-out="object.partner_id.name or ''">Brandon Freeman</t>.
+                    <br/>
+                    <br/>
+                    Here is your invoice
+                    <span style="font-weight:bold;" t-out="object.name or ''">INV/2021/05/0005</span>
+                    <t t-if="object.invoice_origin">
+                        (with reference: <t t-out="object.invoice_origin or ''">SUB003</t>)
+                    </t>
+                    amounting in
+                    <span style="font-weight:bold;"
+                          t-out="format_amount(object.amount_total, object.currency_id) or ''">$ 143,750.00
+                    </span>
+                    from <t t-out="object.company_id.name or ''">YourCompany</t>.
+                    <t t-if="object.payment_state in ('paid', 'in_payment')">
+                        This invoice is already paid.
+                    </t>
+
+                </p>
+            </field>
+            <field name="report_template_ids" eval="[(4, ref('account.account_invoices'))]"/>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

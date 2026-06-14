@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista Tree -->
+        <record id="view_sales_manager_tree" model="ir.ui.view">
+            <field name="name">pyxel.sales.manager.tree</field>
+            <field name="model">pyxel.sales.manager</field>
+            <field name="arch" type="xml">
+                <tree string="Gestores de Ventas" sample="1">
+                    <field name="code" optional="show"/>
+                    <field name="name" string="Nombre"/>
+                    <field name="partner_id" optional="show"/>
+                    <field name="email" optional="hide"/>
+                    <field name="phone" optional="hide"/>
+                    <field name="sales_team_id" optional="show"/>
+                    <field name="commission_rate" optional="show"/>
+                    <field name="customer_count" optional="show"/>
+                    <field name="sale_order_count" optional="show"/>
+                    <field name="total_sales" optional="show" sum="Total Ventas"/>
+                    <field name="total_invoiced" optional="show" sum="Total Facturado"/>
+                    <field name="active" widget="boolean_toggle" optional="show"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista Form -->
+        <record id="view_sales_manager_form" model="ir.ui.view">
+            <field name="name">pyxel.sales.manager.form</field>
+            <field name="model">pyxel.sales.manager</field>
+            <field name="arch" type="xml">
+                <form string="Gestor de Ventas">
+                    <header>
+                        <button name="action_view_sale_orders" type="object"
+                                string="Ver Órdenes" class="oe_stat_button"
+                                icon="fa-shopping-cart"
+                                invisible="sale_order_count == 0"/>
+                        <button name="action_view_invoices" type="object"
+                                string="Ver Facturas" class="oe_stat_button"
+                                icon="fa-file-text-o"
+                                invisible="invoice_count == 0"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_sale_orders" type="object"
+                                    class="oe_stat_button" icon="fa-shopping-cart">
+                                <field name="sale_order_count" widget="statinfo"
+                                       string="Órdenes"/>
+                            </button>
+                            <button name="action_view_invoices" type="object"
+                                    class="oe_stat_button" icon="fa-file-text-o">
+                                <field name="invoice_count" widget="statinfo"
+                                       string="Facturas"/>
+                            </button>
+                            <button name="action_view_customers" type="object"
+                                    class="oe_stat_button" icon="fa-users">
+                                <field name="customer_count" widget="statinfo"
+                                       string="Clientes"/>
+                            </button>
+                        </div>
+
+                        <widget name="web_ribbon" title="Archivado"
+                                bg_color="text-bg-danger"
+                                invisible="active"/>
+
+                        <field name="active" invisible="1"/>
+
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" placeholder="Nombre del Gestor"/>
+                            </h1>
+                            <label for="code"/>
+                            <h2>
+                                <field name="code" readonly="1"/>
+                            </h2>
+                        </div>
+
+                        <group>
+                            <group string="Información General">
+<!--                                <field name="partner_id"-->
+<!--                                       context="{'default_is_company': False}"/>-->
+                                <field name="user_id"/>
+                                <field name="email" readonly="1"/>
+                                <field name="phone"/>
+                                <field name="mobile"/>
+                            </group>
+                            <group string="Información de Ventas">
+                                <field name="sales_team_id"/>
+                                <field name="manager_id"
+                                       domain="[('id', '!=', id)]"/>
+                                <field name="commission_rate" widget="percentage"/>
+                                <field name="company_id"
+                                       groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Período">
+                                <field name="date_start"/>
+                                <field name="date_end"/>
+                            </group>
+                            <group string="Estadísticas">
+                                <field name="total_sales" widget="monetary"/>
+                                <field name="total_invoiced" widget="monetary"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Clientes Asignados" name="customers">
+                                <field name="customer_ids"
+                                       context="{'default_customer_rank': 1}">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="email"/>
+                                        <field name="phone"/>
+                                        <field name="city"/>
+                                        <field name="country_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Notas" name="notes">
+                                <field name="notes" placeholder="Notas adicionales..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Vista Kanban -->
+        <record id="view_sales_manager_kanban" model="ir.ui.view">
+            <field name="name">pyxel.sales.manager.kanban</field>
+            <field name="model">pyxel.sales.manager</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" sample="1">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="partner_id"/>
+                    <field name="email"/>
+                    <field name="phone"/>
+                    <field name="sale_order_count"/>
+                    <field name="total_sales"/>
+                    <field name="commission_rate"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_record_top mb16">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                        <br/>
+                                        <span class="text-muted">
+                                            <field name="code"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <field name="partner_id"/>
+                                    <div t-if="record.email.raw_value">
+                                        <i class="fa fa-envelope"/> <field name="email"/>
+                                    </div>
+                                    <div t-if="record.phone.raw_value">
+                                        <i class="fa fa-phone"/> <field name="phone"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <span class="badge text-bg-info">
+                                            <i class="fa fa-shopping-cart"/>
+                                            <field name="sale_order_count"/> Órdenes
+                                        </span>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="total_sales" widget="monetary"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Action Window -->
+        <record id="action_sales_manager" model="ir.actions.act_window">
+            <field name="name">Gestores de Ventas</field>
+            <field name="res_model">pyxel.sales.manager</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="context">{'search_default_active': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un nuevo Gestor de Ventas
+                </p>
+                <p>
+                    Los gestores de ventas son responsables de gestionar clientes y
+                    realizar seguimiento de las ventas. Puedes asignar comisiones y
+                    equipos de trabajo a cada gestor.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

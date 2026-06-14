@@ -1,0 +1,43 @@
+# ═══════════════════════════════════════════════════════════
+#  .gitignore — Proyecto SCEM / Cevende (Odoo 17 + Docker)
+# ═══════════════════════════════════════════════════════════
+
+# ── Datos vivos (NUNCA a git; la BD se respalda con pg_dump) ──
+/postgres-data/
+/odoo-data/
+
+# ── Backups, dumps, snapshots y .git anidados respaldados ──
+/backup/
+*.dump
+*.sql
+*.zip
+*.tar
+*.tar.gz
+*.gz
+
+# ── custom_muk: assets de marketing (tema comprado) ──
+#   Carpetas static/description = manuales PDF, videos, GIFs y
+#   capturas para la tienda de apps. No afectan al runtime.
+addons/custom_muk/**/static/description/
+
+# ── Artefactos de trabajo ──
+/images/
+my_rendered.html
+/tmp_manifests/
+tmp_*
+
+# ── Python / Odoo ──
+__pycache__/
+*.py[cod]
+*.pyo
+*.log
+
+# ── Sistema operativo / editores ──
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/

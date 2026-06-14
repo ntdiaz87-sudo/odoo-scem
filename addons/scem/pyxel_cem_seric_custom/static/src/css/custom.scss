@@ -1,0 +1,93 @@
+a.btn-primary.reset-button,
+.traking-form button,
+button.btn.btn-primary.btn-search {
+    background-color: #09254a;
+}
+.whatsapp-container {
+    background-color: #B83235;
+}
+img.profile-photo{
+    border: 4px solid #09254a;
+}
+div#my-profile h2{
+    color: #09254a;
+}
+.cont-account-menu .menu-item.active{
+    color: #B83235;
+}
+button#enable-edit:hover{
+    background-color: #B83235;
+}
+.o_portal_details button.btn.btn-primary,
+.oe_reset_password_form button.btn.btn-secondary{
+    background-color: #124054;
+    border: 1px solid #124054;
+}
+button.btn.btn-primary.o_sale_product_configurator_edit,
+.o_portal_details button.btn.btn-primary:hover{
+    background-color: #09254a;
+    border: 1px solid #09254a;
+}
+div#action-buttons button.btn.btn-secondary.me-2.profile-discard {
+    background-color: #e26264;
+    border: 1px solid #e26264;
+}
+div#action-buttons button.btn.btn-secondary.me-2.profile-discard:hover{
+  background-color: #B83235;
+    border: 1px solid #B83235;
+}
+tr.js_product.in_cart.main_product td.td-product_name, 
+tr.js_product.in_cart.main_product td.text-center.td-price {
+    background-color: #054e9212;
+}
+tr.js_product.in_cart.main_product td.text-center.td-qty {
+    background-color: white;
+}
+div#counter-container-card {
+    border-radius: 10px;
+}
+.o_website_sale_checkout .o_total_card {
+    top: 0;
+}
+a.btn.btn-primary.buy-now.buy-now-cart,
+#product_detail #product_details .js_product #add_to_cart,
+a#order_request_btn {
+    background-color: #09254a !important;
+    border: 1px solid #09254a !important;
+}
+input#all_categories,
+input#all_providers {
+    background-color: #b83235;
+    border: #b83235;
+}
+h6.mb-3.sct_filter_title::before {
+    display: none;
+}
+h6.mb-3.sct_filter_title {
+    margin: 0 !important;
+}
+
+.info-clients{
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+}
+p.note {
+    text-align: justify;
+    margin-top: 30px;
+    font-size: 14px;
+    color: #646464;
+}
+a.s_share_twitter,
+a.s_share_pinterest {
+    display: none;
+}
+a.btn.btn-primary.buy-now.buy-now-cart {
+    border-radius: 10px !important;
+    background-color: #09254a;
+    border: 1px solid #09254a !important;
+    width: 100%;
+}
+.counter-buy-btns.shop {
+    justify-content: space-between;
+}

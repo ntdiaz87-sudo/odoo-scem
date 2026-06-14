@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<odoo>
+    <template id="report_saleorder_document_cem_inherit" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[@class='page']" position="before">
+            <div class="row" t-if="report_type == 'pdf' and doc.state == 'cancel'"
+                 style="height:0px; width:100%; margin-left:10%; margin-top:0%;">
+                <div class="col-6" name="watermark">
+                    <span style="-webkit-transform:rotate(-45deg); color:red; font-size:12em; text-align:center; position:absolute; opacity:0.2;">
+                        Canceled
+                    </span>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div t-if="doc.delivery_lapse" class="col-3 mb-2">
+                <strong>Tiempo de entrega:</strong>
+                <p class="m-0" t-field="doc.delivery_lapse"/>
+            </div>
+
+            <div t-if="doc.currency_id" class="col-3 mb-2">
+                <strong>Moneda:</strong>
+                <p class="m-0" t-field="doc.currency_id"/>
+            </div>
+        </xpath>
+
+
+        <xpath expr="//th[@name='th_taxes']" position="replace"/>
+
+        <xpath expr="//td[@name='td_taxes']" position="replace"/>
+
+        <xpath expr="//t[@t-set='taxes']" position="replace"/>
+
+        <xpath expr="//t[@t-set='tax_totals']" position="replace"/>
+        <xpath expr="//t[@t-call='sale.document_tax_totals']" position="replace"/>
+    </template>
+</odoo>

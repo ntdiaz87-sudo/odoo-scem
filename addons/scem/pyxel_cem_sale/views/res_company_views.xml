@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_company_form_inherit" model="ir.ui.view">
+        <field name="name">res.company.form.inherit.pyxel.cem.sale</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="is_default" invisible="1"/>
+                <field name="nit" required="is_default"/>
+                <field name="reeup" required="is_default"/>
+            </xpath>
+
+            <xpath expr="//page[@name='branches']" position="after">
+                <page string="Payment Dateils" name="pay_det">
+                    <group>
+                        <field name="beneficiary" required="is_default"/>
+                        <field name="account_number" required="is_default"/>
+                        <field name="bank" required="is_default"/>
+                        <field name="swift_code" required="is_default"/>
+                    </group>
+                </page>
+
+                <page string="Garantía" name="warranty">
+                    <group>
+                        <field name="company_warranty"/>
+                        <field name="warranty_management" string="Gestión de Garantía"/>
+                    </group>
+                </page>
+
+                <page string="Términos y condiciones" name="terms_conditions">
+                    <group>
+                        <field name="company_terms_conditions" widget="html"/>
+                        <field name="terms_conditions_management" string="Gestión de Términos y Condiciones"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+

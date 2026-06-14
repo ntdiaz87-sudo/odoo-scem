@@ -1,0 +1,106 @@
+// ══════════════════════════════════════════════════════════════════════
+// CEVENDE — Footer (tema aprobado, navy + Inter)
+// ══════════════════════════════════════════════════════════════════════
+
+.cv-footer {
+  background: #071B3A;
+  color: rgba(255,255,255,.7);
+  padding: 54px 0 30px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  .cv-container { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+}
+
+.cv-footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+  gap: 30px;
+}
+
+.cv-footer__brand {
+  .cv-footer__logo {
+    height: 46px;
+    width: auto;
+    object-fit: contain;
+    margin-bottom: 16px;
+  }
+  p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 18px;
+    color: rgba(255,255,255,.6);
+  }
+}
+
+.cv-footer__social {
+  display: flex;
+  gap: 10px;
+  a {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    display: grid;
+    place-items: center;
+    color: #fff !important;
+    transition: background .2s;
+    &:hover { background: #19D3C5; color: #071B3A !important; }
+  }
+}
+
+.cv-footer h5 {
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.cv-footer ul { list-style: none; padding: 0; margin: 0; }
+.cv-footer li {
+  margin-bottom: 10px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  a {
+    color: rgba(255,255,255,.7) !important;
+    text-decoration: none !important;
+    &:hover { color: #19D3C5 !important; }
+  }
+  i { color: #19D3C5; }
+}
+
+.cv-footer__pay {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  img {
+    background: #fff;
+    border-radius: 6px;
+    height: 30px;
+    width: auto;
+    padding: 4px 8px;
+    object-fit: contain;
+  }
+}
+
+.cv-footer__bottom {
+  border-top: 1px solid rgba(255,255,255,.10);
+  margin-top: 38px;
+  padding-top: 22px;
+  font-size: 12px;
+  text-align: center;
+  color: rgba(255,255,255,.5) !important;
+  font-weight: normal !important;
+}
+
+// Botón WhatsApp flotante (de theme_scita) — mantener posición
+a.whatsapp { bottom: 6rem !important; }
+
+@media (max-width: 1024px) {
+  .cv-footer__grid { grid-template-columns: 1fr 1fr 1fr; }
+  .cv-footer__brand { grid-column: 1 / -1; }
+}
+@media (max-width: 767px) {
+  .cv-footer__grid { grid-template-columns: 1fr 1fr; }
+  .cv-footer__brand { grid-column: 1 / -1; }
+}
