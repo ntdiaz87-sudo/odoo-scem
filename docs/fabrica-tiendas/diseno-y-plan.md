@@ -33,6 +33,9 @@ Decisiones ya tomadas por el dueño:
 - **Modelos de IA:** la capa agéntica corre sobre modelos chinos (DeepSeek /
   Qwen / Kimi), al mínimo costo, con precio mensual al cliente de
   básico + % de ventas a partir de un umbral (§6.2).
+- **Diseños únicos:** sin catálogo de plantillas; un diseñador agéntico genera
+  propuestas a partir de una encuesta y el diseño elegido no se repite jamás
+  para otro cliente, ni en web ni en apps (§3.1).
 
 ## 2. Stack (investigación agosto 2026)
 
@@ -40,7 +43,7 @@ Decisiones ya tomadas por el dueño:
 |---|---|---|
 | Motor de comercio | **Vendure** (TypeScript, NestJS, GraphQL, MIT) | Channels = multi-tenant nativo: un servidor sirve N tiendas con productos, precios, envíos y administradores propios. Soporta instancia dedicada por cliente si un plan enterprise lo exige. |
 | Storefront | **Next.js** multi-tenant | Una app sirve todas las tiendas por hostname; responsive + PWA de serie. |
-| Editor visual | **Puck** (MIT, React) | Drag-and-drop con nuestros componentes; plantillas = presets JSON. |
+| Diseño de tiendas | **Diseñador agéntico** (generación IA) + **Puck** (MIT, React) para ajustes | Las propuestas de diseño se GENERAN por IA a partir de una encuesta al cliente y son únicas (§3.1); el diseño elegido se ajusta por clics con Puck (presets JSON). |
 | Web de la empresa + panel Fábrica | Next.js | Landing, planes, registro, demo, wizard de tienda, panel del cliente. |
 | Base de datos | PostgreSQL | Conocida por el equipo; nativa en Vendure. |
 | Apps móviles | **Expo/React Native + EAS** (app contenedora y apps white-label), PWA | Config dinámica por tenant (`app.config.js`), compilación en la nube y actualizaciones OTA. |
@@ -89,6 +92,31 @@ activar canal + hostname + SSL. Instancia dedicada solo para planes enterprise.
    Tropipay).
 3. **Producción:** compra o conecta su dominio → DNS + SSL automáticos →
    tienda publicada en Hetzner. Todo sin salir de la plataforma.
+
+### 3.1 Diseñador agéntico: diseños únicos, nunca repetidos
+
+Decisión del dueño: no hay catálogo de plantillas fijas. El diseño de cada
+tienda lo genera una herramienta agéntica de la fábrica:
+
+1. **Encuesta sencilla** al cliente (qué vende, cómo quiere que se sienta su
+   marca, quién es su cliente típico, colores que ama u odia).
+2. **Generación por IA:** a partir de las respuestas, un agente genera varias
+   propuestas de diseño (paleta, tipografías, layout, componentes) como
+   presets JSON renderizables por el storefront. Si ninguna convence, el
+   cliente pide otra tanda.
+3. **Elección y bloqueo:** la propuesta elegida queda **registrada a nombre
+   del cliente** y se retira para siempre.
+4. **Registro de unicidad:** cada diseño emitido guarda su "huella"
+   (combinación de tokens: paleta + tipografías + estructura de layout +
+   estilo de componentes). Toda propuesta nueva se valida contra el registro
+   exigiendo una distancia mínima respecto a lo ya emitido — por diseño es
+   imposible proponer dos veces lo mismo. La regla aplica igual al tema de
+   las **apps** del cliente (PWA, contenedora y app propia usan los mismos
+   tokens).
+
+Las propuestas descartadas de una tanda vuelven al espacio generable (solo se
+bloquea lo elegido). El ajuste fino posterior (textos, secciones, imágenes) se
+hace por clics con Puck sobre el diseño ya asignado.
 
 ## 4. Dominios y publicación estilo Cloudflare
 
@@ -206,10 +234,13 @@ con clics → feedback → siguiente fase**.
 - El cliente gestiona productos y ve pedidos.
 - **Demo:** un cliente real crea su tienda de punta a punta desde el móvil.
 
-### Fase 2 — Plantillas y editor visual
-- 3–5 plantillas intercambiables; editor Puck embebido (secciones, banners,
-  textos, imágenes); publicación instantánea.
-- **Demo:** personalizar el diseño completo sin código.
+### Fase 2 — Diseñador agéntico y editor visual
+- Encuesta de diseño, generación de propuestas únicas por IA, registro de
+  unicidad (§3.1) y editor Puck para el ajuste fino; publicación instantánea.
+- En la Fase 0/1 se arranca con unos pocos diseños generados a mano bajo la
+  misma regla de unicidad; esta fase automatiza la generación.
+- **Demo:** responder la encuesta, recibir propuestas únicas, elegir una y
+  personalizarla sin código.
 
 ### Fase 3 — Operación completa de e-commerce
 - Inventario por tienda, compras a proveedores, flujo de pedido completo,
