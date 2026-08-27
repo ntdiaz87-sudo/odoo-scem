@@ -1,0 +1,58 @@
+# Fábrica de tiendas online — Fase 0
+# Levanta todo con:  docker compose up -d --build
+# Web pública:       http://localhost:8300
+# Tiendas demo:      http://verdealto.localhost:8300  ·  http://nocta.localhost:8300
+# Panel Vendure:     http://localhost:8301/dashboard  (superadmin / superadmin)
+name: fabrica
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vendure
+      POSTGRES_USER: vendure
+      POSTGRES_PASSWORD: vendure
+    volumes:
+      - fabrica_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vendure -d vendure']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  vendure:
+    build: ./vendure
+    # La semilla es idempotente: crea las 2 tiendas demo solo la primera vez.
+    command: sh -c "npm run seed:demo && npm run start"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: dev
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: vendure
+      DB_USERNAME: vendure
+      DB_PASSWORD: vendure
+      SUPERADMIN_USERNAME: superadmin
+      SUPERADMIN_PASSWORD: superadmin
+      COOKIE_SECRET: cambiar-antes-de-produccion
+    ports:
+      - '8301:3000'
+
+  web:
+    build: ./web
+    depends_on:
+      - vendure
+    environment:
+      VENDURE_API_URL: http://vendure:3000
+      VENDURE_SUPERADMIN_USERNAME: superadmin
+      VENDURE_SUPERADMIN_PASSWORD: superadmin
+      NEXT_PUBLIC_ROOT_DOMAIN: localhost:8300
+      NEXT_PUBLIC_ROOT_URL: http://localhost:8300
+    ports:
+      - '8300:3000'
+
+volumes:
+  fabrica_db_data:
