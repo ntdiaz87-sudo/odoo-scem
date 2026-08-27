@@ -1,138 +1,189 @@
-# Fábrica de Tiendas Online — Diseño y plan por fases
+# Fábrica de Tiendas Online — Diseño v2 y plan por fases
 
-**Estado:** propuesta de diseño (Fase 0 pendiente de OK)
+**Estado:** propuesta de diseño v2 (pendiente de aprobación para arrancar el loop)
 **Fecha:** 2026-08-27
 
 ## 1. Objetivo
 
-Construir una **fábrica de tiendas online**: una plataforma donde un cliente,
-desde su móvil o PC y solo con clics, crea su propia tienda de e-commerce
-básica en minutos, sin contratar una empresa de software. Cada tienda incluye:
+Construir la plataforma de una **empresa fábrica de e-commerce** (sociedad en
+constitución en China; el dueño opera también con empresas en EE. UU. y España).
+El cliente entra a la web de la empresa y, sin salir de la plataforma y solo
+con clics desde móvil o PC:
 
-- Plantillas de diseño configurables por clics (colores, logo, secciones).
-- Catálogo de productos, carrito y checkout.
-- Gestión de pedidos de venta, compras a proveedores e inventario.
-- Multiplataforma por defecto (web responsive + PWA instalable).
+1. **Prueba un demo** de su tienda al instante.
+2. **Compra su producto** según el modelo de negocio/plan que escoja.
+3. **Construye su tienda** con plantillas configurables por clics.
+4. **Compra su dominio** dentro de la plataforma.
+5. **Publica en producción** al estilo Cloudflare (hostname + SSL automáticos),
+   alojado en servidores **Hetzner** de la empresa.
+6. Obtiene un resultado **multiplataforma**: web + PWA instalable + apps
+   iOS/Android (por niveles, ver §5).
+7. **Monta sus agentes de IA** para operar la tienda.
+8. **Gestiona toda la operación**: pedidos, compras, inventario, clientes.
 
-Visión a futuro: la fábrica y las tiendas serán **gestionadas por agentes de
-IA**, y evolucionarán hacia **e-commerce agéntico** (tiendas capaces de vender
-a agentes compradores mediante protocolos como ACP/UCP/AP2).
+Restricción de calendario: el dueño quiere **lanzar la plataforma en unos
+días**, por lo que la Fase 0 del loop es la web pública con el demo funcionando.
 
-## 2. Decisión de tecnología (investigación agosto 2026)
+Decisiones ya tomadas por el dueño:
+- **Mercado:** global (la sede china no implica vender al mercado doméstico
+  chino; la plataforma no crea empresas a los clientes).
+- **Apps móviles:** modelo por niveles (§5).
+- **Pasarela de cobro de la fábrica:** se decide después; el MVP arranca con
+  demo gratis y activación manual de planes.
 
-No se construye sobre Odoo. Se evaluaron las plataformas headless open source
-líderes (Medusa, Saleor, Vendure, Spree, Bagisto) y los constructores visuales
-(Puck, GrapesJS, Webstudio).
-
-### Stack elegido
+## 2. Stack (investigación agosto 2026)
 
 | Capa | Tecnología | Por qué |
 |---|---|---|
-| Motor de comercio | **Vendure** (TypeScript, NestJS, GraphQL, MIT) | Sus **Channels** son multi-tenant nativo: un solo servidor sirve N tiendas, cada una con sus productos, precios, envíos, promociones y administradores propios. Es exactamente el modelo "fábrica". |
-| Storefront | **Next.js** multi-tenant (React) | Una sola app sirve todas las tiendas por subdominio (`tienda1.midominio.com`); responsive y PWA por defecto → multiplataforma. |
-| Editor visual | **Puck** (MIT, React) | Editor drag-and-drop embebible que usa nuestros propios componentes y guarda la página como JSON → las plantillas son presets JSON configurables por clics. |
-| Panel "Fábrica" | Next.js (mismo monorepo) | Wizard de alta: nombre, subdominio, plantilla, logo, colores → provisiona el Channel en Vendure vía Admin API. |
-| Base de datos | PostgreSQL | Ya la conocemos del proyecto Odoo; Vendure la usa nativamente. |
-| Infraestructura | Docker Compose (igual que hoy) | Mismo flujo de trabajo que el proyecto actual; escalable a Kubernetes más adelante. |
-| Pagos | Tropipay (experiencia previa en `pyxel_link_payment_tropipay`) + métodos manuales (transferencia) | Contexto Cuba; arquitectura de pagos enchufable para añadir EnZona u otros. |
-| Capa agéntica (futuro) | MCP + Claude Agent SDK | Todo es API-first (GraphQL); se expone un servidor MCP por tienda para que agentes de IA la operen. |
+| Motor de comercio | **Vendure** (TypeScript, NestJS, GraphQL, MIT) | Channels = multi-tenant nativo: un servidor sirve N tiendas con productos, precios, envíos y administradores propios. Soporta instancia dedicada por cliente si un plan enterprise lo exige. |
+| Storefront | **Next.js** multi-tenant | Una app sirve todas las tiendas por hostname; responsive + PWA de serie. |
+| Editor visual | **Puck** (MIT, React) | Drag-and-drop con nuestros componentes; plantillas = presets JSON. |
+| Web de la empresa + panel Fábrica | Next.js | Landing, planes, registro, demo, wizard de tienda, panel del cliente. |
+| Base de datos | PostgreSQL | Conocida por el equipo; nativa en Vendure. |
+| Apps móviles | **Expo/React Native + EAS** (app contenedora y apps white-label), PWA | Config dinámica por tenant (`app.config.js`), compilación en la nube y actualizaciones OTA. |
+| Dominios | API de registrar revendedor (**OpenSRS / Dynadot / DomainNameAPI**) | Vender y gestionar dominios dentro de la plataforma, marca blanca. |
+| Publicación / edge | **Caddy** con on-demand TLS (opcional Cloudflare for SaaS encima) | Custom hostnames + SSL automático a escala (probado con decenas de miles de dominios por máquina). |
+| Infraestructura | **Hetzner Cloud** + capa PaaS (**Dokploy o Coolify**) → k3s al escalar | Provisioning por API, deploys reproducibles, coste bajo. |
+| Agentes de IA | **MCP + Claude Agent SDK** | Un servidor MCP por tienda; agentes del cliente operan catálogo, pedidos y atención. |
 
-### Alternativa considerada y descartada (por ahora)
+**Clave de costes:** "desplegar en producción" NO es un servidor por cliente:
+las tiendas comparten la instancia Vendure/storefront (Channels) y publicar =
+activar canal + hostname + SSL. Instancia dedicada solo para planes enterprise.
 
-- **Medusa 2.x**: el framework JS más popular, pero la multi-tenancy no es
-  nativa (habría que construir el aislamiento por `store_id` a mano). Vendure
-  lo trae de serie con Channels. Si algún día hace falta aislamiento duro,
-  Vendure también soporta una instancia + BD por tenant con el mismo código.
-- **Odoo multi-website** (módulo `pyxel_multi_website_manager` existente):
-  válido para pocas tiendas gestionadas por nosotros, pero no para autoservicio
-  masivo por clics ni para gestión por agentes (API menos amigable, escalado
-  por instancia pesado).
-
-## 3. Arquitectura
+## 3. Arquitectura de la plataforma
 
 ```
-                        ┌─────────────────────────────┐
-  Cliente (móvil/PC) →  │  FÁBRICA (panel Next.js)    │  "Crear mi tienda" en clics
-                        │  wizard + editor Puck       │
-                        └──────────┬──────────────────┘
-                                   │ Admin API (GraphQL)
-                        ┌──────────▼──────────────────┐
-                        │  VENDURE (1 servidor)       │  Channels = 1 por tienda
-                        │  productos · pedidos ·      │  roles de admin por tenant
-                        │  inventario · compras       │
-                        └──────────┬──────────────────┘
-                                   │ Shop API (GraphQL)
-                        ┌──────────▼──────────────────┐
-  Comprador (cualquier  │  STOREFRONT (Next.js)       │  tiendaX.midominio.com
-  dispositivo) ───────→ │  multi-tenant por subdominio│  PWA instalable
-                        │  render de plantilla JSON   │
-                        └─────────────────────────────┘
-
-  Futuro: servidor MCP por tienda ←→ agentes IA (gestión y venta agéntica)
+                    WEB DE LA EMPRESA (Next.js)
+   landing · planes por modelo de negocio · registro · "Probar demo"
+                              │
+              ┌───────────────┼────────────────────┐
+              ▼               ▼                    ▼
+        PANEL CLIENTE    CONSTRUCTOR          PANEL AGENTES IA
+        planes·dominio   wizard + Puck        montar agentes (MCP)
+              │               │                    │
+              └───────┬───────┴────────────────────┘
+                      ▼  Admin API (GraphQL)
+              VENDURE (Channels: 1 por tienda)
+        productos · pedidos · inventario · compras · clientes
+                      │  Shop API
+                      ▼
+        STOREFRONT Next.js  ──►  PWA  ──►  App contenedora iOS/Android
+        (resuelve tenant         (todos)   (todos los planes)
+         por hostname)                     App propia white-label (premium)
+                      │
+                      ▼
+        EDGE: Caddy on-demand TLS  ·  DNS/dominios (registrar API)
+        INFRA: Hetzner Cloud + Dokploy/Coolify (API de provisioning)
 ```
 
-**Aislamiento de datos:** cada tienda es un Channel de Vendure con sus propios
-administradores (roles restringidos al canal). El storefront resuelve el tenant
-por hostname. La configuración visual (plantilla JSON de Puck, colores, logo)
-vive en una tabla propia de la fábrica indexada por tienda.
+### Ciclo de vida del cliente
 
-**Ubicación del código:** la fábrica es un producto nuevo; se desarrollará en
-una carpeta `factory/` de este repositorio (monorepo) para arrancar rápido,
-con opción de moverla a repositorio propio cuando madure. El Odoo actual
-(cubaelectronica) sigue funcionando aparte, sin tocarse.
+1. **Demo:** clic en "Probar demo" → tienda sandbox instantánea (canal temporal
+   con datos de ejemplo, subdominio efímero, sin tarjeta). Caduca a los N días.
+2. **Producto:** escoge plan según su modelo de negocio → la sandbox se
+   convierte en su tienda real (mismos datos). MVP: activación manual del pago;
+   después, pasarela self-service (pendiente de decisión: Paddle/Airwallex/
+   Tropipay).
+3. **Producción:** compra o conecta su dominio → DNS + SSL automáticos →
+   tienda publicada en Hetzner. Todo sin salir de la plataforma.
 
-## 4. El loop de trabajo (fases)
+## 4. Dominios y publicación estilo Cloudflare
 
-Cada fase es una vuelta del loop: **implementar → desplegar demo → tú lo
-pruebas con clics → feedback → siguiente fase**. Ninguna fase empieza sin
-cerrar la demo de la anterior.
+- **Subdominio gratis** (`mitienda.<dominio-fabrica>.com`) en todos los planes.
+- **Compra de dominio propio** integrada vía API de registrar revendedor
+  (candidatos: OpenSRS, Dynadot, DomainNameAPI; se elige en la fase 4 por
+  precios y cobertura de TLDs). Requiere tener resuelto el cobro (o cobro
+  manual al inicio).
+- **Conectar dominio existente:** el cliente apunta un CNAME/A; Caddy emite el
+  certificado on-demand y enruta por hostname.
+- Cloudflare for SaaS queda como opción encima si más adelante hace falta
+  CDN/anti-DDoS global.
 
-### Fase 0 — Cimientos (1 vuelta)
-- Monorepo `factory/` con Docker Compose: PostgreSQL + Vendure + storefront.
-- Dos tiendas demo precargadas accesibles por subdominios locales.
-- **Demo:** levantar con `docker compose up` y ver 2 tiendas distintas.
+## 5. Multiplataforma: web + iOS + Android
 
-### Fase 1 — Fábrica MVP: crear tienda en clics
-- Wizard público (móvil/PC): registro, nombre de tienda, subdominio,
-  plantilla base, logo y colores.
-- Provisioning automático: Channel + admin del cliente + datos semilla.
-- Tienda navegable al terminar el wizard; el cliente añade productos y ve
-  pedidos desde su panel.
-- **Demo:** crear una tienda real de punta a punta desde un móvil.
+Modelo **por niveles**, compatible con la regla 4.2.6 de Apple (rechaza apps
+de plantilla subidas por la fábrica; permite el modelo "contenedora"):
+
+- **Todos los planes:** storefront web responsive + **PWA instalable** con
+  icono y push, y presencia en la **app contenedora de la fábrica** (una sola
+  app iOS/Android de la empresa, tipo marketplace, donde vive cada tienda).
+- **Plan premium:** **app propia white-label** del cliente (Expo + EAS, config
+  dinámica por tenant), compilada por la plataforma y publicada con la cuenta
+  Apple Developer / Google Play **del propio cliente** (Apple lo exige). OTA
+  updates para no recompilar por cada cambio de diseño.
+
+## 6. Agentes de IA (visión agéntica)
+
+- Cada tienda expone un **servidor MCP** (catálogo, pedidos, inventario,
+  clientes como herramientas).
+- Panel "Agentes": el cliente activa agentes preconfigurados (Claude Agent
+  SDK): redactor de fichas de producto, atención al cliente, reposición de
+  stock, análisis de ventas.
+- Preparación para **vender a agentes compradores** (ACP de Stripe/OpenAI,
+  UCP de Google) cuando el mercado lo pida.
+
+## 7. Nota sobre el lanzamiento desde China
+
+Hospedar en Hetzner (fuera de China) no requiere licencia ICP. El acceso desde
+China continental suele funcionar pero puede ser lento o inestable (GFW); si
+los usuarios en China son relevantes, se probará el acceso real en el
+lanzamiento y, de hacer falta, se añade un punto de presencia en Hong Kong o
+un CDN con cobertura en Asia. Vender al mercado doméstico chino (ICP, WeChat,
+Alipay) queda fuera de alcance salvo decisión futura.
+
+## 8. El loop de trabajo (fases v2)
+
+Cada fase es una vuelta: **implementar → desplegar demo → el dueño la prueba
+con clics → feedback → siguiente fase**.
+
+### Fase 0 — Lanzamiento exprés: web de la empresa + demo (días)
+- Landing pública: propuesta de valor, planes por modelo de negocio, registro.
+- "Probar demo" crea una tienda sandbox al instante (Vendure + storefront con
+  2 plantillas, datos de ejemplo, subdominio efímero).
+- Deploy real en un servidor Hetzner con Dokploy/Coolify.
+- **Demo:** entrar a la web desde un móvil en China y crear una tienda demo.
+
+### Fase 1 — Fábrica MVP: de demo a tienda real
+- Registro/login, panel del cliente, wizard completo (nombre, subdominio,
+  plantilla, logo, colores).
+- Conversión sandbox → tienda persistente; activación manual de planes.
+- El cliente gestiona productos y ve pedidos.
+- **Demo:** un cliente real crea su tienda de punta a punta desde el móvil.
 
 ### Fase 2 — Plantillas y editor visual
-- 3–5 plantillas (JSON Puck) elegibles y cambiables con un clic.
-- Editor Puck embebido: secciones, banners, textos e imágenes por drag-and-drop.
-- Publicación instantánea de cambios.
-- **Demo:** personalizar el diseño de una tienda sin escribir código.
+- 3–5 plantillas intercambiables; editor Puck embebido (secciones, banners,
+  textos, imágenes); publicación instantánea.
+- **Demo:** personalizar el diseño completo sin código.
 
 ### Fase 3 — Operación completa de e-commerce
-- Inventario con stock por tienda, compras a proveedores y recepción.
-- Flujo de pedido completo (pago → preparación → envío → entrega).
-- Pagos: Tropipay + transferencia manual; métodos de envío configurables.
-- Reportes básicos de ventas.
-- **Demo:** ciclo completo comprar-vender-reponer en una tienda.
+- Inventario por tienda, compras a proveedores, flujo de pedido completo,
+  métodos de pago de las tiendas (Tropipay + transferencia), envíos, reportes.
+- **Demo:** ciclo comprar-vender-reponer completo.
 
-### Fase 4 — Multiplataforma reforzada
-- PWA instalable con icono y notificaciones push por tienda.
-- Evaluar app nativa generada por tienda (Capacitor/Expo) si hace falta.
-- **Demo:** instalar una tienda como app en un móvil.
+### Fase 4 — Dominios y publicación en producción
+- Compra de dominio en la plataforma (API de registrar elegida) + conectar
+  dominio propio; Caddy on-demand TLS; pipeline demo → producción.
+- **Demo:** publicar una tienda bajo un dominio comprado en la plataforma.
 
-### Fase 5 — Capa agéntica
-- Servidor MCP por tienda (catálogo, pedidos, inventario como herramientas).
-- Agentes operadores (Claude Agent SDK): describir productos, responder
-  clientes, reponer stock.
-- Preparación para vender a agentes compradores (ACP/UCP) cuando el mercado
-  lo pida.
-- **Demo:** un agente de IA administra una tienda por instrucciones en
-  lenguaje natural.
+### Fase 5 — Apps móviles
+- PWA con push por tienda; app contenedora de la fábrica en App Store/Play;
+  generación white-label premium (EAS) con cuenta del cliente.
+- **Demo:** la misma tienda como PWA, dentro de la contenedora y como app propia.
 
-## 5. Preguntas abiertas (no bloquean la Fase 0)
+### Fase 6 — Facturación self-service de la fábrica
+- Integrar la pasarela que se decida (Paddle MoR / Airwallex / Tropipay),
+  planes, upgrades, cobro de dominios y hosting.
+- **Demo:** alta y pago de un plan sin intervención manual.
 
-1. **Hosting:** ¿dónde vivirá la fábrica en producción? (VPS propio, cloud;
-   afecta a dominios wildcard y a las push notifications).
-2. **Dominio:** ¿qué dominio raíz usaremos para los subdominios de las tiendas?
-3. **Pagos:** ¿Tropipay es el objetivo principal? ¿Hace falta EnZona /
-   Transfermóvil desde el inicio o basta transferencia manual en el MVP?
-4. **Modelo de negocio:** ¿las tiendas pagarán suscripción desde el inicio?
-   (afecta a si la Fase 1 incluye planes/facturación de la fábrica).
+### Fase 7 — Capa agéntica
+- MCP por tienda + panel de agentes (Claude Agent SDK); preparación ACP/UCP.
+- **Demo:** un agente administra una tienda por instrucciones en lenguaje natural.
+
+## 9. Decisiones pendientes (no bloquean las fases 0–3)
+
+1. **Pasarela de cobro de la fábrica** (necesaria a más tardar en la fase 4
+   para vender dominios; la fase 6 la generaliza).
+2. **Registrar revendedor de dominios** (se compara en la fase 4).
+3. **Dominio raíz de la fábrica** para los subdominios de las tiendas y la web
+   de la empresa (hace falta ya en la fase 0).
+4. **Nombre/marca de la empresa** para la landing de la fase 0.
