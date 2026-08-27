@@ -30,6 +30,9 @@ Decisiones ya tomadas por el dueño:
 - **Apps móviles:** modelo por niveles (§5).
 - **Pasarela de cobro de la fábrica:** se decide después; el MVP arranca con
   demo gratis y activación manual de planes.
+- **Modelos de IA:** la capa agéntica corre sobre modelos chinos (DeepSeek /
+  Qwen / Kimi), al mínimo costo, con precio mensual al cliente de
+  básico + % de ventas a partir de un umbral (§6.2).
 
 ## 2. Stack (investigación agosto 2026)
 
@@ -44,7 +47,7 @@ Decisiones ya tomadas por el dueño:
 | Dominios | API de registrar revendedor (**OpenSRS / Dynadot / DomainNameAPI**) | Vender y gestionar dominios dentro de la plataforma, marca blanca. |
 | Publicación / edge | **Caddy** con on-demand TLS (opcional Cloudflare for SaaS encima) | Custom hostnames + SSL automático a escala (probado con decenas de miles de dominios por máquina). |
 | Infraestructura | **Hetzner Cloud** + capa PaaS (**Dokploy o Coolify**) → k3s al escalar | Provisioning por API, deploys reproducibles, coste bajo. |
-| Agentes de IA | **MCP + Claude Agent SDK** | Un servidor MCP por tienda; agentes del cliente operan catálogo, pedidos y atención. |
+| Agentes de IA | **MCP + modelos chinos vía router multi-modelo (LiteLLM)** | Un servidor MCP por tienda; agentes sobre DeepSeek / Qwen / Kimi (APIs compatibles OpenAI, contratables desde China) eligiendo siempre el más barato que resuelva. |
 
 **Clave de costes:** "desplegar en producción" NO es un servidor por cliente:
 las tiendas comparten la instancia Vendure/storefront (Channels) y publicar =
@@ -114,13 +117,66 @@ de plantilla subidas por la fábrica; permite el modelo "contenedora"):
 
 ## 6. Agentes de IA (visión agéntica)
 
+Decisión del dueño: la capa agéntica corre sobre **modelos chinos** (DeepSeek,
+Qwen, Kimi, GLM), no sobre Anthropic, buscando el mínimo costo. El costo de IA
+se traslada al cliente con un precio mensual (ver §6.2).
+
+### 6.1 Arquitectura de agentes
+
 - Cada tienda expone un **servidor MCP** (catálogo, pedidos, inventario,
-  clientes como herramientas).
-- Panel "Agentes": el cliente activa agentes preconfigurados (Claude Agent
-  SDK): redactor de fichas de producto, atención al cliente, reposición de
-  stock, análisis de ventas.
+  clientes como herramientas). MCP es un protocolo abierto y agnóstico del
+  modelo: funciona igual con modelos chinos.
+- **Router multi-modelo (LiteLLM)** con APIs compatibles OpenAI: por defecto
+  el modelo más barato que resuelva la tarea, con la posibilidad de cambiar de
+  proveedor cuando bajen los precios (en 2026 los laboratorios chinos han
+  recortado precios varias veces).
+- Asignación por tarea (precios agosto 2026, por millón de tokens entrada/salida):
+  - **Soporte al cliente y operación de pedidos** (el 90 % del volumen):
+    DeepSeek V4 (~0,14 / 0,28 USD) o Qwen-Flash (~0,05–0,10 / 0,40 USD).
+  - **Redacción de fichas y marketing** (poco volumen, más calidad):
+    Qwen-Plus (~0,40 / 1,20 USD) o Kimi K2.5 (~0,60 / 3,00 USD).
+- Panel "Agentes": el cliente activa agentes preconfigurados: redactor de
+  fichas, atención al cliente, reposición de stock, análisis de ventas.
 - Preparación para **vender a agentes compradores** (ACP de Stripe/OpenAI,
   UCP de Google) cuando el mercado lo pida.
+
+### 6.2 Consumo estimado, costo y precio al cliente
+
+Estimación de consumo mensual por tienda (supuestos: conversación de soporte
+~16k tokens entrada + 2k salida con contexto; ficha de producto ~2k entrada +
+0,6k salida; pedido procesado por agente ~3k entrada + 0,3k salida; análisis
+diario ~20–40k tokens):
+
+| Escenario | Actividad mensual | Tokens aprox. | Costo (DeepSeek V4) |
+|---|---|---|---|
+| Básica | 150 conversaciones, 100 pedidos, 30 fichas, análisis ligero | ~3,4M ent + 0,4M sal | **~0,6 USD/mes** |
+| Media | 1.000 conversaciones, 800 pedidos, 100 fichas, análisis diario | ~20M ent + 2,4M sal | **~3,5 USD/mes** |
+| Viral | 20.000 conversaciones, 10.000 pedidos, 500 fichas | ~355M ent + 44M sal | **~60 USD/mes** (menos con caché de prompts) |
+
+Conclusión: incluso una tienda viral cuesta decenas de USD al mes en IA. El
+margen es enorme si el precio se estructura bien.
+
+**Modelo de precio al cliente (decidido por el dueño: básico + % de ventas):**
+
+1. **Cuota básica mensual** del módulo IA (p. ej. 10–15 USD/mes) que incluye
+   una cuota de uso (p. ej. 500 conversaciones + operación completa). Cubre
+   ~10–20× el costo real del escenario básico/medio.
+2. **A partir de un umbral de ventas** (p. ej. 2.000 USD/mes), se añade un
+   **% de ventas** (p. ej. 1–2 %). Una tienda viral genera mucho más ingreso
+   por este % de lo que crece su costo de IA (el costo crece sublinealmente
+   gracias a caché y modelos baratos).
+3. **Blindaje anti-pérdidas** (el costo NUNCA supera el ingreso):
+   - Excedente de cuota cobrado por bloques (p. ej. 5 USD por 1.000
+     conversaciones extra, cuyo costo real es ~2,5 USD → margen garantizado
+     por diseño en cada bloque).
+   - Tope de gasto de IA por tienda con degradación elegante (el agente pasa
+     a modo económico o cola, nunca factura ilimitado).
+   - Los precios de modelos se revisan trimestralmente en el router; si un
+     proveedor sube precios, se conmuta a otro sin tocar el producto.
+
+Los números exactos de planes se fijan en la Fase 6 (facturación) con datos
+reales de consumo de las primeras tiendas; las cifras anteriores permiten
+publicar precios provisionales desde la Fase 0 sin riesgo de pérdida.
 
 ## 7. Nota sobre el lanzamiento desde China
 
@@ -176,7 +232,9 @@ con clics → feedback → siguiente fase**.
 - **Demo:** alta y pago de un plan sin intervención manual.
 
 ### Fase 7 — Capa agéntica
-- MCP por tienda + panel de agentes (Claude Agent SDK); preparación ACP/UCP.
+- MCP por tienda + panel de agentes sobre modelos chinos con router
+  multi-modelo (§6); medición de consumo real por tienda y ajuste de precios;
+  preparación ACP/UCP.
 - **Demo:** un agente administra una tienda por instrucciones en lenguaje natural.
 
 ## 9. Decisiones pendientes (no bloquean las fases 0–3)
