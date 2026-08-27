@@ -50,9 +50,9 @@ cat <<EOF
 ==========================================================
   Fábrica de tiendas — ambiente de PRUEBAS levantado
 ----------------------------------------------------------
-  Web pública:    http://$SERVER_IP.nip.io
-  Tienda demo 1:  http://verdealto.$SERVER_IP.nip.io
-  Tienda demo 2:  http://nocta.$SERVER_IP.nip.io
+  Web pública:    http://$SERVER_IP.nip.io:8300
+  Tienda demo 1:  http://verdealto.$SERVER_IP.nip.io:8300
+  Tienda demo 2:  http://nocta.$SERVER_IP.nip.io:8300
   Panel admin:    http://$SERVER_IP.nip.io:8301/dashboard
     usuario: superadmin
     clave:   $SUPERADMIN_PASSWORD
