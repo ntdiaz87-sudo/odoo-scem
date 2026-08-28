@@ -40,9 +40,21 @@ else
   sed -i "s/^SERVER_IP=.*/SERVER_IP=$SERVER_IP/" "$ENVFILE"
 fi
 
-echo "== [4/4] Arranque (la primera vez compila las imágenes: 5–10 min) =="
+echo "== [4/5] Arranque (la primera vez compila las imágenes: 5–10 min) =="
 docker compose -f docker-compose.yml -f docker-compose.test.yml \
   --env-file "$ENVFILE" up -d --build
+
+echo "== [5/5] Firewall =="
+# GEX44 tiene UFW activo con solo 22/80/443. La web de pruebas es pública a
+# propósito: se abren 8300 (web) y 8301 (panel). Nota: los puertos publicados
+# por Docker se saltan UFW (regla NAT propia), pero se declaran igualmente
+# para que el firewall refleje la realidad.
+if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
+  ufw allow 8300/tcp >/dev/null && echo "ufw: abierto 8300/tcp (web fábrica)"
+  ufw allow 8301/tcp >/dev/null && echo "ufw: abierto 8301/tcp (panel Vendure)"
+else
+  echo "ufw: no activo; sin cambios"
+fi
 
 SUPERADMIN_PASSWORD=$(grep '^SUPERADMIN_PASSWORD=' "$ENVFILE" | cut -d= -f2)
 cat <<EOF
