@@ -1,0 +1,1165 @@
+<title>Fábrica Neo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Diseño dark-first: :root define la paleta oscura completa (azul profundo → negro, acentos IA violeta/cian) */
+  :root {
+    --bg: #05070d;
+    --bg-raise: #0c1222;
+    --glass: rgba(13, 18, 36, 0.60);
+    --glass-line: rgba(139, 148, 255, 0.16);
+    --ink: #e9edf8;
+    --muted: #9aa5c4;
+    --faint: #6a7494;
+    --line: #1a2340;
+    --accent: #8b7cff;
+    --accent2: #22d3ee;
+    --accent-strong: #b6aaff;
+    --accent-ink: #ffffff;
+    --magenta: #e254b6;
+    --grad: linear-gradient(115deg, #7c5cff 0%, #22d3ee 100%);
+    --grad-text: linear-gradient(100deg, #8b7cff 0%, #22d3ee 60%, #e254b6 115%);
+    --glow: rgba(124, 92, 255, 0.22);
+    --glow2: rgba(34, 211, 238, 0.14);
+    --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    --plan-dark: #0c1222;
+    --focus: #8b7cff;
+    --dev-shadow: rgba(0, 0, 0, 0.6);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f5f5fc;
+      --bg-raise: #ffffff;
+      --glass: rgba(255, 255, 255, 0.74);
+      --glass-line: rgba(70, 60, 160, 0.13);
+      --ink: #171a30;
+      --muted: #4d5473;
+      --faint: #7d84a1;
+      --line: #dcdef0;
+      --accent: #6d4aff;
+      --accent2: #0891b2;
+      --accent-strong: #5636d6;
+      --accent-ink: #ffffff;
+      --magenta: #c02d92;
+      --grad: linear-gradient(115deg, #6d4aff 0%, #0891b2 100%);
+      --grad-text: linear-gradient(100deg, #6d4aff 0%, #0891b2 60%, #c02d92 115%);
+      --glow: rgba(109, 74, 255, 0.14);
+      --glow2: rgba(8, 145, 178, 0.10);
+      --shadow: 0 24px 60px rgba(23, 26, 48, 0.14);
+      --plan-dark: #14162b;
+      --focus: #6d4aff;
+      --dev-shadow: rgba(23, 26, 48, 0.30);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f5fc;
+    --bg-raise: #ffffff;
+    --glass: rgba(255, 255, 255, 0.74);
+    --glass-line: rgba(70, 60, 160, 0.13);
+    --ink: #171a30;
+    --muted: #4d5473;
+    --faint: #7d84a1;
+    --line: #dcdef0;
+    --accent: #6d4aff;
+    --accent2: #0891b2;
+    --accent-strong: #5636d6;
+    --accent-ink: #ffffff;
+    --magenta: #c02d92;
+    --grad: linear-gradient(115deg, #6d4aff 0%, #0891b2 100%);
+    --grad-text: linear-gradient(100deg, #6d4aff 0%, #0891b2 60%, #c02d92 115%);
+    --glow: rgba(109, 74, 255, 0.14);
+    --glow2: rgba(8, 145, 178, 0.10);
+    --shadow: 0 24px 60px rgba(23, 26, 48, 0.14);
+    --plan-dark: #14162b;
+    --focus: #6d4aff;
+    --dev-shadow: rgba(23, 26, 48, 0.30);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Public Sans', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    transition: background 0.45s ease, color 0.45s ease;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { font-family: 'Bricolage Grotesque', 'Public Sans', sans-serif; line-height: 1.06; margin: 0; text-wrap: balance; }
+  a { color: var(--accent); text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; padding: 0; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 6px; }
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 12.5px; font-weight: 500;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .wrap { max-width: 1220px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: fixed; inset: 0 0 auto 0; z-index: 40;
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    border-bottom: 1px solid var(--glass-line);
+  }
+  .nav-in { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .wordmark { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 25px; color: var(--ink); letter-spacing: -0.01em; }
+  .wordmark b { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nav-links { display: flex; gap: 30px; align-items: center; font-size: 14.5px; font-weight: 500; color: var(--muted); }
+  .nav-links a { color: var(--muted); transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a.btn-solid { color: var(--accent-ink); }
+  .nav-links a.btn-solid:hover { color: var(--accent-ink); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    font-weight: 600; font-size: 15.5px; padding: 13px 24px; border-radius: 10px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  }
+  .btn-solid { background: var(--grad); color: var(--accent-ink); box-shadow: 0 10px 30px var(--glow); }
+  .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 16px 38px var(--glow); filter: saturate(1.15); }
+  .btn-ghost { border: 1.5px solid var(--line); color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 10px 18px; font-size: 14px; border-radius: 8px; }
+  .theme-toggle {
+    width: 40px; height: 40px; border-radius: 10px; border: 1.5px solid var(--line);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--muted); transition: color 0.2s, border-color 0.2s, transform 0.3s;
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); transform: rotate(15deg); }
+  .icon-sun, .icon-moon { display: none; }
+  :root[data-theme="dark"] .icon-sun { display: block; }
+  :root[data-theme="light"] .icon-moon { display: block; }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .icon-sun { display: block; }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="light"]):not([data-theme="dark"]) .icon-sun { display: none; }
+    :root:not([data-theme="light"]):not([data-theme="dark"]) .icon-moon { display: block; }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; min-height: 100vh; display: flex; align-items: center; padding: 120px 0 70px; }
+  #weave { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero-grid {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: minmax(0, 10fr) minmax(0, 13fr);
+    gap: 40px; align-items: center; width: 100%;
+  }
+  .hero-copy { display: flex; flex-direction: column; gap: 24px; }
+  .hero h1 { font-size: clamp(36px, 3.9vw, 56px); font-weight: 700; letter-spacing: -0.02em; }
+  .hero h1 .grad { background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-sub { font-size: 17.5px; color: var(--muted); max-width: 50ch; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .hero-note { font-size: 13.5px; color: var(--faint); }
+  .hero-note b { color: var(--accent-strong); font-weight: 600; }
+
+  /* ---------- Dispositivos (laptop + tablet + móvil) ---------- */
+  .stage3d { perspective: 1400px; }
+  .devices { position: relative; height: 560px; transform-style: preserve-3d; will-change: transform; transition: transform 0.25s ease-out; }
+  .devices::before {
+    content: ""; position: absolute; left: 2%; right: 2%; bottom: -44px; height: 60px; border-radius: 50%;
+    background: radial-gradient(50% 100% at 50% 50%, var(--dev-shadow), transparent 70%);
+    filter: blur(6px);
+  }
+  .hud {
+    position: absolute; top: -6px; left: 4%; z-index: 6;
+    display: inline-flex; align-items: center; gap: 9px;
+    background: var(--glass); border: 1px solid var(--glass-line); border-radius: 999px;
+    padding: 8px 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--muted);
+  }
+  .hud-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); box-shadow: 0 0 12px var(--accent2); animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.35; } }
+
+  /* --- MacBook (space black) --- */
+  .laptop { position: absolute; left: 50%; top: 30px; transform: translateX(-50%); width: 640px; z-index: 1; filter: drop-shadow(0 38px 46px var(--dev-shadow)); }
+  .mb-lid { border-radius: 22px 22px 0 0; padding: 2.5px 2.5px 0; background: linear-gradient(180deg, #666b7c 0%, #2c2f38 9%, #16171d 55%, #0c0d12 100%); }
+  .mb-bezel { background: #08090c; border-radius: 20px 20px 0 0; padding: 15px 15px 18px; position: relative; }
+  .mb-cam { position: absolute; top: 5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: #131b2c; box-shadow: inset 0 0 2px #3d5a86, 0 0 2px rgba(90, 130, 190, 0.5); }
+  .mb-screen { position: relative; border-radius: 8px; overflow: hidden; background: #0a0f1e; }
+  .mb-screen::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 8;
+    background: linear-gradient(112deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.035) 20%, rgba(255, 255, 255, 0) 36%);
+  }
+  .mb-deck { position: relative; margin: 0 -30px; height: 17px; border-radius: 3px 3px 16px 16px; background: linear-gradient(180deg, #5d6272 0%, #33363f 28%, #1b1d24 68%, #0e0f14 100%); }
+  .mb-deck::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 8px; border-radius: 0 0 12px 12px; background: linear-gradient(180deg, #101218, #383c47); }
+  .mb-deck::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 2px; height: 2px; border-radius: 2px; background: rgba(255, 255, 255, 0.07); }
+  .browser-bar { display: flex; align-items: center; gap: 7px; padding: 8px 12px; background: linear-gradient(180deg, #191d2c, #12151f); border-bottom: 1px solid #0a0c14; }
+  .browser-bar i { width: 9px; height: 9px; border-radius: 50%; box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.3); }
+  .browser-bar i:nth-child(1) { background: #ff5f57; } .browser-bar i:nth-child(2) { background: #febc2e; } .browser-bar i:nth-child(3) { background: #28c840; }
+  .browser-url {
+    flex: 1; max-width: 260px; margin-left: 10px; display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #93a1c9;
+    background: #0a0d17; border-radius: 6px; padding: 4px 10px;
+  }
+  .browser-url svg { flex: none; }
+
+  /* --- iPad (borde titanio) --- */
+  .tab-dev { position: absolute; right: -34px; bottom: 8px; width: 232px; z-index: 2; animation: bob 7s ease-in-out infinite; filter: drop-shadow(0 26px 32px var(--dev-shadow)); }
+  .tab-ring { border-radius: 27px; padding: 3px; background: linear-gradient(160deg, #767b8d 0%, #2a2d37 30%, #5b606f 60%, #1a1c24 100%); }
+  .tab-glass { background: #000; border-radius: 24px; padding: 9px; position: relative; }
+  .tab-glass::before { content: ""; position: absolute; top: 4px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #101725; z-index: 6; }
+  .tab-screen { position: relative; border-radius: 16px; overflow: hidden; background: #0a0f1e; }
+  .tab-screen::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 8; background: linear-gradient(112deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 22%, rgba(255, 255, 255, 0) 38%); }
+
+  /* --- iPhone (titanio + Dynamic Island) --- */
+  .iph-dev { position: absolute; left: -18px; bottom: -12px; width: 178px; z-index: 3; animation: bob 6s ease-in-out infinite reverse; filter: drop-shadow(0 26px 30px var(--dev-shadow)); }
+  .iph-ring { position: relative; border-radius: 48px; padding: 3.5px; background: linear-gradient(160deg, #8a8f9f 0%, #2c2f3a 26%, #6a6f80 52%, #23252e 76%, #4c515f 100%); }
+  .ib { position: absolute; left: -2.5px; width: 3px; border-radius: 2px; background: linear-gradient(90deg, #4b505e, #181a20); }
+  .ib1 { top: 84px; height: 18px; } .ib2 { top: 112px; height: 30px; } .ib3 { top: 148px; height: 30px; }
+  .ibr { left: auto; right: -2.5px; top: 116px; height: 44px; background: linear-gradient(270deg, #4b505e, #181a20); }
+  .iph-glass { background: #000; border-radius: 44px; padding: 8px; position: relative; }
+  .island { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 62px; height: 17px; border-radius: 10px; background: #000; z-index: 9; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02); }
+  .island::after { content: ""; position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #2a3550, #0b0e18 62%); }
+  .iph-screen { position: relative; border-radius: 37px; overflow: hidden; background: #0a0f1e; }
+  .iph-screen::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 8; background: linear-gradient(112deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 24%, rgba(255, 255, 255, 0) 40%); }
+  @keyframes bob { 50% { transform: translateY(-12px); } }
+
+  .store { transition: opacity 0.3s ease, filter 0.3s ease; }
+  .devices.swapping .store { opacity: 0; filter: blur(8px); }
+
+  /* --- UI de tienda real (colores inline por diseño generado) --- */
+  .store { font-family: 'Public Sans', sans-serif; }
+  .s-announce { text-align: center; font-size: 8.5px; font-weight: 600; letter-spacing: 0.05em; padding: 4px 0; }
+  .s-nav2 { display: flex; align-items: center; gap: 11px; padding: 9px 14px; }
+  .s-logo { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.02em; }
+  .s-links { display: flex; gap: 10px; font-size: 9px; font-weight: 500; opacity: 0.8; }
+  .s-search { flex: 1; display: flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 10px; font-size: 8.5px; opacity: 0.9; }
+  .s-icos { display: flex; gap: 10px; align-items: center; }
+  .s-ico { position: relative; display: flex; }
+  .s-badge { position: absolute; top: -5px; right: -6px; min-width: 11px; height: 11px; border-radius: 6px; font-size: 7px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 0 2px; }
+  .s-hero2 { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 14px; padding: 12px 16px 14px; align-items: center; }
+  .s-kicker { font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; opacity: 0.7; }
+  .s-h1 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 21px; line-height: 1.08; margin: 3px 0 4px; }
+  .s-sub { font-size: 9px; line-height: 1.5; opacity: 0.75; }
+  .s-btnrow { display: flex; gap: 9px; align-items: center; margin-top: 7px; }
+  .s-btn { font-size: 9px; font-weight: 700; padding: 6px 13px; border-radius: 8px; }
+  .s-link2 { font-size: 9px; font-weight: 600; opacity: 0.8; text-decoration: underline; }
+  .s-photo { position: relative; border-radius: 12px; height: 108px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .s-photo::after, .s-cimg::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(130% 90% at 30% 0%, rgba(255, 255, 255, 0.30), transparent 46%),
+                radial-gradient(160% 120% at 50% 118%, rgba(0, 0, 0, 0.34), transparent 56%);
+  }
+  .s-photo em, .s-cimg em { font-style: normal; filter: drop-shadow(0 9px 9px rgba(0, 0, 0, 0.38)); transform: rotate(-8deg); position: relative; }
+  .s-photo em { font-size: 52px; }
+  .s-tag { position: absolute; bottom: 7px; left: 7px; z-index: 2; font-size: 7.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+  .s-cards { display: grid; gap: 10px; padding: 0 16px 14px; }
+  .s-card { border-radius: 10px; overflow: hidden; border: 1px solid; }
+  .s-cimg { position: relative; height: 54px; display: flex; align-items: center; justify-content: center; }
+  .s-cimg em { font-size: 26px; }
+  .s-cbody { padding: 5px 7px 7px; display: flex; flex-direction: column; gap: 2px; }
+  .s-cname { font-size: 8.5px; font-weight: 700; }
+  .s-stars { font-size: 7px; letter-spacing: 0.5px; }
+  .s-stars span { font-weight: 500; margin-left: 3px; opacity: 0.65; }
+  .s-prices { display: flex; gap: 5px; align-items: baseline; }
+  .s-price { font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; font-weight: 700; }
+  .s-old { font-size: 7.5px; text-decoration: line-through; opacity: 0.5; }
+  .s-add { margin-top: 4px; text-align: center; font-size: 8px; font-weight: 700; padding: 4.5px 0; border-radius: 6px; }
+  .s-status { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px 0; font-size: 9px; font-weight: 600; }
+  .s-status svg { display: block; }
+  .s-tabs { display: flex; justify-content: space-around; align-items: center; padding: 8px 0 12px; border-top: 1px solid; margin-top: 2px; }
+  .dev-pill { position: absolute; left: 2%; bottom: -58px; white-space: nowrap; }
+  .live-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; font-weight: 500;
+    color: var(--accent2); border: 1px solid var(--glass-line); background: var(--glass);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 8px 15px; border-radius: 999px;
+  }
+  .regen-btn {
+    position: absolute; right: 0; bottom: -58px;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13.5px; font-weight: 600; color: var(--ink);
+    border: 1.5px solid var(--line); background: var(--glass);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 10px 18px; border-radius: 999px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .regen-btn:hover { border-color: var(--accent); color: var(--accent-strong); }
+  .regen-btn svg { transition: transform 0.45s ease; }
+  .regen-btn:active svg { transform: rotate(360deg); }
+
+  /* ---------- Secciones ---------- */
+  section { position: relative; }
+  .sec { padding: 110px 0; }
+  .sec-glow::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(640px 320px at 78% 12%, var(--glow), transparent 70%),
+                radial-gradient(520px 300px at 12% 88%, var(--glow2), transparent 70%);
+  }
+  .sec-head { display: flex; flex-direction: column; gap: 14px; max-width: 760px; margin-bottom: 54px; position: relative; }
+  .sec-head h2 { font-size: clamp(30px, 3.4vw, 44px); font-weight: 700; letter-spacing: -0.015em; }
+  .sec-head p { margin: 0; color: var(--muted); font-size: 17px; }
+  .hairline { border: none; border-top: 1px solid var(--line); margin: 0; }
+
+  /* Scrollytelling */
+  .story { position: relative; height: 460vh; }
+  .story-pin { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; }
+  .story-head { position: absolute; top: 86px; left: 0; right: 0; }
+  .story-head h2 { font-size: clamp(24px, 2.6vw, 34px); margin-top: 10px; }
+  .story-grid { display: grid; grid-template-columns: 52px minmax(0, 5fr) minmax(0, 6fr); gap: 44px; align-items: stretch; width: 100%; height: 100%; }
+  .rail { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 34px; }
+  .rail-line { position: absolute; left: 7px; top: 22%; bottom: 22%; width: 2px; background: var(--line); border-radius: 2px; }
+  .rail-fill { position: absolute; left: 0; top: 0; width: 100%; height: 0%; background: var(--grad); border-radius: 2px; }
+  .rail-step { position: relative; display: flex; align-items: center; gap: 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--faint); transition: color 0.3s; }
+  .rail-step i { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line); background: var(--bg); flex: none; transition: border-color 0.3s, background 0.3s; }
+  .rail-step.on { color: var(--accent-strong); }
+  .rail-step.on i { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 12px var(--glow); }
+  .st-texts { position: relative; }
+  .st-text {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 16px;
+    opacity: 0; will-change: opacity, transform; padding: 110px 0 40px;
+  }
+  .st-text h3 { font-size: clamp(26px, 2.9vw, 40px); font-weight: 700; letter-spacing: -0.015em; }
+  .st-text p { margin: 0; color: var(--muted); font-size: 16.5px; max-width: 46ch; }
+  .st-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.16em; color: var(--accent); text-transform: uppercase; }
+  .st-extra { display: flex; gap: 10px; flex-wrap: wrap; }
+  .st-chip { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--muted); border: 1px solid var(--line); padding: 6px 12px; border-radius: 999px; }
+  .scene { position: relative; display: flex; align-items: center; justify-content: center; }
+  .fan {
+    position: absolute; width: 148px; height: 244px; border-radius: 16px; border: 1px solid var(--glass-line);
+    box-shadow: var(--shadow); opacity: 0; will-change: transform, opacity; overflow: hidden;
+  }
+  .fan .fh { height: 52px; display: flex; align-items: flex-end; padding: 10px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 12px; }
+  .fan .fc { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px; }
+  .fan .fc i { height: 36px; border-radius: 5px; }
+  .ph {
+    position: relative; z-index: 2; width: 292px; height: 588px; border-radius: 48px;
+    background: linear-gradient(160deg, #8a8f9f 0%, #2c2f3a 26%, #6a6f80 52%, #23252e 76%, #4c515f 100%);
+    box-shadow: var(--shadow), 0 0 90px var(--glow);
+    padding: 4px; will-change: transform;
+    filter: drop-shadow(0 30px 36px var(--dev-shadow));
+  }
+  .ph::before { content: ""; position: absolute; top: 24px; left: 50%; transform: translateX(-50%); width: 86px; height: 24px; border-radius: 14px; background: #000; z-index: 4; }
+  .ph::after { content: ""; position: absolute; top: 30px; left: 50%; transform: translateX(26px); width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #2a3550, #0b0e18 62%); z-index: 5; }
+  .ph-screens { position: absolute; inset: 12px; border-radius: 38px; overflow: hidden; background: #0d1322; box-shadow: 0 0 0 8px #000; }
+  .ph-screen { position: absolute; inset: 0; opacity: 0; display: flex; flex-direction: column; color: #e9edf6; will-change: opacity, transform; }
+  .ph-top { padding: 58px 20px 12px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 19px; }
+  .q-label { font-size: 11.5px; font-weight: 600; color: #7f8ab0; padding: 8px 20px 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px 8px; }
+  .chip { font-size: 13px; font-weight: 600; border: 1.5px solid #2a3355; color: #b9c2df; padding: 8px 14px; border-radius: 999px; }
+  .chip.sel { background: linear-gradient(115deg, #7c5cff, #22d3ee); border-color: transparent; color: #ffffff; }
+  .ph-cta { margin: auto 20px 22px; background: linear-gradient(115deg, #7c5cff, #22d3ee); color: #ffffff; text-align: center; font-weight: 700; font-size: 15px; padding: 14px 0; border-radius: 12px; }
+  .loom { display: flex; gap: 10px; justify-content: center; padding: 26px 0 10px; }
+  .loom i { width: 3px; height: 74px; border-radius: 3px; background: linear-gradient(180deg, transparent, #8b7cff, transparent); animation: loom 1.4s ease-in-out infinite; }
+  .loom i:nth-child(2) { animation-delay: 0.15s; height: 96px; background: linear-gradient(180deg, transparent, #22d3ee, transparent); }
+  .loom i:nth-child(3) { animation-delay: 0.3s; }
+  .loom i:nth-child(4) { animation-delay: 0.45s; height: 96px; background: linear-gradient(180deg, transparent, #e254b6, transparent); }
+  .loom i:nth-child(5) { animation-delay: 0.6s; }
+  @keyframes loom { 50% { transform: scaleY(0.45); opacity: 0.5; } }
+  .mini-props { display: flex; flex-direction: column; gap: 10px; padding: 10px 20px; }
+  .mini-prop { display: flex; align-items: center; gap: 12px; border: 1px solid #232c4c; border-radius: 12px; padding: 10px 12px; }
+  .mini-prop i { width: 40px; height: 40px; border-radius: 9px; flex: none; }
+  .mini-prop b { font-size: 13.5px; } .mini-prop small { display: block; font-size: 11px; color: #7f8ab0; font-weight: 400; }
+  .store-hero { height: 118px; background: linear-gradient(135deg, #101a33, #0b2740); color: #eaf6fb; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px 18px 14px; }
+  .store-hero b { font-family: 'Bricolage Grotesque', sans-serif; font-size: 21px; letter-spacing: 0.06em; }
+  .store-hero small { font-size: 11px; opacity: 0.8; }
+  .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 16px; }
+  .prod { border: 1px solid #232c4c; border-radius: 10px; overflow: hidden; font-size: 11px; }
+  .prod i { display: flex; align-items: center; justify-content: center; height: 58px; font-style: normal; font-size: 26px; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.35)); }
+  .prod span { display: block; padding: 6px 8px 2px; font-weight: 600; color: #e9edf6; }
+  .prod em { display: block; font-style: normal; padding: 0 8px 7px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #22d3ee; }
+  .lock-row { display: flex; align-items: center; gap: 10px; margin: 14px 20px 0; background: rgba(124, 92, 255, 0.16); color: #b6aaff; border-radius: 12px; padding: 12px 14px; font-size: 12.5px; font-weight: 600; }
+  .st-pill { position: absolute; bottom: 6%; left: 50%; transform: translateX(-50%); z-index: 3; opacity: 0; will-change: opacity, transform; }
+  .story.static { height: auto; padding: 90px 0; }
+  .story.static .story-pin { position: relative; height: auto; overflow: visible; display: block; }
+  .story.static .story-head { position: relative; top: 0; margin-bottom: 40px; }
+  .story.static .story-grid { grid-template-columns: 1fr; height: auto; }
+  .story.static .rail, .story.static .fan, .story.static .st-pill { display: none; }
+  .story.static .st-texts { display: flex; flex-direction: column; gap: 34px; }
+  .story.static .st-text { position: relative; opacity: 1; padding: 0; }
+  .story.static .scene { margin-top: 44px; }
+  .story.static .ph-screen:last-child { opacity: 1; }
+
+  /* Diseños únicos */
+  .unique-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 60px; align-items: center; position: relative; }
+  .unique-copy { display: flex; flex-direction: column; gap: 18px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
+    background: var(--glow); color: var(--accent-strong);
+    font-size: 13px; font-weight: 600; padding: 7px 15px; border-radius: 999px;
+  }
+  .lockline { display: flex; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 600; }
+  .lockline svg { color: var(--accent); flex: none; }
+  .tilt-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: end; perspective: 900px; }
+  .tilt {
+    border-radius: 14px; overflow: hidden; border: 1px solid var(--glass-line);
+    box-shadow: var(--shadow); transform-style: preserve-3d; will-change: transform;
+    transition: transform 0.3s ease;
+  }
+  .tilt-head { display: flex; align-items: flex-end; padding: 14px; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; }
+  .tilt-cells { display: grid; gap: 7px; padding: 12px; }
+  .tilt-tag { padding: 0 14px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; }
+
+  /* Features */
+  .feat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; position: relative; }
+  .feat {
+    background: var(--glass); border: 1px solid var(--glass-line); border-radius: 16px;
+    padding: 26px 22px; display: flex; flex-direction: column; gap: 13px;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  .feat:hover { transform: translateY(-5px); border-color: var(--accent); }
+  .feat-ic {
+    width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    background: var(--glow); color: var(--accent-strong);
+  }
+  .feat h3 { font-size: 17.5px; }
+  .feat p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  /* Planes */
+  .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; position: relative; }
+  .plan {
+    background: var(--bg-raise); border: 1px solid var(--line); border-radius: 18px;
+    padding: 32px 28px; display: flex; flex-direction: column; gap: 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .plan:hover { transform: translateY(-6px); }
+  .plan-name { font-weight: 700; font-size: 19px; display: flex; align-items: center; justify-content: space-between; }
+  .plan-price { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 40px; letter-spacing: -0.01em; }
+  .plan-price small { font-size: 15px; font-weight: 500; color: var(--muted); font-family: 'Public Sans', sans-serif; }
+  .plan-meta { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--faint); }
+  .plan ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px; color: var(--muted); }
+  .plan ul li { display: flex; gap: 10px; align-items: flex-start; }
+  .plan ul li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 8px; }
+  .plan .btn { margin-top: auto; }
+  .plan-star {
+    position: relative; background: var(--plan-dark); color: #e9edf8; border-color: transparent;
+    box-shadow: 0 30px 70px var(--glow);
+  }
+  .plan-star::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 19px; padding: 1.5px; pointer-events: none;
+    background: linear-gradient(140deg, #7c5cff, transparent 45%, #22d3ee);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  .plan-star ul, .plan-star .plan-meta { color: #9aa5c4; }
+  .plan-star .plan-price small { color: #9aa5c4; }
+  .plan-pill { background: rgba(124, 92, 255, 0.2); color: #b6aaff; font-size: 11.5px; font-weight: 600; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.04em; }
+
+  /* CTA final + footer */
+  .cta-final { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 22px; position: relative; }
+  .cta-final h2 { font-size: clamp(32px, 4vw, 52px); font-weight: 700; max-width: 20ch; }
+  footer { border-top: 1px solid var(--line); padding: 38px 0 46px; }
+  .foot-in { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; color: var(--faint); font-size: 14px; }
+  .foot-links { display: flex; gap: 26px; }
+  .foot-links a { color: var(--faint); } .foot-links a:hover { color: var(--accent); }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .hud-dot, .tablet, .phone { animation: none; }
+    * { transition-duration: 0.01ms !important; }
+  }
+
+  @media (max-width: 1080px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 60px; }
+    .devices { max-width: 640px; margin: 0 auto; }
+  }
+  @media (max-width: 980px) {
+    .nav-links a { display: none; }
+    .hero { padding-top: 104px; }
+    .story { height: 520vh; }
+    .story-head { top: 72px; }
+    .story-grid { grid-template-columns: 1fr; gap: 0; grid-template-rows: minmax(0, 46%) minmax(0, 54%); }
+    .rail { display: none; }
+    .st-text { justify-content: flex-end; padding: 120px 0 10px; gap: 10px; }
+    .st-text p { font-size: 14.5px; }
+    .scene { transform: scale(0.72); transform-origin: top center; }
+    .unique-grid { grid-template-columns: 1fr; gap: 44px; }
+    .plans { grid-template-columns: 1fr; }
+    .feat-grid { grid-template-columns: repeat(2, 1fr); }
+    .sec { padding: 80px 0; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 20px; }
+    .feat-grid, .tilt-row { grid-template-columns: 1fr; }
+    .devices { height: 420px; }
+    .laptop { width: 100%; left: 0; transform: none; }
+    .tab-dev { display: none; }
+    .iph-dev { width: 148px; left: auto; right: 2px; }
+    .regen-btn { right: 50%; transform: translateX(50%); bottom: -110px; }
+    .dev-pill { left: 50%; transform: translateX(-50%); bottom: -58px; }
+    .hero { padding-bottom: 150px; }
+  }
+</style>
+
+<!-- ==================== NAV ==================== -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="wordmark" aria-label="fábrica — inicio">fábrica<b>.</b></a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#pasos">Cómo funciona</a>
+      <a href="#unicos">Diseños únicos</a>
+      <a href="#planes">Planes</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar entre modo claro y oscuro">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+        <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+      </button>
+      <a href="#cta" class="btn btn-solid btn-sm">Probar demo gratis</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero" id="top">
+  <canvas id="weave" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow reveal">Fábrica de tiendas online · con IA</span>
+      <h1 class="reveal">Tu tienda online, diseñada por IA, <span class="grad">vendiendo en minutos.</span></h1>
+      <p class="hero-sub reveal">Responde unas preguntas y nuestra IA genera un diseño único para tu negocio: nadie más tendrá uno igual. Publícala con tu dominio en web, iOS y Android, con agentes de IA que atienden a tus clientes. Sin contratar programadores.</p>
+      <div class="hero-ctas reveal">
+        <a href="#cta" class="btn btn-solid">Probar demo gratis</a>
+        <a href="#planes" class="btn btn-ghost">Ver planes</a>
+      </div>
+      <p class="hero-note reveal">Sin tarjeta. Tu tienda demo lista en <b>60 segundos</b>.</p>
+    </div>
+
+    <div class="stage3d reveal">
+      <div class="devices" id="devices">
+        <span class="hud"><span class="hud-dot"></span> Diseñador agéntico · en vivo</span>
+        <div class="laptop">
+          <div class="mb-lid">
+            <div class="mb-bezel">
+              <span class="mb-cam"></span>
+              <div class="mb-screen">
+                <div class="browser-bar"><i></i><i></i><i></i><span class="browser-url"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#5d6a8f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg><span id="devUrl">lumen.store</span></span></div>
+                <div class="store" id="storeLap"></div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-deck"></div>
+        </div>
+        <div class="tab-dev"><div class="tab-ring"><div class="tab-glass"><div class="tab-screen"><div class="store" id="storeTab"></div></div></div></div></div>
+        <div class="iph-dev">
+          <div class="iph-ring">
+            <i class="ib ib1"></i><i class="ib ib2"></i><i class="ib ib3"></i><i class="ib ibr"></i>
+            <div class="iph-glass">
+              <span class="island"></span>
+              <div class="iph-screen"><div class="store" id="storePh"></div></div>
+            </div>
+          </div>
+        </div>
+        <span class="live-pill dev-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+          <span id="domain">lumen.store</span>&nbsp;· web · iOS · Android
+        </span>
+        <button class="regen-btn" id="regen">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"></path><path d="M21 3v6h-6"></path></svg>
+          Generar otro diseño
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CÓMO NACE UNA TIENDA (scrollytelling) ==================== -->
+<section class="story" id="pasos">
+  <div class="story-pin">
+    <div class="wrap story-head">
+      <span class="eyebrow">El proceso · sigue bajando</span>
+      <h2>Mira cómo nace una tienda</h2>
+    </div>
+    <div class="wrap story-grid">
+      <div class="rail" aria-hidden="true">
+        <span class="rail-line"><span class="rail-fill" id="railFill"></span></span>
+        <span class="rail-step on"><i></i>01</span>
+        <span class="rail-step"><i></i>02</span>
+        <span class="rail-step"><i></i>03</span>
+        <span class="rail-step"><i></i>04</span>
+      </div>
+
+      <div class="st-texts">
+        <div class="st-text">
+          <span class="st-kicker">Paso 01 — Encuesta</span>
+          <h3>Cuéntale tu negocio a la IA</h3>
+          <p>Una encuesta sencilla: qué vendes, cómo quieres que se sienta tu marca y a quién le hablas. Nada técnico, sin registro complicado ni tarjeta.</p>
+          <div class="st-extra"><span class="st-chip">2 minutos</span><span class="st-chip">desde el móvil</span></div>
+        </div>
+        <div class="st-text">
+          <span class="st-kicker">Paso 02 — Propuestas</span>
+          <h3>La IA genera diseños únicos</h3>
+          <p>En segundos tienes varias propuestas creadas solo para tu negocio. ¿No te convencen? Generas otras. Aquí no existen las plantillas repetidas.</p>
+          <div class="st-extra"><span class="st-chip">diseños irrepetibles</span><span class="st-chip">generar otra tanda</span></div>
+        </div>
+        <div class="st-text">
+          <span class="st-kicker">Paso 03 — Elección</span>
+          <h3>Eliges, y queda bloqueado para ti</h3>
+          <p>El diseño que escojas se registra a tu nombre y se retira para siempre del catálogo: nadie más lo tendrá, ni en la web ni en las apps.</p>
+          <div class="st-extra"><span class="st-chip">registro a tu nombre</span><span class="st-chip">exclusivo de por vida</span></div>
+        </div>
+        <div class="st-text">
+          <span class="st-kicker">Paso 04 — Publicada</span>
+          <h3>Tu tienda, vendiendo</h3>
+          <p>Compra tu dominio aquí mismo y publica con un clic: web, app instalable en iOS y Android, certificado seguro, pedidos, inventario y pagos listos desde el primer día.</p>
+          <div class="st-extra"><span class="st-chip">web</span><span class="st-chip">iOS</span><span class="st-chip">Android</span><span class="st-chip">https seguro</span></div>
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="fan" style="background: #fbf3f1;">
+          <div class="fh" style="background: #c2497c; color: #fdf3f7;">KORA</div>
+          <div class="fc"><i style="background: #f4dbe3;"></i><i style="background: #efe4e0;"></i><i style="background: #f7e6da;"></i><i style="background: #f4dbe3;"></i></div>
+        </div>
+        <div class="fan" style="background: #101418;">
+          <div class="fh" style="color: #c9a35d;">NOCTA</div>
+          <div class="fc"><i style="background: #232a31;"></i><i style="background: #2c333b;"></i><i style="background: #3a3327;"></i><i style="background: #232a31;"></i></div>
+        </div>
+        <div class="fan" style="background: #f2f6fb;">
+          <div class="fh" style="background: #2563eb; color: #eef4ff;">ATLAS</div>
+          <div class="fc"><i style="background: #d8e4f5;"></i><i style="background: #dbe8ee;"></i><i style="background: #ffe3cf;"></i><i style="background: #d8e4f5;"></i></div>
+        </div>
+
+        <div class="ph" id="phone">
+          <div class="ph-screens">
+            <div class="ph-screen">
+              <div class="ph-top">Cuéntanos de tu negocio</div>
+              <div class="q-label">¿Qué vendes?</div>
+              <div class="chips"><span class="chip sel">Tecnología</span><span class="chip">Moda</span><span class="chip">Cosmética</span><span class="chip">Deporte</span></div>
+              <div class="q-label">¿Cómo debe sentirse?</div>
+              <div class="chips"><span class="chip sel">Futurista</span><span class="chip">Elegante</span><span class="chip">Cálida</span></div>
+              <div class="ph-cta">Continuar</div>
+            </div>
+            <div class="ph-screen">
+              <div class="ph-top">Generando propuestas…</div>
+              <div class="loom" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="mini-props">
+                <div class="mini-prop"><i style="background: linear-gradient(135deg, #101a33, #0b2740);"></i><b>LUMEN<small>tech · neón</small></b></div>
+                <div class="mini-prop"><i style="background: #101418;"></i><b>NOCTA<small>nocturno · editorial</small></b></div>
+                <div class="mini-prop"><i style="background: #c2497c;"></i><b>KORA<small>suave · cosmética</small></b></div>
+              </div>
+            </div>
+            <div class="ph-screen">
+              <div class="store-hero"><b>LUMEN</b><small>tecnología que ilumina</small></div>
+              <div class="lock-row">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+                Registrado a tu nombre. Retirado del catálogo para siempre.
+              </div>
+              <div class="store-grid">
+                <div class="prod"><i style="background: radial-gradient(90% 90% at 32% 16%, #2a4070, #111c38 76%);">🎧</i><span>Auriculares Pulse</span><em>$89</em></div>
+                <div class="prod"><i style="background: radial-gradient(90% 90% at 32% 16%, #314a7e, #121d3a 76%);">💡</i><span>Lámpara Halo</span><em>$45</em></div>
+              </div>
+              <div class="ph-cta">Elegir este diseño</div>
+            </div>
+            <div class="ph-screen">
+              <div class="store-hero"><b>LUMEN</b><small>envíos en 24 h · lumen.store</small></div>
+              <div class="store-grid">
+                <div class="prod"><i style="background: radial-gradient(90% 90% at 32% 16%, #2a4070, #111c38 76%);">🎧</i><span>Auriculares Pulse</span><em>$89</em></div>
+                <div class="prod"><i style="background: radial-gradient(90% 90% at 32% 16%, #23395f, #0f1a33 76%);">⌨️</i><span>Teclado Kilo</span><em>$129</em></div>
+                <div class="prod"><i style="background: radial-gradient(90% 90% at 32% 16%, #314a7e, #121d3a 76%);">💡</i><span>Lámpara Halo</span><em>$45</em></div>
+                <div class="prod"><i style="background: radial-gradient(90% 90% at 32% 16%, #263e6b, #101b36 76%);">🔊</i><span>Altavoz Eco</span><em>$75</em></div>
+              </div>
+              <div class="ph-cta">Comprar ahora</div>
+            </div>
+          </div>
+        </div>
+
+        <span class="live-pill st-pill" id="storyPill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+          lumen.store · publicada
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ==================== DISEÑOS ÚNICOS ==================== -->
+<section class="sec sec-glow" id="unicos">
+  <div class="wrap unique-grid">
+    <div class="unique-copy">
+      <span class="badge reveal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18 9.5l-4.1 1.9L12 16l-1.9-4.6L6 9.5l4.1-1.9z"></path></svg>
+        Diseñador con IA
+      </span>
+      <h2 class="reveal" style="font-size: clamp(30px, 3.4vw, 44px);">Ninguna tienda se parece a otra</h2>
+      <p class="reveal" style="margin: 0; color: var(--muted);">Aquí no hay plantillas repetidas. Cuéntanos qué vendes, cómo quieres que se sienta tu marca y quién es tu cliente; nuestra IA genera varios diseños creados solo para ti. El que elijas queda registrado a tu nombre y se retira para siempre: nadie más lo tendrá, ni en la web ni en las apps.</p>
+      <div class="lockline reveal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+        Tu diseño, bloqueado para ti
+      </div>
+    </div>
+    <div class="tilt-row reveal">
+      <div class="tilt" data-tilt style="background: #fbf3f1;">
+        <div class="tilt-head" style="height: 62px; background: #c2497c; color: #fdf3f7; font-size: 15px;">KORA</div>
+        <div class="tilt-cells" style="grid-template-columns: repeat(2, 1fr);">
+          <i style="height: 44px; background: #f4dbe3; border-radius: 6px;"></i>
+          <i style="height: 44px; background: #efe4e0; border-radius: 6px;"></i>
+          <i style="height: 44px; background: #f7e6da; border-radius: 6px;"></i>
+          <i style="height: 44px; background: #f4dbe3; border-radius: 6px;"></i>
+        </div>
+        <div class="tilt-tag" style="color: #a87f90;">suave · cosmética</div>
+      </div>
+      <div class="tilt" data-tilt style="background: #101418;">
+        <div class="tilt-head" style="height: 84px; color: #f3efe8; font-size: 18px; letter-spacing: 0.05em;">NOCTA</div>
+        <div class="tilt-cells" style="grid-template-columns: 1fr;">
+          <i style="height: 34px; background: #232a31; border-radius: 4px;"></i>
+          <i style="height: 34px; background: #2c333b; border-radius: 4px;"></i>
+          <i style="height: 10px; width: 70%; background: #c9a35d; border-radius: 3px;"></i>
+        </div>
+        <div class="tilt-tag" style="color: #8b949c;">nocturno · moda</div>
+      </div>
+      <div class="tilt" data-tilt style="background: #f2f6fb;">
+        <div class="tilt-head" style="height: 56px; background: #2563eb; border-radius: 0 0 26px 0; color: #eef4ff; font-size: 15px;">ATLAS</div>
+        <div class="tilt-cells" style="grid-template-columns: repeat(3, 1fr); display: flex; gap: 7px;">
+          <i style="flex: 1; height: 56px; background: #d8e4f5; border-radius: 999px 999px 8px 8px;"></i>
+          <i style="flex: 1; height: 56px; background: #ffe3cf; border-radius: 999px 999px 8px 8px;"></i>
+          <i style="flex: 1; height: 56px; background: #d8e4f5; border-radius: 999px 999px 8px 8px;"></i>
+        </div>
+        <div class="tilt-tag" style="color: #7189ad;">energía · deporte</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="hairline">
+
+<!-- ==================== QUÉ INCLUYE ==================== -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Todo incluido</span>
+      <h2>Todo lo que necesita tu negocio, en un solo lugar</h2>
+    </div>
+    <div class="feat-grid">
+      <article class="feat reveal">
+        <span class="feat-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="12" rx="2"></rect><path d="M6 20h8"></path><rect x="17" y="8" width="5" height="12" rx="1.5"></rect></svg></span>
+        <h3>Web + apps iOS y Android</h3>
+        <p>Tu tienda funciona en cualquier dispositivo y se instala como app en el móvil de tus clientes.</p>
+      </article>
+      <article class="feat reveal" style="transition-delay: 0.08s">
+        <span class="feat-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18"></path><path d="M12 3c2.5 2.5 3.8 5.6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.6-3.8-9S9.5 5.5 12 3z"></path></svg></span>
+        <h3>Tu dominio, comprado aquí</h3>
+        <p>Busca, compra y conecta tu dominio sin salir de la plataforma. Certificado de seguridad automático.</p>
+      </article>
+      <article class="feat reveal" style="transition-delay: 0.16s">
+        <span class="feat-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2 5 5 .7-3.7 3.5.9 5-4.2-2.4L7.8 16l.9-5L5 7.7 10 7z"></path><path d="M18.5 15l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1-2.1-.9 2.1-.9z"></path></svg></span>
+        <h3>Agentes de IA incluidos</h3>
+        <p>Empleados digitales que responden a tus clientes, redactan tus productos y te avisan cuándo reponer.</p>
+      </article>
+      <article class="feat reveal" style="transition-delay: 0.24s">
+        <span class="feat-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18l-2 12H5z"></path><path d="M8 6V4a4 4 0 0 1 8 0v2"></path></svg></span>
+        <h3>Pedidos, inventario y pagos</h3>
+        <p>Controla ventas, stock y compras a proveedores desde un panel simple, pensado para el móvil.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PLANES ==================== -->
+<section class="sec sec-glow" id="planes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Precios</span>
+      <h2>Planes según tu modelo de negocio</h2>
+      <p>Empieza gratis. Paga solo cuando tu tienda sea de verdad.</p>
+    </div>
+    <div class="plans">
+      <article class="plan reveal">
+        <div class="plan-name">Demo</div>
+        <div class="plan-price">Gratis</div>
+        <div class="plan-meta">14 días de prueba</div>
+        <ul>
+          <li>Tienda de prueba completa</li>
+          <li>Diseños generados por IA</li>
+          <li>Subdominio gratuito</li>
+        </ul>
+        <a href="#cta" class="btn btn-ghost">Empezar ahora</a>
+      </article>
+      <article class="plan plan-star reveal" style="transition-delay: 0.1s">
+        <div class="plan-name">Tienda <span class="plan-pill">Más elegido</span></div>
+        <div class="plan-price">US$ [precio]<small>/mes</small></div>
+        <div class="plan-meta">+ [1–2] % de ventas desde US$ [umbral]/mes</div>
+        <ul>
+          <li>Tu tienda real, publicada</li>
+          <li>Dominio propio y app instalable</li>
+          <li>Pedidos, inventario y pagos</li>
+          <li>Presencia en la app de la fábrica</li>
+        </ul>
+        <a href="#cta" class="btn btn-solid">Crear mi tienda</a>
+      </article>
+      <article class="plan reveal" style="transition-delay: 0.2s">
+        <div class="plan-name">Tienda + IA</div>
+        <div class="plan-price">US$ [precio]<small>/mes</small></div>
+        <div class="plan-meta">+ [1–2] % de ventas desde US$ [umbral]/mes</div>
+        <ul>
+          <li>Todo lo del plan Tienda</li>
+          <li>Agentes de IA: atención y catálogo</li>
+          <li>App propia iOS/Android (premium)</li>
+        </ul>
+        <a href="#cta" class="btn btn-ghost">Hablar con nosotros</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CTA FINAL ==================== -->
+<section class="sec" id="cta">
+  <div class="wrap cta-final reveal">
+    <span class="eyebrow">Empieza hoy</span>
+    <h2>La próxima tienda única de la fábrica puede ser <span style="background: var(--grad-text); -webkit-background-clip: text; background-clip: text; color: transparent;">la tuya</span></h2>
+    <a href="#top" class="btn btn-solid" style="font-size: 17px; padding: 17px 34px;">Probar demo gratis</a>
+    <p class="hero-note">Sin tarjeta · demo lista en 60 segundos · tu diseño, solo tuyo</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <span class="wordmark" style="font-size: 20px;">fábrica<b>.</b> <span class="mono" style="font-weight: 400; font-size: 12.5px; color: var(--faint);">[dominio.com]</span></span>
+    <nav class="foot-links" aria-label="Legal">
+      <a href="#top">Términos</a>
+      <a href="#top">Privacidad</a>
+      <a href="#top">Contacto</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var root = document.documentElement;
+  var reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Tema (dark-first) ---------- */
+  function stored() { try { return localStorage.getItem("fabrica-theme"); } catch (e) { return null; } }
+  function effTheme() {
+    var t = root.dataset.theme;
+    if (t === "light" || t === "dark") return t;
+    return matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+  var saved = stored();
+  if (saved === "light" || saved === "dark") root.dataset.theme = saved;
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    var next = effTheme() === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    try { localStorage.setItem("fabrica-theme", next); } catch (e) {}
+  });
+
+  /* ---------- Reveal on scroll ---------- */
+  var toReveal = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window && !reduced) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+    toReveal.forEach(function (el) { io.observe(el); });
+  } else {
+    toReveal.forEach(function (el) { el.classList.add("in"); });
+  }
+
+  /* ---------- Tiendas generadas: render realista en MacBook, iPad y iPhone ---------- */
+  var designs = [
+    {
+      name: "LUMEN", domain: "lumen.store", announce: "Envío gratis desde $50 · Devoluciones 30 días",
+      pageBg: "#0d1322", ink: "#e9edf6", sub: "#93a1c9", line: "#232c4c", searchBg: "#161f36",
+      accent: "#22d3ee", accentInk: "#062030",
+      heroKicker: "Nueva colección", heroH1: "Sonido que se ve", heroSub: "Audio y luz para espacios que inspiran.",
+      heroScene: "radial-gradient(95% 95% at 30% 12%, #2a4374, #101b36 74%)", heroEmoji: "🎧", heroTag: "−25% hoy",
+      prods: [
+        ["🎧", "Auriculares Pulse", "4.8", "231", "$89", "$119", "radial-gradient(90% 90% at 32% 16%, #2a4070, #111c38 76%)"],
+        ["⌚", "Reloj Vega", "4.7", "118", "$149", "", "radial-gradient(90% 90% at 32% 16%, #23395f, #0f1a33 76%)"],
+        ["💡", "Lámpara Halo", "4.9", "342", "$45", "$59", "radial-gradient(90% 90% at 32% 16%, #314a7e, #121d3a 76%)"],
+        ["🔊", "Altavoz Eco", "4.6", "87", "$75", "", "radial-gradient(90% 90% at 32% 16%, #263e6b, #101b36 76%)"]
+      ]
+    },
+    {
+      name: "KORA", domain: "kora.shop", announce: "Regalo de bienvenida en tu primer pedido",
+      pageBg: "#fdf7f5", ink: "#372631", sub: "#a3808f", line: "#f0dde2", searchBg: "#f6e9ec",
+      accent: "#c2497c", accentInk: "#ffffff",
+      heroKicker: "Ritual diario", heroH1: "Piel en calma", heroSub: "Fórmulas suaves, resultados que se notan.",
+      heroScene: "radial-gradient(95% 95% at 30% 12%, #fae3ea, #efc9d6 78%)", heroEmoji: "🧴", heroTag: "Nuevo",
+      prods: [
+        ["🧴", "Sérum Aura", "4.9", "412", "$34", "$44", "radial-gradient(90% 90% at 32% 16%, #fae3ea, #f0cdd8 78%)"],
+        ["🌸", "Bruma Rosa", "4.7", "96", "$19", "", "radial-gradient(90% 90% at 32% 16%, #fbe9e4, #f2d4c9 78%)"],
+        ["🫧", "Espuma Nube", "4.8", "187", "$22", "", "radial-gradient(90% 90% at 32% 16%, #eef2f7, #d9e3ee 78%)"],
+        ["💄", "Labial Vela", "4.6", "74", "$18", "$24", "radial-gradient(90% 90% at 32% 16%, #f9dfe6, #eec4d2 78%)"]
+      ]
+    },
+    {
+      name: "NOCTA", domain: "nocta.shop", announce: "Colección medianoche — piezas limitadas",
+      pageBg: "#101418", ink: "#f3efe8", sub: "#8b949c", line: "#242b33", searchBg: "#1a2027",
+      accent: "#c9a35d", accentInk: "#14110a",
+      heroKicker: "Otoño 26", heroH1: "Vestir la noche", heroSub: "Sastrería oscura en edición limitada.",
+      heroScene: "radial-gradient(95% 95% at 30% 12%, #262b33, #0c0f13 78%)", heroEmoji: "🧥", heroTag: "Limitada",
+      prods: [
+        ["🧥", "Abrigo Umbra", "4.9", "58", "$210", "", "radial-gradient(90% 90% at 32% 16%, #262b33, #0e1115 78%)"],
+        ["👗", "Vestido Eclipse", "4.8", "41", "$160", "$190", "radial-gradient(90% 90% at 32% 16%, #2b2f38, #101318 78%)"],
+        ["👜", "Bolso Medianoche", "4.7", "122", "$120", "", "radial-gradient(90% 90% at 32% 16%, #33302a, #12100c 78%)"],
+        ["🥾", "Botas Turno", "4.8", "77", "$185", "", "radial-gradient(90% 90% at 32% 16%, #2a2d33, #0f1216 78%)"]
+      ]
+    },
+    {
+      name: "ATLAS", domain: "atlas.run", announce: "Envíos en 24 h · paga en 3 plazos",
+      pageBg: "#f4f7fb", ink: "#152238", sub: "#7189ad", line: "#dde6f2", searchBg: "#e8eef7",
+      accent: "#f97316", accentInk: "#ffffff",
+      heroKicker: "Temporada nueva", heroH1: "Corre el mañana", heroSub: "Equipo ligero para metas grandes.",
+      heroScene: "radial-gradient(95% 95% at 30% 12%, #3b74f0, #1e4fc0 80%)", heroEmoji: "👟", heroTag: "−20%",
+      prods: [
+        ["👟", "Zapatillas Vector", "4.8", "305", "$95", "$115", "radial-gradient(90% 90% at 32% 16%, #dbe7f8, #bcd0ec 80%)"],
+        ["🎒", "Mochila Trek", "4.7", "142", "$60", "", "radial-gradient(90% 90% at 32% 16%, #dfeaf0, #c3d6e2 80%)"],
+        ["⌚", "Reloj Pulso", "4.9", "208", "$140", "", "radial-gradient(90% 90% at 32% 16%, #e4e9f4, #c8d2e6 80%)"],
+        ["🧢", "Gorra Vía", "4.5", "66", "$22", "", "radial-gradient(90% 90% at 32% 16%, #ffe4d1, #f3c9ab 80%)"]
+      ]
+    }
+  ];
+  function ic(p, c, s) { return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="' + c + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>'; }
+  var P = {
+    search: '<circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path>',
+    heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l8.8 8.8 8.8-8.8a5.5 5.5 0 0 0 0-7.8z"></path>',
+    cart: '<path d="M3 6h18l-2 12H5z"></path><path d="M8 6V4a4 4 0 0 1 8 0v2"></path>',
+    user: '<circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path>',
+    home: '<path d="M3 11l9-8 9 8"></path><path d="M5 10v10h14V10"></path>',
+    signal: '<path d="M2 20h.01"></path><path d="M7 20v-4"></path><path d="M12 20v-8"></path><path d="M17 20V8"></path>',
+    wifi: '<path d="M5 12a11 11 0 0 1 14 0"></path><path d="M8.5 15.5a6 6 0 0 1 7 0"></path><circle cx="12" cy="19" r="1"></circle>',
+    batt: '<rect x="2" y="8" width="16" height="8" rx="2"></rect><path d="M21 11v2"></path>'
+  };
+  function stars(d, r, c) { return '<div class="s-stars" style="color:' + d.accent + '">★★★★★<span style="color:' + d.sub + '">' + r + ' (' + c + ')</span></div>'; }
+  function badge(d, n) { return '<span class="s-badge" style="background:' + d.accent + ';color:' + d.accentInk + '">' + n + '</span>'; }
+  function card(d, p, imgH) {
+    return '<div class="s-card" style="border-color:' + d.line + ';background:' + d.pageBg + '">' +
+      '<div class="s-cimg" style="background:' + p[6] + ';height:' + imgH + 'px"><em>' + p[0] + '</em></div>' +
+      '<div class="s-cbody"><span class="s-cname" style="color:' + d.ink + '">' + p[1] + '</span>' + stars(d, p[2], p[3]) +
+      '<span class="s-prices"><span class="s-price" style="color:' + d.ink + '">' + p[4] + '</span>' +
+      (p[5] ? '<span class="s-old" style="color:' + d.sub + '">' + p[5] + '</span>' : '') + '</span>' +
+      '<span class="s-add" style="background:' + d.accent + ';color:' + d.accentInk + '">Añadir</span></div></div>';
+  }
+  function announce(d) { return '<div class="s-announce" style="background:' + d.accent + ';color:' + d.accentInk + '">' + d.announce + '</div>'; }
+  function navBar(d, full) {
+    return '<div class="s-nav2" style="background:' + d.pageBg + '">' +
+      '<span class="s-logo" style="color:' + d.ink + '">' + d.name + '</span>' +
+      (full ? '<span class="s-links" style="color:' + d.ink + '"><span>Novedades</span><span>Catálogo</span><span>Ofertas</span></span>' +
+        '<span class="s-search" style="background:' + d.searchBg + ';color:' + d.sub + '">' + ic(P.search, d.sub, 9) + 'Buscar en ' + d.name.toLowerCase() + '…</span>' : '<span style="flex:1"></span>') +
+      '<span class="s-icos"><span class="s-ico">' + ic(P.heart, d.ink, 13) + '</span>' +
+      '<span class="s-ico">' + ic(P.cart, d.ink, 13) + badge(d, 2) + '</span></span></div>';
+  }
+  function heroBlock(d, h, h1px) {
+    return '<div class="s-hero2" style="background:' + d.pageBg + '">' +
+      '<div><div class="s-kicker" style="color:' + d.sub + '">' + d.heroKicker + '</div>' +
+      '<div class="s-h1" style="color:' + d.ink + ';font-size:' + h1px + 'px">' + d.heroH1 + '</div>' +
+      '<div class="s-sub" style="color:' + d.sub + '">' + d.heroSub + '</div>' +
+      '<div class="s-btnrow"><span class="s-btn" style="background:' + d.accent + ';color:' + d.accentInk + '">Comprar ahora</span>' +
+      '<span class="s-link2" style="color:' + d.sub + '">Ver colección</span></div></div>' +
+      '<div class="s-photo" style="background:' + d.heroScene + ';height:' + h + 'px"><em>' + d.heroEmoji + '</em>' +
+      '<span class="s-tag" style="background:' + d.accent + ';color:' + d.accentInk + '">' + d.heroTag + '</span></div></div>';
+  }
+  function statusBar(d) {
+    return '<div class="s-status" style="color:' + d.ink + ';background:' + d.pageBg + '"><span>9:41</span>' +
+      '<span style="display:flex;gap:4px;align-items:center">' + ic(P.signal, d.ink, 10) + ic(P.wifi, d.ink, 10) + ic(P.batt, d.ink, 12) + '</span></div>';
+  }
+  function tabsBar(d) {
+    return '<div class="s-tabs" style="border-color:' + d.line + ';background:' + d.pageBg + '">' +
+      ic(P.home, d.accent, 13) + ic(P.search, d.sub, 13) +
+      '<span class="s-ico">' + ic(P.cart, d.sub, 13) + badge(d, 2) + '</span>' + ic(P.user, d.sub, 13) + '</div>';
+  }
+  function render(d) {
+    document.getElementById("storeLap").innerHTML =
+      announce(d) + navBar(d, true) + heroBlock(d, 116, 21) +
+      '<div class="s-cards" style="grid-template-columns:repeat(4,1fr);background:' + d.pageBg + '">' +
+      d.prods.map(function (p) { return card(d, p, 54); }).join("") + '</div>';
+    document.getElementById("storeTab").innerHTML =
+      navBar(d, false) + heroBlock(d, 86, 15) +
+      '<div class="s-cards" style="grid-template-columns:repeat(2,1fr);background:' + d.pageBg + ';gap:8px;padding:0 12px 12px">' +
+      d.prods.slice(0, 2).map(function (p) { return card(d, p, 44); }).join("") + '</div>';
+    document.getElementById("storePh").innerHTML =
+      statusBar(d) + navBar(d, false) +
+      '<div style="padding:2px 12px 8px;background:' + d.pageBg + '">' +
+      '<div class="s-photo" style="background:' + d.heroScene + ';height:86px"><em style="font-size:38px">' + d.heroEmoji + '</em>' +
+      '<span class="s-tag" style="background:' + d.accent + ';color:' + d.accentInk + '">' + d.heroTag + '</span></div>' +
+      '<div class="s-h1" style="color:' + d.ink + ';font-size:13px;margin-top:8px">' + d.heroH1 + '</div>' +
+      '<div class="s-sub" style="color:' + d.sub + '">' + d.heroSub + '</div></div>' +
+      '<div class="s-cards" style="grid-template-columns:repeat(2,1fr);background:' + d.pageBg + ';gap:8px;padding:0 12px 10px">' +
+      d.prods.slice(0, 2).map(function (p) { return card(d, p, 40); }).join("") + '</div>' + tabsBar(d);
+    document.getElementById("devUrl").textContent = d.domain;
+    document.getElementById("domain").textContent = d.domain;
+  }
+  var devices = document.getElementById("devices");
+  var di = 0;
+  render(designs[0]);
+  document.getElementById("regen").addEventListener("click", function () {
+    di = (di + 1) % designs.length;
+    if (reduced) { render(designs[di]); return; }
+    devices.classList.add("swapping");
+    setTimeout(function () { render(designs[di]); devices.classList.remove("swapping"); }, 300);
+  });
+
+  /* ---------- Tilt 3D ---------- */
+  var finePointer = matchMedia("(pointer: fine)").matches;
+  function addTilt(el, max) {
+    if (!finePointer || reduced) return;
+    el.addEventListener("mousemove", function (e) {
+      var r = el.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transform = "rotateY(" + (x * max) + "deg) rotateX(" + (-y * max) + "deg)";
+    });
+    el.addEventListener("mouseleave", function () { el.style.transform = ""; });
+  }
+  addTilt(devices, 5);
+  document.querySelectorAll("[data-tilt]").forEach(function (el) { addTilt(el, 10); });
+
+  /* ---------- Scrollytelling ---------- */
+  (function () {
+    var story = document.getElementById("pasos");
+    if (!story) return;
+    var texts = [].slice.call(story.querySelectorAll(".st-text"));
+    var screens = [].slice.call(story.querySelectorAll(".ph-screen"));
+    var fans = [].slice.call(story.querySelectorAll(".fan"));
+    var railSteps = [].slice.call(story.querySelectorAll(".rail-step"));
+    var railFill = document.getElementById("railFill");
+    var phone = document.getElementById("phone");
+    var pill = document.getElementById("storyPill");
+    var N = texts.length;
+    if (reduced) { story.classList.add("static"); return; }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+    var fanDir = [-1, 0, 1];
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var rect = story.getBoundingClientRect();
+      var total = story.offsetHeight - innerHeight;
+      if (total <= 0) return;
+      var p = clamp(-rect.top / total, 0, 1);
+      var seg = p * N;
+      for (var i = 0; i < N; i++) {
+        var inEdge = i === 0 ? 1 : clamp((seg - i) / 0.22, 0, 1);
+        var outEdge = i === N - 1 ? 1 : clamp(((i + 1) - seg) / 0.22, 0, 1);
+        var op = Math.min(inEdge, outEdge);
+        var dy = seg < i + 0.5 ? (1 - op) * 26 : -(1 - op) * 26;
+        texts[i].style.opacity = op;
+        texts[i].style.transform = "translateY(" + dy + "px)";
+        texts[i].style.pointerEvents = op > 0.5 ? "auto" : "none";
+        screens[i].style.opacity = op;
+        screens[i].style.transform = "scale(" + (0.96 + op * 0.04) + ")";
+      }
+      var idx = Math.min(Math.floor(seg), N - 1);
+      railSteps.forEach(function (s, i) { s.classList.toggle("on", i <= idx); });
+      var fa = Math.min(clamp((seg - 1) / 0.22, 0, 1), clamp((2.15 - seg) / 0.3, 0, 1));
+      var spread = clamp(seg - 1, 0, 1); spread = 1 - Math.pow(1 - spread, 3);
+      fans.forEach(function (f, i) {
+        var d = fanDir[i];
+        f.style.opacity = fa * (d === 0 ? 0.9 : 1);
+        f.style.transform = "translateX(" + (d * (36 + spread * 168)) + "px) translateY(" + (d === 0 ? -spread * 26 : spread * 8) + "px) rotate(" + (d * (4 + spread * 7)) + "deg) scale(" + (0.9 + spread * 0.1) + ")";
+        f.style.zIndex = d === 0 ? 1 : 0;
+      });
+      var rotY = 9 * Math.sin(seg * Math.PI * 0.92);
+      var rotX = 2.2 * Math.sin(seg * Math.PI * 1.6);
+      phone.style.transform = "perspective(1100px) rotateY(" + rotY + "deg) rotateX(" + rotX + "deg)";
+      var pa = clamp((seg - (N - 0.85)) / 0.3, 0, 1);
+      pill.style.opacity = pa;
+      pill.style.transform = "translateX(-50%) translateY(" + ((1 - pa) * 14) + "px)";
+      railFill.style.height = (p * 100) + "%";
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+    update();
+  })();
+
+  /* ---------- Shader WebGL: aurora IA (violeta/cian sobre azul→negro) ---------- */
+  var canvas = document.getElementById("weave");
+  var gl = canvas.getContext("webgl", { antialias: false, alpha: false });
+  if (!gl) { canvas.style.background = "radial-gradient(80% 60% at 60% 30%, var(--glow), transparent)"; return; }
+
+  var VS = "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+  var FS = [
+    "precision highp float;",
+    "uniform vec2 u_res;uniform float u_time;uniform float u_dark;",
+    "float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}",
+    "float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);",
+    " return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}",
+    "float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*noise(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}",
+    "void main(){",
+    " vec2 uv=gl_FragCoord.xy/u_res;",
+    " vec2 p=uv;p.x*=u_res.x/u_res.y;",
+    " float t=u_time*.03;",
+    " vec2 q=vec2(fbm(p*1.1+vec2(t,-t*.6)),fbm(p*1.1+vec2(-t*.8,t*.5)+vec2(3.1,7.4)));",
+    " float n1=fbm(p*1.15+q*.9+vec2(t*.6,0.));",
+    " float n2=fbm(p*1.55-q*.7+vec2(-t,t*.4)+vec2(9.2,1.3));",
+    " float n3=fbm(p*.9+q*.5+vec2(t*.3,-t*.5)+vec2(5.7,4.1));",
+    " vec3 bgTopD=vec3(.051,.075,.157);vec3 bgBotD=vec3(.016,.024,.047);",
+    " vec3 bgTopL=vec3(.973,.973,.996);vec3 bgBotL=vec3(.945,.949,.980);",
+    " vec3 bg=mix(mix(bgBotL,bgTopL,uv.y),mix(bgBotD,bgTopD,uv.y),u_dark);",
+    " vec3 cViolet=mix(vec3(.83,.80,.97),vec3(.24,.18,.60),u_dark);",
+    " vec3 cCyan=mix(vec3(.78,.90,.96),vec3(.07,.36,.52),u_dark);",
+    " vec3 cMag=mix(vec3(.93,.82,.93),vec3(.44,.14,.42),u_dark);",
+    " vec3 col=bg;",
+    " col=mix(col,cViolet,smoothstep(.42,.85,n1)*.85);",
+    " col=mix(col,cCyan,smoothstep(.48,.9,n2)*.7);",
+    " col=mix(col,cMag,smoothstep(.55,.95,n3)*smoothstep(.3,.95,uv.x)*.5);",
+    " float fade=smoothstep(.0,.28,uv.y)*smoothstep(1.,.82,uv.y);",
+    " col=mix(bg,col,fade);",
+    " float grain=(hash(gl_FragCoord.xy*.7)-.5)*.02;",
+    " gl_FragColor=vec4(col+grain,1.);",
+    "}"
+  ].join("\n");
+
+  function sh(type, src) {
+    var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+  }
+  var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) return;
+  var prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); gl.useProgram(prog);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, "a");
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var uRes = gl.getUniformLocation(prog, "u_res");
+  var uTime = gl.getUniformLocation(prog, "u_time");
+  var uDark = gl.getUniformLocation(prog, "u_dark");
+
+  var dark = effTheme() === "dark" ? 1 : 0;
+  var darkNow = dark;
+
+  function resize() {
+    var dpr = Math.min(devicePixelRatio || 1, 1.6);
+    var w = canvas.clientWidth * dpr, h = canvas.clientHeight * dpr;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h; gl.viewport(0, 0, w, h);
+    }
+  }
+  var visible = true;
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (en) { visible = en[0].isIntersecting; }, { threshold: 0 }).observe(canvas);
+  }
+  var start = performance.now();
+  function frame(now) {
+    dark = effTheme() === "dark" ? 1 : 0;
+    darkNow += (dark - darkNow) * 0.06;
+    if (visible) {
+      resize();
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.uniform1f(uTime, (now - start) / 1000);
+      gl.uniform1f(uDark, darkNow);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    if (!reduced) requestAnimationFrame(frame);
+  }
+  if (reduced) {
+    resize();
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, 12.0); gl.uniform1f(uDark, dark);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    new MutationObserver(function () {
+      gl.uniform1f(uDark, effTheme() === "dark" ? 1 : 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  } else {
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
