@@ -10,12 +10,25 @@ REPO=https://github.com/ntdiaz87-sudo/odoo-scem.git
 BRANCH=claude/online-store-factory-9cnbb7
 DIR=/opt/fabrica
 
-echo "== [1/3] Docker =="
-if ! command -v docker >/dev/null 2>&1; then
-  curl -fsSL https://get.docker.com | sh
+echo "== [1/3] Comprobaciones (norma: no se instala nada; si falta algo, se avisa) =="
+FALTA=0
+for cmd in docker git curl; do
+  if command -v "$cmd" >/dev/null 2>&1; then
+    echo "ok: $cmd presente"
+  else
+    echo "FALTA: $cmd no está instalado"
+    FALTA=1
+  fi
+done
+if docker compose version >/dev/null 2>&1; then
+  echo "ok: docker compose presente"
+else
+  echo "FALTA: el plugin 'docker compose' no está disponible"
+  FALTA=1
 fi
-if ! command -v git >/dev/null 2>&1; then
-  apt-get update -y && apt-get install -y git
+if [ "$FALTA" -ne 0 ]; then
+  echo "Se detiene sin hacer cambios. Reporta lo que falta en la sesión de Claude."
+  exit 1
 fi
 
 echo "== [2/3] Código (rama $BRANCH) =="

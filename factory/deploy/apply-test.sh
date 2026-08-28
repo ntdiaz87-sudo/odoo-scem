@@ -14,12 +14,17 @@ ENVFILE=.env.test
 if [ ! -f "$ENVFILE" ]; then
   cat > "$ENVFILE" <<EOF
 SERVER_IP=$SERVER_IP
+# Dominio raíz de la fábrica en test. Por defecto la IP vía nip.io; se puede
+# cambiar a un subdominio propio (p. ej. testfabrica.dyxelsolutions.com) con
+# deploy/set-domain.sh una vez creado el DNS.
+FACTORY_HOST=$SERVER_IP.nip.io
 SUPERADMIN_PASSWORD=$(tr -dc a-z0-9 </dev/urandom | head -c 16)
 COOKIE_SECRET=$(tr -dc a-zA-Z0-9 </dev/urandom | head -c 32)
 EOF
 else
-  # Mantiene la clave existente pero refresca la IP por si cambió.
+  # Mantiene claves y dominio, pero refresca la IP por si cambió.
   sed -i "s/^SERVER_IP=.*/SERVER_IP=$SERVER_IP/" "$ENVFILE"
+  grep -q '^FACTORY_HOST=' "$ENVFILE" || echo "FACTORY_HOST=$SERVER_IP.nip.io" >> "$ENVFILE"
 fi
 
 echo "== Arranque de contenedores (la primera vez compila: 5–10 min) =="
@@ -39,15 +44,16 @@ else
 fi
 
 SUPERADMIN_PASSWORD=$(grep '^SUPERADMIN_PASSWORD=' "$ENVFILE" | cut -d= -f2)
+FACTORY_HOST=$(grep '^FACTORY_HOST=' "$ENVFILE" | cut -d= -f2)
 cat <<EOF
 
 ==========================================================
   Fábrica de tiendas — ambiente de PRUEBAS desplegado
 ----------------------------------------------------------
-  Web pública:    http://$SERVER_IP.nip.io:8300
-  Tienda demo 1:  http://verdealto.$SERVER_IP.nip.io:8300
-  Tienda demo 2:  http://nocta.$SERVER_IP.nip.io:8300
-  Panel admin:    http://$SERVER_IP.nip.io:8301/dashboard
+  Web pública:    http://$FACTORY_HOST:8300
+  Tienda demo 1:  http://verdealto.$FACTORY_HOST:8300
+  Tienda demo 2:  http://nocta.$FACTORY_HOST:8300
+  Panel admin:    http://$FACTORY_HOST:8301/dashboard
     usuario: superadmin
     clave:   $SUPERADMIN_PASSWORD
 ----------------------------------------------------------
