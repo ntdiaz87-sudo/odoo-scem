@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# Fábrica de tiendas — despliegue del AMBIENTE DE PRUEBAS en un servidor limpio
-# (Ubuntu/Debian con acceso root). Uso:
+# PRIMER despliegue del ambiente de pruebas en un servidor (Ubuntu/Debian, root
+# o sudo): instala Docker si falta, clona el repo y delega en apply-test.sh.
+# Uso:
 #   curl -fsSL https://raw.githubusercontent.com/ntdiaz87-sudo/odoo-scem/claude/online-store-factory-9cnbb7/factory/deploy/bootstrap-test.sh | bash
-# Idempotente: se puede volver a ejecutar para actualizar a la última versión.
+# Para actualizaciones posteriores basta apply-test.sh (o el CI de Gitea).
 set -euo pipefail
 
 REPO=https://github.com/ntdiaz87-sudo/odoo-scem.git
 BRANCH=claude/online-store-factory-9cnbb7
 DIR=/opt/fabrica
 
-echo "== [1/4] Docker =="
+echo "== [1/3] Docker =="
 if ! command -v docker >/dev/null 2>&1; then
   curl -fsSL https://get.docker.com | sh
 fi
@@ -17,7 +18,7 @@ if ! command -v git >/dev/null 2>&1; then
   apt-get update -y && apt-get install -y git
 fi
 
-echo "== [2/4] Código (rama $BRANCH) =="
+echo "== [2/3] Código (rama $BRANCH) =="
 if [ -d "$DIR/.git" ]; then
   git -C "$DIR" fetch origin "$BRANCH"
   git -C "$DIR" checkout -B "$BRANCH" "origin/$BRANCH"
@@ -25,51 +26,5 @@ else
   git clone --branch "$BRANCH" --depth 1 "$REPO" "$DIR"
 fi
 
-echo "== [3/4] Configuración =="
-SERVER_IP=$(curl -4 -fsSL https://ifconfig.me 2>/dev/null || hostname -I | awk '{print $1}')
-cd "$DIR/factory"
-ENVFILE=.env.test
-if [ ! -f "$ENVFILE" ]; then
-  cat > "$ENVFILE" <<EOF
-SERVER_IP=$SERVER_IP
-SUPERADMIN_PASSWORD=$(tr -dc a-z0-9 </dev/urandom | head -c 16)
-COOKIE_SECRET=$(tr -dc a-zA-Z0-9 </dev/urandom | head -c 32)
-EOF
-else
-  # Mantiene la clave existente pero refresca la IP por si cambió.
-  sed -i "s/^SERVER_IP=.*/SERVER_IP=$SERVER_IP/" "$ENVFILE"
-fi
-
-echo "== [4/5] Arranque (la primera vez compila las imágenes: 5–10 min) =="
-docker compose -f docker-compose.yml -f docker-compose.test.yml \
-  --env-file "$ENVFILE" up -d --build
-
-echo "== [5/5] Firewall =="
-# GEX44 tiene UFW activo con solo 22/80/443. La web de pruebas es pública a
-# propósito: se abren 8300 (web) y 8301 (panel). Nota: los puertos publicados
-# por Docker se saltan UFW (regla NAT propia), pero se declaran igualmente
-# para que el firewall refleje la realidad.
-if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
-  ufw allow 8300/tcp >/dev/null && echo "ufw: abierto 8300/tcp (web fábrica)"
-  ufw allow 8301/tcp >/dev/null && echo "ufw: abierto 8301/tcp (panel Vendure)"
-else
-  echo "ufw: no activo; sin cambios"
-fi
-
-SUPERADMIN_PASSWORD=$(grep '^SUPERADMIN_PASSWORD=' "$ENVFILE" | cut -d= -f2)
-cat <<EOF
-
-==========================================================
-  Fábrica de tiendas — ambiente de PRUEBAS levantado
-----------------------------------------------------------
-  Web pública:    http://$SERVER_IP.nip.io:8300
-  Tienda demo 1:  http://verdealto.$SERVER_IP.nip.io:8300
-  Tienda demo 2:  http://nocta.$SERVER_IP.nip.io:8300
-  Panel admin:    http://$SERVER_IP.nip.io:8301/dashboard
-    usuario: superadmin
-    clave:   $SUPERADMIN_PASSWORD
-----------------------------------------------------------
-  La clave queda guardada en $DIR/factory/$ENVFILE
-  Ambiente de pruebas sin HTTPS: no usar datos reales.
-==========================================================
-EOF
+echo "== [3/3] Despliegue =="
+bash "$DIR/factory/deploy/apply-test.sh"
