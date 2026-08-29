@@ -37,11 +37,14 @@
 
 .e-barra {
   display: flex; align-items: center; justify-content: space-between; gap: 1.5em;
+  flex-wrap: nowrap; white-space: nowrap;
   padding: 1.4em 2em; flex-shrink: 0;
   border-bottom: 1px solid color-mix(in srgb, var(--e-tinta) 12%, transparent);
 }
 .e-marca { font-family: var(--font-display); font-weight: 700; font-size: 1.35em; letter-spacing: .16em; }
-.e-nav { display: flex; gap: 1.6em; font-size: .95em; opacity: .78; }
+/* La barra de la tienda va SIEMPRE en una línea. Si envuelve, crece de alto
+   y en las tarjetas pequeñas empuja el titular fuera de la ventana visible. */
+.e-nav { display: flex; gap: 1.6em; font-size: .95em; opacity: .78; min-width: 0; overflow: hidden; white-space: nowrap; }
 .e-bolsa { width: 1.1em; height: 1.25em; border: .12em solid currentColor; border-radius: .12em .12em .35em .35em; opacity: .8; }
 .e-menu { display: flex; flex-direction: column; gap: .28em; }
 .e-menu i { display: block; width: 1.3em; height: .13em; background: currentColor; opacity: .85; }
