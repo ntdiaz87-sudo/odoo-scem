@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isValidDesign } from '../../../lib/design-generator';
 import { takenDesignKeys } from '../../../lib/design-registry';
+import { esPlantilla } from '../../../lib/plantillas';
 import { findDesign, type StoreDesign } from '../../../lib/designs';
 import { CURRENCY, LOCALE } from '../../../lib/i18n';
 import { rootDomain, slugify, storeUrl } from '../../../lib/tenant';
@@ -110,7 +111,9 @@ export async function POST(req: NextRequest) {
 
     // Registro de unicidad: la huella elegida no puede pertenecer ya a otra
     // tienda (los presets de la Fase 0 quedan exentos).
-    if (customDesign) {
+    // Una PLANTILLA es reutilizable por definición y queda exenta del registro.
+    // El registro solo protege lo que promete exclusividad: el diseño de IA.
+    if (customDesign && !esPlantilla(customDesign.key)) {
       const taken = await takenDesignKeys(auth);
       if (taken.has(customDesign.key)) {
         return NextResponse.json(

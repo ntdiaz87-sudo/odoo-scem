@@ -21,77 +21,87 @@ await check('Landing carga y muestra el mensaje principal', async () => {
   const r = await page.goto(BASE + '/', { waitUntil: 'networkidle' });
   assert(r.status() === 200, `status ${r.status()}`);
   const h1 = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ').trim();
-  assert(h1.includes('生成你的完整商店') && h1.includes('独一无二'), `h1 distinto: "${h1}"`);
+  assert(h1.includes('你的商店') && h1.includes('从这里开始'), `h1 distinto: "${h1}"`);
 });
-await check('Landing: secciones Cómo funciona / Diseños únicos / Planes', async () => {
-  // El diseño parte estos titulares en dos líneas (<br>), así que se
-  // comprueban por fragmentos contiguos.
-  for (const t of ['到一个营业的商店', '三个渠道', '三位 AI 员工']) {
+await check('Landing: las secciones del recorrido están todas', async () => {
+  // Los titulares se parten en dos líneas, así que se comprueban por
+  // fragmentos contiguos.
+  for (const t of ['找到适合你的设计', '两种方式创建你的商店', '到处销售', '所有渠道同步', 'AI 商品工厂', '不是你一个人在运营']) {
     assert(await page.getByText(t, { exact: false }).first().isVisible(), `falta "${t}"`);
   }
 });
-await check('Landing: 3 planes con marcadores de precio', async () => {
+await check('Landing: 4 planes con sus precios y el 0% de comisión', async () => {
   const body = await page.content();
-  for (const t of ['体验版', '开店版', 'AI 商家版', '全渠道版', '¥199', '¥399', '¥699', '0 平台交易佣金']) assert(body.includes(t), `falta ${t}`);
+  for (const t of ['体验版', '开店版', 'AI 商家版', '全渠道版', '¥199', '¥399', '¥699', '0% 平台交易佣金']) {
+    assert(body.includes(t), `falta ${t}`);
+  }
 });
 await check('Landing móvil: sin scroll horizontal', async () => {
   const [sw, cw] = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
   assert(sw <= cw + 1, `scrollWidth ${sw} > clientWidth ${cw}`);
 });
-await check('Landing: los escaparates del hero son tiendas del mercado de Pekín', async () => {
+await check('Galería: 8 plantillas, cada una con previsualización y "usar"', async () => {
+  const tarjetas = await page.locator('.v-tarjeta').count();
+  assert(tarjetas === 8, `hay ${tarjetas} plantillas`);
+  for (const n of ['LUMINA', 'NEO', 'ORIGIN', 'PURE', 'NOMAD', 'BLOOM', 'PAWS', 'HOMELY']) {
+    assert((await page.content()).includes(n), `falta ${n}`);
+  }
+  const previas = await page.locator('a[href^="/templates/"]').count();
+  const usos = await page.locator('a[href^="/demo?plantilla="]').count();
+  assert(previas >= 8, `enlaces de previsualización: ${previas}`);
+  assert(usos >= 8, `enlaces de "usar este diseño": ${usos}`);
+});
+await check('Galería: los escaparates son tiendas reales, con su catálogo', async () => {
+  // Si esto falla, la galería ha vuelto a ser un mosaico de imágenes muertas.
   const body = await page.content();
-  for (const t of ['玩物纪', '青黛', '胡同咖啡', '兔儿爷 · 联名', '缂丝马面裙', '挂耳咖啡 10片']) {
-    assert(body.includes(t), `falta ${t}`);
+  for (const t of ['羊绒针织衫', '头戴式降噪耳机', '云南日晒咖啡豆', '18K 金素圈戒指']) {
+    assert(body.includes(t), `falta el producto ${t}`);
   }
+  const escaparates = await page.locator('.e').count();
+  assert(escaparates >= 8, `escaparates pintados: ${escaparates}`);
 });
-await check('Landing: el contenido de cada teléfono cabe y no pisa la barra de pestañas', async () => {
-  // Los teléfonos laterales van girados; el rectángulo que devuelve el
-  // navegador para un elemento girado es su caja envolvente, más grande que
-  // el elemento. Se quita el giro para medir la maquetación de verdad.
-  const tag = await page.addStyleTag({ content: '.fh-phone--izq,.fh-phone--der{transform:none!important}' });
-  const medidas = await page.$$eval('.fh-app', els => els.map(el => {
-    const app = el.getBoundingClientRect();
-    const rejilla = el.querySelector('.fh-app-rejilla').getBoundingClientRect();
-    const pestanas = el.querySelector('.fh-app-tabs').getBoundingClientRect();
-    return {
-      tienda: el.className.replace('fh-app fh-app--', ''),
-      holgura: Math.round(pestanas.top - rejilla.bottom),
-      alFondo: Math.round(app.bottom - pestanas.bottom),
-    };
-  }));
-  await tag.evaluate(el => el.remove());
-  assert(medidas.length === 3, `esperaba 3 escaparates, hay ${medidas.length}`);
-  for (const m of medidas) {
-    assert(m.holgura >= 0, `la rejilla pisa las pestañas en ${m.tienda} (${m.holgura} px)`);
-    assert(m.alFondo <= 1, `las pestañas no llegan al fondo en ${m.tienda} (${m.alFondo} px)`);
-  }
+await check('Previsualización de plantilla: se abre y ofrece usarla', async () => {
+  const r = await ctx.request.get(BASE + '/templates/neo');
+  assert(r.status() === 200, `status ${r.status()}`);
+  const cuerpo = await r.text();
+  assert(cuerpo.includes('NEO'), 'no muestra la plantilla');
+  assert(cuerpo.includes('/demo?plantilla=neo'), 'no enlaza al asistente con la plantilla');
 });
-await check('CTA "Probar demo gratis" lleva al wizard', async () => {
-  await page.getByRole('link', { name: '免费试用' }).first().click();
+await check('CTA principal lleva al asistente', async () => {
+  await page.getByRole('link', { name: '免费创建商店' }).first().click();
   await page.waitForURL('**/demo');
-  assert(await page.getByLabel('商店名称').isVisible(), 'wizard sin campo de nombre');
+  assert(await page.getByText('你想怎么开始？').isVisible(), 'el asistente no ofrece las dos vías');
 });
 
-// ---------- 2. WIZARD ----------
-await check('Wizard: validación de nombre vacío', async () => {
-  await page.getByRole('button', { name: /生成我的商店/ }).click();
-  await page.waitForTimeout(400);
-  assert((await page.content()).includes('请填写商店名称'), 'no mostró el error de validación');
-});
+// ---------- 2. ASISTENTE ----------
 const STAMP = Math.random().toString(36).slice(2, 6);
 const EMAIL = `owner-${STAMP}@test.local`;
 const PASS = 'clave-segura-123';
 const NAME = `Flujo Total ${STAMP}`;
 const SLUG = `flujo-total-${STAMP}`;
-await check('Wizard: encuesta del diseñador propone 3 diseños únicos', async () => {
-  await page.getByRole('button', { name: '深色' }).click();
-  await page.waitForTimeout(1500);
+
+await check('Asistente: la vía del diseño exclusivo propone 3 diseños', async () => {
+  await page.getByRole('button', { name: 'AI 专属设计' }).click();
+  // 'exact' importa: el botón de tema tiene el título 切换到深色 y también casaría.
+  await page.getByRole('button', { name: '深色', exact: true }).click();
+  await page.waitForTimeout(1200);
   await page.locator('.design-card').first().waitFor({ timeout: 20000 });
   const cards = await page.locator('.design-card').count();
   assert(cards === 3, `hay ${cards} propuestas`);
 });
-await check('Wizard: crear tienda demo con cuenta de dueño y diseño propuesto', async () => {
+await check('Asistente: validación de nombre vacío', async () => {
+  await page.getByRole('button', { name: /生成我的商店/ }).click();
+  await page.waitForTimeout(500);
+  assert((await page.content()).includes('请填写商店名称'), 'no mostró el error de validación');
+});
+await check('Asistente: al elegir un diseño exclusivo se muestra el reclamo', async () => {
   await page.locator('.design-card').first().click();
+  await page.locator('.w-reclamo').waitFor({ timeout: 5000 });
+  const txt = await page.locator('.w-reclamo').innerText();
+  assert(txt.includes('只属于你'), `el reclamo no explica la exclusividad: ${txt}`);
+  assert(txt.includes('DESIGN #'), 'el reclamo no muestra el identificador');
+});
+await check('Asistente: crear tienda con cuenta de dueño y diseño exclusivo', async () => {
   await page.fill('#storeName', NAME);
   await page.fill('#ownerEmail', EMAIL);
   await page.fill('#ownerPassword', PASS);
@@ -439,23 +449,62 @@ await check('MCP: la herramienta rechaza SKU de otra tienda (aislamiento)', asyn
 await check('Idioma: el visitante cambia a español y vuelve al chino', async () => {
   await page.goto(BASE + '/', { waitUntil: 'networkidle' });
   const zh = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');
-  assert(zh.includes('生成你的完整商店'), `no arranca en chino: ${zh}`);
+  assert(zh.includes('你的商店') && zh.includes('从这里开始'), `no arranca en chino: ${zh}`);
 
   await page.getByRole('button', { name: 'Español' }).first().click();
   await page.waitForTimeout(2200);
   const es = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');
-  assert(/Tu tienda online/.test(es), `no cambió a español: ${es}`);
+  assert(/Tu tienda empieza aqu/.test(es), `no cambió a español: ${es}`);
   assert((await page.evaluate(() => document.documentElement.lang)) === 'es', 'el atributo lang no cambió');
 
-  // El asistente también, incluidas las etiquetas de la encuesta.
-  await page.goto(BASE + '/demo', { waitUntil: 'networkidle' });
+  // La galería también: las plantillas enseñan su catálogo en español.
+  assert((await page.content()).includes('Jersey de cachemira'), 'la galería sigue en chino');
+
+  // Y el asistente, incluidas las etiquetas de la encuesta.
+  await page.goto(BASE + '/demo?modo=ai', { waitUntil: 'networkidle' });
   await page.waitForTimeout(1500);
-  assert((await page.locator('h1').first().innerText()).includes('¿Qué quieres vender?'), 'el asistente sigue en chino');
   assert(await page.getByRole('button', { name: 'Moda y accesorios' }).count() > 0, 'la encuesta sigue en chino');
 
   await page.getByRole('button', { name: '中文' }).first().click();
   await page.waitForTimeout(2200);
-  assert((await page.locator('h1').first().innerText()).includes('你想卖什么'), 'no volvió al chino');
+  assert((await page.content()).includes('你卖什么'), 'no volvió al chino');
+});
+
+// ---------- 8. VÍA DE PLANTILLA ----------
+const STAMP2 = Math.random().toString(36).slice(2, 6);
+await check('Plantilla: crear una tienda eligiendo LUMINA desde la galería', async () => {
+  await page.goto(BASE + '/demo?plantilla=lumina', { waitUntil: 'networkidle' });
+  await page.locator('.w-plantilla.is-on').first().waitFor({ timeout: 10000 });
+  await page.fill('#storeName', `Plantilla ${STAMP2}`);
+  await page.fill('#ownerEmail', `tpl-${STAMP2}@test.local`);
+  await page.fill('#ownerPassword', PASS);
+  await page.getByRole('button', { name: /生成我的商店/ }).click();
+  await page.getByText('你的商店已上线！').waitFor({ timeout: 60000 });
+});
+await check('Plantilla: la tienda creada usa los colores y el catálogo de LUMINA', async () => {
+  const r = await ctx.request.post(BASE + '/shop-api', {
+    headers: { 'content-type': 'application/json', 'vendure-token': `plantilla-${STAMP2}` },
+    data: { query: '{ activeChannel { customFields { design displayName } } }' },
+  });
+  const cf = (await r.json()).data.activeChannel.customFields;
+  assert(cf.design.includes('tpl-lumina'), `el diseño guardado no es la plantilla: ${cf.design.slice(0, 80)}`);
+});
+await check('Plantilla: es REUTILIZABLE — una segunda tienda puede elegir la misma', async () => {
+  // Esto es lo que separa una plantilla de un diseño exclusivo. Si el registro
+  // de unicidad la retirase, la galería dejaría de tener sentido.
+  const r = await ctx.request.post(BASE + '/api/demo', {
+    headers: { 'x-forwarded-for': `198.51.100.${1 + Math.floor(Math.random() * 250)}` },
+    data: {
+      storeName: `Plantilla Bis ${STAMP2}`,
+      design: JSON.parse((await (await ctx.request.post(BASE + '/shop-api', {
+        headers: { 'content-type': 'application/json', 'vendure-token': `plantilla-${STAMP2}` },
+        data: { query: '{ activeChannel { customFields { design } } }' },
+      })).json()).data.activeChannel.customFields.design),
+      ownerEmail: `tplbis-${STAMP2}@test.local`,
+      ownerPassword: PASS,
+    },
+  });
+  assert(r.status() === 200, `la segunda tienda con la misma plantilla falló: ${r.status()} ${(await r.text()).slice(0, 140)}`);
 });
 await check('Idioma: la TIENDA no sigue la preferencia del visitante', async () => {
   // La tienda es del comerciante y de su mercado: se sirve en chino aunque

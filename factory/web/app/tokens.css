@@ -1,0 +1,123 @@
+/* =====================================================================
+   TOKENS DEL SISTEMA V2 — claro y oscuro
+   =====================================================================
+   Un solo DOM y unos mismos componentes. El tema se cambia con
+   data-theme="light|dark" en <html>; sin atributo manda la preferencia del
+   sistema. Nunca se duplican páginas ni componentes por tema.
+
+   Regla al escribir estilos nuevos: ningún color en duro. Si un color no
+   está aquí, es que falta un token.
+   ===================================================================== */
+
+:root {
+  /* --- superficie --- */
+  --v-bg: #ffffff;
+  --v-bg-sutil: #f7f8fb;
+  --v-superficie: #ffffff;
+  --v-superficie-2: #f2f4f8;
+  --v-borde: #e6e9ef;
+
+  /* --- texto --- */
+  --v-texto: #0b1220;
+  --v-texto-suave: #667085;
+
+  /* --- acento --- */
+  --v-acento: #6257ff;
+  --v-acento-2: #7c4dff;
+  --v-acento-suave: #f0edff;
+  --v-acento-tinta: #ffffff;
+
+  /* --- estados --- */
+  --v-ok: #16a34a;
+  --v-mal: #dc2626;
+
+  /* --- profundidad --- */
+  --v-sombra: 0 18px 60px rgba(16, 24, 40, .08);
+  --v-sombra-alta: 0 28px 80px rgba(16, 24, 40, .14);
+
+  /* --- forma --- */
+  --v-r-sm: 10px;
+  --v-r-md: 16px;
+  --v-r-lg: 24px;
+  --v-r-xl: 32px;
+
+  /* --- rejilla --- */
+  --v-ancho: 1320px;
+  --v-canal: 40px;
+
+  /* La sección del equipo de IA va oscura siempre, también en tema claro:
+     es la ruptura visual que pide el diseño. */
+  --v-noche: #07101b;
+  --v-noche-2: #101826;
+  --v-noche-borde: #233044;
+  --v-noche-texto: #f8fafc;
+  --v-noche-texto-suave: #98a2b3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --v-bg: #07101b;
+    --v-bg-sutil: #0a1320;
+    --v-superficie: #101826;
+    --v-superficie-2: #152033;
+    --v-borde: #233044;
+    --v-texto: #f8fafc;
+    --v-texto-suave: #98a2b3;
+    --v-acento: #7c63ff;
+    --v-acento-2: #9b6dff;
+    --v-acento-suave: rgba(124, 99, 255, .14);
+    --v-ok: #22c55e;
+    --v-mal: #f87171;
+    --v-sombra: 0 22px 80px rgba(0, 0, 0, .32);
+    --v-sombra-alta: 0 30px 100px rgba(0, 0, 0, .45);
+  }
+}
+
+:root[data-theme='dark'] {
+  --v-bg: #07101b;
+  --v-bg-sutil: #0a1320;
+  --v-superficie: #101826;
+  --v-superficie-2: #152033;
+  --v-borde: #233044;
+  --v-texto: #f8fafc;
+  --v-texto-suave: #98a2b3;
+  --v-acento: #7c63ff;
+  --v-acento-2: #9b6dff;
+  --v-acento-suave: rgba(124, 99, 255, .14);
+  --v-ok: #22c55e;
+  --v-mal: #f87171;
+  --v-sombra: 0 22px 80px rgba(0, 0, 0, .32);
+  --v-sombra-alta: 0 30px 100px rgba(0, 0, 0, .45);
+}
+
+/* ---------------------------------------------------------------------
+   Color de tarjeta de cada plantilla.
+   Medido del píxel real de sus fotos, no del hex que se pidió al generarlas:
+   así la foto y la tarjeta que la contiene son EXACTAMENTE el mismo color y
+   no se ve la costura.
+   --------------------------------------------------------------------- */
+[data-plantilla='lumina'] { --pl-fondo: #dacfc3; --pl-tinta: #241d16; }
+[data-plantilla='neo']    { --pl-fondo: #2a2a29; --pl-tinta: #f4f4f3; }
+[data-plantilla='origin'] { --pl-fondo: #322316; --pl-tinta: #f6ece1; }
+[data-plantilla='pure']   { --pl-fondo: #e5e7e0; --pl-tinta: #1b2019; }
+[data-plantilla='nomad']  { --pl-fondo: #252922; --pl-tinta: #eef1ea; }
+[data-plantilla='bloom']  { --pl-fondo: #f1dedc; --pl-tinta: #2a1a1c; }
+[data-plantilla='paws']   { --pl-fondo: #ebddcc; --pl-tinta: #2a2117; }
+[data-plantilla='homely'] { --pl-fondo: #dfd1bf; --pl-tinta: #262019; }
+
+/* ---------------------------------------------------------------------
+   Las fotos vienen con marco blanco y esquinas redondeadas de ~30 px. En las
+   plantillas oscuras eso sería un halo blanco en cada esquina, así que se
+   empuja fuera del encuadre en vez de reescribir los ficheros.
+   --------------------------------------------------------------------- */
+.v-foto { position: relative; overflow: hidden; background: var(--pl-fondo, var(--v-superficie-2)); }
+.v-foto img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.07); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

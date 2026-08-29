@@ -28,8 +28,8 @@ export async function loadStoreInfo(slug: string): Promise<StoreInfo | null> {
     }
     const headingFont =
       design.headingFont === 'serif'
-        ? "'Source Serif 4', Georgia, serif"
-        : "'Bricolage Grotesque', 'Public Sans', sans-serif";
+        ? "var(--font-serif-cjk)"
+        : "var(--font-display)";
     return { design, name: cf?.displayName || data.activeChannel.code, headingFont };
   } catch {
     return null;

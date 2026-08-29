@@ -1,10 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { estilos, modos, rubros } from '../../lib/design-generator';
 import type { StoreDesign } from '../../lib/designs';
+import { PLANTILLAS, PLANTILLAS_POR_ID, etiquetaCategoria, plantillaADiseno } from '../../lib/plantillas';
+import { Escaparate } from '../_v2/escaparate';
 import { SelectorIdioma, useLocale, useT } from '../locale-provider';
+import { SelectorTema } from '../tema-provider';
 
 interface Created {
   url: string;
@@ -12,6 +16,8 @@ interface Created {
   channelsUrl?: string;
   ownerEmail: string;
 }
+
+type Via = 'sin-elegir' | 'plantilla' | 'ia';
 
 function IconLock() {
   return (
@@ -32,22 +38,39 @@ function IconTick() {
 export default function DemoWizard() {
   const t = useT();
   const locale = useLocale();
+  const params = useSearchParams();
   const RUBROS = rubros(locale);
   const ESTILOS = estilos(locale);
   const MODOS = modos(locale);
+
+  const [via, setVia] = useState<Via>('sin-elegir');
+  const [plantillaId, setPlantillaId] = useState('');
+  const [reclamado, setReclamado] = useState(false);
   const [storeName, setStoreName] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [ownerPassword, setOwnerPassword] = useState('');
-  const [rubro, setRubro] = useState<string>('moda');
-  const [estilo, setEstilo] = useState<string>('calido');
-  const [modo, setModo] = useState<string>('claro');
+  const [rubro, setRubro] = useState('moda');
+  const [estilo, setEstilo] = useState('calido');
+  const [modo, setModo] = useState('claro');
   const [proposals, setProposals] = useState<StoreDesign[]>([]);
-  const [selectedKey, setSelectedKey] = useState<string>('');
+  const [selectedKey, setSelectedKey] = useState('');
   const [designsBusy, setDesignsBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<Created | null>(null);
   const fetchSeq = useRef(0);
+
+  /* El home entra ya con la vía decidida: ?plantilla=lumina desde una tarjeta
+     de la galería, ?modo=ai desde el botón de diseño exclusivo. */
+  useEffect(() => {
+    const tpl = params.get('plantilla');
+    if (tpl && PLANTILLAS_POR_ID[tpl]) {
+      setVia('plantilla');
+      setPlantillaId(tpl);
+      return;
+    }
+    if (params.get('modo') === 'ai') setVia('ia');
+  }, [params]);
 
   const loadProposals = useCallback(async (r: string, e: string, m: string) => {
     const seq = ++fetchSeq.current;
@@ -63,6 +86,7 @@ export default function DemoWizard() {
       if (res.ok && Array.isArray(data.proposals) && data.proposals.length) {
         setProposals(data.proposals);
         setSelectedKey(data.proposals[0].key);
+        setReclamado(false);
       }
     } catch {
       /* la siguiente pulsación reintenta */
@@ -72,45 +96,34 @@ export default function DemoWizard() {
   }, []);
 
   useEffect(() => {
+    if (via !== 'ia') return;
     loadProposals(rubro, estilo, modo);
-  }, [rubro, estilo, modo, loadProposals]);
+  }, [via, rubro, estilo, modo, loadProposals]);
+
+  const plantilla = plantillaId ? PLANTILLAS_POR_ID[plantillaId] : undefined;
 
   async function createStore(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (storeName.trim().length < 2) {
-      setError(t('val.nombre'));
-      return;
-    }
-    if (!ownerEmail.includes('@')) {
-      setError(t('val.correo'));
-      return;
-    }
-    if (ownerPassword.length < 8) {
-      setError(t('val.clave'));
-      return;
-    }
-    const design = proposals.find(d => d.key === selectedKey);
-    if (!design) {
-      setError(t('val.diseno'));
-      return;
-    }
+    if (storeName.trim().length < 2) return setError(t('val.nombre'));
+    if (!ownerEmail.includes('@')) return setError(t('val.correo'));
+    if (ownerPassword.length < 8) return setError(t('val.clave'));
+
+    const design =
+      via === 'plantilla'
+        ? plantilla && plantillaADiseno(plantilla)
+        : proposals.find(d => d.key === selectedKey);
+    if (!design) return setError(t('val.diseno'));
+
     setBusy(true);
     try {
       const res = await fetch('/api/demo', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          storeName: storeName.trim(),
-          design,
-          ownerEmail: ownerEmail.trim(),
-          ownerPassword,
-        }),
+        body: JSON.stringify({ storeName: storeName.trim(), design, ownerEmail: ownerEmail.trim(), ownerPassword }),
       });
       const data = await res.json();
-      if (!res.ok || !data.url) {
-        throw new Error(data.error || t('val.error'));
-      }
+      if (!res.ok || !data.url) throw new Error(data.error || t('val.error'));
       setCreated(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('val.error'));
@@ -119,50 +132,54 @@ export default function DemoWizard() {
     }
   }
 
-  const marca = (
-    <span className="fh-marca">
-      fábrica<span className="fh-punto">.</span>
-    </span>
+  const barra = (
+    <header className="w-cab">
+      <Link href="/" className="v-marca" aria-label="fábrica">
+        fábrica<span>.</span>
+      </Link>
+      <span className="w-cab-fin">
+        <SelectorIdioma compacto />
+        <SelectorTema etiquetas={{ claro: t('v.tema.claro'), oscuro: t('v.tema.oscuro') }} />
+        {via !== 'sin-elegir' && !created ? (
+          <button type="button" className="w-atras" onClick={() => { setVia('sin-elegir'); setPlantillaId(''); }}>
+            <span aria-hidden="true">←</span> {t('w.atras')}
+          </button>
+        ) : (
+          <Link className="w-atras" href="/">
+            <span aria-hidden="true">←</span> {t('volver')}
+          </Link>
+        )}
+      </span>
+    </header>
   );
 
+  /* ----------------------------- tienda creada ---------------------------- */
   if (created) {
     return (
-      <div className="fh-page">
-        <header className="fh-topbar">
-          <Link href="/" aria-label="Ir al inicio de fábrica">
-            {marca}
-          </Link>
-        </header>
-        <main className="fh-panel">
-          <div className="fh-tarjeta">
-            <div className="fh-exito-marca">
+      <div className="w">
+        {barra}
+        <main className="w-panel">
+          <div className="w-tarjeta w-tarjeta--centro">
+            <div className="w-exito">
               <IconTick />
             </div>
             <h1>{t('demo.listo')}</h1>
-            <p className="fh-tarjeta-sub">{t('demo.listo.sub')}</p>
-            <dl className="fh-datos">
+            <p className="w-sub">{t('demo.listo.sub')}</p>
+            <dl className="w-datos">
               <dt>{t('demo.usuario')}</dt>
               <dd>{created.ownerEmail}</dd>
               <dt>{t('demo.contra')}</dt>
               <dd>{t('demo.contra.v')}</dd>
             </dl>
-            <div className="fh-acciones">
-              <a className="fh-btn fh-btn--lima fh-btn--grande fh-btn--bloque" href={created.url}>
-                {t('demo.ver')}
-              </a>
-              <a className="fh-btn fh-btn--linea-oscura fh-btn--grande fh-btn--bloque" href={created.panelUrl}>
-                {t('demo.panel')}
-              </a>
+            <div className="w-acciones">
+              <a className="v-btn v-btn--acento v-btn--grande" href={created.url}>{t('demo.ver')}</a>
+              <a className="v-btn v-btn--linea v-btn--grande" href={created.panelUrl}>{t('demo.panel')}</a>
               {created.channelsUrl ? (
-                <a className="fh-btn fh-btn--linea-oscura fh-btn--grande fh-btn--bloque" href={created.channelsUrl}>
-                  {t('demo.canales')}
-                </a>
+                <a className="v-btn v-btn--linea v-btn--grande" href={created.channelsUrl}>{t('demo.canales')}</a>
               ) : null}
             </div>
-            <p className="fh-nota">
-              <span className="fh-nota-ico">
-                <IconLock />
-              </span>
+            <p className="w-nota">
+              <IconLock />
               {t('demo.exito.nota')}
             </p>
           </div>
@@ -171,197 +188,201 @@ export default function DemoWizard() {
     );
   }
 
-  return (
-    <div className="fh-page">
-      <header className="fh-topbar">
-        <Link href="/" aria-label="Ir al inicio de fábrica">
-          {marca}
-        </Link>
-        <span className="fh-topbar-fin">
-          <SelectorIdioma compacto />
-          <Link className="fh-volver" href="/">
-            <span aria-hidden="true">←</span> {t('volver')}
-          </Link>
-        </span>
-      </header>
-
-      <main className="fh-panel">
-        <div className="fh-tarjeta">
-          <h1>{t('demo.h1')}</h1>
-          <p className="fh-tarjeta-sub">{t('demo.sub')}</p>
-
-          {error ? (
-            <div className="fh-aviso" role="alert">
-              {error}
-            </div>
-          ) : null}
-
-          <form onSubmit={createStore}>
-            <div className="fh-bloque">
-              <p className="fh-legend">
-                <span className="fh-legend-num">1</span> {t('demo.que.vendes')}
-              </p>
-              <div className="fh-chips">
-                {RUBROS.map(r => (
-                  <button
-                    type="button"
-                    key={r.key}
-                    className="fh-opcion"
-                    aria-pressed={rubro === r.key}
-                    onClick={() => setRubro(r.key)}
-                  >
-                    {r.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="fh-bloque">
-              <p className="fh-legend">
-                <span className="fh-legend-num">2</span> {t('demo.marca')}
-              </p>
-              <div className="fh-chips">
-                {ESTILOS.map(s => (
-                  <button
-                    type="button"
-                    key={s.key}
-                    className="fh-opcion"
-                    aria-pressed={estilo === s.key}
-                    onClick={() => setEstilo(s.key)}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="fh-bloque">
-              <p className="fh-legend">
-                <span className="fh-legend-num">3</span> {t('demo.modo')}
-              </p>
-              <div className="fh-chips">
-                {MODOS.map(m => (
-                  <button
-                    type="button"
-                    key={m.key}
-                    className="fh-opcion"
-                    aria-pressed={modo === m.key}
-                    onClick={() => setModo(m.key)}
-                  >
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="fh-bloque">
-              <p className="fh-legend">
-                <span className="fh-legend-num">4</span> {t('demo.disenos')}
-              </p>
-              <div className="design-options" style={{ opacity: designsBusy ? 0.55 : 1 }}>
-                {proposals.map(d => (
-                  <button
-                    type="button"
-                    key={d.key}
-                    className={`design-card${selectedKey === d.key ? ' selected' : ''}`}
-                    onClick={() => setSelectedKey(d.key)}
-                    aria-pressed={selectedKey === d.key}
-                  >
-                    <div className="design-head" style={{ background: d.brand, color: d.brandInk }}>
-                      <span className="dp-marca">{d.label}</span>
-                      <span className="dp-menu" aria-hidden="true">
-                        <i style={{ background: d.brandInk }} />
-                        <i style={{ background: d.brandInk }} />
-                        <i style={{ background: d.brandInk }} />
-                      </span>
-                    </div>
-                    <div className="design-body" style={{ background: d.bg }}>
-                      <div
-                        className="dp-hero"
-                        style={{ background: d.surface, border: `1px solid ${d.inkSoft}22`, borderRadius: d.radius }}
-                      >
-                        <span className="dp-t" style={{ background: d.ink }} />
-                        <span className="dp-t dp-t--corta" style={{ background: d.inkSoft }} />
-                        <span className="dp-cta" style={{ background: d.accent }} />
-                      </div>
-                      <div className="dp-rejilla">
-                        {[0, 1, 2].map(i => (
-                          <span
-                            key={i}
-                            style={{ background: d.surface, border: `1px solid ${d.inkSoft}22`, borderRadius: d.radius }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <div className="design-name">
-                      {d.label}
-                      <span className="dp-fuente">{d.headingFont === 'serif' ? 'Serif' : 'Grotesca'}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                className="fh-regenerar"
-                disabled={designsBusy}
-                onClick={() => loadProposals(rubro, estilo, modo)}
-              >
-                {designsBusy ? t('demo.disenando') : t('demo.otros')}
-              </button>
-              <p className="fh-nota">
-                <span className="fh-nota-ico">
-                  <IconLock />
-                </span>
-                {t('demo.unicidad')}
-              </p>
-            </div>
-
-            <div className="fh-bloque">
-              <p className="fh-legend">
-                <span className="fh-legend-num">5</span> {t('demo.datos')}
-              </p>
-              <div className="fh-campo">
-                <label htmlFor="storeName">{t('demo.nombre')}</label>
-                <input
-                  id="storeName"
-                  type="text"
-                  value={storeName}
-                  maxLength={40}
-                  placeholder={t('demo.nombre.ph')}
-                  onChange={e => setStoreName(e.target.value)}
-                />
-              </div>
-              <div className="fh-campo">
-                <label htmlFor="ownerEmail">{t('demo.correo')}</label>
-                <input
-                  id="ownerEmail"
-                  type="email"
-                  value={ownerEmail}
-                  placeholder="tucorreo@ejemplo.com"
-                  autoComplete="email"
-                  onChange={e => setOwnerEmail(e.target.value)}
-                />
-                <p className="fh-campo-ayuda">{t('demo.correo.ayuda')}</p>
-              </div>
-              <div className="fh-campo">
-                <label htmlFor="ownerPassword">{t('demo.clave')}</label>
-                <input
-                  id="ownerPassword"
-                  type="password"
-                  value={ownerPassword}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  onChange={e => setOwnerPassword(e.target.value)}
-                />
-                <p className="fh-campo-ayuda">{t('demo.clave.ayuda')}</p>
-              </div>
-            </div>
-
-            <button className="fh-btn fh-btn--lima fh-btn--grande fh-btn--bloque fh-enviar" type="submit" disabled={busy}>
-              {busy ? t('demo.enviando') : t('demo.enviar')}
+  /* ------------------------------ bifurcación ----------------------------- */
+  if (via === 'sin-elegir') {
+    return (
+      <div className="w">
+        {barra}
+        <main className="w-panel w-panel--ancho">
+          <div className="w-cabecera">
+            <h1>{t('w.bif.t')}</h1>
+            <p className="w-sub">{t('w.bif.sub')}</p>
+          </div>
+          <div className="w-bifurcacion">
+            <button type="button" className="w-via" onClick={() => setVia('plantilla')}>
+              <span className="w-via-lienzo">
+                <Escaparate p={PLANTILLAS_POR_ID.lumina} locale={locale} variante="tarjeta" />
+              </span>
+              <span className="w-via-txt">
+                <b>{t('w.bif.tpl')}</b>
+                <em>{t('w.bif.tpl.d')}</em>
+              </span>
             </button>
-          </form>
-        </div>
+            <button type="button" className="w-via w-via--ia" onClick={() => setVia('ia')}>
+              <span className="w-via-lienzo w-via-lienzo--ia">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/img/ai-exclusivo.jpg" alt="" />
+              </span>
+              <span className="w-via-txt">
+                <b>{t('w.bif.ai')}</b>
+                <em>{t('w.bif.ai.d')}</em>
+              </span>
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  /* --------------------------------- pasos -------------------------------- */
+  const camposTienda = (
+    <div className="w-bloque">
+      <p className="w-legend">
+        <span className="w-num">{via === 'plantilla' ? 2 : 5}</span> {t('demo.datos')}
+      </p>
+      <div className="w-campo">
+        <label htmlFor="storeName">{t('demo.nombre')}</label>
+        <input id="storeName" type="text" value={storeName} maxLength={40} placeholder={t('demo.nombre.ph')} onChange={e => setStoreName(e.target.value)} />
+      </div>
+      <div className="w-campo">
+        <label htmlFor="ownerEmail">{t('demo.correo')}</label>
+        <input id="ownerEmail" type="email" value={ownerEmail} placeholder="tucorreo@ejemplo.com" autoComplete="email" onChange={e => setOwnerEmail(e.target.value)} />
+        <p className="w-ayuda">{t('demo.correo.ayuda')}</p>
+      </div>
+      <div className="w-campo">
+        <label htmlFor="ownerPassword">{t('demo.clave')}</label>
+        <input id="ownerPassword" type="password" value={ownerPassword} placeholder="••••••••" autoComplete="new-password" onChange={e => setOwnerPassword(e.target.value)} />
+        <p className="w-ayuda">{t('demo.clave.ayuda')}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="w">
+      {barra}
+      <main className="w-panel w-panel--ancho">
+        {error ? (
+          <div className="w-aviso" role="alert">{error}</div>
+        ) : null}
+
+        <form onSubmit={createStore}>
+          {via === 'plantilla' ? (
+            <>
+              <div className="w-bloque">
+                <p className="w-legend">
+                  <span className="w-num">1</span> {t('w.tpl.t')}
+                </p>
+                <p className="w-ayuda w-ayuda--suelta">{t('w.tpl.sub')}</p>
+                <ul className="w-plantillas">
+                  {PLANTILLAS.map(p => (
+                    <li key={p.id}>
+                      <button
+                        type="button"
+                        className={`w-plantilla${plantillaId === p.id ? ' is-on' : ''}`}
+                        aria-pressed={plantillaId === p.id}
+                        onClick={() => setPlantillaId(p.id)}
+                      >
+                        <span className="w-plantilla-lienzo">
+                          <Escaparate p={p} locale={locale} variante="tarjeta" />
+                        </span>
+                        <span className="w-plantilla-id">
+                          <b>{p.nombre}</b>
+                          <em>{etiquetaCategoria(p.categoria, locale)}</em>
+                          {plantillaId === p.id ? <i className="w-plantilla-tick"><IconTick /></i> : null}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="w-nota">
+                  <IconLock />
+                  {t('w.reutilizable')}
+                </p>
+              </div>
+              {camposTienda}
+            </>
+          ) : (
+            <>
+              <div className="w-bloque">
+                <p className="w-legend"><span className="w-num">1</span> {t('demo.que.vendes')}</p>
+                <div className="w-chips">
+                  {RUBROS.map(r => (
+                    <button type="button" key={r.key} className="w-chip" aria-pressed={rubro === r.key} onClick={() => setRubro(r.key)}>{r.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="w-bloque">
+                <p className="w-legend"><span className="w-num">2</span> {t('demo.marca')}</p>
+                <div className="w-chips">
+                  {ESTILOS.map(x => (
+                    <button type="button" key={x.key} className="w-chip" aria-pressed={estilo === x.key} onClick={() => setEstilo(x.key)}>{x.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="w-bloque">
+                <p className="w-legend"><span className="w-num">3</span> {t('demo.modo')}</p>
+                <div className="w-chips">
+                  {MODOS.map(m => (
+                    <button type="button" key={m.key} className="w-chip" aria-pressed={modo === m.key} onClick={() => setModo(m.key)}>{m.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="w-bloque">
+                <p className="w-legend"><span className="w-num">4</span> {t('demo.disenos')}</p>
+                <div className="design-options" style={{ opacity: designsBusy ? 0.55 : 1 }}>
+                  {proposals.map(d => (
+                    <button
+                      type="button"
+                      key={d.key}
+                      className={`design-card${selectedKey === d.key ? ' selected' : ''}`}
+                      onClick={() => { setSelectedKey(d.key); setReclamado(true); }}
+                      aria-pressed={selectedKey === d.key}
+                    >
+                      <div className="design-head" style={{ background: d.brand, color: d.brandInk }}>
+                        <span className="dp-marca">{d.label}</span>
+                        <span className="dp-menu" aria-hidden="true"><i style={{ background: d.brandInk }} /><i style={{ background: d.brandInk }} /><i style={{ background: d.brandInk }} /></span>
+                      </div>
+                      <div className="design-body" style={{ background: d.bg }}>
+                        <div className="dp-hero" style={{ background: d.surface, border: `1px solid ${d.inkSoft}22`, borderRadius: d.radius }}>
+                          <span className="dp-t" style={{ background: d.ink }} />
+                          <span className="dp-t dp-t--corta" style={{ background: d.inkSoft }} />
+                          <span className="dp-cta" style={{ background: d.accent }} />
+                        </div>
+                        <div className="dp-rejilla">
+                          {[0, 1, 2].map(i => (
+                            <span key={i} style={{ background: d.surface, border: `1px solid ${d.inkSoft}22`, borderRadius: d.radius }} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="design-name">
+                        {d.label}
+                        <span className="dp-fuente">{d.headingFont === 'serif' ? 'Serif' : 'Grotesca'}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                <button type="button" className="w-regenerar" disabled={designsBusy} onClick={() => loadProposals(rubro, estilo, modo)}>
+                  {designsBusy ? t('demo.disenando') : t('demo.otros')}
+                </button>
+
+                {reclamado && selectedKey ? (
+                  <div className="w-reclamo" role="status">
+                    <span className="w-reclamo-ico"><IconLock /></span>
+                    <span>
+                      <b>{t('w.reclamo.t')}</b>
+                      <em>{t('w.reclamo.d')}</em>
+                      <code>DESIGN #{selectedKey.slice(0, 10).toUpperCase()}</code>
+                    </span>
+                  </div>
+                ) : (
+                  <p className="w-nota">
+                    <IconLock />
+                    {t('demo.unicidad')}
+                  </p>
+                )}
+              </div>
+              {camposTienda}
+            </>
+          )}
+
+          <button
+            className="v-btn v-btn--acento v-btn--grande w-enviar"
+            type="submit"
+            disabled={busy || (via === 'plantilla' && !plantillaId)}
+          >
+            {busy ? t('demo.enviando') : t('demo.enviar')}
+          </button>
+        </form>
       </main>
     </div>
   );

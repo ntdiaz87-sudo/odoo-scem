@@ -1,3 +1,7 @@
+@import './fuentes.css';
+@import './tokens.css';
+@import './v2.css';
+
 :root {
   --bg: #f5f8f7;
   --surface: #ffffff;
@@ -9,11 +13,9 @@
   --accent-dark: #0b6f63;
   --accent-soft: #e0f0ec;
   --dark: #16262a;
-  /* Pilas con fuentes chinas por delante: en zh el texto CJK lo resuelve
-     Noto Sans SC y los números y latinas, Bricolage/Public Sans. */
-  --font-display: 'Bricolage Grotesque', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Public Sans', sans-serif;
-  --font-body: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Public Sans', system-ui, sans-serif;
-  --font-serif-cjk: 'Noto Serif SC', 'Source Serif 4', 'Songti SC', Georgia, serif;
+  /* Las pilas tipográficas viven en fuentes.css: el CJK lo pone el sistema y
+     el latino se sirve desde nuestro dominio. */
+  --font-body: var(--font-sans);
 }
 
 * { box-sizing: border-box; }

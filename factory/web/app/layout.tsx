@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { getLocale } from '../lib/i18n-server';
+import { getTema } from '../lib/tema-server';
 import { LocaleProvider } from './locale-provider';
+import { TemaProvider } from './tema-provider';
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -19,24 +21,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
+  const [locale, tema] = await Promise.all([getLocale(), getTema()]);
   return (
-    <html lang={locale === 'zh' ? 'zh-CN' : 'es'}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href={
-            /* Las fuentes chinas se cargan siempre: las tiendas del mercado
-               chino las necesitan aunque el visitante mire la fábrica en
-               español. */
-            'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700&family=Public+Sans:wght@400;500;600;700&display=swap'
-          }
-        />
-      </head>
+    // Sin data-theme manda la preferencia del sistema. Resolverlo en el
+    // servidor evita el parpadeo de tema al cargar.
+    <html lang={locale === 'zh' ? 'zh-CN' : 'es'} {...(tema ? { 'data-theme': tema } : {})}>
       <body>
-        <LocaleProvider locale={locale}>{children}</LocaleProvider>
+        <TemaProvider inicial={tema}>
+          <LocaleProvider locale={locale}>{children}</LocaleProvider>
+        </TemaProvider>
       </body>
     </html>
   );

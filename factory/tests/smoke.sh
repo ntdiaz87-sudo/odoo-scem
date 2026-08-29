@@ -23,15 +23,15 @@ echo "$B" | grep -q "se parece a otra" && ok "Landing: sección diseños únicos
 echo "$B" | grep -q "Planes según tu modelo" && ok "Landing: sección de planes" || bad "Landing: falta sección de planes"
 [ "$(code "$BASE/demo")" = 200 ] && ok "Wizard /demo responde" || bad "Wizard /demo no responde"
 
-for T in verdealto nocta; do
+for T in qingzhu noctachina; do
   [ "$(code "$PROTO://$T.$HOSTPART/")" = 200 ] && ok "Tienda $T responde" || bad "Tienda $T no responde"
 done
-body "$PROTO://verdealto.$HOSTPART/" | grep -q "Monstera deliciosa" && ok "Verdealto: catálogo propio" || bad "Verdealto: catálogo no aparece"
-body "$PROTO://nocta.$HOSTPART/" | grep -q "Camisa oversize" && ok "NOCTA: catálogo propio" || bad "NOCTA: catálogo no aparece"
+body "$PROTO://qingzhu.$HOSTPART/" | grep -q "龟背竹" && ok "青竹家居: catálogo propio" || bad "青竹家居: catálogo no aparece"
+body "$PROTO://noctachina.$HOSTPART/" | grep -q "黑色宽版衬衫" && ok "NOCTA 夜行: catálogo propio" || bad "NOCTA 夜行: catálogo no aparece"
 
 # tls-check: candados solo para tiendas reales
 [ "$(code "$BASE/api/tls-check?domain=${HOSTPART%%:*}")" = 200 ] && ok "tls-check: dominio raíz autorizado" || bad "tls-check raíz"
-[ "$(code "$BASE/api/tls-check?domain=verdealto.${HOSTPART%%:*}")" = 200 ] && ok "tls-check: tienda real autorizada" || bad "tls-check tienda real"
+[ "$(code "$BASE/api/tls-check?domain=qingzhu.${HOSTPART%%:*}")" = 200 ] && ok "tls-check: tienda real autorizada" || bad "tls-check tienda real"
 [ "$(code "$BASE/api/tls-check?domain=fantasma-xyz.${HOSTPART%%:*}")" = 404 ] && ok "tls-check: subdominio inventado rechazado" || bad "tls-check inventado"
 
 # Subdominio inexistente: en prod el TLS se niega (000, correcto); en HTTP local, página de aviso
