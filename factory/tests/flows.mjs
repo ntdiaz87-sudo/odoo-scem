@@ -20,10 +20,13 @@ const page = await ctx.newPage();
 await check('Landing carga y muestra el mensaje principal', async () => {
   const r = await page.goto(BASE + '/', { waitUntil: 'networkidle' });
   assert(r.status() === 200, `status ${r.status()}`);
-  assert(await page.locator('h1').first().textContent() === 'Tu tienda online, hecha por ti en minutos.', 'h1 distinto');
+  const h1 = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ').trim();
+  assert(h1 === 'Tu tienda online, creada por IA. Ninguna otra igual.', `h1 distinto: "${h1}"`);
 });
 await check('Landing: secciones Cómo funciona / Diseños únicos / Planes', async () => {
-  for (const t of ['De la idea a vender', 'Ninguna tienda se parece a otra', 'Planes según tu modelo de negocio']) {
+  // El diseño parte estos titulares en dos líneas (<br>), así que se
+  // comprueban por fragmentos contiguos.
+  for (const t of ['De la idea a vender', 'se parece a otra', 'Planes según tu modelo']) {
     assert(await page.getByText(t, { exact: false }).first().isVisible(), `falta "${t}"`);
   }
 });

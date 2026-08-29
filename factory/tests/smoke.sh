@@ -19,7 +19,7 @@ body() { curl -s --max-time 40 "$1" 2>/dev/null; }
 [ "$(code "$BASE/")" = 200 ] && ok "Landing responde 200" || bad "Landing no responde"
 B=$(body "$BASE/")
 echo "$B" | grep -q "Probar demo gratis" && ok "Landing: CTA de demo" || bad "Landing: falta CTA de demo"
-echo "$B" | grep -q "Ninguna tienda se parece a otra" && ok "Landing: sección diseños únicos" || bad "Landing: falta sección diseños únicos"
+echo "$B" | grep -q "se parece a otra" && ok "Landing: sección diseños únicos" || bad "Landing: falta sección diseños únicos"
 echo "$B" | grep -q "Planes según tu modelo" && ok "Landing: sección de planes" || bad "Landing: falta sección de planes"
 [ "$(code "$BASE/demo")" = 200 ] && ok "Wizard /demo responde" || bad "Wizard /demo no responde"
 
