@@ -1,0 +1,33 @@
+# Puente GitHub → Gitea: cada cambio en factory/ de esta rama se empuja como
+# subtree a nilo/fabrica (develop), donde el CI del GEX44 despliega solo.
+# Requiere el secreto GITEA_TOKEN (token de Gitea con escritura en el repo).
+name: Sincronizar fábrica a Gitea
+
+on:
+  push:
+    branches: [claude/online-store-factory-9cnbb7]
+    paths: ['factory/**']
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Subtree de factory/ a Gitea develop
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+        run: |
+          set -e
+          if [ -z "$GITEA_TOKEN" ]; then
+            echo "Falta el secreto GITEA_TOKEN (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+          git subtree split --prefix=factory -b fabrica-solo
+          git push --force \
+            "https://nilo:${GITEA_TOKEN}@git.enetradex.com/nilo/fabrica.git" \
+            fabrica-solo:develop
+          echo "Sincronizado: el CI de Gitea despliega ahora a producción."
