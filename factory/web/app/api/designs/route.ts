@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateProposals, RUBRO_KEYS, ESTILO_KEYS, MODO_KEYS } from '../../../lib/design-generator';
 import { takenDesignKeys } from '../../../lib/design-registry';
+import { getLocale } from '../../../lib/i18n-server';
 
 export async function POST(req: NextRequest) {
   let payload: { rubro?: string; estilo?: string; modo?: string };
@@ -15,7 +16,10 @@ export async function POST(req: NextRequest) {
 
   try {
     const taken = await takenDesignKeys();
-    const proposals = generateProposals({ rubro, estilo, modo }, taken, 3);
+    // Los nombres de los diseños los lee quien elige: van en el idioma del
+    // VISITANTE, no en el del mercado.
+    const locale = await getLocale();
+    const proposals = generateProposals({ rubro, estilo, modo }, taken, 3, locale);
     return NextResponse.json({ proposals });
   } catch (err) {
     console.error('[designs] Error generando propuestas:', err);

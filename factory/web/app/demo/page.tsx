@@ -346,7 +346,7 @@ export default function DemoWizard() {
                       </div>
                       <div className="design-name">
                         {d.label}
-                        <span className="dp-fuente">{d.headingFont === 'serif' ? 'Serif' : 'Grotesca'}</span>
+                        <span className="dp-fuente">{t(d.headingFont === 'serif' ? 'w.fuente.serif' : 'w.fuente.grotesque')}</span>
                       </div>
                     </button>
                   ))}

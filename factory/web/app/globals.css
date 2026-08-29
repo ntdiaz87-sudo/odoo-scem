@@ -1256,20 +1256,24 @@ a:hover { color: var(--accent-dark); }
   .fh-canal-fila { flex-wrap: wrap; }
 }
 
-/* ---- selector de idioma del visitante ---- */
+/* ---- selector de idioma del visitante ----
+   Vive en cabeceras claras (el home V2 y el asistente), así que se pinta con
+   los tokens del tema y no con blancos fijos: con blanco sobre fondo claro el
+   botón desaparecía. Hace juego con .v-tema, que está justo al lado. */
 .fh-idiomas {
   display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; padding: 3px;
+  border: 1px solid var(--v-borde); border-radius: 999px; padding: 3px;
+  background: var(--v-superficie);
 }
 .fh-idiomas button {
   min-height: 32px; padding: 0 12px; border: none; border-radius: 999px;
-  background: transparent; color: rgba(255, 255, 255, .72);
-  font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer;
+  background: transparent; color: var(--v-texto-suave);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer;
   transition: background-color .16s ease, color .16s ease;
 }
-.fh-idiomas button:hover { color: var(--f-white); }
-.fh-idiomas button.es-activo { background: var(--f-white); color: var(--f-ink); }
-.fh-idiomas button:focus-visible { outline: 2px solid var(--f-lime); outline-offset: 2px; }
+.fh-idiomas button:hover { color: var(--v-texto); }
+.fh-idiomas button.es-activo { background: var(--v-texto); color: var(--v-bg); }
+.fh-idiomas button:focus-visible { outline: 2px solid var(--v-acento); outline-offset: 2px; }
 .fh-topbar-fin { display: inline-flex; align-items: center; gap: 14px; }
 
 @media (max-width: 760px) {

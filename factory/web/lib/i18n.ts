@@ -472,6 +472,9 @@ const D: Dict = {
   'v.sync.probar': { zh: '演示一次', es: 'Ver la demo' },
   'v.sync.reiniciar': { zh: '重新演示', es: 'Repetir' },
   'v.sync.producto': { zh: '智能手表', es: 'Reloj inteligente' },
+  'v.sync.wechat': { zh: '微信', es: 'WeChat' },
+  'w.fuente.grotesque': { zh: '无衬线', es: 'Grotesca' },
+  'w.fuente.serif': { zh: '衬线', es: 'Serif' },
 
   'v.fab.h2': { zh: 'AI 商品工厂', es: 'Fábrica de productos con IA' },
   'v.fab.sub': { zh: '一张照片、一个链接或一个 Excel，就能创建可直接销售的商品。', es: 'Convierte una foto, un enlace o un Excel en un producto listo para vender.' },

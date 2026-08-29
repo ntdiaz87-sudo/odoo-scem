@@ -1,7 +1,8 @@
 /**
  * Batería del back office del comerciante (/panel).
  *
- * Corre contra la réplica local:
+ * Corre contra la réplica local. Necesita fixtura; móntala primero:
+ *   node tests/fixtura-backoffice.mjs        → imprime la línea de entorno
  *   CORREO=<correo del dueño> SLUG=<canal> ID_AJENO=<id de producto de otra
  *   tienda> SLUG_AJENO=<otro canal> node tests/qa-backoffice.mjs
  *

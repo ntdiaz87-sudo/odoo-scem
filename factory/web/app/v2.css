@@ -216,11 +216,14 @@
   font-size: clamp(27px, 3.4vw, 42px); line-height: 1.14; letter-spacing: -.02em;
   margin: 0 0 12px; text-wrap: balance;
 }
-.v-sec { padding: clamp(64px, 8vw, 108px) 0; }
+/* 108+108 = 216px entre secciones era demasiado aire: obligaba a hacer scroll
+   a ciegas entre bloque y bloque. 74+74 respira igual y deja asomar lo que
+   viene. */
+.v-sec { padding: clamp(48px, 5.4vw, 74px) 0; }
 .v-sec--sutil { background: var(--v-bg-sutil); }
 .v-sec--noche { background: var(--v-noche); color: var(--v-noche-texto); }
 .v-sec--noche .v-sec-sub, .v-sec--noche .v-aviso-demo { color: var(--v-noche-texto-suave); }
-.v-sec-cab { margin-bottom: 34px; max-width: 62ch; }
+.v-sec-cab { margin-bottom: 28px; max-width: 62ch; }
 .v-sec-cab--centro { margin-inline: auto; text-align: center; }
 .v-sec-sub { font-size: clamp(15px, 1.4vw, 17.5px); line-height: 1.6; color: var(--v-texto-suave); margin: 0; }
 

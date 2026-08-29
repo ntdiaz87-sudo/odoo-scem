@@ -58,7 +58,7 @@ export function DemoSync({ etiquetas }: { etiquetas: Record<string, string> }) {
   const canales = [
     { k: 'Web', ico: 'M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z' },
     { k: 'H5', ico: 'M7 2h10v20H7zM11 18h2' },
-    { k: '微信', ico: 'M9 4c4 0 7 2.5 7 5.6S13 15 9 15a9 9 0 0 1-2.3-.3L4 16l.8-2.3A5.9 5.9 0 0 1 2 9.6C2 6.5 5 4 9 4z' },
+    { k: etiquetas.wechat, ico: 'M9 4c4 0 7 2.5 7 5.6S13 15 9 15a9 9 0 0 1-2.3-.3L4 16l.8-2.3A5.9 5.9 0 0 1 2 9.6C2 6.5 5 4 9 4z' },
   ];
 
   return (

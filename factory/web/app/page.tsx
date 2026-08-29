@@ -201,6 +201,7 @@ export default async function Home() {
                 etiquetas={{
                   demo: t('v.demo'), aviso: t('v.demo.aviso'), agente: t('v.sync.agente'),
                   orden: t('v.sync.orden'), producto: t('v.sync.producto'), reiniciar: t('v.sync.reiniciar'),
+                  wechat: t('v.sync.wechat'),
                 }}
               />
             </Revelar>

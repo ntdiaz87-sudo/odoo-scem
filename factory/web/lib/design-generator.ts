@@ -11,9 +11,8 @@
  * el "plan B" y la encuesta alimentará al diseñador agéntico.
  */
 import type { StoreDesign } from './designs';
-import { LOCALE, type Locale } from './i18n';
+import { type Locale } from './i18n';
 
-const ZH = LOCALE === 'zh';
 
 /** Las etiquetas de la encuesta siguen el idioma del VISITANTE. */
 export function rubros(l: Locale) {
@@ -143,38 +142,45 @@ function fingerprint(tokens: Omit<StoreDesign, 'key' | 'label'>): string {
 
 /* ---------- vocabulario para los nombres ---------- */
 
-const HUE_NAMES: Array<[number, string]> = ZH
-  ? [
+/* El NOMBRE del diseño lo lee quien está eligiendo, así que sigue al idioma
+   del VISITANTE, no al del mercado. Es lo contrario que la tienda ya creada,
+   que se sirve siempre en el idioma de su mercado. */
+const HUE_NAMES_POR_IDIOMA: Record<Locale, Array<[number, string]>> = {
+  zh: [
       [15, '陶土'], [35, '琥珀'], [50, '蜜色'], [70, '橄榄'], [100, '青竹'],
       [140, '翡翠'], [170, '碧玉'], [200, '湖蓝'], [225, '靛青'], [255, '紫罗兰'],
       [285, '兰紫'], [320, '莓红'], [345, '石榴'], [360, '珊瑚'],
-    ]
-  : [
+  ],
+  es: [
       [15, 'Terracota'], [35, 'Ámbar'], [50, 'Miel'], [70, 'Oliva'], [100, 'Salvia'],
       [140, 'Esmeralda'], [170, 'Jade'], [200, 'Lago'], [225, 'Índigo'], [255, 'Violeta'],
       [285, 'Orquídea'], [320, 'Frambuesa'], [345, 'Granate'], [360, 'Coral'],
-    ];
+  ],
+};
 
-const ESTILO_SUFIJOS: Record<string, string[]> = ZH
-  ? {
+const SUFIJOS_POR_IDIOMA: Record<Locale, Record<string, string[]>> = {
+  zh: {
       calido: ['小屋', '暖阳', '静谧', '街角', '微温'],
       elegante: ['雅致', '典礼', '素朴', '华庭', '经典'],
       energico: ['电光', '疾行', '鲜活', '锋锐', '街头'],
-      minimalista: ['纯粹', '安然', '本真', '轻盈', '清晰'],
-    }
-  : {
+    minimalista: ['纯粹', '安然', '本真', '轻盈', '清晰'],
+  },
+  es: {
       calido: ['de casa', 'al sol', 'sereno', 'de barrio', 'tibio'],
       elegante: ['noble', 'de gala', 'sobrio', 'imperial', 'clásico'],
       energico: ['eléctrico', 'en marcha', 'vivo', 'radical', 'urbano'],
-      minimalista: ['puro', 'en calma', 'esencial', 'ligero', 'nítido'],
-    };
+    minimalista: ['puro', 'en calma', 'esencial', 'ligero', 'nítido'],
+  },
+};
 
-function designName(brandHue: number, estilo: string, rand: () => number): string {
+function designName(brandHue: number, estilo: string, rand: () => number, l: Locale): string {
   const hue = ((brandHue % 360) + 360) % 360;
-  const base = (HUE_NAMES.find(([limit]) => hue <= limit) ?? HUE_NAMES[0])[1];
-  const sufijos = ESTILO_SUFIJOS[estilo] ?? ESTILO_SUFIJOS.calido;
+  const nombres = HUE_NAMES_POR_IDIOMA[l];
+  const base = (nombres.find(([limit]) => hue <= limit) ?? nombres[0])[1];
+  const porEstilo = SUFIJOS_POR_IDIOMA[l];
+  const sufijos = porEstilo[estilo] ?? porEstilo.calido;
   const suf = sufijos[Math.floor(rand() * sufijos.length)];
-  return ZH ? `${base}${suf}` : `${base} ${suf}`;
+  return l === 'zh' ? `${base}${suf}` : `${base} ${suf}`;
 }
 
 /* ---------- el generador ---------- */
@@ -196,7 +202,7 @@ const ESTILO_PARAMS: Record<string, { sat: [number, number]; radius: string[]; f
   minimalista: { sat: [10, 24], radius: ['8px', '10px', '12px'], font: ['grotesque'] },
 };
 
-export function generateDesign(answers: SurveyAnswers, seed: number): StoreDesign {
+export function generateDesign(answers: SurveyAnswers, seed: number, locale: Locale): StoreDesign {
   const rand = mulberry32(seed);
   const [h0, h1] = RUBRO_HUES[answers.rubro] ?? RUBRO_HUES.otro;
   const params = ESTILO_PARAMS[answers.estilo] ?? ESTILO_PARAMS.calido;
@@ -244,7 +250,7 @@ export function generateDesign(answers: SurveyAnswers, seed: number): StoreDesig
 
   return {
     key: fingerprint(tokens),
-    label: designName(brandHue, answers.estilo, rand),
+    label: designName(brandHue, answers.estilo, rand, locale),
     ...tokens,
   };
 }
@@ -255,14 +261,15 @@ export function generateDesign(answers: SurveyAnswers, seed: number): StoreDesig
 export function generateProposals(
   answers: SurveyAnswers,
   takenKeys: Set<string>,
-  count = 3,
+  count: number,
+  locale: Locale,
 ): StoreDesign[] {
   const proposals: StoreDesign[] = [];
   const seen = new Set(takenKeys);
   let seed = Math.floor(Math.random() * 2 ** 31);
   let guard = 0;
   while (proposals.length < count && guard++ < 500) {
-    const d = generateDesign(answers, seed++);
+    const d = generateDesign(answers, seed++, locale);
     if (seen.has(d.key)) continue;
     seen.add(d.key);
     proposals.push(d);
