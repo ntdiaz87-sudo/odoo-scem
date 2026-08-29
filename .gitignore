@@ -41,3 +41,7 @@ Desktop.ini
 *~
 .idea/
 .vscode/
+
+# ── Fábrica: dependencias y artefactos de las baterías de prueba ──
+node_modules/
+factory/*.png
