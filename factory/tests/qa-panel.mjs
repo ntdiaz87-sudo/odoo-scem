@@ -1,10 +1,10 @@
 /**
- * Batería QA del PANEL DEL DUEÑO (backend de la tienda).
+ * Batería QA de la CONSOLA AVANZADA (el panel de Vendure, /dashboard).
  *
- * Cubre el hueco que dejaron flows.mjs y qa-edge.mjs: esas prueban las APIs y
- * el escaparate, pero nunca abrían el panel de Vendure como dueño. Aquí se
- * entra por el MISMO enlace que recibe el cliente y se revisan y editan sus
- * productos, como haría él desde el móvil.
+ * El dueño ya NO entra aquí: su enlace lleva a su propio back office, que
+ * cubre tests/qa-backoffice.mjs. Pero la consola sigue publicada como
+ * 高级控制台 al fondo de los ajustes de la tienda, así que sigue teniendo que
+ * funcionar y, sobre todo, seguir aislada: cada dueño ve SOLO su canal.
  *
  * Uso: node tests/qa-panel.mjs   (réplica local: web en 8300, vendure en 3000)
  */
@@ -38,11 +38,15 @@ if (!tienda.url) {
 }
 const SLUG = tienda.url.replace(/^https?:\/\//, '').split('.')[0];
 
-// El enlace del panel que se le entrega al dueño DEBE funcionar (no 404).
-await check('El enlace del panel que recibe el dueño responde (no 404)', async () => {
+const CONSOLA = `${BASE}/dashboard`;
+
+// El enlace del dueño lleva a SU back office; la consola avanzada se sirve
+// aparte y también tiene que responder por el mismo dominio (no 404).
+await check('El enlace del dueño lleva al back office y la consola avanzada responde', async () => {
   assert(tienda.panelUrl, 'la API no devuelve panelUrl');
-  const r = await fetch(tienda.panelUrl, { redirect: 'follow' });
-  assert(r.status === 200, `panelUrl devolvió ${r.status}`);
+  assert(tienda.panelUrl.endsWith('/panel'), `panelUrl es ${tienda.panelUrl}`);
+  const r = await fetch(CONSOLA + '/', { redirect: 'follow' });
+  assert(r.status === 200, `la consola avanzada devolvió ${r.status}`);
 });
 
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
@@ -70,7 +74,7 @@ const sinErrores = (contexto) => {
 };
 
 await check('El dueño entra a su panel con su correo y contraseña', async () => {
-  await page.goto(tienda.panelUrl, { waitUntil: 'networkidle' });
+  await page.goto(CONSOLA, { waitUntil: 'networkidle' });
   await page.waitForTimeout(2500);
   assert(await page.locator('input').count() >= 2, 'no aparece el formulario de acceso');
   await page.locator('input').nth(0).fill(EMAIL);
