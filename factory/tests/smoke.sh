@@ -18,10 +18,22 @@ body() { curl -s --max-time 40 "$1" 2>/dev/null; }
 
 [ "$(code "$BASE/")" = 200 ] && ok "Landing responde 200" || bad "Landing no responde"
 B=$(body "$BASE/")
-echo "$B" | grep -q "Probar demo gratis" && ok "Landing: CTA de demo" || bad "Landing: falta CTA de demo"
-echo "$B" | grep -q "se parece a otra" && ok "Landing: sección diseños únicos" || bad "Landing: falta sección diseños únicos"
-echo "$B" | grep -q "Planes según tu modelo" && ok "Landing: sección de planes" || bad "Landing: falta sección de planes"
-[ "$(code "$BASE/demo")" = 200 ] && ok "Wizard /demo responde" || bad "Wizard /demo no responde"
+echo "$B" | grep -q "从这里开始\|empieza aqu" && ok "Landing: titular principal" || bad "Landing: falta el titular principal"
+echo "$B" | grep -q "LUMINA" && ok "Landing: galería de plantillas" || bad "Landing: falta la galería de plantillas"
+echo "$B" | grep -q "199" && ok "Landing: sección de planes" || bad "Landing: falta sección de planes"
+[ "$(code "$BASE/demo")" = 200 ] && ok "Asistente /demo responde" || bad "Asistente /demo no responde"
+[ "$(code "$BASE/templates/lumina")" = 200 ] && ok "Previsualización de plantilla responde" || bad "Previsualización no responde"
+
+# --- ESTÁTICOS DEL DESPLIEGUE ---
+# La salida "standalone" de Next NO incluye public/: hay que copiarlo aparte en
+# el Dockerfile. Si esa línea falta, el sitio arranca igual y todo parece bien
+# desde el servidor, pero al visitante le faltan TODAS las imágenes, las
+# tipografías y el service worker. Esto es lo que lo caza.
+[ "$(code "$BASE/img/lumina-hero.jpg")" = 200 ] && ok "Estáticos: imágenes de plantilla" || bad "Estáticos: FALTAN las imágenes (¿public/ en el Dockerfile?)"
+[ "$(code "$BASE/img/agente-xiaomei.png")" = 200 ] && ok "Estáticos: avatares del equipo de IA" || bad "Estáticos: faltan los avatares"
+[ "$(code "$BASE/fuentes/inter-latin.woff2")" = 200 ] && ok "Estáticos: tipografías propias" || bad "Estáticos: faltan las tipografías"
+[ "$(code "$BASE/sw.js")" = 200 ] && ok "Estáticos: service worker de las tiendas" || bad "Estáticos: falta el service worker"
+[ "$(code "$BASE/_next/image?url=%2Fimg%2Flumina-hero.jpg&w=1080&q=75")" = 200 ] && ok "Optimizador de imágenes activo" || bad "Optimizador de imágenes caído (¿sharp?)"
 
 for T in qingzhu noctachina; do
   [ "$(code "$PROTO://$T.$HOSTPART/")" = 200 ] && ok "Tienda $T responde" || bad "Tienda $T no responde"
