@@ -39,7 +39,11 @@ export async function POST(req: NextRequest) {
     let slug = baseSlug;
     for (let attempt = 0; attempt < 3 && !channel; attempt++) {
       if (attempt > 0) slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
-      const result = await adminRequest<{
+      let result: {
+        createChannel: { __typename: string; id?: string; token?: string; message?: string };
+      };
+      try {
+        result = await adminRequest<{
         createChannel: { __typename: string; id?: string; token?: string; message?: string };
       }>(
         auth,
@@ -69,6 +73,11 @@ export async function POST(req: NextRequest) {
           },
         },
       );
+      } catch {
+        // Nombre/código ya ocupado (Vendure lanza el error de restricción única
+        // en vez de devolver su ErrorResult): reintenta con sufijo.
+        continue;
+      }
       if (result.createChannel.__typename === 'Channel') {
         channel = { id: result.createChannel.id!, token: result.createChannel.token! };
       }
