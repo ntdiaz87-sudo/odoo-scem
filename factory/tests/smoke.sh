@@ -45,7 +45,7 @@ fi
 # Crear tienda demo end-to-end
 NOMBRE="prueba-humo-$RANDOM"
 R=$(curl -s --max-time 60 -X POST "$BASE/api/demo" -H 'content-type: application/json' \
-  -d "{\"storeName\":\"$NOMBRE\",\"designKey\":\"nocta\"}")
+  -d "{\"storeName\":\"$NOMBRE\",\"designKey\":\"nocta\",\"ownerEmail\":\"$NOMBRE@humo.local\",\"ownerPassword\":\"humo-clave-123\"}")
 URL=$(echo "$R" | grep -o '"url":"[^"]*"' | cut -d'"' -f4)
 if [ -n "$URL" ]; then
   ok "Demo: tienda creada ($URL)"
@@ -55,7 +55,7 @@ else
 fi
 # Duplicado: debe crear con sufijo, no fallar
 R2=$(curl -s --max-time 60 -X POST "$BASE/api/demo" -H 'content-type: application/json' \
-  -d "{\"storeName\":\"$NOMBRE\",\"designKey\":\"hoja-viva\"}")
+  -d "{\"storeName\":\"$NOMBRE\",\"designKey\":\"hoja-viva\",\"ownerEmail\":\"$NOMBRE-2@humo.local\",\"ownerPassword\":\"humo-clave-123\"}")
 echo "$R2" | grep -q '"url"' && ok "Demo: nombre duplicado reintenta con sufijo" || bad "Demo duplicado falló ($R2)"
 
 if [ "$MODE" != "local" ]; then

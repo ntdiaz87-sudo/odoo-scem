@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findDesign } from '../../../lib/designs';
-import { slugify, storeUrl } from '../../../lib/tenant';
+import { rootDomain, slugify, storeUrl } from '../../../lib/tenant';
 import { adminLogin, adminRequest } from '../../../lib/vendure';
 
 const SAMPLE_PRODUCTS = [
@@ -10,22 +10,83 @@ const SAMPLE_PRODUCTS = [
   { name: 'Pack de regalo', slug: 'pack-regalo', description: 'Combina productos y véndelos juntos.', price: 3200 },
 ];
 
+// Permisos del dueño de tienda: opera su catálogo, pedidos, clientes y
+// promociones dentro de SU canal; solo lectura de configuración.
+const OWNER_PERMISSIONS = [
+  'CreateCatalog', 'ReadCatalog', 'UpdateCatalog', 'DeleteCatalog',
+  'CreateOrder', 'ReadOrder', 'UpdateOrder', 'DeleteOrder',
+  'CreateCustomer', 'ReadCustomer', 'UpdateCustomer',
+  'CreatePromotion', 'ReadPromotion', 'UpdatePromotion', 'DeletePromotion',
+  'CreateTag', 'ReadTag', 'UpdateTag', 'DeleteTag',
+  'ReadShippingMethod', 'ReadPaymentMethod', 'ReadCountry', 'ReadSettings',
+];
+
+const SANDBOX_DAYS = 14;
+
+// Límite simple anti-abuso del demo: 3 tiendas por IP por hora.
+const creationsByIp = new Map<string, number[]>();
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const windowStart = now - 60 * 60 * 1000;
+  const recent = (creationsByIp.get(ip) || []).filter(t => t > windowStart);
+  if (recent.length >= 3) {
+    creationsByIp.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  creationsByIp.set(ip, recent);
+  return false;
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 export async function POST(req: NextRequest) {
-  let payload: { storeName?: string; designKey?: string };
+  let payload: { storeName?: string; designKey?: string; ownerEmail?: string; ownerPassword?: string };
   try {
     payload = await req.json();
   } catch {
     return NextResponse.json({ error: 'Petición inválida.' }, { status: 400 });
   }
   const storeName = (payload.storeName || '').trim();
+  const ownerEmail = (payload.ownerEmail || '').trim().toLowerCase();
+  const ownerPassword = payload.ownerPassword || '';
   if (storeName.length < 2 || storeName.length > 40) {
     return NextResponse.json({ error: 'El nombre debe tener entre 2 y 40 caracteres.' }, { status: 400 });
   }
+  if (!EMAIL_RE.test(ownerEmail)) {
+    return NextResponse.json({ error: 'Escribe un correo válido: será tu usuario del panel.' }, { status: 400 });
+  }
+  if (ownerPassword.length < 8) {
+    return NextResponse.json({ error: 'La contraseña debe tener al menos 8 caracteres.' }, { status: 400 });
+  }
+  const ip = (req.headers.get('x-forwarded-for') || 'local').split(',')[0].trim();
+  if (rateLimited(ip)) {
+    return NextResponse.json(
+      { error: 'Has creado varias tiendas demo seguidas. Espera un rato e inténtalo de nuevo.' },
+      { status: 429 },
+    );
+  }
+
   const design = findDesign(payload.designKey || '');
   const baseSlug = slugify(storeName) || 'tienda';
 
   try {
     const auth = await adminLogin();
+
+    // El correo del dueño debe estar libre ANTES de crear nada.
+    const existing = await adminRequest<{ administrators: { totalItems: number } }>(
+      auth,
+      `query CheckEmail($email: String!) {
+        administrators(options: { filter: { emailAddress: { eq: $email } } }) { totalItems }
+      }`,
+      { email: ownerEmail },
+    );
+    if (existing.administrators.totalItems > 0) {
+      return NextResponse.json(
+        { error: 'Ese correo ya tiene una tienda. Usa otro correo o escríbenos para recuperarla.' },
+        { status: 409 },
+      );
+    }
 
     const zonesData = await adminRequest<{ zones: { items: Array<{ id: string; name: string }> } }>(
       auth,
@@ -37,42 +98,42 @@ export async function POST(req: NextRequest) {
     // Crea el canal; si el slug está ocupado, prueba con sufijos.
     let channel: { id: string; token: string } | null = null;
     let slug = baseSlug;
+    const expiresAt = new Date(Date.now() + SANDBOX_DAYS * 24 * 60 * 60 * 1000).toISOString();
     for (let attempt = 0; attempt < 3 && !channel; attempt++) {
       if (attempt > 0) slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
       let result: {
         createChannel: { __typename: string; id?: string; token?: string; message?: string };
       };
       try {
-        result = await adminRequest<{
-        createChannel: { __typename: string; id?: string; token?: string; message?: string };
-      }>(
-        auth,
-        `mutation CreateChannel($input: CreateChannelInput!) {
-          createChannel(input: $input) {
-            __typename
-            ... on Channel { id token }
-            ... on ErrorResult { message }
-          }
-        }`,
-        {
-          input: {
-            code: slug,
-            token: slug,
-            defaultLanguageCode: 'en',
-            availableLanguageCodes: ['en'],
-            pricesIncludeTax: true,
-            defaultCurrencyCode: 'USD',
-            availableCurrencyCodes: ['USD'],
-            defaultTaxZoneId: zone.id,
-            defaultShippingZoneId: zone.id,
-            customFields: {
-              displayName: storeName,
-              design: JSON.stringify(design),
-              isSandbox: true,
+        result = await adminRequest(
+          auth,
+          `mutation CreateChannel($input: CreateChannelInput!) {
+            createChannel(input: $input) {
+              __typename
+              ... on Channel { id token }
+              ... on ErrorResult { message }
+            }
+          }`,
+          {
+            input: {
+              code: slug,
+              token: slug,
+              defaultLanguageCode: 'en',
+              availableLanguageCodes: ['en'],
+              pricesIncludeTax: true,
+              defaultCurrencyCode: 'USD',
+              availableCurrencyCodes: ['USD'],
+              defaultTaxZoneId: zone.id,
+              defaultShippingZoneId: zone.id,
+              customFields: {
+                displayName: storeName,
+                design: JSON.stringify(design),
+                isSandbox: true,
+                expiresAt,
+              },
             },
           },
-        },
-      );
+        );
       } catch {
         // Nombre/código ya ocupado (Vendure lanza el error de restricción única
         // en vez de devolver su ErrorResult): reintenta con sufijo.
@@ -132,7 +193,44 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ url: storeUrl(channel.token) });
+    // Cuenta del dueño: rol restringido a SU canal + administrador.
+    const role = await adminRequest<{ createRole: { id: string } }>(
+      auth,
+      `mutation CreateRole($input: CreateRoleInput!) {
+        createRole(input: $input) { id }
+      }`,
+      {
+        input: {
+          code: `owner-${slug}`,
+          description: `Dueño de la tienda ${storeName}`,
+          permissions: OWNER_PERMISSIONS,
+          channelIds: [channel.id],
+        },
+      },
+    );
+    await adminRequest(
+      auth,
+      `mutation CreateAdmin($input: CreateAdministratorInput!) {
+        createAdministrator(input: $input) { id }
+      }`,
+      {
+        input: {
+          firstName: storeName,
+          lastName: '(dueño)',
+          emailAddress: ownerEmail,
+          password: ownerPassword,
+          roleIds: [role.createRole.id],
+        },
+      },
+    );
+
+    const base = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
+    return NextResponse.json({
+      url: storeUrl(channel.token),
+      panelUrl: `${base}/dashboard`,
+      ownerEmail,
+      expiresAt,
+    });
   } catch (err) {
     console.error('[demo] Error creando tienda sandbox:', err);
     return NextResponse.json(

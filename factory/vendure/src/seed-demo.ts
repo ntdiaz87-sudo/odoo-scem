@@ -15,6 +15,7 @@ import {
     RequestContextService,
     SellerService,
     TaxCategoryService,
+    TransactionalConnection,
     ZoneService,
 } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
@@ -86,7 +87,13 @@ const DEMO_STORES: DemoStore[] = [
 ];
 
 async function seed() {
-    const app = await populate(() => bootstrap(config), initialData);
+    // La semilla levanta su propia instancia efímera en un puerto aparte para
+    // no chocar con un servidor ya corriendo.
+    const seedConfig = {
+        ...config,
+        apiOptions: { ...config.apiOptions, port: +(process.env.SEED_PORT || 3999) },
+    };
+    const app = await populate(() => bootstrap(seedConfig), initialData);
     try {
         const requestContextService = app.get(RequestContextService);
         const channelService = app.get(ChannelService);
@@ -168,6 +175,21 @@ async function seed() {
             }
             console.log(`[seed] ${store.products.length} productos creados en ${store.code}.`);
         }
+
+        // Reparación idempotente: el rol de superadmin debe estar asignado a
+        // TODOS los canales (la creación programática de canales no lo hace
+        // sola, y sin esto no se pueden crear roles de dueño por tienda).
+        const connection = app.get(TransactionalConnection);
+        await connection.rawConnection.query(`
+            INSERT INTO role_channels_channel ("roleId", "channelId")
+            SELECT r.id, c.id FROM role r CROSS JOIN channel c
+            WHERE r.code = '__super_admin_role__'
+              AND NOT EXISTS (
+                SELECT 1 FROM role_channels_channel rc
+                WHERE rc."roleId" = r.id AND rc."channelId" = c.id
+              );
+        `);
+        console.log('[seed] Rol superadmin asignado a todos los canales.');
         console.log('[seed] Semilla completada.');
     } finally {
         await app.close();

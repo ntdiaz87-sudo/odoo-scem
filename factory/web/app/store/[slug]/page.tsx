@@ -15,6 +15,7 @@ interface ChannelData {
       displayName?: string | null;
       design?: string | null;
       isSandbox?: boolean | null;
+      expiresAt?: string | null;
     } | null;
   };
   products: {
@@ -51,7 +52,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     data = await shopQuery<ChannelData>(
       slug,
       `{
-        activeChannel { code token customFields { displayName design isSandbox } }
+        activeChannel { code token customFields { displayName design isSandbox expiresAt } }
         products(options: { take: 12 }) {
           totalItems
           items { id name slug description variants { priceWithTax currencyCode } }
@@ -100,7 +101,10 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
             fontWeight: 600,
           }}
         >
-          Tienda demo creada en la fábrica · <a href={ROOT_URL} style={{ color: design.brandInk, textDecoration: 'underline' }}>crea la tuya gratis</a>
+          Tienda demo creada en la fábrica
+          {cf?.expiresAt ? ` · caduca el ${new Date(cf.expiresAt).toLocaleDateString('es')}` : ''}
+          {' · '}
+          <a href={ROOT_URL} style={{ color: design.brandInk, textDecoration: 'underline' }}>crea la tuya gratis</a>
         </div>
       ) : null}
 

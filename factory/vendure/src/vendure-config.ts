@@ -67,6 +67,8 @@ export const config: VendureConfig = {
             { name: 'design', type: 'text', nullable: true },
             // Tienda de prueba (demo sandbox) vs. tienda real.
             { name: 'isSandbox', type: 'boolean', defaultValue: false },
+            // Caducidad del sandbox (14 días desde su creación).
+            { name: 'expiresAt', type: 'datetime', nullable: true },
         ],
     },
     plugins: [
