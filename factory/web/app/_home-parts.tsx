@@ -118,7 +118,7 @@ export function PantallaVerdealto() {
     <div className="fh-app fh-app--verdealto">
       <Chrome hora="9:41" oscuro />
       <div className="fh-app-bar">
-        <span className="fh-app-marca">VERDEALTO</span>
+        <span className="fh-app-marca">青竹家居</span>
         <span className="fh-app-menu" aria-hidden="true">
           <i />
           <i />
@@ -127,16 +127,16 @@ export function PantallaVerdealto() {
       </div>
       <div className="fh-app-hero">
         <p className="fh-app-titular">
-          Plantas que llenan
+          让绿意
           <br />
-          tu espacio de vida.
+          住进你家。
         </p>
-        <span className="fh-app-cta">Ver colección</span>
+        <span className="fh-app-cta">立即选购</span>
       </div>
       <div className="fh-app-bloque">
-        <p className="fh-app-rot">Categorías</p>
+        <p className="fh-app-rot">分类</p>
         <div className="fh-app-cats">
-          {['Plantas', 'Macetas', 'Accesorios', 'Tierra'].map(c => (
+          {['绿植', '花盆', '工具', '营养土'].map(c => (
             <span key={c} className="fh-app-cat">
               <i className="fh-cat-ico fh-cat-ico--hoja" />
               {c}
@@ -145,17 +145,17 @@ export function PantallaVerdealto() {
         </div>
       </div>
       <div className="fh-app-bloque">
-        <p className="fh-app-rot">Productos destacados</p>
+        <p className="fh-app-rot">热销商品</p>
         <div className="fh-app-rejilla">
           <article className="fh-prod">
             <div className="fh-prod-img fh-planta fh-planta--a" />
-            <p className="fh-prod-n">Monstera</p>
-            <p className="fh-prod-p">$32.00</p>
+            <p className="fh-prod-n">龟背竹</p>
+            <p className="fh-prod-p">¥128</p>
           </article>
           <article className="fh-prod">
             <div className="fh-prod-img fh-planta fh-planta--b" />
-            <p className="fh-prod-n">Ficus lyrata</p>
-            <p className="fh-prod-p">$48.00</p>
+            <p className="fh-prod-n">琴叶榕</p>
+            <p className="fh-prod-p">¥198</p>
           </article>
         </div>
       </div>
@@ -174,7 +174,7 @@ export function PantallaNocta() {
           <i />
           <i />
         </span>
-        <span className="fh-app-marca">NOCTA</span>
+        <span className="fh-app-marca">NOCTA 夜行</span>
         <span className="fh-app-bolsa" aria-hidden="true" />
       </div>
       <div className="fh-nocta-hero">
@@ -184,26 +184,26 @@ export function PantallaNocta() {
         </div>
         <div className="fh-nocta-copy">
           <p className="fh-nocta-titular">
-            NUEVA
+            春夏
             <br />
-            COLECCIÓN
+            新系列
           </p>
-          <p className="fh-nocta-sub">Primavera / Verano</p>
-          <span className="fh-app-cta fh-app-cta--dark">Descubrir</span>
+          <p className="fh-nocta-sub">2026 春夏</p>
+          <span className="fh-app-cta fh-app-cta--dark">立即查看</span>
         </div>
       </div>
       <div className="fh-app-bloque">
-        <p className="fh-app-rot">Destacados</p>
+        <p className="fh-app-rot">精选</p>
         <div className="fh-app-rejilla">
           <article className="fh-prod">
             <div className="fh-prod-img fh-moda fh-moda--camisa" />
-            <p className="fh-prod-n">Camisa Oversize</p>
-            <p className="fh-prod-p">$89.00</p>
+            <p className="fh-prod-n">宽版衬衫</p>
+            <p className="fh-prod-p">¥299</p>
           </article>
           <article className="fh-prod">
             <div className="fh-prod-img fh-moda fh-moda--bolso" />
-            <p className="fh-prod-n">Bolso de piel</p>
-            <p className="fh-prod-p">$129.00</p>
+            <p className="fh-prod-n">真皮手袋</p>
+            <p className="fh-prod-p">¥899</p>
           </article>
         </div>
       </div>
@@ -218,7 +218,7 @@ export function PantallaCasaTerra() {
     <div className="fh-app fh-app--terra">
       <Chrome hora="9:41" oscuro />
       <div className="fh-app-bar">
-        <span className="fh-app-marca">CASA TERRA</span>
+        <span className="fh-app-marca">陶合</span>
         <span className="fh-app-menu" aria-hidden="true">
           <i />
           <i />
@@ -227,16 +227,16 @@ export function PantallaCasaTerra() {
       </div>
       <div className="fh-app-hero">
         <p className="fh-app-titular">
-          Hecho a mano.
+          手作陶器，
           <br />
-          Para durar.
+          用得长久。
         </p>
-        <span className="fh-app-cta">Explorar</span>
+        <span className="fh-app-cta">去逛逛</span>
       </div>
       <div className="fh-app-bloque">
-        <p className="fh-app-rot">Categorías</p>
+        <p className="fh-app-rot">分类</p>
         <div className="fh-app-cats">
-          {['Vajillas', 'Jarrones', 'Cuencos', 'Todos'].map(c => (
+          {['餐具', '花器', '碗碟', '全部'].map(c => (
             <span key={c} className="fh-app-cat">
               <i className="fh-cat-ico fh-cat-ico--pieza" />
               {c}
@@ -245,17 +245,17 @@ export function PantallaCasaTerra() {
         </div>
       </div>
       <div className="fh-app-bloque">
-        <p className="fh-app-rot">Piezas únicas</p>
+        <p className="fh-app-rot">孤品</p>
         <div className="fh-app-rejilla">
           <article className="fh-prod">
             <div className="fh-prod-img fh-ceramica fh-ceramica--jarron" />
-            <p className="fh-prod-n">Jarrón Duna</p>
-            <p className="fh-prod-p">$54.00</p>
+            <p className="fh-prod-n">沙丘花器</p>
+            <p className="fh-prod-p">¥368</p>
           </article>
           <article className="fh-prod">
             <div className="fh-prod-img fh-ceramica fh-ceramica--cuenco" />
-            <p className="fh-prod-n">Cuenco Arcilla</p>
-            <p className="fh-prod-p">$26.00</p>
+            <p className="fh-prod-n">粗陶碗</p>
+            <p className="fh-prod-p">¥168</p>
           </article>
         </div>
       </div>

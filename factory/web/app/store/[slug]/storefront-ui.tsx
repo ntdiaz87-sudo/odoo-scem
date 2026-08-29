@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from 'react';
 import { addToCart, fetchActiveOrder } from '../../../lib/shop-client';
+import { t } from '../../../lib/i18n';
 
 /** Registra el service worker que hace instalable la tienda como app (PWA). */
 export function PwaSetup() {
@@ -38,7 +39,7 @@ export function CartBadge({ slug }: { slug: string }) {
     <a
       className={`st-carrito${count > 0 ? ' is-lleno' : ''}`}
       href="/cart"
-      aria-label={`Carrito, ${count} ${count === 1 ? 'artículo' : 'artículos'}`}
+      aria-label={`${t('st.carrito')} ${count}`}
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M6 7h13l-1.4 8.2a2 2 0 0 1-2 1.7H9.2a2 2 0 0 1-2-1.6L5.3 4.9A1 1 0 0 0 4.3 4H3" />
@@ -73,12 +74,12 @@ export function AddToCartButton({ slug, variantId }: { slug: string; variantId: 
       className={`st-btn st-btn--marca st-add${state === 'done' ? ' is-ok' : ''}${state === 'error' ? ' is-mal' : ''}`}
     >
       {state === 'busy'
-        ? 'Añadiendo…'
+        ? t('st.anadiendo')
         : state === 'done'
-          ? '✓ En el carrito'
+          ? t('st.anadido')
           : state === 'error'
-            ? 'No se pudo, reintenta'
-            : 'Añadir al carrito'}
+            ? t('st.error.anadir')
+            : t('st.anadir')}
     </button>
   );
 }

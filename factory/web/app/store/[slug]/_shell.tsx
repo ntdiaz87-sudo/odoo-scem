@@ -9,6 +9,7 @@
 import type { CSSProperties } from 'react';
 import type { StoreDesign } from '../../../lib/designs';
 import { inkOn } from '../../../lib/design-generator';
+import { fecha, t } from '../../../lib/i18n';
 import { CartBadge } from './storefront-ui';
 
 export function storeVars(design: StoreDesign): CSSProperties {
@@ -24,8 +25,8 @@ export function storeVars(design: StoreDesign): CSSProperties {
     '--s-radio': design.radius,
     '--s-titulo':
       design.headingFont === 'serif'
-        ? "'Source Serif 4', Georgia, serif"
-        : "'Bricolage Grotesque', 'Public Sans', sans-serif",
+        ? 'var(--font-serif-cjk)'
+        : 'var(--font-display)',
   } as CSSProperties;
 }
 
@@ -46,9 +47,9 @@ export function StoreHeader({
         </a>
         <nav className="st-nav" aria-label="Tienda">
           <a href="/" aria-current={activo === 'catalogo' ? 'page' : undefined}>
-            Inicio
+            {t('st.inicio')}
           </a>
-          <a href="/#catalogo">Productos</a>
+          <a href="/#catalogo">{t('st.productos')}</a>
         </nav>
         <CartBadge slug={slug} />
       </div>
@@ -62,21 +63,21 @@ export function StoreFooter({ nombre, rootUrl }: { nombre: string; rootUrl: stri
       <div className="st-pie-in">
         <div>
           <p className="st-pie-marca">{nombre}</p>
-          <p className="st-pie-txt">Gracias por comprar en una tienda pequeña.</p>
+          <p className="st-pie-txt">{t('st.pie.txt')}</p>
         </div>
         <ul className="st-pie-links">
           <li>
-            <a href="/">Inicio</a>
+            <a href="/">{t('st.inicio')}</a>
           </li>
           <li>
-            <a href="/#catalogo">Productos</a>
+            <a href="/#catalogo">{t('st.productos')}</a>
           </li>
           <li>
-            <a href="/cart">Carrito</a>
+            <a href="/cart">{t('st.carrito')}</a>
           </li>
         </ul>
         <p className="st-pie-sello">
-          Creada con{' '}
+          {t('st.creada')}{' '}
           <a href={rootUrl} rel="noreferrer">
             fábrica.
           </a>
@@ -91,10 +92,10 @@ export function SandboxBanner({ expiresAt, rootUrl }: { expiresAt?: string | nul
   return (
     <div className="st-aviso">
       <span className="st-aviso-punto" aria-hidden="true" />
-      Tienda demo creada en la fábrica
-      {expiresAt ? ` · caduca el ${new Date(expiresAt).toLocaleDateString('es')}` : ''}
+      {t('st.demo.banner')}
+      {expiresAt ? ` · ${t('st.demo.caduca')} ${fecha(expiresAt)}` : ''}
       {' · '}
-      <a href={rootUrl}>crea la tuya gratis</a>
+      <a href={rootUrl}>{t('st.demo.crea')}</a>
     </div>
   );
 }
@@ -104,10 +105,10 @@ export function StoreNotFound({ rootUrl }: { rootUrl: string }) {
   return (
     <div className="st-vacio-pagina">
       <div className="st-vacio-caja">
-        <h1>Tienda no encontrada</h1>
-        <p>No existe ninguna tienda en esta dirección, o el demo expiró.</p>
+        <h1>{t('st.no.encontrada')}</h1>
+        <p>{t('st.no.encontrada.d')}</p>
         <a className="fh-btn fh-btn--lima fh-btn--grande" href={rootUrl}>
-          Crear mi tienda
+          {t('st.crear.mia')}
         </a>
       </div>
     </div>

@@ -2,15 +2,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isValidDesign } from '../../../lib/design-generator';
 import { takenDesignKeys } from '../../../lib/design-registry';
 import { findDesign, type StoreDesign } from '../../../lib/designs';
+import { CURRENCY, LOCALE } from '../../../lib/i18n';
 import { rootDomain, slugify, storeUrl } from '../../../lib/tenant';
 import { adminLogin, adminRequest } from '../../../lib/vendure';
 
-const SAMPLE_PRODUCTS = [
-  { name: 'Producto estrella', slug: 'producto-estrella', description: 'El favorito de tus clientes. Sustitúyelo por tu producto real.', price: 2500 },
-  { name: 'Novedad de la semana', slug: 'novedad-semana', description: 'Un lanzamiento reciente para probar tu catálogo.', price: 1800 },
-  { name: 'Básico imprescindible', slug: 'basico-imprescindible', description: 'Ese artículo que nunca falta en el carrito.', price: 900 },
-  { name: 'Pack de regalo', slug: 'pack-regalo', description: 'Combina productos y véndelos juntos.', price: 3200 },
-];
+const ZH = LOCALE === 'zh';
+// El idioma del canal: chino simplificado en China.
+const LANG = ZH ? 'zh_Hans' : 'en';
+
+// Catálogo de ejemplo en el idioma y la moneda del mercado. Los precios en
+// yuan no son una conversión del dólar: son importes verosímiles en China.
+const SAMPLE_PRODUCTS = ZH
+  ? [
+      { name: '明星单品', slug: 'producto-estrella', description: '最受欢迎的一款。上架后换成你自己的商品。', price: 12900 },
+      { name: '本周新品', slug: 'novedad-semana', description: '新上架的商品，用来试试你的目录。', price: 8900 },
+      { name: '日常必备', slug: 'basico-imprescindible', description: '回购率最高的基础款。', price: 4900 },
+      { name: '礼盒套装', slug: 'pack-regalo', description: '把几件商品组合起来一起卖。', price: 19900 },
+    ]
+  : [
+      { name: 'Producto estrella', slug: 'producto-estrella', description: 'El favorito de tus clientes. Sustitúyelo por tu producto real.', price: 2500 },
+      { name: 'Novedad de la semana', slug: 'novedad-semana', description: 'Un lanzamiento reciente para probar tu catálogo.', price: 1800 },
+      { name: 'Básico imprescindible', slug: 'basico-imprescindible', description: 'Ese artículo que nunca falta en el carrito.', price: 900 },
+      { name: 'Pack de regalo', slug: 'pack-regalo', description: 'Combina productos y véndelos juntos.', price: 3200 },
+    ];
 
 // Permisos del dueño de tienda: opera su catálogo, pedidos, clientes y
 // promociones dentro de SU canal; solo lectura de configuración.
@@ -53,24 +67,24 @@ export async function POST(req: NextRequest) {
   try {
     payload = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Petición inválida.' }, { status: 400 });
+    return NextResponse.json({ error: ZH ? '请求无效。' : 'Petición inválida.' }, { status: 400 });
   }
   const storeName = (payload.storeName || '').trim();
   const ownerEmail = (payload.ownerEmail || '').trim().toLowerCase();
   const ownerPassword = payload.ownerPassword || '';
   if (storeName.length < 2 || storeName.length > 40) {
-    return NextResponse.json({ error: 'El nombre debe tener entre 2 y 40 caracteres.' }, { status: 400 });
+    return NextResponse.json({ error: ZH ? '商店名称需要 2 到 40 个字。' : 'El nombre debe tener entre 2 y 40 caracteres.' }, { status: 400 });
   }
   if (!EMAIL_RE.test(ownerEmail)) {
-    return NextResponse.json({ error: 'Escribe un correo válido: será tu usuario del panel.' }, { status: 400 });
+    return NextResponse.json({ error: ZH ? '请填写有效邮箱：这是你登录后台的账号。' : 'Escribe un correo válido: será tu usuario del panel.' }, { status: 400 });
   }
   if (ownerPassword.length < 8) {
-    return NextResponse.json({ error: 'La contraseña debe tener al menos 8 caracteres.' }, { status: 400 });
+    return NextResponse.json({ error: ZH ? '密码至少 8 位。' : 'La contraseña debe tener al menos 8 caracteres.' }, { status: 400 });
   }
   const ip = (req.headers.get('x-forwarded-for') || 'local').split(',')[0].trim();
   if (rateLimited(ip)) {
     return NextResponse.json(
-      { error: 'Has creado varias tiendas demo seguidas. Espera un rato e inténtalo de nuevo.' },
+      { error: ZH ? '你刚刚连续创建了多家体验店，请稍后再试。' : 'Has creado varias tiendas demo seguidas. Espera un rato e inténtalo de nuevo.' },
       { status: 429 },
     );
   }
@@ -90,7 +104,7 @@ export async function POST(req: NextRequest) {
       const taken = await takenDesignKeys(auth);
       if (taken.has(customDesign.key)) {
         return NextResponse.json(
-          { error: 'Ese diseño acaba de ser tomado por otra tienda. Pide nuevas propuestas.' },
+          { error: ZH ? '这套设计刚被别的商店选走了，请换一批。' : 'Ese diseño acaba de ser tomado por otra tienda. Pide nuevas propuestas.' },
           { status: 409 },
         );
       }
@@ -106,7 +120,7 @@ export async function POST(req: NextRequest) {
     );
     if (existing.administrators.totalItems > 0) {
       return NextResponse.json(
-        { error: 'Ese correo ya tiene una tienda. Usa otro correo o escríbenos para recuperarla.' },
+        { error: ZH ? '这个邮箱已经有商店了。请换一个邮箱，或联系我们找回。' : 'Ese correo ya tiene una tienda. Usa otro correo o escríbenos para recuperarla.' },
         { status: 409 },
       );
     }
@@ -141,11 +155,11 @@ export async function POST(req: NextRequest) {
             input: {
               code: slug,
               token: slug,
-              defaultLanguageCode: 'en',
-              availableLanguageCodes: ['en'],
+              defaultLanguageCode: LANG,
+              availableLanguageCodes: [LANG],
               pricesIncludeTax: true,
-              defaultCurrencyCode: 'USD',
-              availableCurrencyCodes: ['USD'],
+              defaultCurrencyCode: CURRENCY,
+              availableCurrencyCodes: [CURRENCY],
               defaultTaxZoneId: zone.id,
               defaultShippingZoneId: zone.id,
               customFields: {
@@ -168,7 +182,7 @@ export async function POST(req: NextRequest) {
     }
     if (!channel) {
       return NextResponse.json(
-        { error: 'Ese nombre ya está en uso. Prueba con otro.' },
+        { error: ZH ? '这个名称已被占用，换一个试试。' : 'Ese nombre ya está en uso. Prueba con otro.' },
         { status: 409 },
       );
     }
@@ -234,7 +248,7 @@ export async function POST(req: NextRequest) {
           input: {
             enabled: true,
             translations: [
-              { languageCode: 'en', name: p.name, slug: `${slug}-${p.slug}`, description: p.description },
+              { languageCode: LANG, name: p.name, slug: `${slug}-${p.slug}`, description: p.description },
             ],
           },
         },
@@ -253,7 +267,7 @@ export async function POST(req: NextRequest) {
               price: p.price,
               taxCategoryId,
               stockOnHand: 25,
-              translations: [{ languageCode: 'en', name: p.name }],
+              translations: [{ languageCode: LANG, name: p.name }],
             },
           ],
         },
@@ -302,7 +316,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[demo] Error creando tienda sandbox:', err);
     return NextResponse.json(
-      { error: 'No se pudo crear la tienda demo. Inténtalo de nuevo en un momento.' },
+      { error: ZH ? '创建失败，请稍后重试。' : 'No se pudo crear la tienda demo. Inténtalo de nuevo en un momento.' },
       { status: 500 },
     );
   }

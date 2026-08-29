@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { formatMoney, shopFetch } from '../../../../lib/shop-client';
+import { shopFetch } from '../../../../lib/shop-client';
+import { money, t } from '../../../../lib/i18n';
 
 interface PlacedOrder {
   code: string;
@@ -37,20 +38,20 @@ export function ThanksView({ slug, nombre }: { slug: string; nombre: string }) {
           <path d="m5 12.5 4.5 4.5L19 7.5" />
         </svg>
       </span>
-      <h1 className="st-gracias-t">¡Pedido confirmado!</h1>
-      <p className="st-caja-txt">Gracias por comprar en {nombre}.</p>
+      <h1 className="st-gracias-t">{t('g.confirmado')}</h1>
+      <p className="st-caja-txt">{t('g.gracias', { tienda: nombre })}</p>
 
       {code ? (
         <dl className="st-pedido">
-          <dt>Número de pedido</dt>
+          <dt>{t('g.numero')}</dt>
           <dd data-testid="order-code">{code}</dd>
           {order ? (
             <>
-              <dt>Total</dt>
-              <dd>{formatMoney(order.totalWithTax, order.currencyCode)}</dd>
+              <dt>{t('g.total')}</dt>
+              <dd>{money(order.totalWithTax, order.currencyCode)}</dd>
               {order.customer?.emailAddress ? (
                 <>
-                  <dt>Aviso enviado a</dt>
+                  <dt>{t('g.aviso')}</dt>
                   <dd>{order.customer.emailAddress}</dd>
                 </>
               ) : null}
@@ -59,9 +60,9 @@ export function ThanksView({ slug, nombre }: { slug: string; nombre: string }) {
         </dl>
       ) : null}
 
-      <p className="st-gracias-nota">La tienda te contactará para coordinar el pago y la entrega.</p>
+      <p className="st-gracias-nota">{t('g.nota')}</p>
       <a className="st-btn st-btn--marca st-btn--grande" href="/">
-        Volver a la tienda
+        {t('g.volver')}
       </a>
     </div>
   );

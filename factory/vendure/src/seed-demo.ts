@@ -8,6 +8,7 @@ import {
     bootstrap,
     ChannelService,
     CurrencyCode,
+    GlobalSettingsService,
     LanguageCode,
     ProductService,
     ProductVariantService,
@@ -24,20 +25,21 @@ import { DESIGN_PRESETS } from './designs';
 import { config } from './vendure-config';
 
 const initialData = {
-    defaultLanguage: LanguageCode.en,
-    defaultZone: 'Americas',
+    defaultLanguage: LanguageCode.zh_Hans,
+    defaultZone: 'Asia',
     countries: [
+        { name: '中国', code: 'CN', zone: 'Asia' },
+        { name: '中国香港', code: 'HK', zone: 'Asia' },
+        { name: '中国台湾', code: 'TW', zone: 'Asia' },
+        { name: '中国澳门', code: 'MO', zone: 'Asia' },
         { name: 'United States', code: 'US', zone: 'Americas' },
-        { name: 'Cuba', code: 'CU', zone: 'Americas' },
-        { name: 'Mexico', code: 'MX', zone: 'Americas' },
         { name: 'Spain', code: 'ES', zone: 'Europe' },
-        { name: 'China', code: 'CN', zone: 'Asia' },
     ],
     taxRates: [{ name: 'Standard Tax', percentage: 0 }],
-    shippingMethods: [{ name: 'Envío estándar', price: 500 }],
+    shippingMethods: [{ name: '标准快递', price: 1000 }],
     paymentMethods: [
         {
-            name: 'Pago demo',
+            name: '货到付款',
             handler: {
                 code: 'dummy-payment-handler',
                 arguments: [{ name: 'automaticSettle', value: 'false' }],
@@ -51,7 +53,7 @@ interface DemoProduct {
     name: string;
     slug: string;
     description: string;
-    price: number; // centavos USD
+    price: number; // en la unidad menor de la moneda del canal (分 / centavos)
 }
 
 interface DemoStore {
@@ -61,7 +63,36 @@ interface DemoStore {
     products: DemoProduct[];
 }
 
-const DEMO_STORES: DemoStore[] = [
+// Tiendas de muestra del mercado de lanzamiento (China): nombres, catálogo y
+// precios en yuan verosímiles, no una traducción del catálogo español.
+const ZH = (process.env.SEED_LOCALE || 'zh') === 'zh';
+
+const DEMO_STORES: DemoStore[] = ZH
+    ? [
+          {
+              code: 'qingzhu',
+              displayName: '青竹家居',
+              designKey: 'hoja-viva',
+              products: [
+                  { name: '龟背竹', slug: 'guibeizhu', description: '好养的大叶绿植，放客厅很出效果。', price: 12800 },
+                  { name: '琴叶榕', slug: 'qinyerong', description: '经典的室内小乔木，叶形好看。', price: 19800 },
+                  { name: '陶土花盆 18cm', slug: 'huapen-18', description: '素烧陶盆，含托盘。', price: 4900 },
+                  { name: '新手养护套装', slug: 'yanghu-taozhuang', description: '营养土、肥料和喷壶，一次配齐。', price: 7900 },
+              ],
+          },
+          {
+              code: 'noctachina',
+              displayName: 'NOCTA 夜行',
+              designKey: 'nocta',
+              products: [
+                  { name: '黑色宽版衬衫', slug: 'heise-chenshan', description: '宽松版型，厚棉，明线工艺。', price: 29900 },
+                  { name: '石墨色工装裤', slug: 'gongzhuangku', description: '多口袋设计，裤脚可调。', price: 34900 },
+                  { name: '金线针织帽', slug: 'zhenzhimao', description: '细针织，本店金线刺绣。', price: 12900 },
+                  { name: '原色帆布袋', slug: 'fanbudai', description: '原色帆布，夜行系列印花。', price: 15900 },
+              ],
+          },
+      ]
+    : [
     {
         code: 'verdealto',
         displayName: 'Verdealto',
@@ -102,7 +133,7 @@ async function seed() {
         const ctx = await requestContextService.create({ apiType: 'admin' });
         const zonesResult: any = await zoneService.findAll(ctx);
         const zoneItems: any[] = Array.isArray(zonesResult) ? zonesResult : zonesResult.items;
-        if (!zoneItems.some(z => z.name === 'Americas')) {
+        if (zoneItems.length === 0) {
             console.log('[seed] Base vacía: cargando datos iniciales…');
             await app.close();
             app = await populate(() => bootstrap(seedConfig), initialData);
@@ -121,11 +152,23 @@ async function seed() {
 
         const ctx: RequestContext = await requestContextService.create({ apiType: 'admin' });
 
+        // El idioma de un canal debe estar habilitado globalmente antes de
+        // poder usarlo: sin esto, crear un canal en chino falla.
+        const globalSettingsService = app.get(GlobalSettingsService);
+        const settings = await globalSettingsService.getSettings(ctx);
+        const idiomas = new Set(settings.availableLanguages);
+        idiomas.add(LanguageCode.zh_Hans);
+        idiomas.add(LanguageCode.en);
+        await globalSettingsService.updateSettings(ctx, {
+            availableLanguages: Array.from(idiomas),
+        });
+        console.log(`[seed] Idiomas habilitados: ${Array.from(idiomas).join(', ')}`);
+
         const existing = await channelService.findAll(ctx);
         const existingCodes = existing.items.map(c => c.code);
         const zonesResult: any = await zoneService.findAll(ctx);
         const zones: any[] = Array.isArray(zonesResult) ? zonesResult : zonesResult.items;
-        const defaultZone = zones.find(z => z.name === 'Americas') ?? zones[0];
+        const defaultZone = zones.find(z => z.name === (ZH ? 'Asia' : 'Americas')) ?? zones[0];
         if (!defaultZone) {
             throw new Error('No hay zonas creadas; la población inicial falló.');
         }
@@ -143,11 +186,11 @@ async function seed() {
             const channelResult: any = await channelService.create(ctx, {
                 code: store.code,
                 token: store.code,
-                defaultLanguageCode: LanguageCode.en,
-                availableLanguageCodes: [LanguageCode.en],
+                defaultLanguageCode: ZH ? LanguageCode.zh_Hans : LanguageCode.en,
+                availableLanguageCodes: [ZH ? LanguageCode.zh_Hans : LanguageCode.en],
                 pricesIncludeTax: true,
-                defaultCurrencyCode: CurrencyCode.USD,
-                availableCurrencyCodes: [CurrencyCode.USD],
+                defaultCurrencyCode: ZH ? CurrencyCode.CNY : CurrencyCode.USD,
+                availableCurrencyCodes: [ZH ? CurrencyCode.CNY : CurrencyCode.USD],
                 defaultTaxZoneId: defaultZone.id,
                 defaultShippingZoneId: defaultZone.id,
                 sellerId: seller.id,
@@ -171,7 +214,7 @@ async function seed() {
                     enabled: true,
                     translations: [
                         {
-                            languageCode: LanguageCode.en,
+                            languageCode: ZH ? LanguageCode.zh_Hans : LanguageCode.en,
                             name: p.name,
                             slug: p.slug,
                             description: p.description,
@@ -185,7 +228,7 @@ async function seed() {
                         price: p.price,
                         taxCategoryId,
                         stockOnHand: 25,
-                        translations: [{ languageCode: LanguageCode.en, name: p.name }],
+                        translations: [{ languageCode: ZH ? LanguageCode.zh_Hans : LanguageCode.en, name: p.name }],
                     } as any,
                 ]);
             }

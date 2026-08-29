@@ -9,8 +9,11 @@
   --accent-dark: #0b6f63;
   --accent-soft: #e0f0ec;
   --dark: #16262a;
-  --font-display: 'Bricolage Grotesque', 'Public Sans', sans-serif;
-  --font-body: 'Public Sans', system-ui, sans-serif;
+  /* Pilas con fuentes chinas por delante: en zh el texto CJK lo resuelve
+     Noto Sans SC y los números y latinas, Bricolage/Public Sans. */
+  --font-display: 'Bricolage Grotesque', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Public Sans', sans-serif;
+  --font-body: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'Public Sans', system-ui, sans-serif;
+  --font-serif-cjk: 'Noto Serif SC', 'Source Serif 4', 'Songti SC', Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -332,7 +335,7 @@ a:hover { color: var(--accent-dark); }
 
 /* =================== PASOS =================== */
 .fh-pasos { background: var(--f-surface); padding: 76px 0 68px; }
-.fh-pasos-rejilla { display: grid; grid-template-columns: 1.05fr repeat(3, 1fr); gap: 32px; align-items: start; }
+.fh-pasos-rejilla { display: grid; grid-template-columns: 1.15fr repeat(3, 1fr); gap: 30px; align-items: start; }
 .fh-pasos-titulo { padding-right: 18px; font-size: clamp(26px, 2.7vw, 35px); }
 .fh-paso-cabeza { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .fh-paso-num {
@@ -1047,4 +1050,91 @@ a:hover { color: var(--accent-dark); }
   .st-linea-n { font-size: 14px; }
   .st-cant button { width: 34px; height: 34px; }
   .st-caja { padding: 26px 18px; }
+}
+
+/* =====================================================================
+   SECCIONES DEL MERCADO CHINO
+   ===================================================================== */
+
+/* Los titulares con salto explícito vienen del diccionario con \n */
+.fh-pre { white-space: pre-line; }
+
+/* ---- canales ---- */
+.fh-canales { background: var(--f-surface-soft); padding: 66px 0; }
+.fh-canales-cabeza {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 34px; align-items: end; margin-bottom: 30px;
+}
+.fh-canales-sub { font-size: 15.5px; line-height: 1.6; color: var(--f-muted); margin: 0; }
+.fh-canales-lista {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.fh-canal {
+  background: var(--f-surface); border: 1px solid var(--f-border); border-radius: 14px;
+  padding: 20px 18px; display: flex; flex-direction: column; gap: 6px;
+}
+.fh-canal.es-plan { opacity: .72; border-style: dashed; }
+.fh-canal-ico { font-size: 24px; line-height: 1; margin-bottom: 4px; }
+.fh-canal-n { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--f-ink); }
+.fh-canal-d { font-size: 13.5px; color: var(--f-muted); line-height: 1.5; flex: 1; }
+.fh-canal-estado {
+  align-self: flex-start; margin-top: 8px; font-size: 11.5px; font-weight: 700;
+  padding: 3px 10px; border-radius: 999px;
+  background: var(--f-surface-soft); color: var(--f-muted);
+}
+.fh-canal-estado.es-live { background: var(--f-lime); color: #10130a; }
+
+/* ---- equipo de IA ---- */
+.fh-equipo { background: var(--f-surface); padding: 70px 0; }
+.fh-equipo-cabeza { max-width: 620px; margin: 0 auto 32px; text-align: center; }
+.fh-equipo-sub { font-size: 15.5px; line-height: 1.6; color: var(--f-muted); margin: 14px 0 0; }
+.fh-equipo-rejilla { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.fh-empleado {
+  background: var(--f-surface-soft); border: 1px solid var(--f-border); border-radius: 16px;
+  padding: 22px 20px; display: flex; flex-direction: column; gap: 12px;
+}
+.fh-empleado-cabeza { display: flex; align-items: center; gap: 12px; }
+.fh-avatar {
+  width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(150deg, var(--f-ink), #2c3138); color: var(--f-lime);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 19px;
+}
+.fh-empleado-n { display: block; font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--f-ink); }
+.fh-empleado-r { display: block; font-size: 12.5px; color: var(--f-muted); font-weight: 600; }
+.fh-empleado-d { font-size: 14.5px; line-height: 1.6; color: var(--f-muted); margin: 0; }
+.fh-equipo-nota {
+  display: flex; align-items: center; gap: 9px; justify-content: center;
+  margin: 26px 0 0; font-size: 13.5px; color: var(--f-muted);
+}
+
+/* ---- planes: cuatro columnas ---- */
+.fh-planes-rejilla--4 { grid-template-columns: 0.9fr repeat(4, 1fr); gap: 16px; }
+.fh-planes-rejilla--4 .fh-plan { padding: 24px 18px 20px; }
+.fh-planes-rejilla--4 .fh-plan-precio { font-size: 27px; margin-bottom: 4px; }
+.fh-plan-nota { font-size: 12.5px; color: var(--f-muted); margin: 0 0 16px; }
+.fh-planes-sello {
+  display: inline-flex; align-items: center; gap: 8px; margin: 18px 0 0;
+  font-size: 13px; font-weight: 700; color: var(--f-ink);
+  border: 1px solid var(--f-border); border-radius: 999px; padding: 7px 14px;
+}
+
+/* ---- pie: registro ICP ---- */
+.fh-pie-icp {
+  display: block; font-size: 12.5px; color: rgba(255, 255, 255, .55);
+  text-decoration: none; margin: 0 0 12px;
+}
+.fh-pie-icp:hover { color: var(--f-white); text-decoration: underline; }
+
+@media (max-width: 1080px) {
+  .fh-canales-lista { grid-template-columns: 1fr 1fr; }
+  .fh-planes-rejilla--4 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .fh-canales, .fh-equipo { padding: 46px 0; }
+  .fh-canales-cabeza { grid-template-columns: 1fr; gap: 14px; }
+  .fh-canales-lista { grid-template-columns: 1fr; }
+  .fh-equipo-rejilla { grid-template-columns: 1fr; }
+  .fh-planes-rejilla--4 { grid-template-columns: 1fr; }
+  .fh-equipo-nota { text-align: left; align-items: flex-start; }
 }

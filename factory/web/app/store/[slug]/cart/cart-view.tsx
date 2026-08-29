@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ActiveOrder, adjustLine, fetchActiveOrder, formatMoney } from '../../../../lib/shop-client';
+import { ActiveOrder, adjustLine, fetchActiveOrder } from '../../../../lib/shop-client';
+import { money, t } from '../../../../lib/i18n';
 
 export function CartView({ slug }: { slug: string }) {
   const [order, setOrder] = useState<ActiveOrder | null>(null);
@@ -11,7 +12,7 @@ export function CartView({ slug }: { slug: string }) {
   useEffect(() => {
     fetchActiveOrder(slug)
       .then(setOrder)
-      .catch(() => setError('No se pudo cargar el carrito.'))
+      .catch(() => setError(t('c.error.cargar')))
       .finally(() => setLoading(false));
   }, [slug]);
 
@@ -21,7 +22,7 @@ export function CartView({ slug }: { slug: string }) {
       const updated = await adjustLine(slug, lineId, qty);
       setOrder(updated && updated.lines.length ? updated : null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo actualizar el carrito.');
+      setError(e instanceof Error ? e.message : t('c.error'));
     }
   }
 
@@ -29,20 +30,20 @@ export function CartView({ slug }: { slug: string }) {
 
   return (
     <>
-      <h1 className="st-flujo-titulo">Tu carrito</h1>
+      <h1 className="st-flujo-titulo">{t('c.tu.carrito')}</h1>
 
       {error ? (
         <div className="st-error" role="alert">
           {error}
         </div>
       ) : null}
-      {loading ? <p className="st-cargando">Cargando…</p> : null}
+      {loading ? <p className="st-cargando">{t('c.cargando')}</p> : null}
 
       {vacio ? (
         <div className="st-caja st-caja--centro">
-          <p className="st-caja-txt">Tu carrito está vacío.</p>
+          <p className="st-caja-txt">{t('c.vacio')}</p>
           <a className="st-btn st-btn--marca st-btn--grande" href="/#catalogo">
-            Ver productos
+            {t('st.ver')}
           </a>
         </div>
       ) : null}
@@ -57,14 +58,14 @@ export function CartView({ slug }: { slug: string }) {
                 </div>
                 <div className="st-linea-info">
                   <p className="st-linea-n">{line.productVariant.name}</p>
-                  <p className="st-linea-p">{formatMoney(line.linePriceWithTax, order.currencyCode)}</p>
+                  <p className="st-linea-p">{money(line.linePriceWithTax, order.currencyCode)}</p>
                 </div>
                 <div className="st-cant">
-                  <button type="button" aria-label="Quitar uno" onClick={() => changeQty(line.id, line.quantity - 1)}>
+                  <button type="button" aria-label={t('c.quitar')} onClick={() => changeQty(line.id, line.quantity - 1)}>
                     −
                   </button>
                   <span>{line.quantity}</span>
-                  <button type="button" aria-label="Añadir uno" onClick={() => changeQty(line.id, line.quantity + 1)}>
+                  <button type="button" aria-label={t('c.anadir')} onClick={() => changeQty(line.id, line.quantity + 1)}>
                     +
                   </button>
                 </div>
@@ -73,21 +74,21 @@ export function CartView({ slug }: { slug: string }) {
           </div>
 
           <aside className="st-resumen">
-            <h2 className="st-resumen-t">Resumen</h2>
+            <h2 className="st-resumen-t">{t('c.resumen')}</h2>
             <div className="st-fila">
-              <span>Artículos</span>
+              <span>{t('c.articulos')}</span>
               <span>{order.totalQuantity}</span>
             </div>
             <div className="st-fila">
-              <span>Subtotal</span>
-              <span data-testid="cart-total">{formatMoney(order.subTotalWithTax, order.currencyCode)}</span>
+              <span>{t('c.subtotal')}</span>
+              <span data-testid="cart-total">{money(order.subTotalWithTax, order.currencyCode)}</span>
             </div>
-            <p className="st-resumen-nota">El envío se calcula al finalizar la compra.</p>
+            <p className="st-resumen-nota">{t('c.envio.nota')}</p>
             <a className="st-btn st-btn--marca st-btn--grande st-btn--bloque" href="/checkout">
-              Finalizar compra
+              {t('c.finalizar')}
             </a>
             <a className="st-seguir" href="/#catalogo">
-              Seguir comprando
+              {t('c.seguir')}
             </a>
           </aside>
         </div>

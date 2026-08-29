@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ESTILOS, MODOS, RUBROS } from '../../lib/design-generator';
 import type { StoreDesign } from '../../lib/designs';
+import { t } from '../../lib/i18n';
 
 interface Created {
   url: string;
@@ -72,20 +73,20 @@ export default function DemoWizard() {
     e.preventDefault();
     setError(null);
     if (storeName.trim().length < 2) {
-      setError('Ponle un nombre a tu tienda (mínimo 2 letras).');
+      setError(t('val.nombre'));
       return;
     }
     if (!ownerEmail.includes('@')) {
-      setError('Escribe un correo válido: será tu usuario del panel.');
+      setError(t('val.correo'));
       return;
     }
     if (ownerPassword.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres.');
+      setError(t('val.clave'));
       return;
     }
     const design = proposals.find(d => d.key === selectedKey);
     if (!design) {
-      setError('Elige uno de los diseños propuestos.');
+      setError(t('val.diseno'));
       return;
     }
     setBusy(true);
@@ -102,11 +103,11 @@ export default function DemoWizard() {
       });
       const data = await res.json();
       if (!res.ok || !data.url) {
-        throw new Error(data.error || 'No se pudo crear la tienda demo.');
+        throw new Error(data.error || t('val.error'));
       }
       setCreated(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error inesperado. Inténtalo otra vez.');
+      setError(err instanceof Error ? err.message : t('val.error'));
     } finally {
       setBusy(false);
     }
@@ -131,31 +132,27 @@ export default function DemoWizard() {
             <div className="fh-exito-marca">
               <IconTick />
             </div>
-            <h1>¡Tu tienda está lista!</h1>
-            <p className="fh-tarjeta-sub">
-              Ya puedes verla, cambiar los productos de ejemplo por los tuyos y recibir pedidos. La
-              demo dura 14 días.
-            </p>
+            <h1>{t('demo.listo')}</h1>
+            <p className="fh-tarjeta-sub">{t('demo.listo.sub')}</p>
             <dl className="fh-datos">
-              <dt>Tu usuario del panel</dt>
+              <dt>{t('demo.usuario')}</dt>
               <dd>{created.ownerEmail}</dd>
-              <dt>Tu contraseña</dt>
-              <dd>La que acabas de elegir</dd>
+              <dt>{t('demo.contra')}</dt>
+              <dd>{t('demo.contra.v')}</dd>
             </dl>
             <div className="fh-acciones">
               <a className="fh-btn fh-btn--lima fh-btn--grande fh-btn--bloque" href={created.url}>
-                Ver mi tienda
+                {t('demo.ver')}
               </a>
               <a className="fh-btn fh-btn--linea-oscura fh-btn--grande fh-btn--bloque" href={created.panelUrl}>
-                Entrar a mi panel (productos y pedidos)
+                {t('demo.panel')}
               </a>
             </div>
             <p className="fh-nota">
               <span className="fh-nota-ico">
                 <IconLock />
               </span>
-              El diseño que elegiste queda registrado a tu nombre: la fábrica no volverá a
-              ofrecerlo a nadie más.
+              {t('demo.exito.nota')}
             </p>
           </div>
         </main>
@@ -170,17 +167,14 @@ export default function DemoWizard() {
           {marca}
         </Link>
         <Link className="fh-volver" href="/">
-          <span aria-hidden="true">←</span> Volver
+          <span aria-hidden="true">←</span> {t('volver')}
         </Link>
       </header>
 
       <main className="fh-panel">
         <div className="fh-tarjeta">
-          <h1>Crea tu tienda demo</h1>
-          <p className="fh-tarjeta-sub">
-            Cuéntanos de tu negocio y la IA te propondrá diseños que no tiene nadie más. Gratis, al
-            instante y con tu propio panel.
-          </p>
+          <h1>{t('demo.h1')}</h1>
+          <p className="fh-tarjeta-sub">{t('demo.sub')}</p>
 
           {error ? (
             <div className="fh-aviso" role="alert">
@@ -191,7 +185,7 @@ export default function DemoWizard() {
           <form onSubmit={createStore}>
             <div className="fh-bloque">
               <p className="fh-legend">
-                <span className="fh-legend-num">1</span> ¿Qué vendes?
+                <span className="fh-legend-num">1</span> {t('demo.que.vendes')}
               </p>
               <div className="fh-chips">
                 {RUBROS.map(r => (
@@ -210,7 +204,7 @@ export default function DemoWizard() {
 
             <div className="fh-bloque">
               <p className="fh-legend">
-                <span className="fh-legend-num">2</span> ¿Cómo es tu marca?
+                <span className="fh-legend-num">2</span> {t('demo.marca')}
               </p>
               <div className="fh-chips">
                 {ESTILOS.map(s => (
@@ -229,7 +223,7 @@ export default function DemoWizard() {
 
             <div className="fh-bloque">
               <p className="fh-legend">
-                <span className="fh-legend-num">3</span> ¿Claro u oscuro?
+                <span className="fh-legend-num">3</span> {t('demo.modo')}
               </p>
               <div className="fh-chips">
                 {MODOS.map(m => (
@@ -248,7 +242,7 @@ export default function DemoWizard() {
 
             <div className="fh-bloque">
               <p className="fh-legend">
-                <span className="fh-legend-num">4</span> Elige tu diseño
+                <span className="fh-legend-num">4</span> {t('demo.disenos')}
               </p>
               <div className="design-options" style={{ opacity: designsBusy ? 0.55 : 1 }}>
                 {proposals.map(d => (
@@ -298,34 +292,33 @@ export default function DemoWizard() {
                 disabled={designsBusy}
                 onClick={() => loadProposals(rubro, estilo, modo)}
               >
-                {designsBusy ? 'Diseñando…' : 'Proponme otros diseños'}
+                {designsBusy ? t('demo.disenando') : t('demo.otros')}
               </button>
               <p className="fh-nota">
                 <span className="fh-nota-ico">
                   <IconLock />
                 </span>
-                Cada diseño tiene una huella única: al elegirlo queda registrado para tu tienda y la
-                fábrica no lo vuelve a ofrecer.
+                {t('demo.unicidad')}
               </p>
             </div>
 
             <div className="fh-bloque">
               <p className="fh-legend">
-                <span className="fh-legend-num">5</span> Tus datos
+                <span className="fh-legend-num">5</span> {t('demo.datos')}
               </p>
               <div className="fh-campo">
-                <label htmlFor="storeName">Nombre de tu tienda</label>
+                <label htmlFor="storeName">{t('demo.nombre')}</label>
                 <input
                   id="storeName"
                   type="text"
                   value={storeName}
                   maxLength={40}
-                  placeholder="Ej.: Dulcería Alba"
+                  placeholder={t('demo.nombre.ph')}
                   onChange={e => setStoreName(e.target.value)}
                 />
               </div>
               <div className="fh-campo">
-                <label htmlFor="ownerEmail">Tu correo</label>
+                <label htmlFor="ownerEmail">{t('demo.correo')}</label>
                 <input
                   id="ownerEmail"
                   type="email"
@@ -334,10 +327,10 @@ export default function DemoWizard() {
                   autoComplete="email"
                   onChange={e => setOwnerEmail(e.target.value)}
                 />
-                <p className="fh-campo-ayuda">Será tu usuario para entrar al panel de tu tienda.</p>
+                <p className="fh-campo-ayuda">{t('demo.correo.ayuda')}</p>
               </div>
               <div className="fh-campo">
-                <label htmlFor="ownerPassword">Elige una contraseña</label>
+                <label htmlFor="ownerPassword">{t('demo.clave')}</label>
                 <input
                   id="ownerPassword"
                   type="password"
@@ -346,12 +339,12 @@ export default function DemoWizard() {
                   autoComplete="new-password"
                   onChange={e => setOwnerPassword(e.target.value)}
                 />
-                <p className="fh-campo-ayuda">Mínimo 8 caracteres.</p>
+                <p className="fh-campo-ayuda">{t('demo.clave.ayuda')}</p>
               </div>
             </div>
 
             <button className="fh-btn fh-btn--lima fh-btn--grande fh-btn--bloque fh-enviar" type="submit" disabled={busy}>
-              {busy ? 'Creando tu tienda…' : 'Crear mi tienda demo'}
+              {busy ? t('demo.enviando') : t('demo.enviar')}
             </button>
           </form>
         </div>

@@ -3,6 +3,7 @@ import { DESIGN_PRESETS } from '../../../lib/designs';
 import { shopQuery } from '../../../lib/vendure';
 import { rootDomain } from '../../../lib/tenant';
 import { loadStoreInfo } from '../../../lib/store-design';
+import { money, t } from '../../../lib/i18n';
 import { AddToCartButton, PwaSetup } from './storefront-ui';
 import { SandboxBanner, StoreFooter, StoreHeader, StoreNotFound, storeVars } from './_shell';
 
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!info) return { title: 'Tienda no encontrada' };
   return {
     title: info.name,
-    description: `Tienda online de ${info.name}`,
+    description: info.name,
     manifest: '/manifest.webmanifest',
     icons: { icon: '/icon.svg' },
     appleWebApp: { capable: true, title: info.name },
@@ -58,14 +59,10 @@ function parseDesign(raw: string | null | undefined): StoreDesign {
   return DESIGN_PRESETS[0];
 }
 
-function formatPrice(minor: number, currency: string): string {
-  return new Intl.NumberFormat('es', { style: 'currency', currency }).format(minor / 100);
-}
-
 const VENTAJAS = [
-  { t: 'Envío a domicilio', d: 'Entrega en 24–48 h' },
-  { t: 'Pago como prefieras', d: 'Transferencia o al recibir' },
-  { t: 'Atención directa', d: 'Te responde la tienda' },
+  { k: 'st.v1' },
+  { k: 'st.v2' },
+  { k: 'st.v3' },
 ];
 
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -101,14 +98,13 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
       <main>
         <section className="st-hero">
           <div className="st-hero-in">
-            <p className="st-hero-eyebrow">Tienda oficial</p>
-            <h1 className="st-hero-titulo">Bienvenido a {nombre}</h1>
-            <p className="st-hero-txt">
-              Descubre nuestra selección, pide desde el móvil y recíbelo en casa. Cada pedido lo
-              prepara y lo atiende directamente la tienda.
-            </p>
+            <p className="st-hero-eyebrow">{t('st.oficial')}</p>
+            <h1 className="st-hero-titulo">
+              {t('st.bienvenido')} {nombre}
+            </h1>
+            <p className="st-hero-txt">{t('st.hero.txt')}</p>
             <a className="st-btn st-btn--marca st-btn--grande" href="#catalogo">
-              Ver productos
+              {t('st.ver')}
             </a>
           </div>
           <div className="st-hero-deco" aria-hidden="true">
@@ -120,23 +116,23 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
         <ul className="st-ventajas">
           {VENTAJAS.map(v => (
-            <li key={v.t}>
-              <span className="st-ventaja-t">{v.t}</span>
-              <span className="st-ventaja-d">{v.d}</span>
+            <li key={v.k}>
+              <span className="st-ventaja-t">{t(`${v.k}.t`)}</span>
+              <span className="st-ventaja-d">{t(`${v.k}.d`)}</span>
             </li>
           ))}
         </ul>
 
         <section className="st-catalogo" id="catalogo">
           <div className="st-sec-cabeza">
-            <h2 className="st-h2">Nuestros productos</h2>
+            <h2 className="st-h2">{t('st.nuestros')}</h2>
             <span className="st-conteo">
-              {data.products.totalItems} {data.products.totalItems === 1 ? 'artículo' : 'artículos'}
+              {data.products.totalItems} {t('st.articulos')}
             </span>
           </div>
 
           {productos.length === 0 ? (
-            <p className="st-vacio">Esta tienda todavía no ha publicado productos.</p>
+            <p className="st-vacio">{t('st.sin.productos')}</p>
           ) : (
             <div className="st-rejilla">
               {productos.map((p, i) => {
@@ -150,7 +146,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
                       <h3 className="st-prod-n">{p.name}</h3>
                       <p className="st-prod-d">{p.description}</p>
                       <p className="st-prod-p">
-                        {v ? formatPrice(v.priceWithTax, v.currencyCode) : '—'}
+                        {v ? money(v.priceWithTax, v.currencyCode) : '—'}
                       </p>
                       {v ? <AddToCartButton slug={slug} variantId={v.id} /> : null}
                     </div>

@@ -10,10 +10,10 @@ import {
   ActiveOrder,
   ORDER_FIELDS,
   fetchActiveOrder,
-  formatMoney,
   notifyCartChanged,
   shopFetch,
 } from '../../../../lib/shop-client';
+import { money, t } from '../../../../lib/i18n';
 
 interface ShippingMethodOption {
   id: string;
@@ -60,7 +60,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
     e.preventDefault();
     setError(null);
     if (!firstName.trim() || !email.includes('@') || !street.trim() || !city.trim()) {
-      setError('Completa tu nombre, correo y dirección de entrega.');
+      setError(t('ck.faltan'));
       return;
     }
     setBusy(true);
@@ -174,7 +174,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
       notifyCartChanged();
       window.location.href = `/gracias?pedido=${encodeURIComponent(pay.addPaymentToOrder.code || '')}`;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo completar el pedido.');
+      setError(err instanceof Error ? err.message : t('ck.error'));
       setBusy(false);
     }
   }
@@ -187,24 +187,22 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
   return (
     <>
       <a className="st-atras" href="/cart">
-        <span aria-hidden="true">←</span> Volver al carrito
+        <span aria-hidden="true">←</span> {t('ck.volver')}
       </a>
-      <h1 className="st-flujo-titulo">Finalizar compra</h1>
-      <p className="st-flujo-sub">
-        Pedido en {nombre} · pagas por transferencia o como acuerdes con la tienda.
-      </p>
+      <h1 className="st-flujo-titulo">{t('ck.titulo')}</h1>
+      <p className="st-flujo-sub">{t('ck.sub', { tienda: nombre })}</p>
 
       {error ? (
         <div className="st-error" role="alert">
           {error}
         </div>
       ) : null}
-      {loading ? <p className="st-cargando">Cargando…</p> : null}
+      {loading ? <p className="st-cargando">{t('c.cargando')}</p> : null}
       {empty2 ? (
         <div className="st-caja st-caja--centro">
-          <p className="st-caja-txt">Tu carrito está vacío.</p>
+          <p className="st-caja-txt">{t('c.vacio')}</p>
           <a className="st-btn st-btn--marca st-btn--grande" href="/#catalogo">
-            Ver productos
+            {t('st.ver')}
           </a>
         </div>
       ) : null}
@@ -213,40 +211,40 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
         <form className="st-carro" onSubmit={placeOrder}>
           <div className="st-form">
             <fieldset className="st-grupo">
-              <legend>Tus datos</legend>
+              <legend>{t('ck.datos')}</legend>
               <div className="st-campos">
                 <div className="st-campo">
-                  <label htmlFor="coNombre">Nombre</label>
+                  <label htmlFor="coNombre">{t('ck.nombre')}</label>
                   <input id="coNombre" value={firstName} onChange={e => setFirstName(e.target.value)} autoComplete="given-name" />
                 </div>
                 <div className="st-campo">
-                  <label htmlFor="coApellidos">Apellidos</label>
+                  <label htmlFor="coApellidos">{t('ck.apellidos')}</label>
                   <input id="coApellidos" value={lastName} onChange={e => setLastName(e.target.value)} autoComplete="family-name" />
                 </div>
                 <div className="st-campo">
-                  <label htmlFor="coCorreo">Correo</label>
+                  <label htmlFor="coCorreo">{t('ck.correo')}</label>
                   <input id="coCorreo" type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
                 </div>
                 <div className="st-campo">
-                  <label htmlFor="coTelefono">Teléfono (opcional)</label>
+                  <label htmlFor="coTelefono">{t('ck.telefono')}</label>
                   <input id="coTelefono" value={phone} onChange={e => setPhone(e.target.value)} autoComplete="tel" />
                 </div>
               </div>
             </fieldset>
 
             <fieldset className="st-grupo">
-              <legend>Entrega</legend>
+              <legend>{t('ck.entrega')}</legend>
               <div className="st-campos">
                 <div className="st-campo st-campo--ancho">
-                  <label htmlFor="coDireccion">Dirección de entrega</label>
-                  <input id="coDireccion" value={street} onChange={e => setStreet(e.target.value)} placeholder="Calle y número" autoComplete="street-address" />
+                  <label htmlFor="coDireccion">{t('ck.direccion')}</label>
+                  <input id="coDireccion" value={street} onChange={e => setStreet(e.target.value)} placeholder={t('ck.direccion.ph')} autoComplete="street-address" />
                 </div>
                 <div className="st-campo">
-                  <label htmlFor="coCiudad">Ciudad</label>
+                  <label htmlFor="coCiudad">{t('ck.ciudad')}</label>
                   <input id="coCiudad" value={city} onChange={e => setCity(e.target.value)} autoComplete="address-level2" />
                 </div>
                 <div className="st-campo">
-                  <label htmlFor="coPais">País</label>
+                  <label htmlFor="coPais">{t('ck.pais')}</label>
                   <select id="coPais" value={countryCode} onChange={e => setCountryCode(e.target.value)}>
                     {countries.map(c => (
                       <option key={c.code} value={c.code}>
@@ -268,7 +266,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
                       />
                       <span>
                         {m.name}
-                        <b>{formatMoney(m.priceWithTax, order.currencyCode)}</b>
+                        <b>{money(m.priceWithTax, order.currencyCode)}</b>
                       </span>
                     </label>
                   ))}
@@ -277,7 +275,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
             </fieldset>
 
             <fieldset className="st-grupo">
-              <legend>Pago</legend>
+              <legend>{t('ck.pago')}</legend>
               <div className="st-pago">
                 <span className="st-pago-ico" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
@@ -295,30 +293,30 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
           </div>
 
           <aside className="st-resumen">
-            <h2 className="st-resumen-t">Tu pedido</h2>
+            <h2 className="st-resumen-t">{t('ck.pedido')}</h2>
             {order.lines.map(l => (
               <div className="st-fila" key={l.id}>
                 <span>
                   {l.quantity} × {l.productVariant.name}
                 </span>
-                <span>{formatMoney(l.linePriceWithTax, order.currencyCode)}</span>
+                <span>{money(l.linePriceWithTax, order.currencyCode)}</span>
               </div>
             ))}
             <div className="st-fila st-fila--suave">
-              <span>Envío</span>
-              <span>{formatMoney(shippingPrice, order.currencyCode)}</span>
+              <span>{t('ck.envio')}</span>
+              <span>{money(shippingPrice, order.currencyCode)}</span>
             </div>
             <div className="st-fila st-fila--total">
-              <span>Total</span>
+              <span>{t('ck.total')}</span>
               <span data-testid="checkout-total">
-                {formatMoney(order.subTotalWithTax + shippingPrice, order.currencyCode)}
+                {money(order.subTotalWithTax + shippingPrice, order.currencyCode)}
               </span>
             </div>
             <button className="st-btn st-btn--marca st-btn--grande st-btn--bloque" type="submit" disabled={busy}>
-              {busy ? 'Confirmando…' : 'Confirmar pedido'}
+              {busy ? t('ck.confirmando') : t('ck.confirmar')}
             </button>
             <a className="st-seguir" href="/cart">
-              Volver al carrito
+              {t('ck.volver')}
             </a>
           </aside>
         </form>

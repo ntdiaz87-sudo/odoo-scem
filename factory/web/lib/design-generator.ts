@@ -11,27 +11,30 @@
  * el "plan B" y la encuesta alimentará al diseñador agéntico.
  */
 import type { StoreDesign } from './designs';
+import { LOCALE } from './i18n';
+
+const ZH = LOCALE === 'zh';
 
 export const RUBROS = [
-  { key: 'moda', label: 'Moda y accesorios' },
-  { key: 'comida', label: 'Comida y dulces' },
-  { key: 'plantas', label: 'Plantas y jardín' },
-  { key: 'tecnologia', label: 'Tecnología' },
-  { key: 'belleza', label: 'Belleza y cuidado' },
-  { key: 'artesania', label: 'Artesanía y hogar' },
-  { key: 'otro', label: 'Otra cosa' },
+  { key: 'moda', label: ZH ? '服饰配件' : 'Moda y accesorios' },
+  { key: 'comida', label: ZH ? '食品甜点' : 'Comida y dulces' },
+  { key: 'plantas', label: ZH ? '花植园艺' : 'Plantas y jardín' },
+  { key: 'tecnologia', label: ZH ? '数码科技' : 'Tecnología' },
+  { key: 'belleza', label: ZH ? '美妆个护' : 'Belleza y cuidado' },
+  { key: 'artesania', label: ZH ? '手作家居' : 'Artesanía y hogar' },
+  { key: 'otro', label: ZH ? '其他' : 'Otra cosa' },
 ] as const;
 
 export const ESTILOS = [
-  { key: 'calido', label: 'Cercana y cálida' },
-  { key: 'elegante', label: 'Elegante y sobria' },
-  { key: 'energico', label: 'Enérgica y llamativa' },
-  { key: 'minimalista', label: 'Minimalista' },
+  { key: 'calido', label: ZH ? '亲切温暖' : 'Cercana y cálida' },
+  { key: 'elegante', label: ZH ? '优雅高级' : 'Elegante y sobria' },
+  { key: 'energico', label: ZH ? '活力鲜明' : 'Enérgica y llamativa' },
+  { key: 'minimalista', label: ZH ? '极简' : 'Minimalista' },
 ] as const;
 
 export const MODOS = [
-  { key: 'claro', label: 'Fondo claro' },
-  { key: 'oscuro', label: 'Fondo oscuro' },
+  { key: 'claro', label: ZH ? '浅色' : 'Fondo claro' },
+  { key: 'oscuro', label: ZH ? '深色' : 'Fondo oscuro' },
 ] as const;
 
 export interface SurveyAnswers {
@@ -127,24 +130,38 @@ function fingerprint(tokens: Omit<StoreDesign, 'key' | 'label'>): string {
 
 /* ---------- vocabulario para los nombres ---------- */
 
-const HUE_NAMES: Array<[number, string]> = [
-  [15, 'Terracota'], [35, 'Ámbar'], [50, 'Miel'], [70, 'Oliva'], [100, 'Salvia'],
-  [140, 'Esmeralda'], [170, 'Jade'], [200, 'Lago'], [225, 'Índigo'], [255, 'Violeta'],
-  [285, 'Orquídea'], [320, 'Frambuesa'], [345, 'Granate'], [360, 'Coral'],
-];
+const HUE_NAMES: Array<[number, string]> = ZH
+  ? [
+      [15, '陶土'], [35, '琥珀'], [50, '蜜色'], [70, '橄榄'], [100, '青竹'],
+      [140, '翡翠'], [170, '碧玉'], [200, '湖蓝'], [225, '靛青'], [255, '紫罗兰'],
+      [285, '兰紫'], [320, '莓红'], [345, '石榴'], [360, '珊瑚'],
+    ]
+  : [
+      [15, 'Terracota'], [35, 'Ámbar'], [50, 'Miel'], [70, 'Oliva'], [100, 'Salvia'],
+      [140, 'Esmeralda'], [170, 'Jade'], [200, 'Lago'], [225, 'Índigo'], [255, 'Violeta'],
+      [285, 'Orquídea'], [320, 'Frambuesa'], [345, 'Granate'], [360, 'Coral'],
+    ];
 
-const ESTILO_SUFIJOS: Record<string, string[]> = {
-  calido: ['de casa', 'al sol', 'sereno', 'de barrio', 'tibio'],
-  elegante: ['noble', 'de gala', 'sobrio', 'imperial', 'clásico'],
-  energico: ['eléctrico', 'en marcha', 'vivo', 'radical', 'urbano'],
-  minimalista: ['puro', 'en calma', 'esencial', 'ligero', 'nítido'],
-};
+const ESTILO_SUFIJOS: Record<string, string[]> = ZH
+  ? {
+      calido: ['小屋', '暖阳', '静谧', '街角', '微温'],
+      elegante: ['雅致', '典礼', '素朴', '华庭', '经典'],
+      energico: ['电光', '疾行', '鲜活', '锋锐', '街头'],
+      minimalista: ['纯粹', '安然', '本真', '轻盈', '清晰'],
+    }
+  : {
+      calido: ['de casa', 'al sol', 'sereno', 'de barrio', 'tibio'],
+      elegante: ['noble', 'de gala', 'sobrio', 'imperial', 'clásico'],
+      energico: ['eléctrico', 'en marcha', 'vivo', 'radical', 'urbano'],
+      minimalista: ['puro', 'en calma', 'esencial', 'ligero', 'nítido'],
+    };
 
 function designName(brandHue: number, estilo: string, rand: () => number): string {
   const hue = ((brandHue % 360) + 360) % 360;
   const base = (HUE_NAMES.find(([limit]) => hue <= limit) ?? HUE_NAMES[0])[1];
   const sufijos = ESTILO_SUFIJOS[estilo] ?? ESTILO_SUFIJOS.calido;
-  return `${base} ${sufijos[Math.floor(rand() * sufijos.length)]}`;
+  const suf = sufijos[Math.floor(rand() * sufijos.length)];
+  return ZH ? `${base}${suf}` : `${base} ${suf}`;
 }
 
 /* ---------- el generador ---------- */
