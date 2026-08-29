@@ -1208,3 +1208,25 @@ a:hover { color: var(--accent-dark); }
   .fh-mp-rutas { max-height: 150px; border-right: none; border-bottom: 1px solid var(--f-border); }
   .fh-canal-fila { flex-wrap: wrap; }
 }
+
+/* ---- selector de idioma del visitante ---- */
+.fh-idiomas {
+  display: inline-flex; align-items: center; gap: 2px; flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, .22); border-radius: 999px; padding: 3px;
+}
+.fh-idiomas button {
+  min-height: 32px; padding: 0 12px; border: none; border-radius: 999px;
+  background: transparent; color: rgba(255, 255, 255, .72);
+  font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background-color .16s ease, color .16s ease;
+}
+.fh-idiomas button:hover { color: var(--f-white); }
+.fh-idiomas button.es-activo { background: var(--f-white); color: var(--f-ink); }
+.fh-idiomas button:focus-visible { outline: 2px solid var(--f-lime); outline-offset: 2px; }
+.fh-topbar-fin { display: inline-flex; align-items: center; gap: 14px; }
+
+@media (max-width: 760px) {
+  .fh-idiomas button { padding: 0 9px; font-size: 12.5px; min-height: 30px; }
+  .fh-topbar-fin { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .fh-idiomas button { transition: none; } }

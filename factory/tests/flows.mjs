@@ -383,6 +383,39 @@ await check('MCP: la herramienta rechaza SKU de otra tienda (aislamiento)', asyn
   assert(v && v.priceWithTax === 12800, `el precio de qingzhu cambió: ${v?.priceWithTax}`);
 });
 
+// ---------- 7. IDIOMA DEL VISITANTE ----------
+await check('Idioma: el visitante cambia a español y vuelve al chino', async () => {
+  await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+  const zh = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');
+  assert(zh.includes('生成你的完整商店'), `no arranca en chino: ${zh}`);
+
+  await page.getByRole('button', { name: 'Español' }).first().click();
+  await page.waitForTimeout(2200);
+  const es = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');
+  assert(/Tu tienda online/.test(es), `no cambió a español: ${es}`);
+  assert((await page.evaluate(() => document.documentElement.lang)) === 'es', 'el atributo lang no cambió');
+
+  // El asistente también, incluidas las etiquetas de la encuesta.
+  await page.goto(BASE + '/demo', { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1500);
+  assert((await page.locator('h1').first().innerText()).includes('¿Qué quieres vender?'), 'el asistente sigue en chino');
+  assert(await page.getByRole('button', { name: 'Moda y accesorios' }).count() > 0, 'la encuesta sigue en chino');
+
+  await page.getByRole('button', { name: '中文' }).first().click();
+  await page.waitForTimeout(2200);
+  assert((await page.locator('h1').first().innerText()).includes('你想卖什么'), 'no volvió al chino');
+});
+await check('Idioma: la TIENDA no sigue la preferencia del visitante', async () => {
+  // La tienda es del comerciante y de su mercado: se sirve en chino aunque
+  // el visitante tenga la fábrica en español.
+  await ctx.addCookies([{ name: 'fabrica_idioma', value: 'es', domain: 'localhost', path: '/' }]);
+  await page.goto(`http://qingzhu.${HOST}/`, { waitUntil: 'networkidle' });
+  const body = await page.content();
+  assert(body.includes('欢迎来到'), 'la tienda cambió de idioma con la cookie del visitante');
+  assert(body.includes('加入购物车'), 'los botones de la tienda cambiaron de idioma');
+  await ctx.clearCookies();
+});
+
 await browser.close();
 
 let fails = 0;

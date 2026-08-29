@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { HTML_LANG, LOCALE, t } from '../lib/i18n';
+import { getLocale } from '../lib/i18n-server';
+import { LocaleProvider } from './locale-provider';
 
-export const metadata: Metadata =
-  LOCALE === 'zh'
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return locale === 'zh'
     ? {
         title: 'fábrica · 你的 AI 商店工厂',
         description:
@@ -14,23 +16,28 @@ export const metadata: Metadata =
         description:
           'Crea tu tienda online con un diseño único generado por IA, publícala con tu dominio y véndela en web y apps. Sin programadores.',
       };
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
-    <html lang={HTML_LANG}>
+    <html lang={locale === 'zh' ? 'zh-CN' : 'es'}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
           href={
-            LOCALE === 'zh'
-              ? 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700&display=swap'
-              : 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap'
+            /* Las fuentes chinas se cargan siempre: las tiendas del mercado
+               chino las necesitan aunque el visitante mire la fábrica en
+               español. */
+            'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;700&family=Public+Sans:wght@400;500;600;700&display=swap'
           }
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <LocaleProvider locale={locale}>{children}</LocaleProvider>
+      </body>
     </html>
   );
 }

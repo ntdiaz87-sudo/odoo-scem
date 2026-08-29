@@ -1,15 +1,34 @@
 /**
- * Idioma de la plataforma. Sin dependencias: el idioma se fija en build con
- * NEXT_PUBLIC_LOCALE (zh por defecto, que es el mercado de lanzamiento), de
- * modo que sirve igual en componentes de servidor y de cliente.
+ * Idiomas de la plataforma.
+ *
+ * Hay DOS idiomas en juego y no son lo mismo:
+ *
+ *  · **El idioma del mercado** (`LOCALE`): se fija en build con
+ *    NEXT_PUBLIC_LOCALE. Define la moneda, el idioma de los canales que se
+ *    crean y el de las TIENDAS de los comerciantes. Una tienda china se
+ *    sirve en chino aunque el visitante tenga la fábrica en español: esa
+ *    tienda es de su dueño y de su mercado.
+ *
+ *  · **El idioma del visitante**: solo afecta a las páginas de la propia
+ *    fábrica (home, asistente, panel de canales). Se resuelve por petición
+ *    desde una cookie, con el idioma del navegador como respaldo — ver
+ *    i18n-server.ts (servidor) y app/locale-provider.tsx (cliente).
  *
  * El chino NO es una traducción del español: es el idioma en el que se
- * escribió esta versión del producto. El español queda como secundario.
+ * escribió esta versión del producto.
  */
 export type Locale = 'zh' | 'es';
 
+export const LOCALES: Locale[] = ['zh', 'es'];
+export const NOMBRE_IDIOMA: Record<Locale, string> = { zh: '中文', es: 'Español' };
+
+/** Idioma del mercado de lanzamiento (build). */
 export const LOCALE: Locale =
   (process.env.NEXT_PUBLIC_LOCALE as Locale) === 'es' ? 'es' : 'zh';
+
+export function esLocaleValido(v: string | undefined | null): v is Locale {
+  return v === 'zh' || v === 'es';
+}
 
 /** Moneda del mercado: yuan en China, dólar fuera. */
 export const CURRENCY = LOCALE === 'zh' ? 'CNY' : 'USD';
@@ -94,6 +113,80 @@ const D: Dict = {
   'planes.cta.ai': { zh: '创建我的商店', es: 'Crear mi tienda' },
   'planes.cta.omni': { zh: '联系我们', es: 'Hablar con nosotros' },
   'planes.sin.comision': { zh: '0 平台交易佣金', es: '0 % de comisión de plataforma' },
+
+
+  /* ---- canales ---- */
+  'canales.t': { zh: '三个渠道，\n一次生成。', es: 'Tres canales,\ngenerados a la vez.' },
+  'canales.sub': {
+    zh: '同一个商品库、同一批订单。改一次价格，网店、H5 和小程序同时更新。',
+    es: 'Un solo catálogo y un solo flujo de pedidos. Cambias un precio una vez y se actualiza en los tres.',
+  },
+  'canal.web.n': { zh: '网店', es: 'Tienda web' },
+  'canal.web.d': { zh: '独立域名，自动 SSL', es: 'Dominio propio y certificado automático' },
+  'canal.h5.n': { zh: 'H5', es: 'H5' },
+  'canal.h5.d': { zh: '微信内直接打开，扫码即达', es: 'Se abre dentro de WeChat; se entra por código QR' },
+  'canal.mp.n': { zh: '微信小程序', es: 'Mini programa de WeChat' },
+  'canal.mp.d': { zh: '一分钟授权，同步上架', es: 'Autorización en un minuto, catálogo sincronizado' },
+  'canal.apps.n': { zh: 'iOS / Android', es: 'iOS / Android' },
+  'canal.apps.d': { zh: '高级套餐提供', es: 'En los planes superiores' },
+  'canal.live': { zh: '已上线', es: 'Activo' },
+  'canal.plan': { zh: '高级套餐', es: 'Plan superior' },
+
+  /* ---- equipo de IA ---- */
+  'equipo.eyebrow': { zh: 'AI 团队', es: 'Equipo de IA' },
+  'equipo.t': { zh: '三位 AI 员工，和你一起看店。', es: 'Tres empleados de IA, contigo en la tienda.' },
+  'equipo.sub': {
+    zh: '不是「AI 功能」，是三位有名字的同事。重要的操作先给你看，你点头才执行。',
+    es: 'No son «funciones de IA»: son tres compañeros con nombre. Lo importante te lo enseñan antes, y solo actúan si das el visto bueno.',
+  },
+  'equipo.1.n': { zh: '小美', es: 'Mei' },
+  'equipo.1.r': { zh: '客服 AI', es: 'Atención al cliente' },
+  'equipo.1.d': { zh: '回答顾客、查订单、查库存，拿不准的转给你。', es: 'Responde a tus clientes, consulta pedidos y stock, y te pasa lo que no tiene claro.' },
+  'equipo.2.n': { zh: '小林', es: 'Lin' },
+  'equipo.2.r': { zh: '运营 AI', es: 'Operaciones' },
+  'equipo.2.d': { zh: '盯库存、找滞销品、准备促销，等你点头再执行。', es: 'Vigila el stock, detecta lo que no se vende y prepara promociones, a la espera de tu aprobación.' },
+  'equipo.3.n': { zh: '小安', es: 'An' },
+  'equipo.3.r': { zh: '内容 AI', es: 'Contenido' },
+  'equipo.3.d': { zh: '写商品详情、优化标题、按渠道调整文案。', es: 'Escribe las fichas, mejora los títulos y adapta el texto a cada canal.' },
+  'equipo.nota': {
+    zh: '三种授权级别：只建议 · 准备好等你批准 · 自动执行你允许的操作。',
+    es: 'Tres niveles de autorización: solo recomienda · prepara y espera tu aprobación · ejecuta lo que autorizaste.',
+  },
+
+  /* ---- planes ---- */
+  'plan.demo.n': { zh: '体验版', es: 'Demo' },
+  'plan.demo.p': { zh: '免费', es: 'Gratis' },
+  'plan.demo.nota': { zh: '14 天试用', es: '14 días de prueba' },
+  'plan.demo.i': { zh: '完整体验店|专属设计生成|免费二级域名|AI 功能试用', es: 'Tienda de prueba completa|Diseños generados para ti|Subdominio gratuito|IA de prueba' },
+  'plan.store.n': { zh: '开店版', es: 'Tienda' },
+  'plan.store.nota': { zh: '按年 ¥1.990', es: 'Anual ¥1.990' },
+  'plan.store.i': { zh: '网店 + H5|专属设计与域名|订单、库存与客户|SSL 与托管', es: 'Tienda web + H5|Diseño propio y dominio|Pedidos, inventario y clientes|Certificado y alojamiento' },
+  'plan.ai.n': { zh: 'AI 商家版', es: 'Tienda + IA' },
+  'plan.ai.nota': { zh: '按年 ¥3.990', es: 'Anual ¥3.990' },
+  'plan.ai.i': { zh: '开店版全部功能|客服 AI + 内容 AI|运营 AI（建议模式）|数据分析', es: 'Todo el plan Tienda|IA de atención y de contenido|IA de operaciones (modo consejo)|Analítica' },
+  'plan.omni.n': { zh: '全渠道版', es: 'Omnicanal' },
+  'plan.omni.nota': { zh: '按年 ¥6.990', es: 'Anual ¥6.990' },
+  'plan.omni.i': { zh: 'AI 商家版全部功能|微信小程序|完整 AI 团队|更高用量与自动化', es: 'Todo el plan Tienda + IA|Mini programa de WeChat|Equipo de IA completo|Más uso y automatizaciones' },
+  'plan.cta.crear': { zh: '创建我的商店', es: 'Crear mi tienda' },
+  'plan.cta.gratis': { zh: '免费开始', es: 'Empezar gratis' },
+  'plan.cta.hablar': { zh: '联系我们', es: 'Hablar con nosotros' },
+
+  /* ---- identidades, FAQ y pie ---- */
+  'ident.t': { zh: '在 fábrica 可以诞生的品牌', es: 'Marcas que pueden nacer en fábrica' },
+  'faq.t': { zh: '还有疑问？', es: '¿Tienes preguntas?' },
+  'faq.d': { zh: '关于 fábrica 的常见问题，我们都整理好了。', es: 'Respondemos las dudas más comunes sobre fábrica.' },
+  'faq.cta': { zh: '查看常见问题', es: 'Ver preguntas frecuentes' },
+  'pie.producto': { zh: '产品', es: 'Producto' },
+  'pie.empresa': { zh: '公司', es: 'Empresa' },
+  'pie.soporte': { zh: '支持', es: 'Soporte' },
+  'pie.sobre': { zh: '关于我们', es: 'Sobre nosotros' },
+  'pie.contacto': { zh: '联系我们', es: 'Contacto' },
+  'pie.terminos': { zh: '服务条款', es: 'Términos y condiciones' },
+  'pie.privacidad': { zh: '隐私政策', es: 'Privacidad' },
+  'pie.ayuda': { zh: '帮助中心', es: 'Centro de ayuda' },
+  'pie.faq': { zh: '常见问题', es: 'Preguntas frecuentes' },
+  'pie.estado': { zh: '系统状态', es: 'Estado del sistema' },
+  'pie.hecho': { zh: 'AI 生成', es: 'Hecho con IA' },
 
   /* ---- onboarding ---- */
   'demo.h1': { zh: '你想卖什么？', es: '¿Qué quieres vender?' },
@@ -231,24 +324,34 @@ const D: Dict = {
   'g.volver': { zh: '返回商店', es: 'Volver a la tienda' },
 };
 
-export function t(key: string, vars?: Record<string, string>): string {
+/** Traduce una clave a un idioma concreto. */
+export function translate(locale: Locale, key: string, vars?: Record<string, string>): string {
   const entry = D[key];
   if (!entry) return key;
-  let s = entry[LOCALE];
+  let s = entry[locale];
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.split(`{${k}}`).join(v);
   return s;
 }
 
-/** Precio en la moneda del mercado, formateado con la convención local. */
-export function money(minor: number, currency?: string): string {
-  const cur = currency || CURRENCY;
-  return new Intl.NumberFormat(LOCALE === 'zh' ? 'zh-CN' : 'es', {
+/**
+ * Traduce en el idioma del MERCADO. Es lo que usan las páginas de tienda:
+ * no dependen de la preferencia del visitante.
+ */
+export function t(key: string, vars?: Record<string, string>): string {
+  return translate(LOCALE, key, vars);
+}
+
+const INTL: Record<Locale, string> = { zh: 'zh-CN', es: 'es' };
+
+/** Precio formateado. La moneda viene del dato; el formato, del idioma. */
+export function money(minor: number, currency?: string, locale: Locale = LOCALE): string {
+  return new Intl.NumberFormat(INTL[locale], {
     style: 'currency',
-    currency: cur,
+    currency: currency || CURRENCY,
   }).format(minor / 100);
 }
 
-/** Fecha corta local. */
-export function fecha(iso: string): string {
-  return new Date(iso).toLocaleDateString(LOCALE === 'zh' ? 'zh-CN' : 'es');
+/** Fecha corta. */
+export function fecha(iso: string, locale: Locale = LOCALE): string {
+  return new Date(iso).toLocaleDateString(INTL[locale]);
 }

@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ESTILOS, MODOS, RUBROS } from '../../lib/design-generator';
+import { estilos, modos, rubros } from '../../lib/design-generator';
 import type { StoreDesign } from '../../lib/designs';
-import { t } from '../../lib/i18n';
+import { SelectorIdioma, useLocale, useT } from '../locale-provider';
 
 interface Created {
   url: string;
@@ -30,6 +30,11 @@ function IconTick() {
 }
 
 export default function DemoWizard() {
+  const t = useT();
+  const locale = useLocale();
+  const RUBROS = rubros(locale);
+  const ESTILOS = estilos(locale);
+  const MODOS = modos(locale);
   const [storeName, setStoreName] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [ownerPassword, setOwnerPassword] = useState('');
@@ -172,9 +177,12 @@ export default function DemoWizard() {
         <Link href="/" aria-label="Ir al inicio de fábrica">
           {marca}
         </Link>
-        <Link className="fh-volver" href="/">
-          <span aria-hidden="true">←</span> {t('volver')}
-        </Link>
+        <span className="fh-topbar-fin">
+          <SelectorIdioma compacto />
+          <Link className="fh-volver" href="/">
+            <span aria-hidden="true">←</span> {t('volver')}
+          </Link>
+        </span>
       </header>
 
       <main className="fh-panel">

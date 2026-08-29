@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { LOCALE, t } from '../lib/i18n';
+import { getLocale, getT } from '../lib/i18n-server';
+import { SelectorIdioma } from './locale-provider';
 import {
   IconAgent,
   IconBox,
@@ -29,101 +30,81 @@ const CAPACIDADES = [
   { icono: <IconBox />, k: 'home.cap4' },
 ];
 
+type T = (k: string, v?: Record<string, string>) => string;
+
 const CANALES = [
-  { icono: '🌐', n: '网店', d: '独立域名，自动 SSL', estado: 'live' },
-  { icono: '📱', n: 'H5', d: '微信内直接打开，扫码即达', estado: 'live' },
-  { icono: '💬', n: '微信小程序', d: '一分钟授权，同步上架', estado: 'live' },
-  { icono: '🍎', n: 'iOS / Android', d: '高级套餐提供', estado: 'plan' },
+  { icono: '🌐', k: 'canal.web', estado: 'live' },
+  { icono: '📱', k: 'canal.h5', estado: 'live' },
+  { icono: '💬', k: 'canal.mp', estado: 'live' },
+  { icono: '🍎', k: 'canal.apps', estado: 'plan' },
 ];
 
-const EQUIPO = [
-  { nombre: '小美', rol: '客服 AI', d: '回答顾客、查订单、查库存，拿不准的转给你。' },
-  { nombre: '小林', rol: '运营 AI', d: '盯库存、找滞销品、准备促销，等你点头再执行。' },
-  { nombre: '小安', rol: '内容 AI', d: '写商品详情、优化标题、按渠道调整文案。' },
-];
+const EQUIPO = ['equipo.1', 'equipo.2', 'equipo.3'];
 
 const IDENTIDADES = ['青竹家居', 'NOCTA 夜行', '陶合', '拾光', '雾山', '游牧'];
 
-const PIE = [
-  {
-    titulo: '产品',
-    enlaces: [
-      { t: '怎么用', h: '#como-funciona' },
-      { t: '专属设计', h: '#disenos' },
-      { t: '销售渠道', h: '#canales' },
-      { t: '价格', h: '#planes' },
-    ],
-  },
-  {
-    titulo: '公司',
-    enlaces: [
-      { t: '关于我们', h: '#disenos' },
-      { t: '联系我们', h: '#planes' },
-      { t: '服务条款', h: '#planes' },
-      { t: '隐私政策', h: '#planes' },
-    ],
-  },
-  {
-    titulo: '支持',
-    enlaces: [
-      { t: '帮助中心', h: '#faq' },
-      { t: '常见问题', h: '#faq' },
-      { t: '系统状态', h: '#faq' },
-    ],
-  },
-];
+function pie(t: T) {
+  return [
+    {
+      titulo: t('pie.producto'),
+      enlaces: [
+        { t: t('nav.como'), h: '#como-funciona' },
+        { t: t('nav.disenos'), h: '#disenos' },
+        { t: t('nav.canales'), h: '#canales' },
+        { t: t('nav.planes'), h: '#planes' },
+      ],
+    },
+    {
+      titulo: t('pie.empresa'),
+      enlaces: [
+        { t: t('pie.sobre'), h: '#disenos' },
+        { t: t('pie.contacto'), h: '#planes' },
+        { t: t('pie.terminos'), h: '#planes' },
+        { t: t('pie.privacidad'), h: '#planes' },
+      ],
+    },
+    {
+      titulo: t('pie.soporte'),
+      enlaces: [
+        { t: t('pie.ayuda'), h: '#faq' },
+        { t: t('pie.faq'), h: '#faq' },
+        { t: t('pie.estado'), h: '#faq' },
+      ],
+    },
+  ];
+}
 
-const PLANES = [
-  {
-    k: 'demo',
-    nombre: '体验版',
-    precio: '免费',
-    precioChico: false,
-    nota: '14 天试用',
-    items: ['完整体验店', '专属设计生成', '免费二级域名', 'AI 功能试用'],
-    cta: '免费开始',
-    destacado: false,
-  },
-  {
-    k: 'store',
-    nombre: '开店版',
-    precio: '¥199',
-    precioChico: false,
-    nota: '按年 ¥1.990',
-    items: ['网店 + H5', '专属设计与域名', '订单、库存与客户', 'SSL 与托管'],
-    cta: '创建我的商店',
-    destacado: false,
-  },
-  {
-    k: 'ai',
-    nombre: 'AI 商家版',
-    precio: '¥399',
-    precioChico: false,
-    nota: '按年 ¥3.990',
-    items: ['开店版全部功能', '客服 AI + 内容 AI', '运营 AI（建议模式）', '数据分析'],
-    cta: '创建我的商店',
-    destacado: true,
-  },
-  {
-    k: 'omni',
-    nombre: '全渠道版',
-    precio: '¥699',
-    precioChico: false,
-    nota: '按年 ¥6.990',
-    items: ['AI 商家版全部功能', '微信小程序', '完整 AI 团队', '更高用量与自动化'],
-    cta: '联系我们',
-    destacado: false,
-  },
-];
+/**
+ * Los precios NO se traducen: son los del mercado chino. Un visitante que
+ * mira la fábrica en español ve el producto chino explicado en su idioma,
+ * con sus precios reales en yuan.
+ */
+function planes(t: T) {
+  return [
+    { k: 'demo', precio: t('plan.demo.p'), cta: t('plan.cta.gratis'), destacado: false },
+    { k: 'store', precio: '¥199', cta: t('plan.cta.crear'), destacado: false },
+    { k: 'ai', precio: '¥399', cta: t('plan.cta.crear'), destacado: true },
+    { k: 'omni', precio: '¥699', cta: t('plan.cta.hablar'), destacado: false },
+  ].map(p => ({
+    ...p,
+    nombre: t(`plan.${p.k}.n`),
+    nota: t(`plan.${p.k}.nota`),
+    items: t(`plan.${p.k}.i`).split('|'),
+  }));
+}
 
-export default function Landing() {
+export default async function Landing() {
+  const t = await getT();
+  const locale = await getLocale();
+  const PIE = pie(t);
+  const PLANES = planes(t);
   return (
     <>
       {/* ============ HERO ============ */}
       <header className="fh-hero">
         <div className="fh-hero-luz" aria-hidden="true" />
         <div className="fh-wrap">
-          <nav className="fh-nav" aria-label="主导航">
+          <nav className="fh-nav" aria-label={t('nav.como')}>
             <span className="fh-marca">
               fábrica<span className="fh-punto">.</span>
             </span>
@@ -133,6 +114,7 @@ export default function Landing() {
               <a href="#canales">{t('nav.canales')}</a>
               <a href="#planes">{t('nav.planes')}</a>
             </div>
+            <SelectorIdioma compacto />
             <Link className="fh-btn fh-btn--lima fh-nav-cta" href="/demo">
               {t('nav.cta')}
               <span aria-hidden="true">→</span>
@@ -218,25 +200,19 @@ export default function Landing() {
         <section className="fh-canales" id="canales">
           <div className="fh-wrap">
             <div className="fh-canales-cabeza">
-              <h2 className="fh-h2">
-                三个渠道，
-                <br />
-                一次生成。
-              </h2>
-              <p className="fh-canales-sub">
-                同一个商品库、同一批订单。改一次价格，网店、H5 和小程序同时更新。
-              </p>
+              <h2 className="fh-h2 fh-pre">{t('canales.t')}</h2>
+              <p className="fh-canales-sub">{t('canales.sub')}</p>
             </div>
             <ul className="fh-canales-lista">
               {CANALES.map(c => (
-                <li className={`fh-canal${c.estado === 'plan' ? ' es-plan' : ''}`} key={c.n}>
+                <li className={`fh-canal${c.estado === 'plan' ? ' es-plan' : ''}`} key={c.k}>
                   <span className="fh-canal-ico" aria-hidden="true">
                     {c.icono}
                   </span>
-                  <span className="fh-canal-n">{c.n}</span>
-                  <span className="fh-canal-d">{c.d}</span>
+                  <span className="fh-canal-n">{t(`${c.k}.n`)}</span>
+                  <span className="fh-canal-d">{t(`${c.k}.d`)}</span>
                   <span className={`fh-canal-estado${c.estado === 'live' ? ' es-live' : ''}`}>
-                    {c.estado === 'live' ? '已上线' : '高级套餐'}
+                    {c.estado === 'live' ? t('canal.live') : t('canal.plan')}
                   </span>
                 </li>
               ))}
@@ -282,31 +258,29 @@ export default function Landing() {
         <section className="fh-equipo" id="equipo">
           <div className="fh-wrap">
             <div className="fh-equipo-cabeza">
-              <p className="fh-eyebrow fh-eyebrow--centrado">AI 团队</p>
-              <h2 className="fh-h2 fh-centrado">三位 AI 员工，和你一起看店。</h2>
-              <p className="fh-equipo-sub">
-                不是「AI 功能」，是三位有名字的同事。重要的操作先给你看，你点头才执行。
-              </p>
+              <p className="fh-eyebrow fh-eyebrow--centrado">{t('equipo.eyebrow')}</p>
+              <h2 className="fh-h2 fh-centrado">{t('equipo.t')}</h2>
+              <p className="fh-equipo-sub">{t('equipo.sub')}</p>
             </div>
             <div className="fh-equipo-rejilla">
-              {EQUIPO.map(e => (
-                <article className="fh-empleado" key={e.nombre}>
+              {EQUIPO.map(k => (
+                <article className="fh-empleado" key={k}>
                   <div className="fh-empleado-cabeza">
                     <span className="fh-avatar" aria-hidden="true">
-                      {e.nombre.slice(-1)}
+                      {t(`${k}.n`).slice(-1)}
                     </span>
                     <span>
-                      <span className="fh-empleado-n">{e.nombre}</span>
-                      <span className="fh-empleado-r">{e.rol}</span>
+                      <span className="fh-empleado-n">{t(`${k}.n`)}</span>
+                      <span className="fh-empleado-r">{t(`${k}.r`)}</span>
                     </span>
                   </div>
-                  <p className="fh-empleado-d">{e.d}</p>
+                  <p className="fh-empleado-d">{t(`${k}.d`)}</p>
                 </article>
               ))}
             </div>
             <p className="fh-equipo-nota">
               <span className="fh-punto-lima" aria-hidden="true" />
-              三种授权级别：只建议 · 准备好等你批准 · 自动执行你允许的操作。
+              {t('equipo.nota')}
             </p>
           </div>
         </section>
@@ -356,7 +330,7 @@ export default function Landing() {
         {/* ============ IDENTIDADES ============ */}
         <section className="fh-identidades">
           <div className="fh-wrap">
-            <h2 className="fh-identidades-titulo">在 fábrica 可以诞生的品牌</h2>
+            <h2 className="fh-identidades-titulo">{t('ident.t')}</h2>
             <ul className="fh-wordmarks">
               {IDENTIDADES.map(i => (
                 <li key={i}>{i}</li>
@@ -369,10 +343,10 @@ export default function Landing() {
         <section className="fh-faq" id="faq">
           <div className="fh-wrap fh-faq-rejilla">
             <div>
-              <h2 className="fh-h2">还有疑问？</h2>
-              <p className="fh-faq-texto">关于 fábrica 的常见问题，我们都整理好了。</p>
+              <h2 className="fh-h2">{t('faq.t')}</h2>
+              <p className="fh-faq-texto">{t('faq.d')}</p>
               <a className="fh-btn fh-btn--linea-oscura" href="#como-funciona">
-                查看常见问题
+                {t('faq.cta')}
               </a>
             </div>
             <div className="fh-globos" aria-hidden="true">
@@ -410,14 +384,14 @@ export default function Landing() {
           ))}
           <div className="fh-pie-final">
             <p className="fh-pie-dominio">[dominio.com]</p>
-            <p className="fh-pie-legal">© 2026 fábrica.{LOCALE === 'zh' ? ' 保留所有权利。' : ' Todos los derechos reservados.'}</p>
+            <p className="fh-pie-legal">© 2026 fábrica.{locale === 'zh' ? ' 保留所有权利。' : ' Todos los derechos reservados.'}</p>
             {/* En China es obligatorio mostrar el número de registro ICP en el pie. */}
             <a className="fh-pie-icp" href="https://beian.miit.gov.cn/" rel="noreferrer">
               [ICP备案号]
             </a>
             <span className="fh-pie-sello">
               <span className="fh-punto-lima" aria-hidden="true" />
-              AI 生成
+              {t('pie.hecho')}
             </span>
           </div>
         </div>

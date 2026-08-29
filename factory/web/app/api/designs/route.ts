@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateProposals, RUBROS, ESTILOS, MODOS } from '../../../lib/design-generator';
+import { generateProposals, RUBRO_KEYS, ESTILO_KEYS, MODO_KEYS } from '../../../lib/design-generator';
 import { takenDesignKeys } from '../../../lib/design-registry';
 
 export async function POST(req: NextRequest) {
@@ -9,9 +9,9 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: 'Petición inválida.' }, { status: 400 });
   }
-  const rubro = RUBROS.some(r => r.key === payload.rubro) ? payload.rubro! : 'otro';
-  const estilo = ESTILOS.some(e => e.key === payload.estilo) ? payload.estilo! : 'calido';
-  const modo = MODOS.some(m => m.key === payload.modo) ? payload.modo! : 'claro';
+  const rubro = RUBRO_KEYS.includes(payload.rubro || '') ? payload.rubro! : 'otro';
+  const estilo = ESTILO_KEYS.includes(payload.estilo || '') ? payload.estilo! : 'calido';
+  const modo = MODO_KEYS.includes(payload.modo || '') ? payload.modo! : 'claro';
 
   try {
     const taken = await takenDesignKeys();

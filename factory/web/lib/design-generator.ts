@@ -11,31 +11,44 @@
  * el "plan B" y la encuesta alimentará al diseñador agéntico.
  */
 import type { StoreDesign } from './designs';
-import { LOCALE } from './i18n';
+import { LOCALE, type Locale } from './i18n';
 
 const ZH = LOCALE === 'zh';
 
-export const RUBROS = [
-  { key: 'moda', label: ZH ? '服饰配件' : 'Moda y accesorios' },
-  { key: 'comida', label: ZH ? '食品甜点' : 'Comida y dulces' },
-  { key: 'plantas', label: ZH ? '花植园艺' : 'Plantas y jardín' },
-  { key: 'tecnologia', label: ZH ? '数码科技' : 'Tecnología' },
-  { key: 'belleza', label: ZH ? '美妆个护' : 'Belleza y cuidado' },
-  { key: 'artesania', label: ZH ? '手作家居' : 'Artesanía y hogar' },
-  { key: 'otro', label: ZH ? '其他' : 'Otra cosa' },
-] as const;
+/** Las etiquetas de la encuesta siguen el idioma del VISITANTE. */
+export function rubros(l: Locale) {
+  const z = l === 'zh';
+  return [
+    { key: 'moda', label: z ? '服饰配件' : 'Moda y accesorios' },
+    { key: 'comida', label: z ? '食品甜点' : 'Comida y dulces' },
+    { key: 'plantas', label: z ? '花植园艺' : 'Plantas y jardín' },
+    { key: 'tecnologia', label: z ? '数码科技' : 'Tecnología' },
+    { key: 'belleza', label: z ? '美妆个护' : 'Belleza y cuidado' },
+    { key: 'artesania', label: z ? '手作家居' : 'Artesanía y hogar' },
+    { key: 'otro', label: z ? '其他' : 'Otra cosa' },
+  ];
+}
+export function estilos(l: Locale) {
+  const z = l === 'zh';
+  return [
+    { key: 'calido', label: z ? '亲切温暖' : 'Cercana y cálida' },
+    { key: 'elegante', label: z ? '优雅高级' : 'Elegante y sobria' },
+    { key: 'energico', label: z ? '活力鲜明' : 'Enérgica y llamativa' },
+    { key: 'minimalista', label: z ? '极简' : 'Minimalista' },
+  ];
+}
+export function modos(l: Locale) {
+  const z = l === 'zh';
+  return [
+    { key: 'claro', label: z ? '浅色' : 'Fondo claro' },
+    { key: 'oscuro', label: z ? '深色' : 'Fondo oscuro' },
+  ];
+}
 
-export const ESTILOS = [
-  { key: 'calido', label: ZH ? '亲切温暖' : 'Cercana y cálida' },
-  { key: 'elegante', label: ZH ? '优雅高级' : 'Elegante y sobria' },
-  { key: 'energico', label: ZH ? '活力鲜明' : 'Enérgica y llamativa' },
-  { key: 'minimalista', label: ZH ? '极简' : 'Minimalista' },
-] as const;
-
-export const MODOS = [
-  { key: 'claro', label: ZH ? '浅色' : 'Fondo claro' },
-  { key: 'oscuro', label: ZH ? '深色' : 'Fondo oscuro' },
-] as const;
+/** Claves válidas, para validar en el servidor sin depender del idioma. */
+export const RUBRO_KEYS = ['moda', 'comida', 'plantas', 'tecnologia', 'belleza', 'artesania', 'otro'];
+export const ESTILO_KEYS = ['calido', 'elegante', 'energico', 'minimalista'];
+export const MODO_KEYS = ['claro', 'oscuro'];
 
 export interface SurveyAnswers {
   rubro: string;
