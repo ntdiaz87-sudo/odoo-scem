@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { leerSesion } from '../../../lib/panel-sesion';
 import { loadStoreInfo } from '../../../lib/store-design';
 import { rootDomain, storeUrl } from '../../../lib/tenant';
 import { MiniProgramPanel } from './mini-panel';
@@ -15,6 +17,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CanalesPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+
+  // Esta página entrega el código fuente del mini programa, que lleva dentro
+  // el token del canal: no puede quedar abierta a quien acierte el slug. Solo
+  // la ve el dueño de ESA tienda, con su sesión del back office.
+  const sesion = await leerSesion();
+  if (!sesion) redirect('/panel');
+  if (sesion.canal.token !== slug) redirect(`/canales/${sesion.canal.token}`);
+
   const info = await loadStoreInfo(slug);
 
   if (!info) {

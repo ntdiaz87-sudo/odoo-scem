@@ -257,6 +257,17 @@ await check('Fase 1: el dueño entra al panel y ve SOLO su canal', async () => {
   const codes = j.data.login.channels.map((c) => c.code);
   assert(codes.length === 1 && codes[0] === SLUG, `canales del dueño: ${codes.join(',')}`);
 });
+await check('El enlace del dueño lleva a SU back office, no a la consola de Vendure', async () => {
+  const r = await ctx.request.get(BASE + '/panel');
+  assert(r.status() === 200, `status ${r.status()}`);
+  const cuerpo = await r.text();
+  assert(cuerpo.includes('id="correo"') && cuerpo.includes('id="clave"'), 'la puerta del panel no pide credenciales');
+});
+await check('El panel de canales ya no está abierto a quien acierte el slug', async () => {
+  const r = await ctx.request.get(`${BASE}/canales/${SLUG}`, { maxRedirects: 0 });
+  assert(r.status() === 307 || r.status() === 302, `status ${r.status()} (debería redirigir a /panel)`);
+  assert((r.headers()['location'] || '').includes('/panel'), `redirige a ${r.headers()['location']}`);
+});
 await check('Fase 1: correo repetido rechazado con aviso claro', async () => {
   const res = await ctx.request.post(BASE + '/api/demo', { data: { storeName: 'Otra Tienda', designKey: 'hoja-viva', ownerEmail: EMAIL, ownerPassword: PASS } });
   assert(res.status() === 409, `status ${res.status()}`);

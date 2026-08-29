@@ -319,7 +319,7 @@ export async function POST(req: NextRequest) {
     const base = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
     return NextResponse.json({
       url: storeUrl(channel.token),
-      panelUrl: `${base}/dashboard`,
+      panelUrl: `${base}/panel`,
       channelsUrl: `${base}/canales/${channel.token}`,
       ownerEmail,
       expiresAt,
