@@ -65,3 +65,5 @@ cd factory/web && npm install && npm run dev   # http://localhost:8300
   junto con registro/login y caducidad de sandboxes).
 - Los presets de diseño están duplicados en `vendure/src/designs.ts` y
   `web/lib/designs.ts`; en la Fase 2 los sustituye el diseñador agéntico.
+
+<!-- despliegue continuo activo: GitHub → Gitea → CI GEX44 -->
