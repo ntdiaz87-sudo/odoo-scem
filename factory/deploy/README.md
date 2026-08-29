@@ -17,8 +17,8 @@ puertos SOLO en `127.0.0.1`; Caddy del host para TLS/dominio; DNS gris.
 | `/etc/caddy/Caddyfile` | UN bloque nuevo (y `on_demand_tls` en el global si no existe) |
 | Cloudflare (zona elegida) | 2 registros A **en gris**: `fabrica` y `*.fabrica` |
 
-Puertos: **8250 (web)** y **8251 (vendure)** en 127.0.0.1 — asignados como
-"proyecto nuevo" en el runbook general (8300 ya está ocupado en GEX44).
+Puertos: **8260 (web)** y **8261 (vendure)** en 127.0.0.1 — asignados como
+"proyecto nuevo" en el runbook general (8300 y 8250 ya están ocupados en GEX44; 8250 lo usa seric en 0.0.0.0).
 Comprobar antes: `ss -ltnp | grep -oE '127.0.0.1:8[0-9]{3}' | sort -u`
 
 ## Paso a paso (desde la laptop, `ssh gex44`)
@@ -72,7 +72,7 @@ existe), añadir — necesario para los certificados por tienda:
 
 ```
 on_demand_tls {
-    ask http://127.0.0.1:8250/api/tls-check
+    ask http://127.0.0.1:8260/api/tls-check
 }
 ```
 
@@ -86,10 +86,10 @@ fabrica.enetradex.com, *.fabrica.enetradex.com {
     }
     @vendure path /admin-api* /shop-api* /assets* /dashboard* /graphiql* /mailbox*
     handle @vendure {
-        reverse_proxy 127.0.0.1:8251
+        reverse_proxy 127.0.0.1:8261
     }
     handle {
-        reverse_proxy 127.0.0.1:8250
+        reverse_proxy 127.0.0.1:8260
     }
 }
 ```
