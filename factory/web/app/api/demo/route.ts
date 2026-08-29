@@ -150,6 +150,51 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // La tienda debe poder vender desde el minuto uno: se le asignan los
+    // métodos de envío y de pago de la plataforma a su canal.
+    const methods = await adminRequest<{
+      shippingMethods: { items: Array<{ id: string }> };
+      paymentMethods: { items: Array<{ id: string; enabled: boolean }> };
+      stockLocations: { items: Array<{ id: string }> };
+    }>(
+      auth,
+      `{
+        shippingMethods { items { id } }
+        paymentMethods { items { id enabled } }
+        stockLocations { items { id } }
+      }`,
+    );
+    const shippingMethodIds = methods.shippingMethods.items.map(m => m.id);
+    const paymentMethodIds = methods.paymentMethods.items.filter(m => m.enabled).map(m => m.id);
+    if (shippingMethodIds.length) {
+      await adminRequest(
+        auth,
+        `mutation AssignShipping($input: AssignShippingMethodsToChannelInput!) {
+          assignShippingMethodsToChannel(input: $input) { id }
+        }`,
+        { input: { channelId: channel.id, shippingMethodIds } },
+      );
+    }
+    if (paymentMethodIds.length) {
+      await adminRequest(
+        auth,
+        `mutation AssignPayment($input: AssignPaymentMethodsToChannelInput!) {
+          assignPaymentMethodsToChannel(input: $input) { id }
+        }`,
+        { input: { channelId: channel.id, paymentMethodIds } },
+      );
+    }
+    const stockLocationIds = methods.stockLocations.items.map(s => s.id);
+    if (stockLocationIds.length) {
+      await adminRequest(
+        auth,
+        `mutation AssignStock($input: AssignStockLocationsToChannelInput!) {
+          assignStockLocationsToChannel(input: $input) { id }
+        }`,
+        { input: { channelId: channel.id, stockLocationIds } },
+      );
+    }
+
     const taxData = await adminRequest<{ taxCategories: { items: Array<{ id: string }> } }>(
       auth,
       `{ taxCategories { items { id } } }`,

@@ -2,6 +2,7 @@ import type { StoreDesign } from '../../../lib/designs';
 import { DESIGN_PRESETS } from '../../../lib/designs';
 import { shopQuery } from '../../../lib/vendure';
 import { rootDomain } from '../../../lib/tenant';
+import { AddToCartButton, CartBadge } from './storefront-ui';
 
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
 
@@ -25,7 +26,7 @@ interface ChannelData {
       name: string;
       slug: string;
       description: string;
-      variants: Array<{ priceWithTax: number; currencyCode: string }>;
+      variants: Array<{ id: string; priceWithTax: number; currencyCode: string }>;
     }>;
   };
 }
@@ -55,7 +56,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
         activeChannel { code token customFields { displayName design isSandbox expiresAt } }
         products(options: { take: 12 }) {
           totalItems
-          items { id name slug description variants { priceWithTax currencyCode } }
+          items { id name slug description variants { id priceWithTax currencyCode } }
         }
       }`,
     );
@@ -120,24 +121,14 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
         }}
       >
         <div style={{ fontFamily: headingFont, fontWeight: 700, fontSize: 24, color: design.ink }}>{name}</div>
-        <div
-          style={{
-            minWidth: 44,
-            minHeight: 44,
-            borderRadius: '50%',
-            background: design.surface,
-            border: `1px solid ${design.inkSoft}33`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 13,
-            fontWeight: 700,
-            color: design.ink,
-          }}
-          aria-label="Carrito"
-        >
-          0
-        </div>
+        <CartBadge
+          slug={slug}
+          surface={design.surface}
+          ink={design.ink}
+          inkSoft={design.inkSoft}
+          brand={design.brand}
+          brandInk={design.brandInk}
+        />
       </header>
 
       <section
@@ -217,6 +208,14 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
                     ? formatPrice(p.variants[0].priceWithTax, p.variants[0].currencyCode)
                     : '—'}
                 </div>
+                {p.variants[0] ? (
+                  <AddToCartButton
+                    slug={slug}
+                    variantId={p.variants[0].id}
+                    brand={design.brand}
+                    brandInk={design.brandInk}
+                  />
+                ) : null}
               </div>
             </div>
           ))}

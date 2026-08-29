@@ -3,6 +3,7 @@ import {
     DefaultJobQueuePlugin,
     DefaultSchedulerPlugin,
     DefaultSearchPlugin,
+    DefaultStockLocationStrategy,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -56,6 +57,14 @@ export const config: VendureConfig = {
     },
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
+    },
+    catalogOptions: {
+        // La estrategia multicanal por defecto cachea 7 días qué canales ven
+        // cada almacén y NO se invalida al asignar el almacén a un canal nuevo:
+        // las tiendas recién creadas verían stock 0 (InsufficientStockError).
+        // Aquí cada variante pertenece a un solo canal, así que la estrategia
+        // simple es correcta y no sufre ese caché.
+        stockLocationStrategy: new DefaultStockLocationStrategy(),
     },
     // When adding or altering custom field definitions, the database will
     // need to be updated. See the "Migrations" section in README.md.

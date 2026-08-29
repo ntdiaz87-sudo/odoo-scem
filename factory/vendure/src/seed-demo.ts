@@ -93,7 +93,23 @@ async function seed() {
         ...config,
         apiOptions: { ...config.apiOptions, port: +(process.env.SEED_PORT || 3999) },
     };
-    const app = await populate(() => bootstrap(seedConfig), initialData);
+    // populate() NO es idempotente (duplica métodos de envío/pago e impuestos
+    // si se repite): solo se ejecuta si la base está vacía de zonas.
+    let app = await bootstrap(seedConfig);
+    {
+        const requestContextService = app.get(RequestContextService);
+        const zoneService = app.get(ZoneService);
+        const ctx = await requestContextService.create({ apiType: 'admin' });
+        const zonesResult: any = await zoneService.findAll(ctx);
+        const zoneItems: any[] = Array.isArray(zonesResult) ? zonesResult : zonesResult.items;
+        if (!zoneItems.some(z => z.name === 'Americas')) {
+            console.log('[seed] Base vacía: cargando datos iniciales…');
+            await app.close();
+            app = await populate(() => bootstrap(seedConfig), initialData);
+        } else {
+            console.log('[seed] Datos iniciales ya presentes, no se repite populate.');
+        }
+    }
     try {
         const requestContextService = app.get(RequestContextService);
         const channelService = app.get(ChannelService);
@@ -190,6 +206,52 @@ async function seed() {
               );
         `);
         console.log('[seed] Rol superadmin asignado a todos los canales.');
+
+        // Reparación de duplicados históricos (populate corrió más de una vez
+        // en despliegues previos): se conserva el método más antiguo por código.
+        await connection.rawConnection.query(`
+            UPDATE shipping_method SET "deletedAt" = now()
+            WHERE "deletedAt" IS NULL AND id NOT IN (
+                SELECT min(id) FROM shipping_method WHERE "deletedAt" IS NULL GROUP BY code
+            );
+        `);
+        await connection.rawConnection.query(`
+            UPDATE payment_method SET enabled = false
+            WHERE id NOT IN (SELECT min(id) FROM payment_method GROUP BY code);
+        `);
+
+        // Todos los canales deben poder vender: método de envío y de pago
+        // asignados a cada canal (idempotente; cubre también los canales que
+        // ya existían sin métodos).
+        await connection.rawConnection.query(`
+            INSERT INTO shipping_method_channels_channel ("shippingMethodId", "channelId")
+            SELECT s.id, c.id FROM shipping_method s CROSS JOIN channel c
+            WHERE s."deletedAt" IS NULL
+              AND NOT EXISTS (
+                SELECT 1 FROM shipping_method_channels_channel x
+                WHERE x."shippingMethodId" = s.id AND x."channelId" = c.id
+              );
+        `);
+        await connection.rawConnection.query(`
+            INSERT INTO payment_method_channels_channel ("paymentMethodId", "channelId")
+            SELECT p.id, c.id FROM payment_method p CROSS JOIN channel c
+            WHERE p.enabled
+              AND NOT EXISTS (
+                SELECT 1 FROM payment_method_channels_channel x
+                WHERE x."paymentMethodId" = p.id AND x."channelId" = c.id
+              );
+        `);
+        // Sin almacén asignado al canal, el stock vendible es 0 y el carrito
+        // rechaza los productos (InsufficientStockError).
+        await connection.rawConnection.query(`
+            INSERT INTO stock_location_channels_channel ("stockLocationId", "channelId")
+            SELECT s.id, c.id FROM stock_location s CROSS JOIN channel c
+            WHERE NOT EXISTS (
+                SELECT 1 FROM stock_location_channels_channel x
+                WHERE x."stockLocationId" = s.id AND x."channelId" = c.id
+            );
+        `);
+        console.log('[seed] Métodos de envío/pago y almacén asignados a todos los canales.');
         console.log('[seed] Semilla completada.');
     } finally {
         await app.close();

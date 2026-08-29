@@ -53,6 +53,17 @@ if [ -n "$URL" ]; then
 else
   bad "Demo: no se pudo crear tienda ($R)"
 fi
+# Fase 3: el carrito funciona en la tienda recién creada (rewrite /shop-api + stock)
+if [ -n "$URL" ]; then
+  SLUGHOST=${URL#*://}; SLUG=${SLUGHOST%%.*}
+  VID=$(curl -s --max-time 40 -X POST "$BASE/shop-api" -H 'content-type: application/json' \
+    -H "vendure-token: $SLUG" -d '{"query":"{ products { items { variants { id } } } }"}' \
+    | grep -o '"id":"[0-9]*"' | head -1 | grep -o '[0-9]*')
+  ADD=$(curl -s --max-time 40 -X POST "$BASE/shop-api" -H 'content-type: application/json' \
+    -H "vendure-token: $SLUG" \
+    -d "{\"query\":\"mutation { addItemToOrder(productVariantId: $VID, quantity: 1) { __typename ... on ErrorResult { message } } }\"}")
+  echo "$ADD" | grep -q '"__typename":"Order"' && ok "Fase 3: añadir al carrito funciona" || bad "Fase 3: carrito falló ($ADD)"
+fi
 # Duplicado: debe crear con sufijo, no fallar
 R2=$(curl -s --max-time 60 -X POST "$BASE/api/demo" -H 'content-type: application/json' \
   -d "{\"storeName\":\"$NOMBRE\",\"designKey\":\"hoja-viva\",\"ownerEmail\":\"$NOMBRE-2@humo.local\",\"ownerPassword\":\"humo-clave-123\"}")
