@@ -16,8 +16,10 @@ export function tenantFromHost(host: string): string | null {
   return null;
 }
 
-export function storeUrl(slug: string, protocol: string): string {
-  return `${protocol}//${slug}.${rootDomain()}`;
+export function storeUrl(slug: string): string {
+  const base = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
+  const u = new URL(base);
+  return `${u.protocol}//${slug}.${u.host}`;
 }
 
 export function slugify(name: string): string {

@@ -1,0 +1,59 @@
+# Fábrica de tiendas — stack de servidor (patrón de la casa, ver deploy/README.md)
+# Se invoca SIEMPRE con:  docker compose --env-file ../.env -f docker-compose.prod.yml up -d --build
+# Puertos publicados SOLO en 127.0.0.1; el Caddy del host hace TLS y dominio.
+name: ${STACK}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vendure
+      POSTGRES_USER: vendure
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vendure -d vendure']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  vendure:
+    build: ../vendure
+    # La semilla es idempotente: crea las 2 tiendas demo solo la primera vez.
+    command: sh -c "npm run seed:demo && npm run start"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: vendure
+      DB_USERNAME: vendure
+      DB_PASSWORD: ${DB_PASSWORD}
+      SUPERADMIN_USERNAME: superadmin
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      ASSET_URL_PREFIX: https://${FACTORY_HOST}/assets/
+    ports:
+      - '127.0.0.1:${VENDURE_PORT}:3000'
+    restart: unless-stopped
+
+  web:
+    build: ../web
+    depends_on:
+      - vendure
+    environment:
+      VENDURE_API_URL: http://vendure:3000
+      VENDURE_SUPERADMIN_USERNAME: superadmin
+      VENDURE_SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD}
+      NEXT_PUBLIC_ROOT_DOMAIN: ${FACTORY_HOST}
+      NEXT_PUBLIC_ROOT_URL: https://${FACTORY_HOST}
+    ports:
+      - '127.0.0.1:${WEB_PORT}:3000'
+    restart: unless-stopped
+
+volumes:
+  db_data:

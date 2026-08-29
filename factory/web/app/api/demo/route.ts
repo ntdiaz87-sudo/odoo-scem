@@ -123,8 +123,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const protocol = req.nextUrl.protocol || 'http:';
-    return NextResponse.json({ url: storeUrl(channel.token, protocol) });
+    return NextResponse.json({ url: storeUrl(channel.token) });
   } catch (err) {
     console.error('[demo] Error creando tienda sandbox:', err);
     return NextResponse.json(

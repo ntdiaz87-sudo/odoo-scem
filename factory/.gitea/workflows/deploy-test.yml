@@ -1,29 +1,42 @@
-# CI/CD al estilo de la casa (como Bussiness): push a develop → despliegue a test.
-# Este workflow aplica cuando la fábrica viva en su repo propio de Gitea
-# (contenido de factory/ en la raíz del repo). En GitHub este fichero es inerte.
-#
-# AJUSTAR ANTES DE ACTIVAR (ver deploy/README.md):
-#   - runs-on: el label real del runner de GEX44 (igual que usa Bussiness).
-name: Desplegar fábrica a test
+# CI/CD al estilo de la casa (calcado del patrón Qbaprotic, runner en modo host):
+# push a develop → fetch+reset del clon en /opt/fabrica → compose up → verificación.
+# Reglas del runner gex44: SOLO pasos `run:` (sin actions JS) y sin `services:`.
+# Aplica cuando la fábrica vive en su repo de Gitea con el contenido de factory/
+# en la raíz. En GitHub este fichero es inerte.
+name: Desplegar fábrica (test)
 
 on:
   push:
     branches: [develop]
 
 jobs:
-  deploy-test:
-    runs-on: self-hosted # TODO: label real del runner del GEX44
+  deploy:
+    runs-on: gex44
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Sincronizar código a /opt/fabrica
+      - name: Traer develop
         run: |
-          mkdir -p /opt/fabrica
-          rsync -a --delete \
-            --exclude '.git' \
-            --exclude '.env.test' \
-            ./ /opt/fabrica/
+          set -e
+          git -C /opt/fabrica fetch origin --prune --force
+          git -C /opt/fabrica reset --hard origin/develop
+          git -C /opt/fabrica log -1 --oneline
 
-      - name: Desplegar ambiente de test
-        run: bash /opt/fabrica/deploy/apply-test.sh
+      - name: Levantar el stack
+        run: |
+          set -e
+          cd /opt/fabrica/infra
+          docker compose --env-file ../.env -f docker-compose.prod.yml up -d --build
+
+      - name: Verificar
+        run: |
+          set -e
+          HOST=$(grep '^FACTORY_HOST=' /opt/fabrica/.env | cut -d= -f2)
+          COD=000
+          for i in $(seq 1 30); do
+            COD=$(curl -s -o /dev/null -w "%{http_code}" "https://$HOST/" || true)
+            [ "$COD" = "200" ] && echo "OK $COD" && exit 0
+            sleep 4
+          done
+          echo "FALLO: $COD"
+          docker logs --tail 50 fabrica-web-1 || true
+          docker logs --tail 50 fabrica-vendure-1 || true
+          exit 1

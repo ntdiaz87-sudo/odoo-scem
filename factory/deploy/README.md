@@ -1,104 +1,150 @@
-# Runbook — Fábrica de tiendas en el entorno de TEST (GEX44)
+# Runbook — Desplegar la fábrica en el GEX44 (patrón de la casa)
 
-Cómo se monta, actualiza y opera el ambiente de pruebas de la fábrica en el
-GEX44 (46.4.98.13), siguiendo el patrón de la casa (runbook de Rober,
-2026-08-06): entornos de test aislados, credenciales generadas, y CI/CD con
-Gitea donde un push a `develop` despliega solo a test.
+Alineado con el runbook general "Cómo se despliega en Hetzner" (verificado
+2026-08-28, escrito desde el despliegue de Qbaprotic). Piezas propias de la
+fábrica: `infra/docker-compose.prod.yml`, `.env.example`,
+`.gitea/workflows/deploy-test.yml` y el endpoint `/api/tls-check`.
 
-## Mapa del despliegue
+**Normas**: no tocar nada de lo que corre; no instalar nada sin comprobar;
+puertos SOLO en `127.0.0.1`; Caddy del host para TLS/dominio; DNS gris.
 
-- **Servidor:** GEX44 — convive con Loki/Grafana, MinIO/backups, runner de CI
-  y Sericomerx (`/opt/seric`). La fábrica vive en **`/opt/fabrica`**, con sus
-  propios contenedores y volumen de Postgres; no toca nada de lo anterior.
-- **Puertos:** UFW del GEX44 permite 22/80/443; el despliegue declara además
-  **8300** (web) y **8301** (panel Vendure). Recordatorio del propio runbook:
-  los puertos publicados por Docker se saltan UFW — la regla se añade para que
-  el firewall refleje la realidad.
-- **URLs de test (sin dominio, vía nip.io):**
-  - Web pública: `http://46.4.98.13.nip.io:8300`
-  - Tiendas: `http://<tienda>.46.4.98.13.nip.io:8300`
-  - Panel: `http://46.4.98.13.nip.io:8301/dashboard`
-- **Credenciales:** generadas en el servidor al primer despliegue y guardadas
-  en `.env.test` junto al `docker-compose.yml`. Nunca se comitean.
+## Qué toca este despliegue (y nada más)
 
-## Piezas
-
-| Fichero | Qué hace |
+| Dónde | Qué |
 |---|---|
-| `deploy/recon.sh` | Reconocimiento de **solo lectura** del servidor (contenedores, puertos, proxys, disco). Ejecutar SIEMPRE antes del primer despliegue y pegar el informe en la sesión de Claude. |
-| `deploy/bootstrap-test.sh` | **Primer** despliegue: instala Docker si falta, clona el repo en `/opt/fabrica` y llama a `apply-test.sh`. |
-| `deploy/apply-test.sh` | Despliegue **repetible** (idempotente): crea/actualiza `.env.test`, `docker compose up -d --build`, firewall, e imprime URLs y clave. Es lo que ejecuta el CI. |
-| `.gitea/workflows/deploy-test.yml` | Workflow de Gitea Actions: push a `develop` → sincroniza a `/opt/fabrica` → `apply-test.sh`. |
-| `docker-compose.yml` + `docker-compose.test.yml` | Base + override de test (nip.io:8300, claves desde `.env.test`). |
+| `/opt/fabrica` | Clon del repo + `.env` + contenedores/volúmenes propios (`STACK=fabrica`) |
+| `/opt/fabrica_deploy_key(.pub)` | Deploy key de solo lectura del repo |
+| `/etc/caddy/Caddyfile` | UN bloque nuevo (y `on_demand_tls` en el global si no existe) |
+| Cloudflare (zona elegida) | 2 registros A **en gris**: `fabrica` y `*.fabrica` |
 
-## Flujo A — Primer despliegue (manual, una sola vez)
+Puertos: **8250 (web)** y **8251 (vendure)** en 127.0.0.1 — asignados como
+"proyecto nuevo" en el runbook general (8300 ya está ocupado en GEX44).
+Comprobar antes: `ss -ltnp | grep -oE '127.0.0.1:8[0-9]{3}' | sort -u`
 
-```bash
-ssh root@46.4.98.13   # o el usuario devops con sudo
+## Paso a paso (desde la laptop, `ssh gex44`)
 
-# 1. Reconocimiento (no cambia nada; pegar el informe en Claude para revisión)
-curl -fsSL https://raw.githubusercontent.com/ntdiaz87-sudo/odoo-scem/claude/online-store-factory-9cnbb7/factory/deploy/recon.sh | bash
+### 1. Repo en Gitea
 
-# 2. Con luz verde, desplegar
-curl -fsSL https://raw.githubusercontent.com/ntdiaz87-sudo/odoo-scem/claude/online-store-factory-9cnbb7/factory/deploy/bootstrap-test.sh | bash
-```
-
-Actualizar a mano más tarde: `bash /opt/fabrica/factory/deploy/apply-test.sh`
-(tras un `git -C /opt/fabrica pull`).
-
-## Flujo B — CI/CD con Gitea (patrón Bussiness)
-
-Objetivo final: la fábrica en su **repo propio de Gitea** (p. ej.
-`nilo/fabrica`) con el contenido de `factory/` en la raíz, y cada push a
-`develop` desplegando a test automáticamente.
-
-1. **Crear el repo en Gitea** (`nilo/fabrica`, rama por defecto `develop`).
-2. **Subir el contenido de `factory/` como raíz del nuevo repo.** Desde un
-   clon del monorepo de GitHub:
-   ```bash
-   git subtree split --prefix=factory -b fabrica-solo
-   git push <remote-gitea> fabrica-solo:develop
-   ```
-3. **Runner:** en `.gitea/workflows/deploy-test.yml`, cambiar `runs-on` por el
-   label real del runner del GEX44 (el mismo que usa el deploy de Bussiness).
-   El runner necesita poder ejecutar `rsync`, `docker compose` y escribir en
-   `/opt/fabrica` (mismo esquema que ya funciona para Bussiness).
-4. **Migración del estado manual:** el layout del CI deja el compose en
-   `/opt/fabrica/docker-compose.yml` (raíz plana). Si antes se usó el Flujo A
-   (layout monorepo con `factory/` dentro), conservar la clave:
-   ```bash
-   mv /opt/fabrica/factory/.env.test /tmp/fabrica-env-backup
-   rm -rf /opt/fabrica && mkdir -p /opt/fabrica
-   mv /tmp/fabrica-env-backup /opt/fabrica/.env.test
-   ```
-   y lanzar el primer push a `develop`.
-
-Desde entonces: los cambios se desarrollan aquí (sesión de Claude → GitHub) o
-directamente en Gitea, y **todo push a `develop` = test actualizado**.
-
-## Operación diaria
+Crear `nilo/fabrica` en https://git.enetradex.com (privado, rama por defecto
+`develop`). Subir el contenido de `factory/` como raíz del repo. Desde un clon
+del monorepo de GitHub en la laptop:
 
 ```bash
-cd /opt/fabrica            # (o /opt/fabrica/factory en layout monorepo)
-docker compose ps          # estado
-docker compose logs -f web       # logs de la web
-docker compose logs -f vendure   # logs del motor
-docker compose restart web       # reinicio suave
-docker compose down        # parar (el volumen de datos se conserva)
+git clone -b claude/online-store-factory-9cnbb7 https://github.com/ntdiaz87-sudo/odoo-scem.git
+cd odoo-scem
+git subtree split --prefix=factory -b fabrica-solo
+git remote add gitea git@git.enetradex.com:nilo/fabrica.git
+git push gitea fabrica-solo:develop
 ```
 
-Resembrar desde cero (borra las tiendas de prueba): `docker compose down -v`
-y volver a ejecutar `apply-test.sh`.
+### 2. Primera vez en el servidor
 
-## Pendientes / por confirmar
+```bash
+ssh gex44
 
-- **Label del runner** de GEX44 y URL del Gitea (tomar como referencia el
-  workflow de Bussiness).
-- **Qué sirve hoy 80/443 en GEX44** (respondió 403; lo dirá `recon.sh`).
-- **Cloudflare:** al validar el test, pasar a `testfabrica.dyxelsolutions.com`
-  con HTTPS como Bussiness. Salvedad: los subdominios de tiendas
-  (`x.testfabrica...`) son de segundo nivel y el certificado Universal de
-  Cloudflare no los cubre — se resolverá en esa fase (opciones sin coste:
-  tiendas por ruta en test, o cert de origen + DNS only).
-- Este entorno es de **pruebas**: sin HTTPS y con wizard de demo sin captcha
-  ni límites (llegan en Fase 1). No usar datos reales.
+# Deploy key propia del proyecto (patrón /opt/*_deploy_key)
+ssh-keygen -t ed25519 -f /opt/fabrica_deploy_key -N "" -C "fabrica@gex44"
+cat /opt/fabrica_deploy_key.pub
+#   → pegarla en Gitea: repo fabrica > Settings > Deploy Keys (solo lectura)
+
+GIT_SSH_COMMAND="ssh -i /opt/fabrica_deploy_key" \
+  git clone --branch develop git@git.enetradex.com:nilo/fabrica.git /opt/fabrica
+git -C /opt/fabrica config core.sshCommand "ssh -i /opt/fabrica_deploy_key"
+
+cd /opt/fabrica
+cp .env.example .env
+chmod 600 .env
+# EDITAR .env:
+#   FACTORY_HOST  → dominio elegido (p. ej. fabrica.enetradex.com)
+#   DB_PASSWORD / SUPERADMIN_PASSWORD / COOKIE_SECRET → openssl rand -base64 32
+
+cd infra
+docker compose --env-file ../.env -f docker-compose.prod.yml up -d --build
+# Primera construcción: varios minutos. La semilla crea las 2 tiendas demo sola.
+```
+
+### 3. Caddy (el del host)
+
+En `/etc/caddy/Caddyfile`:
+
+**a)** En el bloque global de opciones (el `{ ... }` inicial; crearlo si no
+existe), añadir — necesario para los certificados por tienda:
+
+```
+on_demand_tls {
+    ask http://127.0.0.1:8250/api/tls-check
+}
+```
+
+**b)** Bloque del sitio (apex + subdominios de tiendas):
+
+```
+fabrica.enetradex.com, *.fabrica.enetradex.com {
+    encode zstd gzip
+    tls {
+        on_demand
+    }
+    @vendure path /admin-api* /shop-api* /assets* /dashboard* /graphiql* /mailbox*
+    handle @vendure {
+        reverse_proxy 127.0.0.1:8251
+    }
+    handle {
+        reverse_proxy 127.0.0.1:8250
+    }
+}
+```
+
+```bash
+caddy validate --config /etc/caddy/Caddyfile
+systemctl reload caddy
+```
+
+`/api/tls-check` responde 200 solo para el dominio raíz y para subdominios cuya
+tienda existe: Caddy no emite certificados para subdominios inventados.
+
+### 4. DNS (Cloudflare, ambos EN GRIS — naranja mata el HTTP-01)
+
+| Tipo | Nombre | Contenido |
+|---|---|---|
+| A | `fabrica` | 46.4.98.13 |
+| A | `*.fabrica` | 46.4.98.13 |
+
+Zona `enetradex.com` (id `dfd7c99e1db54cd768c2533185974339`) o la zona
+`dyxelsolutions.com` si se prefiere ese apellido — mismo procedimiento.
+
+### 5. Comprobaciones
+
+```bash
+docker ps --filter name=fabrica          # todo Up
+curl -s -o /dev/null -w '%{http_code}\n' https://fabrica.enetradex.com/          # 200
+curl -s -o /dev/null -w '%{http_code}\n' https://verdealto.fabrica.enetradex.com/  # 200 (emite cert al vuelo)
+ss -ltnp | grep -v 127.0.0.1 | grep -E ':8[0-9]{3}'   # vacío: nada en 0.0.0.0
+```
+
+URLs resultantes: `https://fabrica.enetradex.com` (web + demo),
+`https://verdealto.` / `https://nocta.` (tiendas), `/dashboard` (panel Vendure,
+superadmin + SUPERADMIN_PASSWORD del `.env`).
+
+### 6. CI/CD
+
+Con el repo en Gitea y el clon hecho, **cada push a `develop` despliega solo**
+(`.gitea/workflows/deploy-test.yml`, `runs-on: gex44`, solo pasos `run:`).
+La verdad del run está en `/opt/act_runner.log` si la UI de Gitea miente.
+
+### Pendientes conocidos
+
+- Añadir la fábrica a los backups (`/opt/backup_*.sh`) cuando haya datos que
+  importen — no se añaden solos.
+- `ci.sh` con lint/tests antes del paso de despliegue (Fase 1).
+- Postgres del stack usa contraseña generada (no repetir el patrón `odoo/odoo`).
+
+---
+
+## Plan B — sin dominio ni Caddy (nip.io, HTTP)
+
+Scripts previos, siguen funcionando para una prueba rápida SIN tocar Caddy:
+`deploy/recon.sh` (reconocimiento solo lectura), `deploy/bootstrap-test.sh`
+(clona de GitHub a /opt/fabrica y levanta en `<IP>.nip.io:8300` — ojo: en GEX44
+el 8300 está ocupado, cambiar el puerto en `docker-compose.yml` si se usa) y
+`deploy/set-domain.sh`. Para el GEX44 el camino recomendado es el patrón de la
+casa de arriba.

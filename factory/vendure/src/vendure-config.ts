@@ -74,10 +74,9 @@ export const config: VendureConfig = {
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, '../static/assets'),
-            // For local dev, the correct value for assetUrlPrefix should
-            // be guessed correctly, but for production it will usually need
-            // to be set manually to match your production url.
-            assetUrlPrefix: IS_DEV ? undefined : 'https://www.my-shop.com/assets/',
+            // En el servidor, los assets se sirven detrás del Caddy del host:
+            // ASSET_URL_PREFIX=https://<dominio>/assets/ (ver factory/infra).
+            assetUrlPrefix: process.env.ASSET_URL_PREFIX || undefined,
         }),
         DefaultSchedulerPlugin.init(),
         DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),
