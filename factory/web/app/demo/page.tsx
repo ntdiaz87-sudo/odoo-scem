@@ -9,6 +9,7 @@ import { t } from '../../lib/i18n';
 interface Created {
   url: string;
   panelUrl: string;
+  channelsUrl?: string;
   ownerEmail: string;
 }
 
@@ -147,6 +148,11 @@ export default function DemoWizard() {
               <a className="fh-btn fh-btn--linea-oscura fh-btn--grande fh-btn--bloque" href={created.panelUrl}>
                 {t('demo.panel')}
               </a>
+              {created.channelsUrl ? (
+                <a className="fh-btn fh-btn--linea-oscura fh-btn--grande fh-btn--bloque" href={created.channelsUrl}>
+                  {t('demo.canales')}
+                </a>
+              ) : null}
             </div>
             <p className="fh-nota">
               <span className="fh-nota-ico">

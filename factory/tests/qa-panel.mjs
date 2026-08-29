@@ -86,7 +86,7 @@ await check('La lista de productos muestra los 4 productos de SU tienda', async 
   await page.goto(`${BASE}/dashboard/products?sort=-updatedAt&page=1&perPage=10`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(3500);
   const texto = await page.locator('body').innerText();
-  for (const p of ['Producto estrella', 'Novedad de la semana', 'Básico imprescindible', 'Pack de regalo']) {
+  for (const p of ['明星单品', '本周新品', '日常必备', '礼盒套装']) {
     assert(texto.includes(p), `falta "${p}" en la lista`);
   }
   assert(texto.includes(SLUG), 'no aparecen los slugs de su tienda');

@@ -7,8 +7,14 @@ import { rootDomain, slugify, storeUrl } from '../../../lib/tenant';
 import { adminLogin, adminRequest } from '../../../lib/vendure';
 
 const ZH = LOCALE === 'zh';
-// El idioma del canal: chino simplificado en China.
+// Idioma del CANAL: el del mercado (lo que sirve la tienda).
 const LANG = ZH ? 'zh_Hans' : 'en';
+// Idioma de las TRADUCCIONES de producto: siempre `en`, aunque el texto sea
+// chino. El panel de Vendure guarda en su idioma de interfaz (inglés por
+// defecto); si los productos naciesen en zh_Hans, editar el nombre en el
+// panel no se vería en la tienda. Con `en` los dos caminos convergen
+// (ver la nota TRADUCCIONES en vendure/src/seed-demo.ts).
+const LANG_PRODUCTO = 'en';
 
 // Catálogo de ejemplo en el idioma y la moneda del mercado. Los precios en
 // yuan no son una conversión del dólar: son importes verosímiles en China.
@@ -248,7 +254,7 @@ export async function POST(req: NextRequest) {
           input: {
             enabled: true,
             translations: [
-              { languageCode: LANG, name: p.name, slug: `${slug}-${p.slug}`, description: p.description },
+              { languageCode: LANG_PRODUCTO, name: p.name, slug: `${slug}-${p.slug}`, description: p.description },
             ],
           },
         },
@@ -267,7 +273,7 @@ export async function POST(req: NextRequest) {
               price: p.price,
               taxCategoryId,
               stockOnHand: 25,
-              translations: [{ languageCode: LANG, name: p.name }],
+              translations: [{ languageCode: LANG_PRODUCTO, name: p.name }],
             },
           ],
         },
@@ -310,6 +316,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       url: storeUrl(channel.token),
       panelUrl: `${base}/dashboard`,
+      channelsUrl: `${base}/canales/${channel.token}`,
       ownerEmail,
       expiresAt,
     });

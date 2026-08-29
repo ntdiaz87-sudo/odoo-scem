@@ -11,6 +11,7 @@ import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
+import { alipayHandler, wechatPayHandler } from './payments-cn';
 import path from 'path';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
@@ -56,7 +57,10 @@ export const config: VendureConfig = {
         database: process.env.DB_NAME || 'vendure',
     },
     paymentOptions: {
-        paymentMethodHandlers: [dummyPaymentHandler],
+        // dummyPaymentHandler cubre el pago contra entrega / acordado con la
+        // tienda; los dos chinos entran en cuanto haya credenciales (ver
+        // payments-cn.ts).
+        paymentMethodHandlers: [dummyPaymentHandler, wechatPayHandler, alipayHandler],
     },
     catalogOptions: {
         // La estrategia multicanal por defecto cachea 7 días qué canales ven

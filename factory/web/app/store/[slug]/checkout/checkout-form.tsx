@@ -21,12 +21,33 @@ interface ShippingMethodOption {
   priceWithTax: number;
 }
 
+interface PaymentMethodOption {
+  id: string;
+  code: string;
+  name: string;
+  isEligible: boolean;
+}
+
+/**
+ * Icono y nota por método. Se reconoce por palabra clave porque Vendure usa
+ * el nombre como código cuando el nombre está en chino.
+ */
+function pagoInfo(m: PaymentMethodOption): { ico: string; nota: string } {
+  const id = `${m.code} ${m.name}`.toLowerCase();
+  if (id.includes('微信') || id.includes('wechat')) return { ico: '💚', nota: '微信内一键支付' };
+  if (id.includes('支付宝') || id.includes('alipay')) return { ico: '🔷', nota: '跳转支付宝完成付款' };
+  if (id.includes('货到') || id.includes('dummy')) return { ico: '📦', nota: '收到货再付款' };
+  return { ico: '💳', nota: '' };
+}
+
 export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string }) {
   const [order, setOrder] = useState<ActiveOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
   const [shippingMethods, setShippingMethods] = useState<ShippingMethodOption[]>([]);
   const [shippingMethodId, setShippingMethodId] = useState('');
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethodOption[]>([]);
+  const [paymentCode, setPaymentCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,13 +65,24 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
       shopFetch<{
         availableCountries: Array<{ code: string; name: string }>;
         eligibleShippingMethods: ShippingMethodOption[];
-      }>(slug, `{ availableCountries { code name } eligibleShippingMethods { id name priceWithTax } }`),
+        eligiblePaymentMethods: PaymentMethodOption[];
+      }>(
+        slug,
+        `{
+          availableCountries { code name }
+          eligibleShippingMethods { id name priceWithTax }
+          eligiblePaymentMethods { id code name isEligible }
+        }`,
+      ),
     ])
       .then(([o, meta]) => {
         setOrder(o);
         setCountries(meta.availableCountries);
         setShippingMethods(meta.eligibleShippingMethods);
         if (meta.eligibleShippingMethods[0]) setShippingMethodId(meta.eligibleShippingMethods[0].id);
+        const pagos = meta.eligiblePaymentMethods.filter(m => m.isEligible);
+        setPaymentMethods(pagos);
+        if (pagos[0]) setPaymentCode(pagos[0].code);
       })
       .catch(() => setError('No se pudo cargar el checkout. Vuelve al carrito e inténtalo de nuevo.'))
       .finally(() => setLoading(false));
@@ -149,11 +181,8 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
         throw new Error(transition.transitionOrderToState.message || 'No se pudo preparar el pago.');
       }
 
-      const pm = await shopFetch<{
-        eligiblePaymentMethods: Array<{ code: string; isEligible: boolean }>;
-      }>(slug, `{ eligiblePaymentMethods { code isEligible } }`);
-      const method = pm.eligiblePaymentMethods.find(m => m.isEligible);
-      if (!method) throw new Error('La tienda no tiene método de pago configurado.');
+      const method = paymentMethods.find(m => m.code === paymentCode) || paymentMethods[0];
+      if (!method) throw new Error(t('ck.sin.pago'));
 
       const pay = await shopFetch<{
         addPaymentToOrder: { __typename: string; message?: string; code?: string; state?: string };
@@ -166,7 +195,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
             ... on ErrorResult { message }
           }
         }`,
-        { input: { method: method.code, metadata: { forma: 'pago manual acordado con la tienda' } } },
+        { input: { method: method.code, metadata: { canal: 'h5' } } },
       );
       if (pay.addPaymentToOrder.__typename !== 'Order') {
         throw new Error(pay.addPaymentToOrder.message || 'No se pudo registrar el pedido.');
@@ -276,19 +305,30 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
 
             <fieldset className="st-grupo">
               <legend>{t('ck.pago')}</legend>
-              <div className="st-pago">
-                <span className="st-pago-ico" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2.5" y="5.5" width="19" height="13" rx="2.5" />
-                    <path d="M2.5 10h19" />
-                  </svg>
-                </span>
-                <span>
-                  <b>Pago acordado con la tienda.</b> Al confirmar, la tienda recibe tu pedido y te
-                  contacta para cobrar (transferencia, efectivo a la entrega…). No se te cobra nada
-                  ahora.
-                </span>
+              <div className="st-pagos">
+                {paymentMethods.map(m => {
+                  const info = pagoInfo(m);
+                  return (
+                    <label key={m.id} className={`st-pago-op${paymentCode === m.code ? ' is-sel' : ''}`}>
+                      <input
+                        type="radio"
+                        name="pago"
+                        value={m.code}
+                        checked={paymentCode === m.code}
+                        onChange={() => setPaymentCode(m.code)}
+                      />
+                      <span className="st-pago-ico2" aria-hidden="true">
+                        {info.ico}
+                      </span>
+                      <span className="st-pago-txt">
+                        <b>{m.name}</b>
+                        {info.nota ? <em>{info.nota}</em> : null}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
+              <p className="st-pago-aviso">{t('ck.pago.aviso')}</p>
             </fieldset>
           </div>
 

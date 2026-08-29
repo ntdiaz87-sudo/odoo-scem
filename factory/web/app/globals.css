@@ -1138,3 +1138,73 @@ a:hover { color: var(--accent-dark); }
   .fh-planes-rejilla--4 { grid-template-columns: 1fr; }
   .fh-equipo-nota { text-align: left; align-items: flex-start; }
 }
+
+/* ---- métodos de pago del checkout ---- */
+.st-pagos { display: flex; flex-direction: column; gap: 9px; margin-top: 8px; }
+.st-pago-op {
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+  border: 1.5px solid color-mix(in srgb, var(--s-ink) 16%, transparent);
+  border-radius: calc(var(--s-radio) * .8); padding: 13px 15px;
+}
+.st-pago-op.is-sel { border-color: var(--s-brand); background: color-mix(in srgb, var(--s-brand) 8%, transparent); }
+.st-pago-ico2 { font-size: 20px; line-height: 1; flex-shrink: 0; }
+.st-pago-txt { display: flex; flex-direction: column; gap: 2px; }
+.st-pago-txt b { font-size: 15px; font-weight: 700; color: var(--s-ink); }
+.st-pago-txt em { font-style: normal; font-size: 12.5px; color: var(--s-ink-soft); }
+.st-pago-aviso { font-size: 12.5px; color: var(--s-ink-soft); margin: 12px 0 0; line-height: 1.5; }
+
+/* ---- panel de canales del comerciante ---- */
+.fh-panel--ancho { max-width: 900px; }
+.fh-canal-lista { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.fh-canal-fila {
+  display: flex; align-items: center; gap: 14px;
+  border: 1px solid var(--f-border); border-radius: 13px; padding: 15px 17px;
+}
+.fh-canal-fila.es-plan { opacity: .68; border-style: dashed; }
+.fh-canal-fila .fh-canal-ico { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.fh-canal-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.fh-canal-info b { font-size: 15.5px; color: var(--f-ink); }
+.fh-canal-url { font-size: 13px; color: var(--f-muted); word-break: break-all; text-decoration: none; }
+.fh-canal-url:hover { color: var(--f-ink); text-decoration: underline; }
+.fh-canal-fila .fh-canal-d { font-size: 13px; color: var(--f-muted); line-height: 1.5; }
+.fh-estado {
+  flex-shrink: 0; font-size: 11.5px; font-weight: 700; padding: 4px 11px; border-radius: 999px;
+  background: var(--f-surface-soft); color: var(--f-muted);
+}
+.fh-estado.es-live { background: var(--f-lime); color: #10130a; }
+.fh-estado.es-listo { background: var(--f-ink); color: var(--f-lime); }
+
+.fh-mp { margin-top: 34px; border-top: 1px solid var(--f-border); padding-top: 26px; }
+.fh-mp-t { font-family: var(--font-display); font-size: 19px; margin: 0 0 8px; color: var(--f-ink); }
+.fh-mp-d { font-size: 14.5px; line-height: 1.6; color: var(--f-muted); margin: 0 0 18px; }
+.fh-mp-ok { font-size: 13.5px; color: var(--f-ink); margin: 0 0 14px; }
+.fh-mp-ok code, .fh-mp-pasos code {
+  background: var(--f-surface-soft); border-radius: 5px; padding: 1px 6px; font-size: 12.5px;
+}
+.fh-mp-caja {
+  display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 0;
+  border: 1px solid var(--f-border); border-radius: 13px; overflow: hidden;
+}
+.fh-mp-rutas {
+  list-style: none; margin: 0; padding: 8px; background: var(--f-surface-soft);
+  max-height: 340px; overflow-y: auto; border-right: 1px solid var(--f-border);
+}
+.fh-mp-rutas button {
+  width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+  font-family: 'Spline Sans Mono', ui-monospace, monospace; font-size: 12px;
+  padding: 6px 8px; border-radius: 6px; color: var(--f-muted);
+}
+.fh-mp-rutas button:hover { background: var(--f-surface); color: var(--f-ink); }
+.fh-mp-rutas button.es-activo { background: var(--f-ink); color: var(--f-lime); }
+.fh-mp-codigo {
+  margin: 0; padding: 16px; overflow: auto; max-height: 340px;
+  background: var(--f-night); color: #dfe6df;
+  font-family: 'Spline Sans Mono', ui-monospace, monospace; font-size: 12px; line-height: 1.6;
+}
+.fh-mp-pasos { margin: 18px 0 0; padding-left: 20px; font-size: 14px; color: var(--f-muted); line-height: 1.7; }
+
+@media (max-width: 760px) {
+  .fh-mp-caja { grid-template-columns: minmax(0, 1fr); }
+  .fh-mp-rutas { max-height: 150px; border-right: none; border-bottom: 1px solid var(--f-border); }
+  .fh-canal-fila { flex-wrap: wrap; }
+}

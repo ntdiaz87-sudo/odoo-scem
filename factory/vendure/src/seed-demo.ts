@@ -1,8 +1,21 @@
 /**
- * Semilla de la Fase 0: datos iniciales (zonas, impuestos, envío, pago) y dos
- * tiendas demo, cada una como Channel de Vendure con catálogo y diseño propios.
+ * Semilla: datos iniciales (zonas, impuestos, envío, pago) y las tiendas de
+ * muestra, cada una como Channel de Vendure con catálogo y diseño propios.
  *
  * Uso: npm run seed:demo  (idempotente: si las tiendas ya existen, no hace nada)
+ *
+ * TRADUCCIONES — por qué los textos chinos se guardan bajo `en`
+ * -------------------------------------------------------------
+ * El canal de cada tienda es zh_Hans (correcto: es lo que sirve la tienda),
+ * pero el panel de Vendure guarda en SU idioma de interfaz, que por defecto
+ * es inglés. Si los productos se crean en zh_Hans, el comerciante edita el
+ * nombre en el panel, se escribe la traducción inglesa y la tienda sigue
+ * mostrando la china: el cambio "no aparece".
+ *
+ * Guardando el texto (chino) bajo `en`, los dos caminos convergen:
+ *   · panel en inglés  → actualiza `en`      → la tienda cae a `en`  ✓
+ *   · panel en chino   → crea `zh_Hans`      → la tienda usa zh_Hans ✓
+ * El código de idioma es interno; el comerciante nunca lo ve.
  */
 import {
     bootstrap,
@@ -38,6 +51,16 @@ const initialData = {
     taxRates: [{ name: 'Standard Tax', percentage: 0 }],
     shippingMethods: [{ name: '标准快递', price: 1000 }],
     paymentMethods: [
+        // Los tres métodos que espera un comprador chino. Los dos primeros
+        // entran en modo API en cuanto haya credenciales de proveedor.
+        {
+            name: '微信支付',
+            handler: { code: 'wechat-pay', arguments: [{ name: 'subMchId', value: '' }] },
+        },
+        {
+            name: '支付宝',
+            handler: { code: 'alipay', arguments: [{ name: 'subMchId', value: '' }] },
+        },
         {
             name: '货到付款',
             handler: {
@@ -152,17 +175,16 @@ async function seed() {
 
         const ctx: RequestContext = await requestContextService.create({ apiType: 'admin' });
 
-        // El idioma de un canal debe estar habilitado globalmente antes de
-        // poder usarlo: sin esto, crear un canal en chino falla.
+        // Idiomas disponibles: el del mercado y el inglés.
+        //
+        // El inglés NO se usa para mostrar nada: se deja habilitado porque el
+        // panel de Vendure envía su propio idioma al guardar, y quitarlo hace
+        // que guardar un producto falle. Ver la nota de TRADUCCIONES abajo.
         const globalSettingsService = app.get(GlobalSettingsService);
-        const settings = await globalSettingsService.getSettings(ctx);
-        const idiomas = new Set(settings.availableLanguages);
-        idiomas.add(LanguageCode.zh_Hans);
-        idiomas.add(LanguageCode.en);
         await globalSettingsService.updateSettings(ctx, {
-            availableLanguages: Array.from(idiomas),
+            availableLanguages: [LanguageCode.zh_Hans, LanguageCode.en],
         });
-        console.log(`[seed] Idiomas habilitados: ${Array.from(idiomas).join(', ')}`);
+        console.log('[seed] Idiomas habilitados: zh_Hans, en');
 
         const existing = await channelService.findAll(ctx);
         const existingCodes = existing.items.map(c => c.code);
@@ -214,7 +236,8 @@ async function seed() {
                     enabled: true,
                     translations: [
                         {
-                            languageCode: ZH ? LanguageCode.zh_Hans : LanguageCode.en,
+                            // Ver nota TRADUCCIONES en la cabecera de este fichero.
+                            languageCode: LanguageCode.en,
                             name: p.name,
                             slug: p.slug,
                             description: p.description,
@@ -228,7 +251,7 @@ async function seed() {
                         price: p.price,
                         taxCategoryId,
                         stockOnHand: 25,
-                        translations: [{ languageCode: ZH ? LanguageCode.zh_Hans : LanguageCode.en, name: p.name }],
+                        translations: [{ languageCode: LanguageCode.en, name: p.name }],
                     } as any,
                 ]);
             }

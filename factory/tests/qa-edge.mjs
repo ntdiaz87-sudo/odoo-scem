@@ -77,8 +77,8 @@ await check('Nombre con <script> se crea pero queda NEUTRALIZADO en la página',
 await check('Nombre con comillas SQL no rompe nada (las tablas siguen vivas)', async () => {
   const r = await demo({ storeName: `Rob'); DROP TABLE channel;-- ${STAMP}`.slice(0, 40), designKey: 'hoja-viva', ownerEmail: `sql-${STAMP}@t.local`, ownerPassword: 'clave-larga-123' });
   assert(r.status === 200, `dio ${r.status}`);
-  const q = await fetch(API + '/shop-api', { method: 'POST', headers: { 'content-type': 'application/json', 'vendure-token': 'verdealto' }, body: JSON.stringify({ query: '{ products { totalItems } }' }) });
-  assert((await q.json()).data.products.totalItems === 4, 'verdealto perdió su catálogo');
+  const q = await fetch(API + '/shop-api', { method: 'POST', headers: { 'content-type': 'application/json', 'vendure-token': 'qingzhu' }, body: JSON.stringify({ query: '{ products { totalItems } }' }) });
+  assert((await q.json()).data.products.totalItems === 4, 'qingzhu perdió su catálogo');
 });
 let uniUrl = '';
 await check('Nombre unicode (Café Ñandú 🌟) → slug limpio y tienda navegable', async () => {
@@ -105,12 +105,12 @@ await check('Sesión de carrito de una tienda NO abre el pedido en otra', async 
   const r1 = await fetch(BASE + '/shop-api', { method: 'POST', headers: { 'content-type': 'application/json', 'vendure-token': slug }, body: JSON.stringify({ query: `mutation { addItemToOrder(productVariantId: ${vid}, quantity: 1) { __typename } }` }) });
   const bearer = r1.headers.get('vendure-auth-token');
   assert(bearer, 'sin token de sesión');
-  const r2 = await fetch(BASE + '/shop-api', { method: 'POST', headers: { 'content-type': 'application/json', 'vendure-token': 'verdealto', authorization: `Bearer ${bearer}` }, body: JSON.stringify({ query: '{ activeOrder { code totalQuantity } }' }) });
+  const r2 = await fetch(BASE + '/shop-api', { method: 'POST', headers: { 'content-type': 'application/json', 'vendure-token': 'qingzhu', authorization: `Bearer ${bearer}` }, body: JSON.stringify({ query: '{ activeOrder { code totalQuantity } }' }) });
   const other = (await r2.json()).data.activeOrder;
-  assert(!other || other.totalQuantity === 0, `el pedido se filtró a verdealto: ${JSON.stringify(other)}`);
+  assert(!other || other.totalQuantity === 0, `el pedido se filtró a qingzhu: ${JSON.stringify(other)}`);
 });
 await check('Checkout por API con carrito vacío → error controlado, nunca 500', async () => {
-  const r = await fetch(BASE + '/shop-api', { method: 'POST', headers: { 'content-type': 'application/json', 'vendure-token': 'verdealto' }, body: JSON.stringify({ query: 'mutation { transitionOrderToState(state: "ArrangingPayment") { __typename ... on OrderStateTransitionError { message } } }' }) });
+  const r = await fetch(BASE + '/shop-api', { method: 'POST', headers: { 'content-type': 'application/json', 'vendure-token': 'qingzhu' }, body: JSON.stringify({ query: 'mutation { transitionOrderToState(state: "ArrangingPayment") { __typename ... on OrderStateTransitionError { message } } }' }) });
   assert(r.status === 200, `HTTP ${r.status}`);
 });
 await check('tls-check: dominios hostiles → 400/404, nunca 500', async () => {
@@ -173,12 +173,12 @@ await check('Página /gracias sin número de pedido no se rompe', async () => {
   const slug = uniUrl.replace('http://', '').split('.')[0];
   const r = await page.goto(`http://${slug}.${HOST}/gracias`, { waitUntil: 'networkidle' });
   assert(r.status() === 200, `status ${r.status()}`);
-  assert((await page.content()).includes('Pedido confirmado'), 'no renderiza');
+  assert((await page.content()).includes('下单成功'), 'no renderiza');
 });
 await check('Carrito/checkout de un subdominio inexistente → aviso, no error', async () => {
   for (const path of ['/cart', '/checkout']) {
     await page.goto(`http://no-existe-${STAMP}.${HOST}${path}`, { waitUntil: 'networkidle' });
-    assert((await page.content()).includes('Tienda no encontrada'), `${path} sin aviso`);
+    assert((await page.content()).includes('未找到该商店'), `${path} sin aviso`);
   }
 });
 

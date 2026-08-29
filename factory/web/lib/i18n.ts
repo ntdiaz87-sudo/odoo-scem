@@ -131,6 +131,7 @@ const D: Dict = {
   'demo.contra.v': { zh: '你刚才设置的密码', es: 'La que acabas de elegir' },
   'demo.ver': { zh: '查看我的商店', es: 'Ver mi tienda' },
   'demo.panel': { zh: '进入后台（商品与订单）', es: 'Entrar a mi panel (productos y pedidos)' },
+  'demo.canales': { zh: '我的销售渠道（含小程序源码）', es: 'Mis canales de venta' },
   'demo.exito.nota': {
     zh: '你选中的设计已登记在你名下，我们不会再提供给任何人。',
     es: 'El diseño que elegiste queda registrado a tu nombre: la fábrica no volverá a ofrecerlo a nadie más.',
@@ -211,6 +212,11 @@ const D: Dict = {
   'ck.pedido': { zh: '你的订单', es: 'Tu pedido' },
   'ck.envio': { zh: '运费', es: 'Envío' },
   'ck.total': { zh: '合计', es: 'Total' },
+  'ck.sin.pago': { zh: '本店还没有配置支付方式。', es: 'La tienda no tiene método de pago configurado.' },
+  'ck.pago.aviso': {
+    zh: '平台支付通道开通前，订单先记为待付款，由店家与你确认收款。',
+    es: 'Hasta activar la pasarela, el pedido queda pendiente y la tienda confirma el cobro contigo.',
+  },
   'ck.confirmar': { zh: '提交订单', es: 'Confirmar pedido' },
   'ck.confirmando': { zh: '提交中…', es: 'Confirmando…' },
   'ck.faltan': { zh: '请填写姓名、邮箱和收货地址。', es: 'Completa tu nombre, correo y dirección de entrega.' },
