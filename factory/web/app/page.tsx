@@ -11,11 +11,9 @@ import {
   IconLock,
   IconPublish,
   IconWand,
-  PantallaCasaTerra,
-  PantallaNocta,
-  PantallaVerdealto,
   Telefono,
 } from './_home-parts';
+import { PantallaHutong, PantallaQingdai, PantallaToys } from './_home-tiendas';
 
 const PASOS = [
   { n: '01', icono: <IconCursor />, k: 'home.paso1' },
@@ -41,7 +39,7 @@ const CANALES = [
 
 const EQUIPO = ['equipo.1', 'equipo.2', 'equipo.3'];
 
-const IDENTIDADES = ['青竹家居', 'NOCTA 夜行', '陶合', '拾光', '雾山', '游牧'];
+const IDENTIDADES = ['玩物纪', '青黛', '胡同咖啡', '拾光', '雾山', '游牧'];
 
 function pie(t: T) {
   return [
@@ -163,14 +161,14 @@ export default async function Landing() {
                 {t('home.anotacion')}
               </p>
               <div className="fh-phones">
-                <Telefono variante="izq" etiqueta="青竹家居：由 fábrica 的 AI 生成的花植商店">
-                  <PantallaVerdealto />
+                <Telefono variante="izq" etiqueta="玩物纪：由 fábrica 的 AI 生成的潮玩商店">
+                  <PantallaToys />
                 </Telefono>
-                <Telefono variante="centro" etiqueta="NOCTA 夜行：由 fábrica 的 AI 生成的服饰商店">
-                  <PantallaNocta />
+                <Telefono variante="centro" etiqueta="青黛：由 fábrica 的 AI 生成的新中式服饰商店">
+                  <PantallaQingdai />
                 </Telefono>
-                <Telefono variante="der" etiqueta="陶合：由 fábrica 的 AI 生成的陶器商店">
-                  <PantallaCasaTerra />
+                <Telefono variante="der" etiqueta="胡同咖啡：由 fábrica 的 AI 生成的精品咖啡商店">
+                  <PantallaHutong />
                 </Telefono>
               </div>
             </div>

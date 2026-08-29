@@ -87,7 +87,11 @@ export async function POST(req: NextRequest) {
   if (ownerPassword.length < 8) {
     return NextResponse.json({ error: ZH ? '密码至少 8 位。' : 'La contraseña debe tener al menos 8 caracteres.' }, { status: 400 });
   }
-  const ip = (req.headers.get('x-forwarded-for') || 'local').split(',')[0].trim();
+  // El ÚLTIMO valor de x-forwarded-for es el que añade nuestro proxy (Caddy
+  // lo apila), así que es el único que el visitante no puede inventarse. Con
+  // el primero, cualquiera saltaba el límite mandando una cabecera al azar.
+  const reenviado = (req.headers.get('x-forwarded-for') || '').split(',').map(v => v.trim()).filter(Boolean);
+  const ip = reenviado[reenviado.length - 1] || 'local';
   if (rateLimited(ip)) {
     return NextResponse.json(
       { error: ZH ? '你刚刚连续创建了多家体验店，请稍后再试。' : 'Has creado varias tiendas demo seguidas. Espera un rato e inténtalo de nuevo.' },

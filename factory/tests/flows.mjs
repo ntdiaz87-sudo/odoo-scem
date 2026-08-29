@@ -38,6 +38,34 @@ await check('Landing móvil: sin scroll horizontal', async () => {
   const [sw, cw] = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
   assert(sw <= cw + 1, `scrollWidth ${sw} > clientWidth ${cw}`);
 });
+await check('Landing: los escaparates del hero son tiendas del mercado de Pekín', async () => {
+  const body = await page.content();
+  for (const t of ['玩物纪', '青黛', '胡同咖啡', '兔儿爷 · 联名', '缂丝马面裙', '挂耳咖啡 10片']) {
+    assert(body.includes(t), `falta ${t}`);
+  }
+});
+await check('Landing: el contenido de cada teléfono cabe y no pisa la barra de pestañas', async () => {
+  // Los teléfonos laterales van girados; el rectángulo que devuelve el
+  // navegador para un elemento girado es su caja envolvente, más grande que
+  // el elemento. Se quita el giro para medir la maquetación de verdad.
+  const tag = await page.addStyleTag({ content: '.fh-phone--izq,.fh-phone--der{transform:none!important}' });
+  const medidas = await page.$$eval('.fh-app', els => els.map(el => {
+    const app = el.getBoundingClientRect();
+    const rejilla = el.querySelector('.fh-app-rejilla').getBoundingClientRect();
+    const pestanas = el.querySelector('.fh-app-tabs').getBoundingClientRect();
+    return {
+      tienda: el.className.replace('fh-app fh-app--', ''),
+      holgura: Math.round(pestanas.top - rejilla.bottom),
+      alFondo: Math.round(app.bottom - pestanas.bottom),
+    };
+  }));
+  await tag.evaluate(el => el.remove());
+  assert(medidas.length === 3, `esperaba 3 escaparates, hay ${medidas.length}`);
+  for (const m of medidas) {
+    assert(m.holgura >= 0, `la rejilla pisa las pestañas en ${m.tienda} (${m.holgura} px)`);
+    assert(m.alFondo <= 1, `las pestañas no llegan al fondo en ${m.tienda} (${m.alFondo} px)`);
+  }
+});
 await check('CTA "Probar demo gratis" lleva al wizard', async () => {
   await page.getByRole('link', { name: '免费试用' }).first().click();
   await page.waitForURL('**/demo');
@@ -235,8 +263,21 @@ await check('Fase 1: correo repetido rechazado con aviso claro', async () => {
   assert((await res.json()).error.includes('已经有商店'), 'mensaje inesperado');
 });
 await check('Fase 1: límite anti-abuso del demo (429 a la cuarta)', async () => {
-  const res = await ctx.request.post(BASE + '/api/demo', { data: { storeName: 'Cuarta Tienda', designKey: 'hoja-viva', ownerEmail: `cuarta-${STAMP}@test.local`, ownerPassword: PASS } });
-  assert(res.status() === 429, `status ${res.status()}`);
+  // La prueba gasta su propio cupo desde una IP inventada, así no depende de
+  // cuántas tiendas haya creado el resto de la batería. Reutiliza el correo
+  // del dueño ya existente: el contador sube igual y el intento muere en el
+  // 409 de correo repetido, sin dejar tiendas de más en la base.
+  const ip = `203.0.113.${1 + Math.floor(Math.random() * 250)}`;
+  const pedir = (n) => ctx.request.post(BASE + '/api/demo', {
+    headers: { 'x-forwarded-for': ip },
+    data: { storeName: `Cupo ${n}`, designKey: 'hoja-viva', ownerEmail: EMAIL, ownerPassword: PASS },
+  });
+  for (let n = 1; n <= 3; n++) {
+    const r = await pedir(n);
+    assert(r.status() === 409, `el intento ${n} debía morir en el correo repetido, dio ${r.status()}`);
+  }
+  const cuarta = await pedir(4);
+  assert(cuarta.status() === 429, `status ${cuarta.status()}`);
 });
 
 // ---------- 5. FASE 3: CARRITO Y CHECKOUT ----------
