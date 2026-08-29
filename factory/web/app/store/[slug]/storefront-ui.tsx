@@ -5,6 +5,16 @@
 import { useEffect, useState } from 'react';
 import { addToCart, fetchActiveOrder } from '../../../lib/shop-client';
 
+/** Registra el service worker que hace instalable la tienda como app (PWA). */
+export function PwaSetup() {
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+    }
+  }, []);
+  return null;
+}
+
 export function CartBadge({
   slug,
   surface,

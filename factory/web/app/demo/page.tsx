@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { DESIGN_PRESETS } from '../../lib/designs';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ESTILOS, MODOS, RUBROS } from '../../lib/design-generator';
+import type { StoreDesign } from '../../lib/designs';
 
 interface Created {
   url: string;
@@ -14,10 +15,42 @@ export default function DemoWizard() {
   const [storeName, setStoreName] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [ownerPassword, setOwnerPassword] = useState('');
-  const [designKey, setDesignKey] = useState(DESIGN_PRESETS[0].key);
+  const [rubro, setRubro] = useState<string>('moda');
+  const [estilo, setEstilo] = useState<string>('calido');
+  const [modo, setModo] = useState<string>('claro');
+  const [proposals, setProposals] = useState<StoreDesign[]>([]);
+  const [selectedKey, setSelectedKey] = useState<string>('');
+  const [designsBusy, setDesignsBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<Created | null>(null);
+  const fetchSeq = useRef(0);
+
+  const loadProposals = useCallback(async (r: string, e: string, m: string) => {
+    const seq = ++fetchSeq.current;
+    setDesignsBusy(true);
+    try {
+      const res = await fetch('/api/designs', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ rubro: r, estilo: e, modo: m }),
+      });
+      const data = await res.json();
+      if (seq !== fetchSeq.current) return; // llegó tarde: ya hay otra encuesta
+      if (res.ok && Array.isArray(data.proposals) && data.proposals.length) {
+        setProposals(data.proposals);
+        setSelectedKey(data.proposals[0].key);
+      }
+    } catch {
+      /* la siguiente pulsación reintenta */
+    } finally {
+      if (seq === fetchSeq.current) setDesignsBusy(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadProposals(rubro, estilo, modo);
+  }, [rubro, estilo, modo, loadProposals]);
 
   async function createStore(e: React.FormEvent) {
     e.preventDefault();
@@ -34,6 +67,11 @@ export default function DemoWizard() {
       setError('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
+    const design = proposals.find(d => d.key === selectedKey);
+    if (!design) {
+      setError('Elige uno de los diseños propuestos.');
+      return;
+    }
     setBusy(true);
     try {
       const res = await fetch('/api/demo', {
@@ -41,7 +79,7 @@ export default function DemoWizard() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           storeName: storeName.trim(),
-          designKey,
+          design,
           ownerEmail: ownerEmail.trim(),
           ownerPassword,
         }),
@@ -76,7 +114,8 @@ export default function DemoWizard() {
         </div>
         <div className="hint" style={{ marginTop: 18 }}>
           En el panel puedes cambiar los productos de ejemplo por los tuyos: precios, fotos,
-          descripciones y stock.
+          descripciones y stock. El diseño que elegiste queda registrado a tu nombre: nadie más lo
+          recibirá.
         </div>
       </main>
     );
@@ -89,13 +128,85 @@ export default function DemoWizard() {
       </Link>
       <h1>Crea tu tienda demo</h1>
       <p className="sub">
-        Gratis y al instante, con tu propio panel para gestionar productos y pedidos. En la versión
-        completa, la IA generará diseños únicos a partir de una encuesta.
+        Cuéntanos de tu negocio y el diseñador de la fábrica te propondrá diseños que no tiene
+        nadie más. Gratis y al instante, con tu propio panel.
       </p>
 
       {error ? <div className="error-box">{error}</div> : null}
 
       <form onSubmit={createStore}>
+        <div className="field">
+          <label>¿Qué vendes?</label>
+          <div className="chip-row">
+            {RUBROS.map(r => (
+              <button type="button" key={r.key} className={`chip${rubro === r.key ? ' chip-on' : ''}`} onClick={() => setRubro(r.key)}>
+                {r.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="field">
+          <label>¿Cómo es tu marca?</label>
+          <div className="chip-row">
+            {ESTILOS.map(s => (
+              <button type="button" key={s.key} className={`chip${estilo === s.key ? ' chip-on' : ''}`} onClick={() => setEstilo(s.key)}>
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="field">
+          <label>¿Claro u oscuro?</label>
+          <div className="chip-row">
+            {MODOS.map(m => (
+              <button type="button" key={m.key} className={`chip${modo === m.key ? ' chip-on' : ''}`} onClick={() => setModo(m.key)}>
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="field">
+          <label>Diseños propuestos para ti</label>
+          <div className="design-options" style={{ opacity: designsBusy ? 0.55 : 1 }}>
+            {proposals.map(d => (
+              <button
+                type="button"
+                key={d.key}
+                className={`design-card${selectedKey === d.key ? ' selected' : ''}`}
+                onClick={() => setSelectedKey(d.key)}
+                aria-pressed={selectedKey === d.key}
+              >
+                <div className="design-head" style={{ background: d.brand, color: d.brandInk }}>
+                  {d.label}
+                </div>
+                <div className="design-body" style={{ background: d.bg }}>
+                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
+                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
+                  <div style={{ background: d.accent, height: 10, borderRadius: 3 }} />
+                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
+                </div>
+                <div className="design-name">{d.label}</div>
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="btn btn-outline btn-block"
+            style={{ marginTop: 12 }}
+            disabled={designsBusy}
+            onClick={() => loadProposals(rubro, estilo, modo)}
+          >
+            {designsBusy ? 'Diseñando…' : '🎲 Proponme otros diseños'}
+          </button>
+          <div className="hint">
+            Cada diseño tiene una huella única: al elegirlo queda registrado para tu tienda y la
+            fábrica no lo vuelve a ofrecer.
+          </div>
+        </div>
+
         <div className="field">
           <label htmlFor="storeName">Nombre de tu tienda</label>
           <input
@@ -130,36 +241,6 @@ export default function DemoWizard() {
             autoComplete="new-password"
             onChange={e => setOwnerPassword(e.target.value)}
           />
-        </div>
-
-        <div className="field">
-          <label>Elige un diseño de muestra</label>
-          <div className="design-options">
-            {DESIGN_PRESETS.map(d => (
-              <button
-                type="button"
-                key={d.key}
-                className={`design-card${designKey === d.key ? ' selected' : ''}`}
-                onClick={() => setDesignKey(d.key)}
-                aria-pressed={designKey === d.key}
-              >
-                <div className="design-head" style={{ background: d.brand, color: d.brandInk }}>
-                  {d.label}
-                </div>
-                <div className="design-body" style={{ background: d.bg }}>
-                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
-                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
-                  <div style={{ background: d.accent, height: 10, borderRadius: 3 }} />
-                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
-                </div>
-                <div className="design-name">{d.label}</div>
-              </button>
-            ))}
-          </div>
-          <div className="hint">
-            En la plataforma final, el diseño que elijas quedará registrado a tu nombre y no se
-            repetirá para nadie más.
-          </div>
         </div>
 
         <button className="btn btn-primary btn-block" type="submit" disabled={busy}>

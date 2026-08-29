@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findDesign } from '../../../lib/designs';
+import { isValidDesign } from '../../../lib/design-generator';
+import { takenDesignKeys } from '../../../lib/design-registry';
+import { findDesign, type StoreDesign } from '../../../lib/designs';
 import { rootDomain, slugify, storeUrl } from '../../../lib/tenant';
 import { adminLogin, adminRequest } from '../../../lib/vendure';
 
@@ -41,7 +43,13 @@ function rateLimited(ip: string): boolean {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export async function POST(req: NextRequest) {
-  let payload: { storeName?: string; designKey?: string; ownerEmail?: string; ownerPassword?: string };
+  let payload: {
+    storeName?: string;
+    designKey?: string;
+    design?: unknown;
+    ownerEmail?: string;
+    ownerPassword?: string;
+  };
   try {
     payload = await req.json();
   } catch {
@@ -67,11 +75,26 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const design = findDesign(payload.designKey || '');
+  // Diseño: o una propuesta completa del diseñador (con huella única), o un
+  // preset por clave (compatibilidad con la Fase 0 y las pruebas de humo).
+  const customDesign: StoreDesign | null = isValidDesign(payload.design) ? payload.design : null;
+  const design = customDesign ?? findDesign(payload.designKey || '');
   const baseSlug = slugify(storeName) || 'tienda';
 
   try {
     const auth = await adminLogin();
+
+    // Registro de unicidad: la huella elegida no puede pertenecer ya a otra
+    // tienda (los presets de la Fase 0 quedan exentos).
+    if (customDesign) {
+      const taken = await takenDesignKeys(auth);
+      if (taken.has(customDesign.key)) {
+        return NextResponse.json(
+          { error: 'Ese diseño acaba de ser tomado por otra tienda. Pide nuevas propuestas.' },
+          { status: 409 },
+        );
+      }
+    }
 
     // El correo del dueño debe estar libre ANTES de crear nada.
     const existing = await adminRequest<{ administrators: { totalItems: number } }>(

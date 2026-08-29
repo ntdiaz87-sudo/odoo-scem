@@ -2,7 +2,22 @@ import type { StoreDesign } from '../../../lib/designs';
 import { DESIGN_PRESETS } from '../../../lib/designs';
 import { shopQuery } from '../../../lib/vendure';
 import { rootDomain } from '../../../lib/tenant';
-import { AddToCartButton, CartBadge } from './storefront-ui';
+import { AddToCartButton, CartBadge, PwaSetup } from './storefront-ui';
+import { loadStoreInfo } from '../../../lib/store-design';
+
+/** Metadatos por tienda: título propio y manifiesto PWA instalable. */
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const info = await loadStoreInfo(slug);
+  if (!info) return { title: 'Tienda no encontrada' };
+  return {
+    title: info.name,
+    description: `Tienda online de ${info.name}`,
+    manifest: '/manifest.webmanifest',
+    icons: { icon: '/icon.svg' },
+    appleWebApp: { capable: true, title: info.name },
+  };
+}
 
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
 
@@ -91,6 +106,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
         flexDirection: 'column',
       }}
     >
+      <PwaSetup />
       {cf?.isSandbox ? (
         <div
           style={{
