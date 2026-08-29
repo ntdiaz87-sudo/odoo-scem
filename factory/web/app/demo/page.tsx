@@ -11,6 +11,22 @@ interface Created {
   ownerEmail: string;
 }
 
+function IconLock() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="4.5" y="10" width="15" height="11" rx="2.4" />
+      <path d="M8 10V7.5a4 4 0 0 1 8 0V10" />
+    </svg>
+  );
+}
+function IconTick() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m5 12.5 4.5 4.5L19 7.5" />
+    </svg>
+  );
+}
+
 export default function DemoWizard() {
   const [storeName, setStoreName] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
@@ -36,7 +52,7 @@ export default function DemoWizard() {
         body: JSON.stringify({ rubro: r, estilo: e, modo: m }),
       });
       const data = await res.json();
-      if (seq !== fetchSeq.current) return; // llegó tarde: ya hay otra encuesta
+      if (seq !== fetchSeq.current) return;
       if (res.ok && Array.isArray(data.proposals) && data.proposals.length) {
         setProposals(data.proposals);
         setSelectedKey(data.proposals[0].key);
@@ -96,157 +112,250 @@ export default function DemoWizard() {
     }
   }
 
+  const marca = (
+    <span className="fh-marca">
+      fábrica<span className="fh-punto">.</span>
+    </span>
+  );
+
   if (created) {
     return (
-      <main className="wizard">
-        <h1>🎉 ¡Tu tienda está lista!</h1>
-        <p className="sub">
-          Guarda estos datos: tu usuario del panel es <strong>{created.ownerEmail}</strong> y la
-          contraseña la que acabas de elegir. La demo dura 14 días.
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <a className="btn btn-primary btn-block" href={created.url}>
-            Ver mi tienda
-          </a>
-          <a className="btn btn-outline btn-block" href={created.panelUrl}>
-            Entrar a mi panel (productos y pedidos)
-          </a>
-        </div>
-        <div className="hint" style={{ marginTop: 18 }}>
-          En el panel puedes cambiar los productos de ejemplo por los tuyos: precios, fotos,
-          descripciones y stock. El diseño que elegiste queda registrado a tu nombre: nadie más lo
-          recibirá.
-        </div>
-      </main>
+      <div className="fh-page">
+        <header className="fh-topbar">
+          <Link href="/" aria-label="Ir al inicio de fábrica">
+            {marca}
+          </Link>
+        </header>
+        <main className="fh-panel">
+          <div className="fh-tarjeta">
+            <div className="fh-exito-marca">
+              <IconTick />
+            </div>
+            <h1>¡Tu tienda está lista!</h1>
+            <p className="fh-tarjeta-sub">
+              Ya puedes verla, cambiar los productos de ejemplo por los tuyos y recibir pedidos. La
+              demo dura 14 días.
+            </p>
+            <dl className="fh-datos">
+              <dt>Tu usuario del panel</dt>
+              <dd>{created.ownerEmail}</dd>
+              <dt>Tu contraseña</dt>
+              <dd>La que acabas de elegir</dd>
+            </dl>
+            <div className="fh-acciones">
+              <a className="fh-btn fh-btn--lima fh-btn--grande fh-btn--bloque" href={created.url}>
+                Ver mi tienda
+              </a>
+              <a className="fh-btn fh-btn--linea-oscura fh-btn--grande fh-btn--bloque" href={created.panelUrl}>
+                Entrar a mi panel (productos y pedidos)
+              </a>
+            </div>
+            <p className="fh-nota">
+              <span className="fh-nota-ico">
+                <IconLock />
+              </span>
+              El diseño que elegiste queda registrado a tu nombre: la fábrica no volverá a
+              ofrecerlo a nadie más.
+            </p>
+          </div>
+        </main>
+      </div>
     );
   }
 
   return (
-    <main className="wizard">
-      <Link className="back-link" href="/">
-        ← Volver
-      </Link>
-      <h1>Crea tu tienda demo</h1>
-      <p className="sub">
-        Cuéntanos de tu negocio y el diseñador de la fábrica te propondrá diseños que no tiene
-        nadie más. Gratis y al instante, con tu propio panel.
-      </p>
+    <div className="fh-page">
+      <header className="fh-topbar">
+        <Link href="/" aria-label="Ir al inicio de fábrica">
+          {marca}
+        </Link>
+        <Link className="fh-volver" href="/">
+          <span aria-hidden="true">←</span> Volver
+        </Link>
+      </header>
 
-      {error ? <div className="error-box">{error}</div> : null}
+      <main className="fh-panel">
+        <div className="fh-tarjeta">
+          <h1>Crea tu tienda demo</h1>
+          <p className="fh-tarjeta-sub">
+            Cuéntanos de tu negocio y la IA te propondrá diseños que no tiene nadie más. Gratis, al
+            instante y con tu propio panel.
+          </p>
 
-      <form onSubmit={createStore}>
-        <div className="field">
-          <label>¿Qué vendes?</label>
-          <div className="chip-row">
-            {RUBROS.map(r => (
-              <button type="button" key={r.key} className={`chip${rubro === r.key ? ' chip-on' : ''}`} onClick={() => setRubro(r.key)}>
-                {r.label}
-              </button>
-            ))}
-          </div>
-        </div>
+          {error ? (
+            <div className="fh-aviso" role="alert">
+              {error}
+            </div>
+          ) : null}
 
-        <div className="field">
-          <label>¿Cómo es tu marca?</label>
-          <div className="chip-row">
-            {ESTILOS.map(s => (
-              <button type="button" key={s.key} className={`chip${estilo === s.key ? ' chip-on' : ''}`} onClick={() => setEstilo(s.key)}>
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
+          <form onSubmit={createStore}>
+            <div className="fh-bloque">
+              <p className="fh-legend">
+                <span className="fh-legend-num">1</span> ¿Qué vendes?
+              </p>
+              <div className="fh-chips">
+                {RUBROS.map(r => (
+                  <button
+                    type="button"
+                    key={r.key}
+                    className="fh-opcion"
+                    aria-pressed={rubro === r.key}
+                    onClick={() => setRubro(r.key)}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        <div className="field">
-          <label>¿Claro u oscuro?</label>
-          <div className="chip-row">
-            {MODOS.map(m => (
-              <button type="button" key={m.key} className={`chip${modo === m.key ? ' chip-on' : ''}`} onClick={() => setModo(m.key)}>
-                {m.label}
-              </button>
-            ))}
-          </div>
-        </div>
+            <div className="fh-bloque">
+              <p className="fh-legend">
+                <span className="fh-legend-num">2</span> ¿Cómo es tu marca?
+              </p>
+              <div className="fh-chips">
+                {ESTILOS.map(s => (
+                  <button
+                    type="button"
+                    key={s.key}
+                    className="fh-opcion"
+                    aria-pressed={estilo === s.key}
+                    onClick={() => setEstilo(s.key)}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        <div className="field">
-          <label>Diseños propuestos para ti</label>
-          <div className="design-options" style={{ opacity: designsBusy ? 0.55 : 1 }}>
-            {proposals.map(d => (
+            <div className="fh-bloque">
+              <p className="fh-legend">
+                <span className="fh-legend-num">3</span> ¿Claro u oscuro?
+              </p>
+              <div className="fh-chips">
+                {MODOS.map(m => (
+                  <button
+                    type="button"
+                    key={m.key}
+                    className="fh-opcion"
+                    aria-pressed={modo === m.key}
+                    onClick={() => setModo(m.key)}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="fh-bloque">
+              <p className="fh-legend">
+                <span className="fh-legend-num">4</span> Elige tu diseño
+              </p>
+              <div className="design-options" style={{ opacity: designsBusy ? 0.55 : 1 }}>
+                {proposals.map(d => (
+                  <button
+                    type="button"
+                    key={d.key}
+                    className={`design-card${selectedKey === d.key ? ' selected' : ''}`}
+                    onClick={() => setSelectedKey(d.key)}
+                    aria-pressed={selectedKey === d.key}
+                  >
+                    <div className="design-head" style={{ background: d.brand, color: d.brandInk }}>
+                      <span className="dp-marca">{d.label}</span>
+                      <span className="dp-menu" aria-hidden="true">
+                        <i style={{ background: d.brandInk }} />
+                        <i style={{ background: d.brandInk }} />
+                        <i style={{ background: d.brandInk }} />
+                      </span>
+                    </div>
+                    <div className="design-body" style={{ background: d.bg }}>
+                      <div
+                        className="dp-hero"
+                        style={{ background: d.surface, border: `1px solid ${d.inkSoft}22`, borderRadius: d.radius }}
+                      >
+                        <span className="dp-t" style={{ background: d.ink }} />
+                        <span className="dp-t dp-t--corta" style={{ background: d.inkSoft }} />
+                        <span className="dp-cta" style={{ background: d.accent }} />
+                      </div>
+                      <div className="dp-rejilla">
+                        {[0, 1, 2].map(i => (
+                          <span
+                            key={i}
+                            style={{ background: d.surface, border: `1px solid ${d.inkSoft}22`, borderRadius: d.radius }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="design-name">
+                      {d.label}
+                      <span className="dp-fuente">{d.headingFont === 'serif' ? 'Serif' : 'Grotesca'}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
               <button
                 type="button"
-                key={d.key}
-                className={`design-card${selectedKey === d.key ? ' selected' : ''}`}
-                onClick={() => setSelectedKey(d.key)}
-                aria-pressed={selectedKey === d.key}
+                className="fh-regenerar"
+                disabled={designsBusy}
+                onClick={() => loadProposals(rubro, estilo, modo)}
               >
-                <div className="design-head" style={{ background: d.brand, color: d.brandInk }}>
-                  {d.label}
-                </div>
-                <div className="design-body" style={{ background: d.bg }}>
-                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
-                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
-                  <div style={{ background: d.accent, height: 10, borderRadius: 3 }} />
-                  <div style={{ background: d.surface, border: `1px solid ${d.inkSoft}22` }} />
-                </div>
-                <div className="design-name">{d.label}</div>
+                {designsBusy ? 'Diseñando…' : 'Proponme otros diseños'}
               </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="btn btn-outline btn-block"
-            style={{ marginTop: 12 }}
-            disabled={designsBusy}
-            onClick={() => loadProposals(rubro, estilo, modo)}
-          >
-            {designsBusy ? 'Diseñando…' : '🎲 Proponme otros diseños'}
-          </button>
-          <div className="hint">
-            Cada diseño tiene una huella única: al elegirlo queda registrado para tu tienda y la
-            fábrica no lo vuelve a ofrecer.
-          </div>
-        </div>
+              <p className="fh-nota">
+                <span className="fh-nota-ico">
+                  <IconLock />
+                </span>
+                Cada diseño tiene una huella única: al elegirlo queda registrado para tu tienda y la
+                fábrica no lo vuelve a ofrecer.
+              </p>
+            </div>
 
-        <div className="field">
-          <label htmlFor="storeName">Nombre de tu tienda</label>
-          <input
-            id="storeName"
-            type="text"
-            value={storeName}
-            maxLength={40}
-            placeholder="Ej.: Dulcería Alba"
-            onChange={e => setStoreName(e.target.value)}
-          />
-        </div>
+            <div className="fh-bloque">
+              <p className="fh-legend">
+                <span className="fh-legend-num">5</span> Tus datos
+              </p>
+              <div className="fh-campo">
+                <label htmlFor="storeName">Nombre de tu tienda</label>
+                <input
+                  id="storeName"
+                  type="text"
+                  value={storeName}
+                  maxLength={40}
+                  placeholder="Ej.: Dulcería Alba"
+                  onChange={e => setStoreName(e.target.value)}
+                />
+              </div>
+              <div className="fh-campo">
+                <label htmlFor="ownerEmail">Tu correo</label>
+                <input
+                  id="ownerEmail"
+                  type="email"
+                  value={ownerEmail}
+                  placeholder="tucorreo@ejemplo.com"
+                  autoComplete="email"
+                  onChange={e => setOwnerEmail(e.target.value)}
+                />
+                <p className="fh-campo-ayuda">Será tu usuario para entrar al panel de tu tienda.</p>
+              </div>
+              <div className="fh-campo">
+                <label htmlFor="ownerPassword">Elige una contraseña</label>
+                <input
+                  id="ownerPassword"
+                  type="password"
+                  value={ownerPassword}
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  onChange={e => setOwnerPassword(e.target.value)}
+                />
+                <p className="fh-campo-ayuda">Mínimo 8 caracteres.</p>
+              </div>
+            </div>
 
-        <div className="field">
-          <label htmlFor="ownerEmail">Tu correo (será tu usuario del panel)</label>
-          <input
-            id="ownerEmail"
-            type="email"
-            value={ownerEmail}
-            placeholder="tucorreo@ejemplo.com"
-            autoComplete="email"
-            onChange={e => setOwnerEmail(e.target.value)}
-          />
+            <button className="fh-btn fh-btn--lima fh-btn--grande fh-btn--bloque fh-enviar" type="submit" disabled={busy}>
+              {busy ? 'Creando tu tienda…' : 'Crear mi tienda demo'}
+            </button>
+          </form>
         </div>
-
-        <div className="field">
-          <label htmlFor="ownerPassword">Elige una contraseña (mínimo 8 caracteres)</label>
-          <input
-            id="ownerPassword"
-            type="password"
-            value={ownerPassword}
-            placeholder="••••••••"
-            autoComplete="new-password"
-            onChange={e => setOwnerPassword(e.target.value)}
-          />
-        </div>
-
-        <button className="btn btn-primary btn-block" type="submit" disabled={busy}>
-          {busy ? 'Creando tu tienda…' : 'Crear mi tienda demo'}
-        </button>
-      </form>
-    </main>
+      </main>
+    </div>
   );
 }

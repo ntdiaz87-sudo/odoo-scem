@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { StoreDesign } from '../../../../lib/designs';
 import { formatMoney, shopFetch } from '../../../../lib/shop-client';
 
 interface PlacedOrder {
@@ -12,17 +11,7 @@ interface PlacedOrder {
   customer?: { emailAddress: string } | null;
 }
 
-export function ThanksView({
-  slug,
-  design,
-  name,
-  headingFont,
-}: {
-  slug: string;
-  design: StoreDesign;
-  name: string;
-  headingFont: string;
-}) {
+export function ThanksView({ slug, nombre }: { slug: string; nombre: string }) {
   const [code, setCode] = useState('');
   const [order, setOrder] = useState<PlacedOrder | null>(null);
 
@@ -42,75 +31,38 @@ export function ThanksView({
   }, [slug]);
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: design.bg,
-        color: design.ink,
-        fontFamily: "'Public Sans', system-ui, sans-serif",
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 24,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 480,
-          width: '100%',
-          background: design.surface,
-          border: `1px solid ${design.inkSoft}26`,
-          borderRadius: design.radius,
-          padding: '34px 28px',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: 46 }}>✅</div>
-        <h1 style={{ fontFamily: headingFont, fontSize: 27, margin: '10px 0 8px' }}>
-          ¡Pedido confirmado!
-        </h1>
-        <p style={{ color: design.inkSoft, fontSize: 15.5, margin: '0 0 16px' }}>
-          Gracias por comprar en {name}.
-        </p>
-        {code ? (
-          <div
-            style={{
-              background: design.bg,
-              borderRadius: 10,
-              padding: '12px 16px',
-              fontSize: 15,
-              marginBottom: 14,
-            }}
-          >
-            Número de pedido: <strong data-testid="order-code">{code}</strong>
-            {order ? (
-              <div style={{ color: design.inkSoft, fontSize: 14, marginTop: 4 }}>
-                Total {formatMoney(order.totalWithTax, order.currencyCode)}
-                {order.customer?.emailAddress ? ` · aviso a ${order.customer.emailAddress}` : ''}
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-        <p style={{ color: design.inkSoft, fontSize: 14, margin: '0 0 20px' }}>
-          La tienda te contactará para coordinar el pago y la entrega.
-        </p>
-        <a
-          href="/"
-          style={{
-            display: 'inline-flex',
-            minHeight: 48,
-            alignItems: 'center',
-            padding: '0 24px',
-            borderRadius: 9,
-            background: design.brand,
-            color: design.brandInk,
-            fontWeight: 700,
-            textDecoration: 'none',
-          }}
-        >
-          Volver a la tienda
-        </a>
-      </div>
+    <div className="st-caja st-caja--centro st-gracias">
+      <span className="st-gracias-marca" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+          <path d="m5 12.5 4.5 4.5L19 7.5" />
+        </svg>
+      </span>
+      <h1 className="st-gracias-t">¡Pedido confirmado!</h1>
+      <p className="st-caja-txt">Gracias por comprar en {nombre}.</p>
+
+      {code ? (
+        <dl className="st-pedido">
+          <dt>Número de pedido</dt>
+          <dd data-testid="order-code">{code}</dd>
+          {order ? (
+            <>
+              <dt>Total</dt>
+              <dd>{formatMoney(order.totalWithTax, order.currencyCode)}</dd>
+              {order.customer?.emailAddress ? (
+                <>
+                  <dt>Aviso enviado a</dt>
+                  <dd>{order.customer.emailAddress}</dd>
+                </>
+              ) : null}
+            </>
+          ) : null}
+        </dl>
+      ) : null}
+
+      <p className="st-gracias-nota">La tienda te contactará para coordinar el pago y la entrega.</p>
+      <a className="st-btn st-btn--marca st-btn--grande" href="/">
+        Volver a la tienda
+      </a>
     </div>
   );
 }

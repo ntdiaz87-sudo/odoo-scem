@@ -2,8 +2,13 @@ import type { StoreDesign } from '../../../lib/designs';
 import { DESIGN_PRESETS } from '../../../lib/designs';
 import { shopQuery } from '../../../lib/vendure';
 import { rootDomain } from '../../../lib/tenant';
-import { AddToCartButton, CartBadge, PwaSetup } from './storefront-ui';
 import { loadStoreInfo } from '../../../lib/store-design';
+import { AddToCartButton, PwaSetup } from './storefront-ui';
+import { SandboxBanner, StoreFooter, StoreHeader, StoreNotFound, storeVars } from './_shell';
+
+const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
+
+export const dynamic = 'force-dynamic';
 
 /** Metadatos por tienda: título propio y manifiesto PWA instalable. */
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -18,10 +23,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     appleWebApp: { capable: true, title: info.name },
   };
 }
-
-const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
-
-export const dynamic = 'force-dynamic';
 
 interface ChannelData {
   activeChannel: {
@@ -61,6 +62,12 @@ function formatPrice(minor: number, currency: string): string {
   return new Intl.NumberFormat('es', { style: 'currency', currency }).format(minor / 100);
 }
 
+const VENTAJAS = [
+  { t: 'Envío a domicilio', d: 'Entrega en 24–48 h' },
+  { t: 'Pago como prefieras', d: 'Transferencia o al recibir' },
+  { t: 'Atención directa', d: 'Te responde la tienda' },
+];
+
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   let data: ChannelData;
@@ -76,181 +83,86 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
       }`,
     );
   } catch {
-    return (
-      <main className="wizard" style={{ textAlign: 'center' }}>
-        <h1>Tienda no encontrada</h1>
-        <p className="sub">No existe ninguna tienda en esta dirección, o el demo expiró.</p>
-        <a className="btn btn-primary" href={ROOT_URL}>
-          Crear mi tienda
-        </a>
-      </main>
-    );
+    return <StoreNotFound rootUrl={ROOT_URL} />;
   }
 
   const cf = data.activeChannel.customFields;
   const design = parseDesign(cf?.design);
-  const name = cf?.displayName || data.activeChannel.code;
-  const headingFont =
-    design.headingFont === 'serif'
-      ? "'Source Serif 4', Georgia, serif"
-      : "'Bricolage Grotesque', 'Public Sans', sans-serif";
+  const nombre = cf?.displayName || data.activeChannel.code;
+  const productos = data.products.items;
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: design.bg,
-        color: design.ink,
-        fontFamily: "'Public Sans', system-ui, sans-serif",
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <div className="st" style={storeVars(design)}>
       <PwaSetup />
-      {cf?.isSandbox ? (
-        <div
-          style={{
-            background: design.brand,
-            color: design.brandInk,
-            textAlign: 'center',
-            padding: '8px 16px',
-            fontSize: 13.5,
-            fontWeight: 600,
-          }}
-        >
-          Tienda demo creada en la fábrica
-          {cf?.expiresAt ? ` · caduca el ${new Date(cf.expiresAt).toLocaleDateString('es')}` : ''}
-          {' · '}
-          <a href={ROOT_URL} style={{ color: design.brandInk, textDecoration: 'underline' }}>crea la tuya gratis</a>
-        </div>
-      ) : null}
+      {cf?.isSandbox ? <SandboxBanner expiresAt={cf?.expiresAt} rootUrl={ROOT_URL} /> : null}
 
-      <header
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '18px 24px',
-          maxWidth: 1080,
-          width: '100%',
-          margin: '0 auto',
-        }}
-      >
-        <div style={{ fontFamily: headingFont, fontWeight: 700, fontSize: 24, color: design.ink }}>{name}</div>
-        <CartBadge
-          slug={slug}
-          surface={design.surface}
-          ink={design.ink}
-          inkSoft={design.inkSoft}
-          brand={design.brand}
-          brandInk={design.brandInk}
-        />
-      </header>
+      <StoreHeader slug={slug} nombre={nombre} activo="catalogo" />
 
-      <section
-        style={{
-          maxWidth: 1080,
-          width: '100%',
-          margin: '0 auto',
-          padding: '0 24px',
-        }}
-      >
-        <div
-          style={{
-            background: design.brand,
-            color: design.brandInk,
-            borderRadius: design.radius,
-            padding: '34px 30px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 12,
-          }}
-        >
-          <div style={{ fontFamily: headingFont, fontWeight: 700, fontSize: 'clamp(26px, 4vw, 38px)', lineHeight: 1.12 }}>
-            Bienvenido a {name}
+      <main>
+        <section className="st-hero">
+          <div className="st-hero-in">
+            <p className="st-hero-eyebrow">Tienda oficial</p>
+            <h1 className="st-hero-titulo">Bienvenido a {nombre}</h1>
+            <p className="st-hero-txt">
+              Descubre nuestra selección, pide desde el móvil y recíbelo en casa. Cada pedido lo
+              prepara y lo atiende directamente la tienda.
+            </p>
+            <a className="st-btn st-btn--marca st-btn--grande" href="#catalogo">
+              Ver productos
+            </a>
           </div>
-          <div style={{ opacity: 0.85, fontSize: 15.5 }}>Envío a domicilio en 24–48 h · Pago seguro</div>
-        </div>
-      </section>
+          <div className="st-hero-deco" aria-hidden="true">
+            <span className="st-deco st-deco--1" />
+            <span className="st-deco st-deco--2" />
+            <span className="st-deco st-deco--3" />
+          </div>
+        </section>
 
-      <main
-        style={{
-          flex: 1,
-          maxWidth: 1080,
-          width: '100%',
-          margin: '0 auto',
-          padding: '28px 24px 48px',
-        }}
-      >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-            gap: 18,
-          }}
-        >
-          {data.products.items.map((p, i) => (
-            <div
-              key={p.id}
-              style={{
-                background: design.surface,
-                border: `1px solid ${design.inkSoft}26`,
-                borderRadius: design.radius,
-                overflow: 'hidden',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div
-                style={{
-                  height: 130,
-                  background: `${i % 2 === 0 ? design.brand : design.accent}22`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontFamily: headingFont,
-                  fontWeight: 700,
-                  fontSize: 40,
-                  color: design.brand,
-                }}
-              >
-                {p.name.charAt(0).toUpperCase()}
-              </div>
-              <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <div style={{ fontWeight: 600, fontSize: 15.5 }}>{p.name}</div>
-                <div style={{ fontSize: 13.5, color: design.inkSoft, minHeight: 40 }}>{p.description}</div>
-                <div style={{ fontWeight: 700, fontSize: 16, color: design.brand === design.bg ? design.ink : design.brand }}>
-                  {p.variants[0]
-                    ? formatPrice(p.variants[0].priceWithTax, p.variants[0].currencyCode)
-                    : '—'}
-                </div>
-                {p.variants[0] ? (
-                  <AddToCartButton
-                    slug={slug}
-                    variantId={p.variants[0].id}
-                    brand={design.brand}
-                    brandInk={design.brandInk}
-                  />
-                ) : null}
-              </div>
-            </div>
+        <ul className="st-ventajas">
+          {VENTAJAS.map(v => (
+            <li key={v.t}>
+              <span className="st-ventaja-t">{v.t}</span>
+              <span className="st-ventaja-d">{v.d}</span>
+            </li>
           ))}
-        </div>
+        </ul>
+
+        <section className="st-catalogo" id="catalogo">
+          <div className="st-sec-cabeza">
+            <h2 className="st-h2">Nuestros productos</h2>
+            <span className="st-conteo">
+              {data.products.totalItems} {data.products.totalItems === 1 ? 'artículo' : 'artículos'}
+            </span>
+          </div>
+
+          {productos.length === 0 ? (
+            <p className="st-vacio">Esta tienda todavía no ha publicado productos.</p>
+          ) : (
+            <div className="st-rejilla">
+              {productos.map((p, i) => {
+                const v = p.variants[0];
+                return (
+                  <article className="st-prod" key={p.id}>
+                    <div className={`st-prod-img st-prod-img--${i % 4}`} aria-hidden="true">
+                      <span>{p.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div className="st-prod-cuerpo">
+                      <h3 className="st-prod-n">{p.name}</h3>
+                      <p className="st-prod-d">{p.description}</p>
+                      <p className="st-prod-p">
+                        {v ? formatPrice(v.priceWithTax, v.currencyCode) : '—'}
+                      </p>
+                      {v ? <AddToCartButton slug={slug} variantId={v.id} /> : null}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
       </main>
 
-      <footer
-        style={{
-          textAlign: 'center',
-          padding: '20px 24px 32px',
-          fontSize: 13.5,
-          color: design.inkSoft,
-        }}
-      >
-        {name} · Creada con{' '}
-        <a href={ROOT_URL} style={{ color: design.inkSoft, textDecoration: 'underline' }}>
-          fábrica.
-        </a>
-      </footer>
+      <StoreFooter nombre={nombre} rootUrl={ROOT_URL} />
     </div>
   );
 }

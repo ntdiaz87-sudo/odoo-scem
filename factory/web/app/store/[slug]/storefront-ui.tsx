@@ -1,6 +1,6 @@
 'use client';
 
-/** Piezas interactivas del escaparate: botón de añadir y contador del carrito. */
+/** Piezas interactivas de la tienda: registro PWA, contador y añadir al carrito. */
 
 import { useEffect, useState } from 'react';
 import { addToCart, fetchActiveOrder } from '../../../lib/shop-client';
@@ -15,21 +15,7 @@ export function PwaSetup() {
   return null;
 }
 
-export function CartBadge({
-  slug,
-  surface,
-  ink,
-  inkSoft,
-  brand,
-  brandInk,
-}: {
-  slug: string;
-  surface: string;
-  ink: string;
-  inkSoft: string;
-  brand: string;
-  brandInk: string;
-}) {
+export function CartBadge({ slug }: { slug: string }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -48,44 +34,23 @@ export function CartBadge({
     };
   }, [slug]);
 
-  const active = count > 0;
   return (
     <a
+      className={`st-carrito${count > 0 ? ' is-lleno' : ''}`}
       href="/cart"
-      aria-label={`Carrito, ${count} artículos`}
-      style={{
-        minWidth: 44,
-        minHeight: 44,
-        borderRadius: 999,
-        padding: '0 16px',
-        background: active ? brand : surface,
-        color: active ? brandInk : ink,
-        border: `1px solid ${inkSoft}33`,
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 6,
-        fontSize: 14,
-        fontWeight: 700,
-        textDecoration: 'none',
-      }}
+      aria-label={`Carrito, ${count} ${count === 1 ? 'artículo' : 'artículos'}`}
     >
-      🛒 {count}
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M6 7h13l-1.4 8.2a2 2 0 0 1-2 1.7H9.2a2 2 0 0 1-2-1.6L5.3 4.9A1 1 0 0 0 4.3 4H3" />
+        <circle cx="10" cy="20" r="1.2" />
+        <circle cx="17" cy="20" r="1.2" />
+      </svg>
+      <span className="st-carrito-n">{count}</span>
     </a>
   );
 }
 
-export function AddToCartButton({
-  slug,
-  variantId,
-  brand,
-  brandInk,
-}: {
-  slug: string;
-  variantId: string;
-  brand: string;
-  brandInk: string;
-}) {
+export function AddToCartButton({ slug, variantId }: { slug: string; variantId: string }) {
   const [state, setState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle');
 
   async function add() {
@@ -93,10 +58,10 @@ export function AddToCartButton({
     try {
       await addToCart(slug, variantId);
       setState('done');
-      setTimeout(() => setState('idle'), 1600);
+      setTimeout(() => setState('idle'), 1800);
     } catch {
       setState('error');
-      setTimeout(() => setState('idle'), 2500);
+      setTimeout(() => setState('idle'), 2600);
     }
   }
 
@@ -105,19 +70,7 @@ export function AddToCartButton({
       type="button"
       onClick={add}
       disabled={state === 'busy'}
-      style={{
-        marginTop: 10,
-        minHeight: 44,
-        border: 'none',
-        borderRadius: 9,
-        background: brand,
-        color: brandInk,
-        fontWeight: 700,
-        fontSize: 14.5,
-        cursor: 'pointer',
-        opacity: state === 'busy' ? 0.7 : 1,
-        fontFamily: 'inherit',
-      }}
+      className={`st-btn st-btn--marca st-add${state === 'done' ? ' is-ok' : ''}${state === 'error' ? ' is-mal' : ''}`}
     >
       {state === 'busy'
         ? 'Añadiendo…'

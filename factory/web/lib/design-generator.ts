@@ -65,9 +65,45 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** Blanco o negro, el que más contraste dé sobre el color dado. */
-function inkOn(hex: string): string {
-  return luminance(hex) > 0.35 ? '#161616' : '#f7f6f2';
+const TINTA_OSCURA = '#161616';
+const TINTA_CLARA = '#f7f6f2';
+
+function contraste(a: string, b: string): number {
+  const l1 = Math.max(luminance(a), luminance(b));
+  const l2 = Math.min(luminance(a), luminance(b));
+  return (l1 + 0.05) / (l2 + 0.05);
+}
+
+/**
+ * Tinta legible sobre el color dado: se calcula el contraste real contra las
+ * dos tintas y se elige la mejor, en vez de decidir por un umbral fijo. Así
+ * ningún diseño generado se queda en el límite de la accesibilidad.
+ */
+export function inkOn(hex: string): string {
+  return contraste(TINTA_OSCURA, hex) >= contraste(TINTA_CLARA, hex) ? TINTA_OSCURA : TINTA_CLARA;
+}
+
+/** Mejor contraste alcanzable sobre un color con nuestras dos tintas. */
+function mejorContraste(hex: string): number {
+  return Math.max(contraste(TINTA_OSCURA, hex), contraste(TINTA_CLARA, hex));
+}
+
+/**
+ * Devuelve un color de la familia pedida que SÍ admite texto legible encima.
+ * Hay una "zona muerta" de luminosidad media donde ni el negro ni el blanco
+ * llegan a 4.5:1; si el color cae ahí, se aparta de ella (se oscurece en los
+ * diseños claros, se aclara en los oscuros) hasta cumplir. Así ningún diseño
+ * generado puede nacer inaccesible.
+ */
+function colorLegible(h: number, s: number, l: number, aclarar: boolean): string {
+  let luz = l;
+  for (let i = 0; i < 16; i++) {
+    const hex = hslToHex(h, s, luz);
+    if (mejorContraste(hex) >= 4.8) return hex;
+    luz += aclarar ? 4 : -4;
+    if (luz > 96 || luz < 6) break;
+  }
+  return hslToHex(h, s, aclarar ? 92 : 14);
 }
 
 /* ---------- semillas y huellas ---------- */
@@ -155,13 +191,14 @@ export function generateDesign(answers: SurveyAnswers, seed: number): StoreDesig
   const inkSoft = dark
     ? hslToHex(brandHue, 8, 68 + rand() * 6)
     : hslToHex(brandHue, 12, 36 + rand() * 8);
-  // En oscuro la marca sube de luz para despegarse del fondo.
+  // En oscuro la marca sube de luz para despegarse del fondo. En ambos casos
+  // se garantiza que el color admita texto legible encima (botones, etiquetas).
   const brand = dark
-    ? hslToHex(brandHue, Math.min(90, sat + 12), 56 + rand() * 14)
-    : hslToHex(brandHue, sat, 30 + rand() * 14);
+    ? colorLegible(brandHue, Math.min(90, sat + 12), 56 + rand() * 14, true)
+    : colorLegible(brandHue, sat, 30 + rand() * 14, false);
   const accent = dark
-    ? hslToHex(accentHue, Math.min(88, sat + 8), 60 + rand() * 12)
-    : hslToHex(accentHue, Math.min(80, sat + 14), 40 + rand() * 14);
+    ? colorLegible(accentHue, Math.min(88, sat + 8), 60 + rand() * 12, true)
+    : colorLegible(accentHue, Math.min(80, sat + 14), 40 + rand() * 14, false);
 
   const tokens: Omit<StoreDesign, 'key' | 'label'> = {
     bg,

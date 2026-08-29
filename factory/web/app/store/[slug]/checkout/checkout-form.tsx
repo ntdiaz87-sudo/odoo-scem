@@ -6,7 +6,6 @@
  * dueño lo liquida desde su panel cuando recibe el dinero.
  */
 import { useEffect, useState } from 'react';
-import type { StoreDesign } from '../../../../lib/designs';
 import {
   ActiveOrder,
   ORDER_FIELDS,
@@ -22,17 +21,7 @@ interface ShippingMethodOption {
   priceWithTax: number;
 }
 
-export function CheckoutForm({
-  slug,
-  design,
-  name,
-  headingFont,
-}: {
-  slug: string;
-  design: StoreDesign;
-  name: string;
-  headingFont: string;
-}) {
+export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string }) {
   const [order, setOrder] = useState<ActiveOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
@@ -193,170 +182,147 @@ export function CheckoutForm({
   const empty = !loading && (!order || !order.lines.length);
   const shippingPrice = shippingMethods.find(m => m.id === shippingMethodId)?.priceWithTax ?? 0;
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    minHeight: 48,
-    border: `1.5px solid ${design.inkSoft}44`,
-    borderRadius: 9,
-    padding: '0 14px',
-    fontSize: 16,
-    background: design.surface,
-    color: design.ink,
-    fontFamily: 'inherit',
-    boxSizing: 'border-box',
-  };
-  const labelStyle: React.CSSProperties = { display: 'block', fontWeight: 700, fontSize: 14.5, margin: '14px 0 6px' };
+  const empty2 = empty;
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: design.bg,
-        color: design.ink,
-        fontFamily: "'Public Sans', system-ui, sans-serif",
-      }}
-    >
-      <div style={{ maxWidth: 560, margin: '0 auto', padding: '28px 20px 60px' }}>
-        <a href="/cart" style={{ color: design.inkSoft, fontSize: 14.5, fontWeight: 600, textDecoration: 'none' }}>
-          ← Volver al carrito
-        </a>
-        <h1 style={{ fontFamily: headingFont, fontSize: 30, margin: '18px 0 6px' }}>Finalizar compra</h1>
-        <p style={{ color: design.inkSoft, margin: '0 0 18px', fontSize: 15 }}>
-          Pedido en {name} · pagas por transferencia o como acuerdes con la tienda.
-        </p>
+    <>
+      <a className="st-atras" href="/cart">
+        <span aria-hidden="true">←</span> Volver al carrito
+      </a>
+      <h1 className="st-flujo-titulo">Finalizar compra</h1>
+      <p className="st-flujo-sub">
+        Pedido en {nombre} · pagas por transferencia o como acuerdes con la tienda.
+      </p>
 
-        {error ? (
-          <div style={{ background: '#fbe9e7', color: '#8a2b1d', borderRadius: 10, padding: '12px 16px', marginBottom: 16, fontSize: 14.5 }}>
-            {error}
-          </div>
-        ) : null}
+      {error ? (
+        <div className="st-error" role="alert">
+          {error}
+        </div>
+      ) : null}
+      {loading ? <p className="st-cargando">Cargando…</p> : null}
+      {empty2 ? (
+        <div className="st-caja st-caja--centro">
+          <p className="st-caja-txt">Tu carrito está vacío.</p>
+          <a className="st-btn st-btn--marca st-btn--grande" href="/#catalogo">
+            Ver productos
+          </a>
+        </div>
+      ) : null}
 
-        {loading ? <p style={{ color: design.inkSoft }}>Cargando…</p> : null}
-        {empty ? (
-          <p>
-            Tu carrito está vacío.{' '}
-            <a href="/" style={{ color: design.ink, fontWeight: 700 }}>
-              Ver productos
-            </a>
-          </p>
-        ) : null}
-
-        {order && order.lines.length ? (
-          <form onSubmit={placeOrder}>
-            <div
-              style={{
-                background: design.surface,
-                border: `1px solid ${design.inkSoft}26`,
-                borderRadius: design.radius,
-                padding: '14px 18px',
-                fontSize: 14.5,
-              }}
-            >
-              {order.lines.map(l => (
-                <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
-                  <span>
-                    {l.quantity} × {l.productVariant.name}
-                  </span>
-                  <span>{formatMoney(l.linePriceWithTax, order.currencyCode)}</span>
+      {order && order.lines.length ? (
+        <form className="st-carro" onSubmit={placeOrder}>
+          <div className="st-form">
+            <fieldset className="st-grupo">
+              <legend>Tus datos</legend>
+              <div className="st-campos">
+                <div className="st-campo">
+                  <label htmlFor="coNombre">Nombre</label>
+                  <input id="coNombre" value={firstName} onChange={e => setFirstName(e.target.value)} autoComplete="given-name" />
                 </div>
-              ))}
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', color: design.inkSoft }}>
-                <span>Envío</span>
-                <span>{formatMoney(shippingPrice, order.currencyCode)}</span>
+                <div className="st-campo">
+                  <label htmlFor="coApellidos">Apellidos</label>
+                  <input id="coApellidos" value={lastName} onChange={e => setLastName(e.target.value)} autoComplete="family-name" />
+                </div>
+                <div className="st-campo">
+                  <label htmlFor="coCorreo">Correo</label>
+                  <input id="coCorreo" type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+                </div>
+                <div className="st-campo">
+                  <label htmlFor="coTelefono">Teléfono (opcional)</label>
+                  <input id="coTelefono" value={phone} onChange={e => setPhone(e.target.value)} autoComplete="tel" />
+                </div>
               </div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  borderTop: `1px solid ${design.inkSoft}26`,
-                  marginTop: 6,
-                  paddingTop: 8,
-                  fontWeight: 700,
-                  fontSize: 16,
-                }}
-              >
-                <span>Total</span>
-                <span data-testid="checkout-total">
-                  {formatMoney(order.subTotalWithTax + shippingPrice, order.currencyCode)}
+            </fieldset>
+
+            <fieldset className="st-grupo">
+              <legend>Entrega</legend>
+              <div className="st-campos">
+                <div className="st-campo st-campo--ancho">
+                  <label htmlFor="coDireccion">Dirección de entrega</label>
+                  <input id="coDireccion" value={street} onChange={e => setStreet(e.target.value)} placeholder="Calle y número" autoComplete="street-address" />
+                </div>
+                <div className="st-campo">
+                  <label htmlFor="coCiudad">Ciudad</label>
+                  <input id="coCiudad" value={city} onChange={e => setCity(e.target.value)} autoComplete="address-level2" />
+                </div>
+                <div className="st-campo">
+                  <label htmlFor="coPais">País</label>
+                  <select id="coPais" value={countryCode} onChange={e => setCountryCode(e.target.value)}>
+                    {countries.map(c => (
+                      <option key={c.code} value={c.code}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              {shippingMethods.length > 1 ? (
+                <div className="st-envios">
+                  {shippingMethods.map(m => (
+                    <label key={m.id} className={`st-envio${shippingMethodId === m.id ? ' is-sel' : ''}`}>
+                      <input
+                        type="radio"
+                        name="shipping"
+                        checked={shippingMethodId === m.id}
+                        onChange={() => setShippingMethodId(m.id)}
+                      />
+                      <span>
+                        {m.name}
+                        <b>{formatMoney(m.priceWithTax, order.currencyCode)}</b>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              ) : null}
+            </fieldset>
+
+            <fieldset className="st-grupo">
+              <legend>Pago</legend>
+              <div className="st-pago">
+                <span className="st-pago-ico" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2.5" y="5.5" width="19" height="13" rx="2.5" />
+                    <path d="M2.5 10h19" />
+                  </svg>
+                </span>
+                <span>
+                  <b>Pago acordado con la tienda.</b> Al confirmar, la tienda recibe tu pedido y te
+                  contacta para cobrar (transferencia, efectivo a la entrega…). No se te cobra nada
+                  ahora.
                 </span>
               </div>
+            </fieldset>
+          </div>
+
+          <aside className="st-resumen">
+            <h2 className="st-resumen-t">Tu pedido</h2>
+            {order.lines.map(l => (
+              <div className="st-fila" key={l.id}>
+                <span>
+                  {l.quantity} × {l.productVariant.name}
+                </span>
+                <span>{formatMoney(l.linePriceWithTax, order.currencyCode)}</span>
+              </div>
+            ))}
+            <div className="st-fila st-fila--suave">
+              <span>Envío</span>
+              <span>{formatMoney(shippingPrice, order.currencyCode)}</span>
             </div>
-
-            <label style={labelStyle} htmlFor="coNombre">Nombre</label>
-            <input id="coNombre" style={inputStyle} value={firstName} onChange={e => setFirstName(e.target.value)} />
-            <label style={labelStyle} htmlFor="coApellidos">Apellidos</label>
-            <input id="coApellidos" style={inputStyle} value={lastName} onChange={e => setLastName(e.target.value)} />
-            <label style={labelStyle} htmlFor="coCorreo">Correo</label>
-            <input id="coCorreo" type="email" style={inputStyle} value={email} onChange={e => setEmail(e.target.value)} />
-            <label style={labelStyle} htmlFor="coTelefono">Teléfono (opcional)</label>
-            <input id="coTelefono" style={inputStyle} value={phone} onChange={e => setPhone(e.target.value)} />
-            <label style={labelStyle} htmlFor="coDireccion">Dirección de entrega</label>
-            <input id="coDireccion" style={inputStyle} value={street} onChange={e => setStreet(e.target.value)} placeholder="Calle y número" />
-            <label style={labelStyle} htmlFor="coCiudad">Ciudad</label>
-            <input id="coCiudad" style={inputStyle} value={city} onChange={e => setCity(e.target.value)} />
-            <label style={labelStyle} htmlFor="coPais">País</label>
-            <select id="coPais" style={inputStyle} value={countryCode} onChange={e => setCountryCode(e.target.value)}>
-              {countries.map(c => (
-                <option key={c.code} value={c.code}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            {shippingMethods.length > 1 ? (
-              <>
-                <label style={labelStyle}>Método de envío</label>
-                {shippingMethods.map(m => (
-                  <label key={m.id} style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '6px 0', fontSize: 15 }}>
-                    <input
-                      type="radio"
-                      name="shipping"
-                      checked={shippingMethodId === m.id}
-                      onChange={() => setShippingMethodId(m.id)}
-                    />
-                    {m.name} · {formatMoney(m.priceWithTax, order.currencyCode)}
-                  </label>
-                ))}
-              </>
-            ) : null}
-
-            <div
-              style={{
-                marginTop: 18,
-                background: `${design.accent}22`,
-                borderRadius: 10,
-                padding: '12px 16px',
-                fontSize: 14,
-                color: design.ink,
-              }}
-            >
-              💳 <strong>Pago manual:</strong> al confirmar, la tienda recibe tu pedido y te contacta
-              para cobrar (transferencia, efectivo a la entrega…). No se te cobra nada ahora.
+            <div className="st-fila st-fila--total">
+              <span>Total</span>
+              <span data-testid="checkout-total">
+                {formatMoney(order.subTotalWithTax + shippingPrice, order.currencyCode)}
+              </span>
             </div>
-
-            <button
-              type="submit"
-              disabled={busy}
-              style={{
-                marginTop: 18,
-                width: '100%',
-                minHeight: 52,
-                border: 'none',
-                borderRadius: 10,
-                background: design.brand,
-                color: design.brandInk,
-                fontWeight: 700,
-                fontSize: 16.5,
-                cursor: 'pointer',
-                opacity: busy ? 0.7 : 1,
-                fontFamily: 'inherit',
-              }}
-            >
+            <button className="st-btn st-btn--marca st-btn--grande st-btn--bloque" type="submit" disabled={busy}>
               {busy ? 'Confirmando…' : 'Confirmar pedido'}
             </button>
-          </form>
-        ) : null}
-      </div>
-    </div>
+            <a className="st-seguir" href="/cart">
+              Volver al carrito
+            </a>
+          </aside>
+        </form>
+      ) : null}
+    </>
   );
 }
