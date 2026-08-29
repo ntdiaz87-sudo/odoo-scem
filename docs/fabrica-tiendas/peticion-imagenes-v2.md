@@ -236,3 +236,113 @@ línea, misma paleta. Fondo circular liso lavanda `#F0EDFF` en las tres.
 
 Cuando termines estas cuatro tandas, dímelo y te paso otras veinte para cuatro
 rubros más (outdoor, flores, mascotas y hogar), con el mismo formato.
+
+---
+
+# REVISIÓN — decisiones tomadas y petición P1 definitiva
+
+## Decisiones
+
+| | Decisión |
+|---|---|
+| Alcance de la estética | Home + asistente `/demo` + plantillas. El back office y las tiendas de los clientes, en una vuelta posterior |
+| Flujo de `/demo` | Entra la bifurcación «plantilla o diseño exclusivo» y el momento de reclamo. El Step 0 queda fuera hasta que haya clave de modelo |
+| BLOOM | **Joyería**, no flores |
+| Alojamiento | China continental → **las tipografías se auto-alojan**, no se cargan de Google Fonts |
+
+## Cambios respecto a la primera petición
+
+- **BLOOM pasa a joyería**: anillo, collar, pendientes y brazalete.
+- **Se caen las 5 verticales del P2**: el ambiente apaisado se recorta a vertical con CSS.
+- **Se añaden 2 fotos sobre blanco puro** para las dos secciones de IA, que van sobre fondo claro.
+- **Tamaños corregidos a los nativos del generador**: 1536×1024 para ambientes y 1024×1024 para productos. Los 2400×1400 de la primera versión no existen como salida; pedirlos obliga a ampliar, y una foto ampliada se nota.
+
+## Ficheros pendientes
+
+**Del P0 ya generado (24):** los originales sueltos, no la hoja de contactos.
+
+`lumina-hero.jpg` · `lumina-p1..p4.png` · `neo-hero.jpg` · `neo-p1..p4.png` ·
+`origin-hero.jpg` · `origin-p1..p4.png` · `pure-hero.jpg` · `pure-p1..p4.png` ·
+`agente-xiaomei.png` · `agente-xiaolin.png` · `agente-xiaoan.png` ·
+`ai-exclusivo.jpg`
+
+**Del P1 (22):**
+
+`nomad-hero.jpg` · `nomad-p1..p4.png` · `bloom-hero.jpg` · `bloom-p1..p4.png` ·
+`paws-hero.jpg` · `paws-p1..p4.png` · `homely-hero.jpg` · `homely-p1..p4.png` ·
+`blanco-auriculares.png` · `blanco-reloj.png`
+
+---
+
+# EL PROMPT PARA CHATGPT — bloque P1
+
+Copia desde aquí hasta el final.
+
+---
+
+Segunda parte del set de imágenes para el sitio de comercio electrónico chino.
+Mismas reglas que la vez anterior, sin excepción:
+
+1. **Cero texto.** Ninguna palabra, letra, número, cartel, etiqueta ni logo, en
+   ningún sitio de la imagen. El texto se añade después por software.
+2. **Nada de marcas reales**, ni envases que imiten a una marca existente, ni
+   edificios o lugares reconocibles.
+3. **Mercado chino.** Las personas, de Asia oriental. Estilo de tienda urbana
+   china de gama media-alta.
+
+Estilo: fotografía de producto de gama alta, luz suave y realista, composición
+limpia, sensación premium y editorial.
+
+## TANDA 5 — cuatro fotos de ambiente (formato apaisado 1536×1024)
+
+Deja la mitad izquierda relativamente despejada: ahí va un titular.
+
+1. Un excursionista asiático visto de espaldas en un sendero de montaña al
+   amanecer, con una mochila de lona; luz cálida y rasante, niebla baja.
+2. Joyería de oro fino —un collar y un anillo— sobre seda color hueso
+   arrugada, luz muy suave, enfoque corto y elegante.
+3. Un golden retriever sentado, mirando a cámara, sobre un fondo crema liso,
+   con luz de estudio suave y amable.
+4. Un rincón de salón con cerámica artesanal y un textil de lino sobre madera
+   clara, luz de tarde entrando de lado.
+
+## TANDA 6 — dieciséis fotos de producto (cuadradas 1024×1024)
+
+Cada grupo de cuatro va sobre un fondo de estudio liso, sin degradado, del
+color exacto que indico. Producto centrado y sombra de contacto suave.
+
+Fondo verde oscuro `#1E2620`:
+5. Una mochila de lona resistente, de tres cuartos.
+6. Un termo de acero cepillado, de pie.
+7. Un par de botas de montaña de piel.
+8. Una linterna de mano compacta.
+
+Fondo rosa pálido `#F7F0F2`:
+9. Un anillo de oro fino, en primer plano sobre el fondo.
+10. Un collar de cadena fina de oro, extendido en curva suave.
+11. Un par de pendientes de aro pequeños, de oro.
+12. Un brazalete rígido de oro.
+
+Fondo crema cálido `#FCF4E8`:
+13. Un collar de cuero para perro, enrollado.
+14. Una cama redonda para mascota, de tela beige.
+15. Un juguete de cuerda trenzada para perro.
+16. Un comedero de cerámica blanca para mascota.
+
+Fondo arena `#F1EDE6`:
+17. Un cuenco de cerámica artesanal color arcilla.
+18. Una manta de lino doblada, color hueso.
+19. Una vela en tarro de vidrio transparente, apagada.
+20. Una tetera de barro sin esmaltar.
+
+## TANDA 7 — dos fotos sobre blanco puro (cuadradas 1024×1024)
+
+Fondo **blanco puro `#FFFFFF`**, liso, sin degradado, con sombra de contacto
+muy suave. Son para dos secciones de fondo claro.
+
+21. Unos auriculares de diadema negros mate, de tres cuartos.
+22. Un reloj inteligente de correa negra, con la pantalla apagada.
+
+---
+
+Con estas 22 está completo el set.
