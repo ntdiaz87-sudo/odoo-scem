@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { dominioOcupado, nombreTxt, normalizarDominio, nuevoTestigo } from '../../lib/dominios';
 import { MONEDA_DE, esLocaleValido } from '../../lib/i18n';
 import { getT } from '../../lib/i18n-server';
-import { borrarPromo, cobrarPedido, crearCupon, crearGruposDeVariantes, crearProducto, crearSeckill, enviarPedido, guardarDistribuidores, guardarDominio, guardarProducto, guardarVariantes, informeDistribuidores, verDominio, verProducto } from '../../lib/panel-datos';
+import { borrarPromo, cobrarPedido, crearCupon, crearGruposDeVariantes, crearProducto, crearSeckill, enviarPedido, ajustarSaldo, cobrarConSaldo, guardarDistribuidores, guardarDominio, guardarProducto, guardarVariantes, informeDistribuidores, verDominio, verProducto } from '../../lib/panel-datos';
 import { COOKIE_PANEL, LANG_CANAL, leerSesion, opcionesCookie } from '../../lib/panel-sesion';
 import { adminLogin, adminRequest, ownerLogin, ownerLogout, ownerMe, panelRequest } from '../../lib/vendure';
 
@@ -496,4 +496,31 @@ export async function accionQuitarDominio(_datos: FormData): Promise<void> {
   const s = await exigirSesion();
   await guardarDominio(s, { dominio: null, verificado: false, txt: null });
   revalidatePath('/panel/tienda');
+}
+
+/* ----------------------- clientes y 会员储值 ------------------------------ */
+
+export async function accionRecargarSaldo(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const clienteId = String(datos.get('clienteId') || '');
+  const bruto = Number(String(datos.get('importe') || '0').replace(',', '.'));
+  const delta = Math.round(bruto * 100);
+  const nota = String(datos.get('nota') || '').trim().slice(0, 80);
+  if (!clienteId || !Number.isFinite(delta) || delta === 0) return { error: t('pn.cl.rec.mal') };
+  const error = await ajustarSaldo(s, clienteId, delta, nota || (delta > 0 ? '充值' : '扣减'));
+  if (error) return { error: t('pn.cl.rec.mal') };
+  revalidatePath(`/panel/clientes/${clienteId}`);
+  return { ok: t('pn.cl.rec.ok') };
+}
+
+export async function accionCobrarConSaldo(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const pedidoId = String(datos.get('pedidoId') || '');
+  if (!pedidoId) return { error: t('pn.cl.rec.mal') };
+  const error = await cobrarConSaldo(s, pedidoId);
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath(`/panel/pedidos/${pedidoId}`);
+  return { ok: t('pn.pe.saldo.ok') };
 }

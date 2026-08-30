@@ -724,3 +724,190 @@ export async function guardarDominio(
     return err instanceof Error ? err.message : 'x';
   }
 }
+
+/* --------------------- clientes y 会员储值 (Fase 6) ----------------------- */
+
+export interface MovSaldo {
+  fecha: string;
+  delta: number; // céntimos; positivo = recarga, negativo = gasto
+  nota: string;
+}
+
+export function leerMovs(json: string | null | undefined): MovSaldo[] {
+  if (!json) return [];
+  try {
+    const v = JSON.parse(json) as MovSaldo[];
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+
+export interface ClienteResumen {
+  id: string;
+  nombre: string;
+  correo: string;
+  telefono: string;
+  pedidos: number;
+  ultimo: string | null; // fecha del último pedido
+  saldo: number;
+}
+
+export async function listarClientes(s: SesionPanel): Promise<ClienteResumen[]> {
+  const r = await panelRequest<{
+    customers: {
+      items: Array<{
+        id: string; firstName: string; lastName: string; emailAddress: string; phoneNumber: string | null;
+        customFields?: { saldo?: number | null } | null;
+        orders: { totalItems: number; items: Array<{ orderPlacedAt: string | null }> };
+      }>;
+    };
+  }>(
+    s.token,
+    s.canal.token,
+    `{ customers(options: { take: 200, sort: { createdAt: DESC } }) {
+      items {
+        id firstName lastName emailAddress phoneNumber
+        customFields { saldo }
+        orders(options: { take: 1, sort: { orderPlacedAt: DESC } }) { totalItems items { orderPlacedAt } }
+      }
+    } }`,
+  );
+  return (r.data?.customers.items ?? []).map(c => ({
+    id: c.id,
+    nombre: `${c.firstName} ${c.lastName}`.replace(/ -$/, '').trim(),
+    correo: c.emailAddress,
+    telefono: c.phoneNumber || '',
+    pedidos: c.orders.totalItems,
+    ultimo: c.orders.items[0]?.orderPlacedAt ?? null,
+    saldo: c.customFields?.saldo ?? 0,
+  }));
+}
+
+export interface ClienteFicha extends ClienteResumen {
+  movs: MovSaldo[];
+  historial: Array<{ id: string; code: string; state: string; totalWithTax: number; fecha: string | null }>;
+}
+
+export async function verCliente(s: SesionPanel, id: string): Promise<ClienteFicha | null> {
+  const r = await panelRequest<{
+    customer: {
+      id: string; firstName: string; lastName: string; emailAddress: string; phoneNumber: string | null;
+      customFields?: { saldo?: number | null; saldoMovs?: string | null } | null;
+      orders: { totalItems: number; items: Array<{ id: string; code: string; state: string; totalWithTax: number; orderPlacedAt: string | null }> };
+    } | null;
+  }>(
+    s.token,
+    s.canal.token,
+    `query Cliente($id: ID!) { customer(id: $id) {
+      id firstName lastName emailAddress phoneNumber
+      customFields { saldo saldoMovs }
+      orders(options: { take: 50, sort: { orderPlacedAt: DESC } }) {
+        totalItems
+        items { id code state totalWithTax orderPlacedAt }
+      }
+    } }`,
+    { id },
+  );
+  const c = r.data?.customer;
+  if (!c) return null;
+  return {
+    id: c.id,
+    nombre: `${c.firstName} ${c.lastName}`.replace(/ -$/, '').trim(),
+    correo: c.emailAddress,
+    telefono: c.phoneNumber || '',
+    pedidos: c.orders.totalItems,
+    ultimo: c.orders.items[0]?.orderPlacedAt ?? null,
+    saldo: c.customFields?.saldo ?? 0,
+    movs: leerMovs(c.customFields?.saldoMovs),
+    historial: c.orders.items.map(o => ({ id: o.id, code: o.code, state: o.state, totalWithTax: o.totalWithTax, fecha: o.orderPlacedAt })),
+  };
+}
+
+/**
+ * Recarga o gasto de saldo. El saldo nunca baja de cero: el libro de
+ * movimientos es la memoria del comerciante, no un descubierto.
+ */
+export async function ajustarSaldo(
+  s: SesionPanel,
+  clienteId: string,
+  delta: number,
+  nota: string,
+): Promise<string | undefined> {
+  const actual = await verCliente(s, clienteId);
+  if (!actual) return 'cliente no encontrado';
+  const nuevo = actual.saldo + delta;
+  if (nuevo < 0) return 'saldo insuficiente';
+  const movs = [{ fecha: new Date().toISOString(), delta, nota }, ...actual.movs].slice(0, 100);
+  const r = await panelRequest<{ updateCustomer: { __typename: string; message?: string } }>(
+    s.token,
+    s.canal.token,
+    `mutation Saldo($input: UpdateCustomerInput!) { updateCustomer(input: $input) {
+      __typename ... on Customer { id } ... on ErrorResult { message }
+    } }`,
+    { input: { id: clienteId, customFields: { saldo: nuevo, saldoMovs: JSON.stringify(movs) } } },
+  );
+  if (r.error) return r.error;
+  const res = r.data?.updateCustomer;
+  return res && res.__typename !== 'Customer' ? res.message || res.__typename : undefined;
+}
+
+/**
+ * Cobra un pedido contra el 储值 del cliente: descuenta el total del saldo
+ * y liquida el pago pendiente. Si liquidar falla, el saldo se devuelve.
+ */
+export async function cobrarConSaldo(s: SesionPanel, pedidoId: string): Promise<string | undefined> {
+  const r = await panelRequest<{
+    order: {
+      code: string; totalWithTax: number;
+      customer: { id: string } | null;
+      payments: Array<{ id: string; state: string }> | null;
+    } | null;
+  }>(
+    s.token,
+    s.canal.token,
+    `query PedidoSaldo($id: ID!) { order(id: $id) {
+      code totalWithTax customer { id } payments { id state }
+    } }`,
+    { id: pedidoId },
+  );
+  const o = r.data?.order;
+  if (!o || !o.customer) return 'pedido sin cliente';
+  const pendiente = (o.payments || []).find(p => p.state === 'Authorized');
+  if (!pendiente) return 'sin pago pendiente';
+  const gasto = await ajustarSaldo(s, o.customer.id, -o.totalWithTax, `订单 ${o.code}`);
+  if (gasto) return gasto;
+  const cobro = await cobrarPedido(s, pendiente.id);
+  if (cobro) {
+    await ajustarSaldo(s, o.customer.id, o.totalWithTax, `退回 ${o.code}`);
+    return cobro;
+  }
+  return undefined;
+}
+
+/** Saldo 储值 del cliente de un pedido con pago pendiente, para el botón de cobro. */
+export async function saldoDelPedido(
+  s: SesionPanel,
+  pedidoId: string,
+): Promise<{ saldo: number; total: number } | null> {
+  const r = await panelRequest<{
+    order: {
+      totalWithTax: number;
+      customer: { customFields?: { saldo?: number | null } | null } | null;
+      payments: Array<{ state: string }> | null;
+    } | null;
+  }>(
+    s.token,
+    s.canal.token,
+    `query SaldoPedido($id: ID!) { order(id: $id) {
+      totalWithTax
+      customer { customFields { saldo } }
+      payments { state }
+    } }`,
+    { id: pedidoId },
+  );
+  const o = r.data?.order;
+  if (!o?.customer) return null;
+  if (!(o.payments || []).some(p => p.state === 'Authorized')) return null;
+  return { saldo: o.customer.customFields?.saldo ?? 0, total: o.totalWithTax };
+}

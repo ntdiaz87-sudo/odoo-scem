@@ -49,11 +49,11 @@ await check('El dueño entra con sus credenciales', async () => {
   assert(await page.getByRole('heading', { level: 1 }).isVisible(), 'sin título');
 });
 
-await check('Resumen: cifras del día y navegación de 5 secciones', async () => {
+await check('Resumen: cifras del día y navegación de 6 secciones', async () => {
   const cifras = await page.locator('.pn-cifra').count();
   assert(cifras === 4, `cifras=${cifras}`);
   const nav = await page.locator('.pn-nav-item').count();
-  assert(nav === 5, `nav=${nav}`);
+  assert(nav === 6, `nav=${nav}`);
 });
 
 let idProducto = '';

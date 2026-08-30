@@ -2,10 +2,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getT } from '../../../../../lib/i18n-server';
 import { fecha, money } from '../../../../../lib/i18n';
-import { verPedido } from '../../../../../lib/panel-datos';
+import { saldoDelPedido, verPedido } from '../../../../../lib/panel-datos';
 import { exigirSesionPagina } from '../../../../../lib/panel-sesion';
 import { etiquetaEstado } from '../../../../../lib/panel-estados';
 import { AccionesPedido } from './acciones-pedido';
+import { CobroConSaldo } from './saldo-cobro';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,6 +17,10 @@ export default async function DetallePedido({ params }: { params: Promise<{ id: 
   const { pedido } = await verPedido(s, id);
   if (!pedido) notFound();
   const e = etiquetaEstado(pedido.state, t);
+  // 会员储值: si el cliente tiene saldo que cubre el pedido, se ofrece cobrar
+  // contra él en vez de esperar una transferencia.
+  const saldoInfo = await saldoDelPedido(s, id);
+  const conSaldo = saldoInfo && saldoInfo.saldo >= saldoInfo.total && saldoInfo.total > 0;
 
   return (
     <>
@@ -61,6 +66,13 @@ export default async function DetallePedido({ params }: { params: Promise<{ id: 
         </dl>
       </section>
 
+      {conSaldo ? (
+        <CobroConSaldo
+          pedidoId={id}
+          aviso={t('pn.pe.saldo.tiene', { s: money(saldoInfo!.saldo, s.moneda, s.mercado) })}
+          etiquetas={{ boton: t('pn.pe.saldo.btn'), enviando: t('pn.pr.guardando') }}
+        />
+      ) : null}
       <AccionesPedido
         pedidoId={pedido.id}
         pagoPendienteId={pedido.pagoPendienteId}

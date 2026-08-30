@@ -119,6 +119,15 @@ export const config: VendureConfig = {
             // el checkout desde la cookie y de ahí sale su comisión.
             { name: 'distribuidor', type: 'string', nullable: true },
         ],
+        Customer: [
+            // 会员储值 (Fase 6): saldo prepagado en céntimos y su libro de
+            // movimientos como JSON [{fecha, delta, nota}]. Solo lo toca el
+            // COMERCIANTE desde su panel: el comprador no tiene cuenta aún,
+            // así que dejarle gastar saldo con solo saber un correo sería
+            // regalar el saldo ajeno.
+            { name: 'saldo', type: 'int', defaultValue: 0 },
+            { name: 'saldoMovs', type: 'text', nullable: true },
+        ],
     },
     plugins: [
         GraphiqlPlugin.init(),

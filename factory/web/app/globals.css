@@ -1367,7 +1367,7 @@ a:hover { color: var(--accent-dark); }
      barra se hacía más ancha que la pantalla y desbordaba el móvil entero. */
   /* Una columna por pestaña: si esto se queda corto al añadir una pestaña,
      la sobrante salta a una segunda fila y TAPA el contenido de abajo. */
-  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
   background: var(--pn-superficie); border-top: 1px solid var(--pn-borde);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -1709,3 +1709,21 @@ a:hover { color: var(--accent-dark); }
 .pn-do-actual { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0; }
 .pn-do-ok { color: #16a34a; font-weight: 700; font-size: .88rem; }
 .pn-do-pend { opacity: .65; font-size: .88rem; }
+
+/* -- panel: clientes y 储值 -- */
+.pn-segmentos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.pn-segmento {
+  font-size: .85rem; font-weight: 600; text-decoration: none; color: inherit;
+  padding: 6px 14px; border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+.pn-segmento.is-on { background: var(--pn-acento); color: var(--pn-acento-tinta, #fff); border-color: transparent; }
+.pn-movs { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 6px; }
+.pn-mov {
+  display: flex; align-items: baseline; gap: 10px; font-size: .9rem;
+  padding: 6px 0; border-bottom: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+}
+.pn-mov-nota { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.pn-mov-fecha { font-size: .78rem; opacity: .6; white-space: nowrap; }
+.pn-mov-neg { color: #d64545; }
+.pn-mov-pos { color: #16a34a; }
