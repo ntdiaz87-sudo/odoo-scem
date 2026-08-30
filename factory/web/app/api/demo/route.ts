@@ -3,13 +3,15 @@ import { isValidDesign } from '../../../lib/design-generator';
 import { takenDesignKeys } from '../../../lib/design-registry';
 import { esPlantilla } from '../../../lib/plantillas';
 import { findDesign, type StoreDesign } from '../../../lib/designs';
-import { CURRENCY, LOCALE } from '../../../lib/i18n';
+import { LOCALE, MONEDA_DE, esLocaleValido, type Locale } from '../../../lib/i18n';
 import { rootDomain, slugify, storeUrl } from '../../../lib/tenant';
+import { LANG_CANAL } from '../../../lib/panel-sesion';
 import { adminLogin, adminRequest } from '../../../lib/vendure';
 
 const ZH = LOCALE === 'zh';
-// Idioma del CANAL: el del mercado (lo que sirve la tienda).
-const LANG = ZH ? 'zh_Hans' : 'en';
+
+// El idioma de canal por mercado vive en lib/panel-sesion: lo usan también los
+// ajustes del panel, y con dos copias una se queda atrás.
 // Idioma de las TRADUCCIONES de producto: siempre `en`, aunque el texto sea
 // chino. El panel de Vendure guarda en su idioma de interfaz (inglés por
 // defecto); si los productos naciesen en zh_Hans, editar el nombre en el
@@ -17,21 +19,29 @@ const LANG = ZH ? 'zh_Hans' : 'en';
 // (ver la nota TRADUCCIONES en vendure/src/seed-demo.ts).
 const LANG_PRODUCTO = 'en';
 
-// Catálogo de ejemplo en el idioma y la moneda del mercado. Los precios en
-// yuan no son una conversión del dólar: son importes verosímiles en China.
-const SAMPLE_PRODUCTS = ZH
-  ? [
-      { name: '明星单品', slug: 'producto-estrella', description: '最受欢迎的一款。上架后换成你自己的商品。', price: 12900 },
-      { name: '本周新品', slug: 'novedad-semana', description: '新上架的商品，用来试试你的目录。', price: 8900 },
-      { name: '日常必备', slug: 'basico-imprescindible', description: '回购率最高的基础款。', price: 4900 },
-      { name: '礼盒套装', slug: 'pack-regalo', description: '把几件商品组合起来一起卖。', price: 19900 },
-    ]
-  : [
-      { name: 'Producto estrella', slug: 'producto-estrella', description: 'El favorito de tus clientes. Sustitúyelo por tu producto real.', price: 2500 },
-      { name: 'Novedad de la semana', slug: 'novedad-semana', description: 'Un lanzamiento reciente para probar tu catálogo.', price: 1800 },
-      { name: 'Básico imprescindible', slug: 'basico-imprescindible', description: 'Ese artículo que nunca falta en el carrito.', price: 900 },
-      { name: 'Pack de regalo', slug: 'pack-regalo', description: 'Combina productos y véndelos juntos.', price: 3200 },
-    ];
+// Catálogo de ejemplo, en el idioma de CADA tienda. Los precios no son una
+// conversión: son importes verosímiles en cada mercado, y por eso el chino no
+// es el español multiplicado por nada.
+const CATALOGO: Record<Locale, Array<{ name: string; slug: string; description: string; price: number }>> = {
+  zh: [
+    { name: '明星单品', slug: 'producto-estrella', description: '最受欢迎的一款。上架后换成你自己的商品。', price: 12900 },
+    { name: '本周新品', slug: 'novedad-semana', description: '新上架的商品，用来试试你的目录。', price: 8900 },
+    { name: '日常必备', slug: 'basico-imprescindible', description: '回购率最高的基础款。', price: 4900 },
+    { name: '礼盒套装', slug: 'pack-regalo', description: '把几件商品组合起来一起卖。', price: 19900 },
+  ],
+  es: [
+    { name: 'Producto estrella', slug: 'producto-estrella', description: 'El favorito de tus clientes. Sustitúyelo por tu producto real.', price: 2500 },
+    { name: 'Novedad de la semana', slug: 'novedad-semana', description: 'Un lanzamiento reciente para probar tu catálogo.', price: 1800 },
+    { name: 'Básico imprescindible', slug: 'basico-imprescindible', description: 'Ese artículo que nunca falta en el carrito.', price: 900 },
+    { name: 'Pack de regalo', slug: 'pack-regalo', description: 'Combina productos y véndelos juntos.', price: 3200 },
+  ],
+  en: [
+    { name: 'Best seller', slug: 'producto-estrella', description: 'Your customers\u2019 favourite. Replace it with your real product.', price: 2500 },
+    { name: 'New this week', slug: 'novedad-semana', description: 'A recent arrival, to try out your catalogue.', price: 1800 },
+    { name: 'Everyday basic', slug: 'basico-imprescindible', description: 'The one item that is always in the cart.', price: 900 },
+    { name: 'Gift bundle', slug: 'pack-regalo', description: 'Put a few products together and sell them as one.', price: 3200 },
+  ],
+};
 
 // Permisos del dueño de tienda: opera su catálogo, pedidos, clientes y
 // promociones dentro de SU canal; solo lectura de configuración.
@@ -104,6 +114,7 @@ export async function POST(req: NextRequest) {
     design?: unknown;
     ownerEmail?: string;
     ownerPassword?: string;
+    mercado?: string;
   };
   try {
     payload = await req.json();
@@ -113,6 +124,11 @@ export async function POST(req: NextRequest) {
   const storeName = (payload.storeName || '').trim();
   const ownerEmail = (payload.ownerEmail || '').trim().toLowerCase();
   const ownerPassword = payload.ownerPassword || '';
+  // El mercado de la tienda: idioma y moneda de lo que verán SUS clientes.
+  // Si no viene, se queda en el del lanzamiento, que es lo que había antes.
+  const mercado: Locale = esLocaleValido(payload.mercado) ? payload.mercado : LOCALE;
+  const lang = LANG_CANAL[mercado];
+  const moneda = MONEDA_DE[mercado];
   if (storeName.length < 2 || storeName.length > 40) {
     return NextResponse.json({ error: ZH ? '商店名称需要 2 到 40 个字。' : 'El nombre debe tener entre 2 y 40 caracteres.' }, { status: 400 });
   }
@@ -186,6 +202,7 @@ export async function POST(req: NextRequest) {
     if (!zone) throw new Error('El servidor de tiendas no está inicializado (sin zonas).');
 
     // Crea el canal; si el slug está ocupado, prueba con sufijos.
+    let ultimoError = '';
     let channel: { id: string; token: string } | null = null;
     let slug = baseSlug;
     const expiresAt = new Date(Date.now() + SANDBOX_DAYS * 24 * 60 * 60 * 1000).toISOString();
@@ -208,15 +225,16 @@ export async function POST(req: NextRequest) {
             input: {
               code: slug,
               token: slug,
-              defaultLanguageCode: LANG,
-              availableLanguageCodes: [LANG],
+              defaultLanguageCode: lang,
+              availableLanguageCodes: [lang],
               pricesIncludeTax: true,
-              defaultCurrencyCode: CURRENCY,
-              availableCurrencyCodes: [CURRENCY],
+              defaultCurrencyCode: moneda,
+              availableCurrencyCodes: [moneda],
               defaultTaxZoneId: zone.id,
               defaultShippingZoneId: zone.id,
               customFields: {
                 displayName: storeName,
+                mercado,
                 design: JSON.stringify(design),
                 isSandbox: true,
                 expiresAt,
@@ -224,18 +242,33 @@ export async function POST(req: NextRequest) {
             },
           },
         );
-      } catch {
+      } catch (err) {
         // Nombre/código ya ocupado (Vendure lanza el error de restricción única
         // en vez de devolver su ErrorResult): reintenta con sufijo.
+        //
+        // Se deja rastro en el log: este catch se tragaba TODO, y cuando el
+        // fallo no era el nombre —un idioma que Vendure no acepta, por
+        // ejemplo— el comerciante recibía "ese nombre ya está en uso", que es
+        // mentira, y no había forma de saber qué pasaba de verdad.
+        ultimoError = err instanceof Error ? err.message : String(err);
+        console.error('[demo] createChannel falló:', ultimoError);
         continue;
       }
       if (result.createChannel.__typename === 'Channel') {
         channel = { id: result.createChannel.id!, token: result.createChannel.token! };
+      } else {
+        // La otra mitad del mismo agujero: Vendure puede devolver un
+        // ErrorResult en vez de lanzar, y esto lo descartaba en silencio.
+        ultimoError = result.createChannel.message || result.createChannel.__typename;
+        console.error('[demo] createChannel rechazó:', ultimoError);
       }
     }
     if (!channel) {
       return NextResponse.json(
-        { error: ZH ? '这个名称已被占用，换一个试试。' : 'Ese nombre ya está en uso. Prueba con otro.' },
+        {
+          error: ZH ? '这个名称已被占用，换一个试试。' : 'Ese nombre ya está en uso. Prueba con otro.',
+          detalle: ultimoError,
+        },
         { status: 409 },
       );
     }
@@ -291,7 +324,7 @@ export async function POST(req: NextRequest) {
     );
     const taxCategoryId = taxData.taxCategories.items[0]?.id;
 
-    for (const p of SAMPLE_PRODUCTS) {
+    for (const p of CATALOGO[mercado]) {
       const created = await adminRequest<{ createProduct: { id: string } }>(
         auth,
         `mutation CreateProduct($input: CreateProductInput!) {

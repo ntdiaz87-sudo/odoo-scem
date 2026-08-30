@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useT } from '../../locale-provider';
 
 interface Generado {
   tienda: string;
@@ -9,7 +10,18 @@ interface Generado {
   ficheros: Record<string, string>;
 }
 
+/**
+ * Los pasos para publicar el mini programa.
+ *
+ * Esto estaba escrito en chino a mano y no pasaba por el diccionario, contra la
+ * regla de la casa: las páginas de la FÁBRICA siguen al visitante. Un
+ * comerciante que tenía la fábrica en español llegaba aquí y se encontraba las
+ * instrucciones en chino. Los nombres propios de WeChat (开发管理 → 服务器域名)
+ * sí se quedan en chino: son los rótulos que va a ver de verdad en su pantalla,
+ * y traducirlos le haría buscar un menú que no existe.
+ */
 export function MiniProgramPanel({ slug, nombre }: { slug: string; nombre: string }) {
+  const t = useT();
   const [datos, setDatos] = useState<Generado | null>(null);
   const [activo, setActivo] = useState('pages/index/index.wxml');
   const [cargando, setCargando] = useState(false);
@@ -20,11 +32,11 @@ export function MiniProgramPanel({ slug, nombre }: { slug: string; nombre: strin
     setError(null);
     try {
       const r = await fetch(`/api/miniprogram/${encodeURIComponent(slug)}`);
-      if (!r.ok) throw new Error('生成失败');
+      if (!r.ok) throw new Error(t('mp.error'));
       const d = (await r.json()) as Generado;
       setDatos(d);
     } catch (e) {
-      setError(e instanceof Error ? e.message : '生成失败');
+      setError(e instanceof Error ? e.message : t('mp.error'));
     } finally {
       setCargando(false);
     }
@@ -34,15 +46,14 @@ export function MiniProgramPanel({ slug, nombre }: { slug: string; nombre: strin
 
   return (
     <section className="fh-mp">
-      <h2 className="fh-mp-t">微信小程序源码</h2>
+      <h2 className="fh-mp-t">{t('mp.titulo')}</h2>
       <p className="fh-mp-d">
-        用 <b>{nombre}</b> 的专属配色和字体生成，直接连到你的商品和订单。
-        用微信开发者工具打开后上传即可，不需要经过我们。
+        {t('mp.desc.a', { tienda: nombre })} {t('mp.desc.b')}
       </p>
 
       {!datos ? (
         <button className="fh-btn fh-btn--lima fh-btn--grande" onClick={generar} disabled={cargando}>
-          {cargando ? '生成中…' : '生成我的小程序源码'}
+          {cargando ? t('mp.generando') : t('mp.generar')}
         </button>
       ) : null}
       {error ? <div className="fh-aviso">{error}</div> : null}
@@ -50,7 +61,7 @@ export function MiniProgramPanel({ slug, nombre }: { slug: string; nombre: strin
       {datos ? (
         <>
           <p className="fh-mp-ok">
-            ✓ 已生成 {datos.archivos} 个文件 · API 域名 <code>{datos.apiUrl}</code>
+            ✓ {t('mp.ok', { n: String(datos.archivos) })} · {t('mp.dominio')} <code>{datos.apiUrl}</code>
           </p>
           <div className="fh-mp-caja">
             <ul className="fh-mp-rutas">
@@ -71,10 +82,14 @@ export function MiniProgramPanel({ slug, nombre }: { slug: string; nombre: strin
             </pre>
           </div>
           <ol className="fh-mp-pasos">
-            <li>在微信公众平台注册小程序，拿到 AppID。</li>
-            <li>把 <code>project.config.json</code> 里的 appid 换成你的。</li>
-            <li>在「开发管理 → 服务器域名」里加入 <code>{datos.apiUrl}</code>。</li>
-            <li>完成小程序备案，然后上传提交审核。</li>
+            <li>{t('mp.p1')}</li>
+            <li>
+              {t('mp.p2.a')} <code>project.config.json</code> {t('mp.p2.b')}
+            </li>
+            <li>
+              {t('mp.p3.a')} <code>{datos.apiUrl}</code> {t('mp.p3.b')}
+            </li>
+            <li>{t('mp.p4')}</li>
           </ol>
         </>
       ) : null}

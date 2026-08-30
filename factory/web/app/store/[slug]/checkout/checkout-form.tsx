@@ -13,7 +13,7 @@ import {
   notifyCartChanged,
   shopFetch,
 } from '../../../../lib/shop-client';
-import { money, t } from '../../../../lib/i18n';
+import { useDinero, useTt } from '../../../../lib/tienda-locale';
 
 interface ShippingMethodOption {
   id: string;
@@ -32,15 +32,20 @@ interface PaymentMethodOption {
  * Icono y nota por método. Se reconoce por palabra clave porque Vendure usa
  * el nombre como código cuando el nombre está en chino.
  */
-function pagoInfo(m: PaymentMethodOption): { ico: string; nota: string } {
+function pagoInfo(
+  m: PaymentMethodOption,
+  t: (k: string) => string,
+): { ico: string; nota: string } {
   const id = `${m.code} ${m.name}`.toLowerCase();
-  if (id.includes('微信') || id.includes('wechat')) return { ico: '💚', nota: '微信内一键支付' };
-  if (id.includes('支付宝') || id.includes('alipay')) return { ico: '🔷', nota: '跳转支付宝完成付款' };
-  if (id.includes('货到') || id.includes('dummy')) return { ico: '📦', nota: '收到货再付款' };
+  if (id.includes('微信') || id.includes('wechat')) return { ico: '💚', nota: t('ck.m.wechat') };
+  if (id.includes('支付宝') || id.includes('alipay')) return { ico: '🔷', nota: t('ck.m.alipay') };
+  if (id.includes('货到') || id.includes('dummy')) return { ico: '📦', nota: t('ck.m.contra') };
   return { ico: '💳', nota: '' };
 }
 
 export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string }) {
+  const t = useTt();
+  const money = useDinero();
   const [order, setOrder] = useState<ActiveOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
@@ -307,7 +312,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
               <legend>{t('ck.pago')}</legend>
               <div className="st-pagos">
                 {paymentMethods.map(m => {
-                  const info = pagoInfo(m);
+                  const info = pagoInfo(m, t);
                   return (
                     <label key={m.id} className={`st-pago-op${paymentCode === m.code ? ' is-sel' : ''}`}>
                       <input

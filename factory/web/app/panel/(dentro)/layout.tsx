@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function LayoutPanel({ children }: { children: React.ReactNode }) {
   const s = await leerSesion();
   if (!s) redirect('/panel');
-  const t = await getT();
+  const t = await getT(s.mercado);
 
   const enlaces = [
     { href: '/panel/inicio', etiqueta: t('pn.nav.inicio'), icono: 'inicio' as const },

@@ -7,6 +7,7 @@ import { estilos, modos, rubros } from '../../lib/design-generator';
 import type { StoreDesign } from '../../lib/designs';
 import { PLANTILLAS, PLANTILLAS_POR_ID, etiquetaCategoria, plantillaADiseno } from '../../lib/plantillas';
 import { Escaparate } from '../_v2/escaparate';
+import { LOCALES, NOMBRE_IDIOMA, SIMBOLO_DE, type Locale } from '../../lib/i18n';
 import { SelectorIdioma, useLocale, useT } from '../locale-provider';
 import { SelectorTema } from '../tema-provider';
 
@@ -47,6 +48,11 @@ export default function DemoWizard() {
   const [plantillaId, setPlantillaId] = useState('');
   const [reclamado, setReclamado] = useState(false);
   const [storeName, setStoreName] = useState('');
+  // El mercado de SU tienda: en qué idioma y moneda la verán sus clientes.
+  // Arranca en el idioma que el comerciante está usando ahora mismo, que casi
+  // siempre es el que quiere, pero puede cambiarlo: una cosa es en qué idioma
+  // lee él la fábrica y otra en qué idioma vende.
+  const [mercado, setMercado] = useState<Locale>(locale);
   const [ownerEmail, setOwnerEmail] = useState('');
   const [ownerPassword, setOwnerPassword] = useState('');
   const [rubro, setRubro] = useState('moda');
@@ -120,7 +126,7 @@ export default function DemoWizard() {
       const res = await fetch('/api/demo', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ storeName: storeName.trim(), design, ownerEmail: ownerEmail.trim(), ownerPassword }),
+        body: JSON.stringify({ storeName: storeName.trim(), design, mercado, ownerEmail: ownerEmail.trim(), ownerPassword }),
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || t('val.error'));
@@ -233,6 +239,24 @@ export default function DemoWizard() {
       <div className="w-campo">
         <label htmlFor="storeName">{t('demo.nombre')}</label>
         <input id="storeName" type="text" value={storeName} maxLength={40} placeholder={t('demo.nombre.ph')} onChange={e => setStoreName(e.target.value)} />
+      </div>
+      <div className="w-campo">
+        <label htmlFor="mercado">{t('demo.mercado')}</label>
+        <div className="w-mercado" role="group" aria-labelledby="mercado">
+          {LOCALES.map(l => (
+            <button
+              key={l}
+              type="button"
+              className={l === mercado ? 'is-on' : ''}
+              aria-pressed={l === mercado}
+              onClick={() => setMercado(l)}
+            >
+              <b>{NOMBRE_IDIOMA[l]}</b>
+              <em>{SIMBOLO_DE[l]}</em>
+            </button>
+          ))}
+        </div>
+        <p className="w-ayuda">{t('demo.mercado.ayuda')}</p>
       </div>
       <div className="w-campo">
         <label htmlFor="ownerEmail">{t('demo.correo')}</label>

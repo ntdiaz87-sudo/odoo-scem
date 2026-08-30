@@ -9,7 +9,9 @@
 import type { CSSProperties } from 'react';
 import type { StoreDesign } from '../../../lib/designs';
 import { inkOn } from '../../../lib/design-generator';
-import { fecha, t } from '../../../lib/i18n';
+import { LOCALE, fecha, translate, type Locale } from '../../../lib/i18n';
+import type { StoreInfo } from '../../../lib/store-design';
+import { MercadoProvider } from '../../../lib/tienda-locale';
 import { CartBadge } from './storefront-ui';
 
 export function storeVars(design: StoreDesign): CSSProperties {
@@ -33,12 +35,15 @@ export function storeVars(design: StoreDesign): CSSProperties {
 export function StoreHeader({
   slug,
   nombre,
+  mercado,
   activo,
 }: {
   slug: string;
   nombre: string;
+  mercado: Locale;
   activo?: 'catalogo' | 'carrito';
 }) {
+  const t = (k: string) => translate(mercado, k);
   return (
     <header className="st-head">
       <div className="st-head-in">
@@ -57,7 +62,16 @@ export function StoreHeader({
   );
 }
 
-export function StoreFooter({ nombre, rootUrl }: { nombre: string; rootUrl: string }) {
+export function StoreFooter({
+  nombre,
+  rootUrl,
+  mercado,
+}: {
+  nombre: string;
+  rootUrl: string;
+  mercado: Locale;
+}) {
+  const t = (k: string) => translate(mercado, k);
   return (
     <footer className="st-pie">
       <div className="st-pie-in">
@@ -88,12 +102,21 @@ export function StoreFooter({ nombre, rootUrl }: { nombre: string; rootUrl: stri
 }
 
 /** Aviso de tienda demo, con su caducidad. */
-export function SandboxBanner({ expiresAt, rootUrl }: { expiresAt?: string | null; rootUrl: string }) {
+export function SandboxBanner({
+  expiresAt,
+  rootUrl,
+  mercado,
+}: {
+  expiresAt?: string | null;
+  rootUrl: string;
+  mercado: Locale;
+}) {
+  const t = (k: string) => translate(mercado, k);
   return (
     <div className="st-aviso">
       <span className="st-aviso-punto" aria-hidden="true" />
       {t('st.demo.banner')}
-      {expiresAt ? ` · ${t('st.demo.caduca')} ${fecha(expiresAt)}` : ''}
+      {expiresAt ? ` · ${t('st.demo.caduca')} ${fecha(expiresAt, mercado)}` : ''}
       {' · '}
       <a href={rootUrl}>{t('st.demo.crea')}</a>
     </div>
@@ -101,7 +124,9 @@ export function SandboxBanner({ expiresAt, rootUrl }: { expiresAt?: string | nul
 }
 
 /** Pantalla de tienda inexistente o caducada. */
-export function StoreNotFound({ rootUrl }: { rootUrl: string }) {
+export function StoreNotFound({ rootUrl, locale = LOCALE }: { rootUrl: string; locale?: Locale }) {
+  // Aquí no hay tienda de la que sacar idioma: se usa el del lanzamiento.
+  const t = (k: string) => translate(locale, k);
   return (
     <div className="st-vacio-pagina">
       <div className="st-vacio-caja">
@@ -112,5 +137,41 @@ export function StoreNotFound({ rootUrl }: { rootUrl: string }) {
         </a>
       </div>
     </div>
+  );
+}
+
+
+/**
+ * Marco de una página de tienda: variables de diseño, idioma de la tienda,
+ * cabecera y pie. Las cuatro páginas repetían este montaje; ahora lo comparten,
+ * que es también lo que garantiza que ninguna se quede sin el proveedor de
+ * mercado y vuelva a pintarse en el idioma del build.
+ */
+export function MarcoTienda({
+  slug,
+  info,
+  rootUrl,
+  activo,
+  banner,
+  clase,
+  children,
+}: {
+  slug: string;
+  info: StoreInfo;
+  rootUrl: string;
+  activo?: 'catalogo' | 'carrito';
+  banner?: React.ReactNode;
+  clase?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <MercadoProvider valor={{ locale: info.mercado, moneda: info.moneda }}>
+      <div className="st" style={storeVars(info.design)}>
+        {banner}
+        <StoreHeader slug={slug} nombre={info.name} mercado={info.mercado} activo={activo} />
+        <main className={clase}>{children}</main>
+        <StoreFooter nombre={info.name} rootUrl={rootUrl} mercado={info.mercado} />
+      </div>
+    </MercadoProvider>
   );
 }

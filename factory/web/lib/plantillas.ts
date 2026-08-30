@@ -21,6 +21,7 @@ export interface ProductoPlantilla {
   img: string;
   zh: string;
   es: string;
+  en: string;
   precio: number;
 }
 
@@ -37,10 +38,10 @@ export interface Plantilla {
   hero: string;
   /** Encuadre del hero: dónde queda el motivo al recortar. */
   heroPos: string;
-  titular: { zh: string; es: string };
-  subtitulo: { zh: string; es: string };
-  cta: { zh: string; es: string };
-  categorias: { zh: string; es: string }[];
+  titular: { zh: string; es: string; en: string };
+  subtitulo: { zh: string; es: string; en: string };
+  cta: { zh: string; es: string; en: string };
+  categorias: { zh: string; es: string; en: string }[];
   productos: ProductoPlantilla[];
 }
 
@@ -56,18 +57,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#f6f1ea',
     hero: '/img/lumina-hero.jpg',
     heroPos: '58% 35%',
-    titular: { zh: '新季系列', es: 'Nueva temporada' },
-    subtitulo: { zh: '2026 春夏', es: 'Primavera-verano 2026' },
-    cta: { zh: '立即选购', es: 'Comprar' },
+    titular: { zh: '新季系列', es: 'Nueva temporada', en: 'New season' },
+    subtitulo: { zh: '2026 春夏', es: 'Primavera-verano 2026', en: 'Spring-summer 2026' },
+    cta: { zh: '立即选购', es: 'Comprar', en: 'Shop now' },
     categorias: [
-      { zh: '上衣', es: 'Tops' }, { zh: '外套', es: 'Abrigos' },
-      { zh: '包袋', es: 'Bolsos' }, { zh: '配饰', es: 'Accesorios' },
+      { zh: '上衣', es: 'Tops', en: 'Tops' }, { zh: '外套', es: 'Abrigos', en: 'Coats' },
+      { zh: '包袋', es: 'Bolsos', en: 'Bags' }, { zh: '配饰', es: 'Accesorios', en: 'Accessories' },
     ],
     productos: [
-      { img: '/img/lumina-p1.png', zh: '羊绒针织衫', es: 'Jersey de cachemira', precio: 39900 },
-      { img: '/img/lumina-p2.png', zh: '真皮托特包', es: 'Bolso tote de piel', precio: 129900 },
-      { img: '/img/lumina-p3.png', zh: '羊毛大衣', es: 'Abrigo de lana', precio: 189900 },
-      { img: '/img/lumina-p4.png', zh: '真丝方巾', es: 'Pañuelo de seda', precio: 29900 },
+      { img: '/img/lumina-p1.png', zh: '羊绒针织衫', es: 'Jersey de cachemira', en: 'Cashmere jumper', precio: 39900 },
+      { img: '/img/lumina-p2.png', zh: '真皮托特包', es: 'Bolso tote de piel', en: 'Leather tote bag', precio: 129900 },
+      { img: '/img/lumina-p3.png', zh: '羊毛大衣', es: 'Abrigo de lana', en: 'Wool coat', precio: 189900 },
+      { img: '/img/lumina-p4.png', zh: '真丝方巾', es: 'Pañuelo de seda', en: 'Silk scarf', precio: 29900 },
     ],
   },
   {
@@ -81,18 +82,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#ffffff',
     hero: '/img/neo-hero.jpg',
     heroPos: '62% 45%',
-    titular: { zh: '声音的边界', es: 'El límite del sonido' },
-    subtitulo: { zh: '主动降噪 · 40 小时续航', es: 'Cancelación activa · 40 h' },
-    cta: { zh: '立即选购', es: 'Comprar' },
+    titular: { zh: '声音的边界', es: 'El límite del sonido', en: 'The edge of sound' },
+    subtitulo: { zh: '主动降噪 · 40 小时续航', es: 'Cancelación activa · 40 h', en: 'Active cancelling · 40 h' },
+    cta: { zh: '立即选购', es: 'Comprar', en: 'Shop now' },
     categorias: [
-      { zh: '耳机', es: 'Auriculares' }, { zh: '穿戴', es: 'Wearables' },
-      { zh: '音箱', es: 'Altavoces' }, { zh: '配件', es: 'Accesorios' },
+      { zh: '耳机', es: 'Auriculares', en: 'Headphones' }, { zh: '穿戴', es: 'Wearables', en: 'Wearables' },
+      { zh: '音箱', es: 'Altavoces', en: 'Speakers' }, { zh: '配件', es: 'Accesorios', en: 'Accessories' },
     ],
     productos: [
-      { img: '/img/neo-p1.png', zh: '头戴式降噪耳机', es: 'Auriculares con cancelación', precio: 89900 },
-      { img: '/img/neo-p2.png', zh: '智能手表', es: 'Reloj inteligente', precio: 129900 },
-      { img: '/img/neo-p3.png', zh: '真无线耳机', es: 'Auriculares inalámbricos', precio: 59900 },
-      { img: '/img/neo-p4.png', zh: '便携蓝牙音箱', es: 'Altavoz portátil', precio: 44900 },
+      { img: '/img/neo-p1.png', zh: '头戴式降噪耳机', es: 'Auriculares con cancelación', en: 'Noise-cancelling headphones', precio: 89900 },
+      { img: '/img/neo-p2.png', zh: '智能手表', es: 'Reloj inteligente', en: 'Smart watch', precio: 129900 },
+      { img: '/img/neo-p3.png', zh: '真无线耳机', es: 'Auriculares inalámbricos', en: 'Wireless earbuds', precio: 59900 },
+      { img: '/img/neo-p4.png', zh: '便携蓝牙音箱', es: 'Altavoz portátil', en: 'Portable speaker', precio: 44900 },
     ],
   },
   {
@@ -106,18 +107,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#2a1b12',
     hero: '/img/origin-hero.jpg',
     heroPos: '72% 50%',
-    titular: { zh: '一杯好咖啡', es: 'Un buen café' },
-    subtitulo: { zh: '当日烘焙，隔日送达', es: 'Tostado el día, entregado al siguiente' },
-    cta: { zh: '去逛逛', es: 'Ver la tienda' },
+    titular: { zh: '一杯好咖啡', es: 'Un buen café', en: 'A proper coffee' },
+    subtitulo: { zh: '当日烘焙，隔日送达', es: 'Tostado el día, entregado al siguiente', en: 'Roasted today, delivered tomorrow' },
+    cta: { zh: '去逛逛', es: 'Ver la tienda', en: 'Visit the store' },
     categorias: [
-      { zh: '咖啡豆', es: 'Café' }, { zh: '器具', es: 'Utensilios' },
-      { zh: '杯具', es: 'Tazas' }, { zh: '礼盒', es: 'Regalo' },
+      { zh: '咖啡豆', es: 'Café', en: 'Coffee' }, { zh: '器具', es: 'Utensilios', en: 'Tools' },
+      { zh: '杯具', es: 'Tazas', en: 'Mugs' }, { zh: '礼盒', es: 'Regalo', en: 'Gifts' },
     ],
     productos: [
-      { img: '/img/origin-p1.png', zh: '云南日晒咖啡豆', es: 'Café de Yunnan', precio: 12800 },
-      { img: '/img/origin-p2.png', zh: '精选拼配豆', es: 'Mezcla de la casa', precio: 9800 },
-      { img: '/img/origin-p3.png', zh: '细口手冲壶', es: 'Hervidor de cuello fino', precio: 26800 },
-      { img: '/img/origin-p4.png', zh: '粗陶咖啡杯', es: 'Taza de cerámica', precio: 12800 },
+      { img: '/img/origin-p1.png', zh: '云南日晒咖啡豆', es: 'Café de Yunnan', en: 'Yunnan coffee', precio: 12800 },
+      { img: '/img/origin-p2.png', zh: '精选拼配豆', es: 'Mezcla de la casa', en: 'House blend', precio: 9800 },
+      { img: '/img/origin-p3.png', zh: '细口手冲壶', es: 'Hervidor de cuello fino', en: 'Gooseneck kettle', precio: 26800 },
+      { img: '/img/origin-p4.png', zh: '粗陶咖啡杯', es: 'Taza de cerámica', en: 'Ceramic mug', precio: 12800 },
     ],
   },
   {
@@ -131,18 +132,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#f2f4f0',
     hero: '/img/pure-hero.jpg',
     heroPos: '68% 50%',
-    titular: { zh: '干净，就够了', es: 'Limpio, y ya está' },
-    subtitulo: { zh: '成分透明 · 无香精', es: 'Fórmula transparente · sin perfume' },
-    cta: { zh: '开始护肤', es: 'Empezar' },
+    titular: { zh: '干净，就够了', es: 'Limpio, y ya está', en: 'Clean, and that is it' },
+    subtitulo: { zh: '成分透明 · 无香精', es: 'Fórmula transparente · sin perfume', en: 'Clear formula · fragrance free' },
+    cta: { zh: '开始护肤', es: 'Empezar', en: 'Start' },
     categorias: [
-      { zh: '精华', es: 'Sérums' }, { zh: '面霜', es: 'Cremas' },
-      { zh: '清洁', es: 'Limpieza' }, { zh: '套装', es: 'Packs' },
+      { zh: '精华', es: 'Sérums', en: 'Serums' }, { zh: '面霜', es: 'Cremas', en: 'Creams' },
+      { zh: '清洁', es: 'Limpieza', en: 'Cleansing' }, { zh: '套装', es: 'Packs', en: 'Bundles' },
     ],
     productos: [
-      { img: '/img/pure-p1.png', zh: '修护精华液', es: 'Sérum reparador', precio: 29900 },
-      { img: '/img/pure-p2.png', zh: '保湿面霜', es: 'Crema hidratante', precio: 35900 },
-      { img: '/img/pure-p3.png', zh: '氨基酸洁面', es: 'Limpiador facial', precio: 14900 },
-      { img: '/img/pure-p4.png', zh: '舒缓喷雾', es: 'Bruma calmante', precio: 12900 },
+      { img: '/img/pure-p1.png', zh: '修护精华液', es: 'Sérum reparador', en: 'Repairing serum', precio: 29900 },
+      { img: '/img/pure-p2.png', zh: '保湿面霜', es: 'Crema hidratante', en: 'Moisturiser', precio: 35900 },
+      { img: '/img/pure-p3.png', zh: '氨基酸洁面', es: 'Limpiador facial', en: 'Face cleanser', precio: 14900 },
+      { img: '/img/pure-p4.png', zh: '舒缓喷雾', es: 'Bruma calmante', en: 'Calming mist', precio: 12900 },
     ],
   },
   {
@@ -156,18 +157,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#1b2016',
     hero: '/img/nomad-hero.jpg',
     heroPos: '55% 45%',
-    titular: { zh: '去更远的地方', es: 'Llega más lejos' },
-    subtitulo: { zh: '耐用装备，陪你走完全程', es: 'Equipo que aguanta el camino entero' },
-    cta: { zh: '看装备', es: 'Ver equipo' },
+    titular: { zh: '去更远的地方', es: 'Llega más lejos', en: 'Go further' },
+    subtitulo: { zh: '耐用装备，陪你走完全程', es: 'Equipo que aguanta el camino entero', en: 'Gear that lasts the whole trail' },
+    cta: { zh: '看装备', es: 'Ver equipo', en: 'See gear' },
     categorias: [
-      { zh: '背包', es: 'Mochilas' }, { zh: '保温', es: 'Térmicos' },
-      { zh: '鞋履', es: 'Calzado' }, { zh: '照明', es: 'Iluminación' },
+      { zh: '背包', es: 'Mochilas', en: 'Backpacks' }, { zh: '保温', es: 'Térmicos', en: 'Flasks' },
+      { zh: '鞋履', es: 'Calzado', en: 'Footwear' }, { zh: '照明', es: 'Iluminación', en: 'Lighting' },
     ],
     productos: [
-      { img: '/img/nomad-p1.png', zh: '帆布登山包', es: 'Mochila de lona', precio: 59900 },
-      { img: '/img/nomad-p2.png', zh: '不锈钢保温壶', es: 'Termo de acero', precio: 21900 },
-      { img: '/img/nomad-p3.png', zh: '真皮登山靴', es: 'Botas de montaña', precio: 89900 },
-      { img: '/img/nomad-p4.png', zh: '强光手电筒', es: 'Linterna de mano', precio: 17900 },
+      { img: '/img/nomad-p1.png', zh: '帆布登山包', es: 'Mochila de lona', en: 'Canvas backpack', precio: 59900 },
+      { img: '/img/nomad-p2.png', zh: '不锈钢保温壶', es: 'Termo de acero', en: 'Steel flask', precio: 21900 },
+      { img: '/img/nomad-p3.png', zh: '真皮登山靴', es: 'Botas de montaña', en: 'Hiking boots', precio: 89900 },
+      { img: '/img/nomad-p4.png', zh: '强光手电筒', es: 'Linterna de mano', en: 'Handheld torch', precio: 17900 },
     ],
   },
   {
@@ -181,18 +182,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#fff8f2',
     hero: '/img/bloom-hero.jpg',
     heroPos: '50% 50%',
-    titular: { zh: '一克的浪漫', es: 'Un gramo de romance' },
-    subtitulo: { zh: '18K 金 · 可刻字', es: 'Oro de 18 quilates · grabado' },
-    cta: { zh: '看系列', es: 'Ver colección' },
+    titular: { zh: '一克的浪漫', es: 'Un gramo de romance', en: 'A gram of romance' },
+    subtitulo: { zh: '18K 金 · 可刻字', es: 'Oro de 18 quilates · grabado', en: '18-carat gold · engraved' },
+    cta: { zh: '看系列', es: 'Ver colección', en: 'See collection' },
     categorias: [
-      { zh: '戒指', es: 'Anillos' }, { zh: '项链', es: 'Collares' },
-      { zh: '耳饰', es: 'Pendientes' }, { zh: '手镯', es: 'Pulseras' },
+      { zh: '戒指', es: 'Anillos', en: 'Rings' }, { zh: '项链', es: 'Collares', en: 'Necklaces' },
+      { zh: '耳饰', es: 'Pendientes', en: 'Earrings' }, { zh: '手镯', es: 'Pulseras', en: 'Bracelets' },
     ],
     productos: [
-      { img: '/img/bloom-p1.png', zh: '18K 金素圈戒指', es: 'Anillo de oro 18K', precio: 188000 },
-      { img: '/img/bloom-p2.png', zh: '锁骨金链', es: 'Collar de cadena fina', precio: 128000 },
-      { img: '/img/bloom-p3.png', zh: '小圆耳环', es: 'Pendientes de aro', precio: 88000 },
-      { img: '/img/bloom-p4.png', zh: '素圈手镯', es: 'Brazalete liso', precio: 218000 },
+      { img: '/img/bloom-p1.png', zh: '18K 金素圈戒指', es: 'Anillo de oro 18K', en: '18K gold ring', precio: 188000 },
+      { img: '/img/bloom-p2.png', zh: '锁骨金链', es: 'Collar de cadena fina', en: 'Fine chain necklace', precio: 128000 },
+      { img: '/img/bloom-p3.png', zh: '小圆耳环', es: 'Pendientes de aro', en: 'Hoop earrings', precio: 88000 },
+      { img: '/img/bloom-p4.png', zh: '素圈手镯', es: 'Brazalete liso', en: 'Plain bangle', precio: 218000 },
     ],
   },
   {
@@ -206,18 +207,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#fff6ef',
     hero: '/img/paws-hero.jpg',
     heroPos: '50% 40%',
-    titular: { zh: '它值得更好的', es: 'Se merece algo mejor' },
-    subtitulo: { zh: '安全材质 · 好洗好收', es: 'Materiales seguros · fáciles de lavar' },
-    cta: { zh: '去逛逛', es: 'Ver la tienda' },
+    titular: { zh: '它值得更好的', es: 'Se merece algo mejor', en: 'They deserve better' },
+    subtitulo: { zh: '安全材质 · 好洗好收', es: 'Materiales seguros · fáciles de lavar', en: 'Safe materials · easy to wash' },
+    cta: { zh: '去逛逛', es: 'Ver la tienda', en: 'Visit the store' },
     categorias: [
-      { zh: '牵引', es: 'Paseo' }, { zh: '睡窝', es: 'Camas' },
-      { zh: '玩具', es: 'Juguetes' }, { zh: '餐具', es: 'Comederos' },
+      { zh: '牵引', es: 'Paseo', en: 'Walks' }, { zh: '睡窝', es: 'Camas', en: 'Beds' },
+      { zh: '玩具', es: 'Juguetes', en: 'Toys' }, { zh: '餐具', es: 'Comederos', en: 'Feeders' },
     ],
     productos: [
-      { img: '/img/paws-p1.png', zh: '真皮项圈', es: 'Collar de piel', precio: 15900 },
-      { img: '/img/paws-p2.png', zh: '圆形宠物窝', es: 'Cama redonda', precio: 32900 },
-      { img: '/img/paws-p3.png', zh: '编织磨牙玩具', es: 'Juguete de cuerda', precio: 5900 },
-      { img: '/img/paws-p4.png', zh: '陶瓷食盆', es: 'Comedero de cerámica', precio: 9900 },
+      { img: '/img/paws-p1.png', zh: '真皮项圈', es: 'Collar de piel', en: 'Leather collar', precio: 15900 },
+      { img: '/img/paws-p2.png', zh: '圆形宠物窝', es: 'Cama redonda', en: 'Round bed', precio: 32900 },
+      { img: '/img/paws-p3.png', zh: '编织磨牙玩具', es: 'Juguete de cuerda', en: 'Rope toy', precio: 5900 },
+      { img: '/img/paws-p4.png', zh: '陶瓷食盆', es: 'Comedero de cerámica', en: 'Ceramic bowl', precio: 9900 },
     ],
   },
   {
@@ -231,18 +232,18 @@ export const PLANTILLAS: Plantilla[] = [
     acentoTinta: '#f8f3ec',
     hero: '/img/homely-hero.jpg',
     heroPos: '55% 55%',
-    titular: { zh: '把家住成\n想要的样子', es: 'Haz de tu casa\nlo que quieras' },
-    subtitulo: { zh: '手作器物 · 天然材质', es: 'Piezas hechas a mano · materiales naturales' },
-    cta: { zh: '去逛逛', es: 'Ver la tienda' },
+    titular: { zh: '把家住成\n想要的样子', es: 'Haz de tu casa\nlo que quieras', en: 'Make your home\nwhatever you want' },
+    subtitulo: { zh: '手作器物 · 天然材质', es: 'Piezas hechas a mano · materiales naturales', en: 'Handmade pieces · natural materials' },
+    cta: { zh: '去逛逛', es: 'Ver la tienda', en: 'Visit the store' },
     categorias: [
-      { zh: '餐具', es: 'Vajilla' }, { zh: '织物', es: 'Textil' },
-      { zh: '香氛', es: 'Aromas' }, { zh: '茶具', es: 'Té' },
+      { zh: '餐具', es: 'Vajilla', en: 'Tableware' }, { zh: '织物', es: 'Textil', en: 'Textiles' },
+      { zh: '香氛', es: 'Aromas', en: 'Scents' }, { zh: '茶具', es: 'Té', en: 'Tea' },
     ],
     productos: [
-      { img: '/img/homely-p1.png', zh: '手作陶碗', es: 'Cuenco de cerámica', precio: 12800 },
-      { img: '/img/homely-p2.png', zh: '亚麻盖毯', es: 'Manta de lino', precio: 39900 },
-      { img: '/img/homely-p3.png', zh: '香薰蜡烛', es: 'Vela aromática', precio: 19900 },
-      { img: '/img/homely-p4.png', zh: '粗陶茶壶', es: 'Tetera de barro', precio: 28800 },
+      { img: '/img/homely-p1.png', zh: '手作陶碗', es: 'Cuenco de cerámica', en: 'Ceramic bowl', precio: 12800 },
+      { img: '/img/homely-p2.png', zh: '亚麻盖毯', es: 'Manta de lino', en: 'Linen throw', precio: 39900 },
+      { img: '/img/homely-p3.png', zh: '香薰蜡烛', es: 'Vela aromática', en: 'Scented candle', precio: 19900 },
+      { img: '/img/homely-p4.png', zh: '粗陶茶壶', es: 'Tetera de barro', en: 'Clay teapot', precio: 28800 },
     ],
   },
 ];
@@ -255,20 +256,20 @@ export const PLANTILLAS_POR_ID: Record<string, Plantilla> = Object.fromEntries(
 export const ROTACION_HERO = ['lumina', 'neo', 'origin', 'pure', 'homely'];
 
 export function etiquetaCategoria(c: CategoriaPlantilla, l: Locale): string {
-  const d: Record<CategoriaPlantilla, { zh: string; es: string }> = {
-    moda: { zh: '时尚', es: 'Moda' },
-    tecnologia: { zh: '科技', es: 'Tecnología' },
-    cafe: { zh: '咖啡', es: 'Café' },
-    belleza: { zh: '美妆', es: 'Belleza' },
-    outdoor: { zh: '户外', es: 'Outdoor' },
-    joyeria: { zh: '珠宝', es: 'Joyería' },
-    mascotas: { zh: '宠物', es: 'Mascotas' },
-    hogar: { zh: '家居', es: 'Hogar' },
+  const d: Record<CategoriaPlantilla, { zh: string; es: string; en: string }> = {
+    moda: { zh: '时尚', es: 'Moda', en: 'Fashion' },
+    tecnologia: { zh: '科技', es: 'Tecnología', en: 'Tech' },
+    cafe: { zh: '咖啡', es: 'Café', en: 'Coffee' },
+    belleza: { zh: '美妆', es: 'Belleza', en: 'Beauty' },
+    outdoor: { zh: '户外', es: 'Outdoor', en: 'Outdoor' },
+    joyeria: { zh: '珠宝', es: 'Joyería', en: 'Jewellery' },
+    mascotas: { zh: '宠物', es: 'Mascotas', en: 'Pets' },
+    hogar: { zh: '家居', es: 'Hogar', en: 'Home' },
   };
   return d[c][l];
 }
 
-export function texto(v: { zh: string; es: string }, l: Locale): string {
+export function texto(v: { zh: string; es: string; en: string }, l: Locale): string {
   return v[l];
 }
 

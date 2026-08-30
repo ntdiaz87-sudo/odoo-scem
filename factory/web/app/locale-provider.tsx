@@ -8,7 +8,7 @@
  * recarga para que el servidor vuelva a pintar en el idioma nuevo.
  */
 import { createContext, useContext } from 'react';
-import { LOCALES, Locale, NOMBRE_IDIOMA, translate } from '../lib/i18n';
+import { LOCALES, Locale, NOMBRE_IDIOMA, NOMBRE_IDIOMA_CORTO, translate } from '../lib/i18n';
 
 const Ctx = createContext<Locale>('zh');
 
@@ -46,7 +46,8 @@ export function SelectorIdioma({ compacto = false }: { compacto?: boolean }) {
           aria-pressed={l === actual}
           onClick={() => elegir(l)}
         >
-          {NOMBRE_IDIOMA[l]}
+          <b>{NOMBRE_IDIOMA[l]}</b>
+          <i>{NOMBRE_IDIOMA_CORTO[l]}</i>
         </button>
       ))}
     </div>

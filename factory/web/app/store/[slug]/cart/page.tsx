@@ -1,6 +1,6 @@
 import { loadStoreInfo } from '../../../../lib/store-design';
 import { rootDomain } from '../../../../lib/tenant';
-import { StoreFooter, StoreHeader, StoreNotFound, storeVars } from '../_shell';
+import { MarcoTienda, StoreNotFound } from '../_shell';
 import { CartView } from './cart-view';
 
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
@@ -12,12 +12,8 @@ export default async function CartPage({ params }: { params: Promise<{ slug: str
   const info = await loadStoreInfo(slug);
   if (!info) return <StoreNotFound rootUrl={ROOT_URL} />;
   return (
-    <div className="st" style={storeVars(info.design)}>
-      <StoreHeader slug={slug} nombre={info.name} activo="carrito" />
-      <main className="st-flujo">
-        <CartView slug={slug} />
-      </main>
-      <StoreFooter nombre={info.name} rootUrl={ROOT_URL} />
-    </div>
+    <MarcoTienda slug={slug} info={info} rootUrl={ROOT_URL} clase="st-flujo" activo="carrito">
+      <CartView slug={slug} />
+    </MarcoTienda>
   );
 }

@@ -24,9 +24,15 @@ let nIP = Math.floor(Math.random() * 250);
 const ipSuelta = () => `198.51.100.${(nIP++ % 250) + 1}`; // rango distinto al de la prueba del cupo
 
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
+/* Esta batería comprueba textos en CHINO, así que lo pide explícitamente en vez
+   de confiar en el idioma por omisión. Antes funcionaba de casualidad: el
+   navegador de Playwright pide en-US, el inglés no era un idioma de la fábrica
+   y la petición caía al del mercado. En cuanto el inglés pasó a existir, la
+   fábrica empezó a servirlo —bien hecho— y media batería se cayó de golpe. */
 const ctx = await browser.newContext({
   viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2,
-  extraHTTPHeaders: { 'x-forwarded-for': ipSuelta() },
+  locale: 'zh-CN',
+  extraHTTPHeaders: { 'x-forwarded-for': ipSuelta(), 'accept-language': 'zh-CN,zh;q=0.9' },
 });
 const page = await ctx.newPage();
 

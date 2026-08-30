@@ -8,12 +8,12 @@ export const dynamic = 'force-dynamic';
 
 export default async function Inicio() {
   const s = await exigirSesionPagina();
-  const t = await getT();
+  const t = await getT(s.mercado);
   const r = await resumen(s);
 
   const cifras = [
     { k: t('pn.hoy.pedidos'), v: String(r.pedidosHoy) },
-    { k: t('pn.hoy.ingresos'), v: money(r.ingresosHoy) },
+    { k: t('pn.hoy.ingresos'), v: money(r.ingresosHoy, s.moneda, s.mercado) },
     { k: t('pn.enventa'), v: String(r.enVenta) },
     { k: t('pn.sinstock'), v: String(r.agotados) },
   ];

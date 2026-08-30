@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Productos() {
   const s = await exigirSesionPagina();
-  const t = await getT();
+  const t = await getT(s.mercado);
   const { productos } = await listarProductos(s);
 
   return (
@@ -40,7 +40,7 @@ export default async function Productos() {
                   <span className="pn-fila-txt">
                     <b>{p.name}</b>
                     <span className="pn-fila-sub">
-                      {v ? money(v.price) : '—'} · {t('pn.pr.stock')} {v ? v.stockOnHand : 0}
+                      {v ? money(v.price, s.moneda, s.mercado) : '—'} · {t('pn.pr.stock')} {v ? v.stockOnHand : 0}
                     </span>
                   </span>
                   <span className={`pn-pill${p.enabled ? ' is-on' : ''}`}>

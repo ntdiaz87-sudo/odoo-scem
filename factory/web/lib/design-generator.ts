@@ -156,6 +156,11 @@ const HUE_NAMES_POR_IDIOMA: Record<Locale, Array<[number, string]>> = {
       [140, 'Esmeralda'], [170, 'Jade'], [200, 'Lago'], [225, 'Índigo'], [255, 'Violeta'],
       [285, 'Orquídea'], [320, 'Frambuesa'], [345, 'Granate'], [360, 'Coral'],
   ],
+  en: [
+      [15, 'Terracotta'], [35, 'Amber'], [50, 'Honey'], [70, 'Olive'], [100, 'Sage'],
+      [140, 'Emerald'], [170, 'Jade'], [200, 'Lake'], [225, 'Indigo'], [255, 'Violet'],
+      [285, 'Orchid'], [320, 'Raspberry'], [345, 'Garnet'], [360, 'Coral'],
+  ],
 };
 
 const SUFIJOS_POR_IDIOMA: Record<Locale, Record<string, string[]>> = {
@@ -170,6 +175,12 @@ const SUFIJOS_POR_IDIOMA: Record<Locale, Record<string, string[]>> = {
       elegante: ['noble', 'de gala', 'sobrio', 'imperial', 'clásico'],
       energico: ['eléctrico', 'en marcha', 'vivo', 'radical', 'urbano'],
     minimalista: ['puro', 'en calma', 'esencial', 'ligero', 'nítido'],
+  },
+  en: {
+      calido: ['Home', 'Sunlit', 'Calm', 'Corner', 'Warm'],
+      elegante: ['Noble', 'Gala', 'Sober', 'Imperial', 'Classic'],
+      energico: ['Electric', 'Rush', 'Alive', 'Radical', 'Street'],
+    minimalista: ['Pure', 'Still', 'Essential', 'Light', 'Clear'],
   },
 };
 

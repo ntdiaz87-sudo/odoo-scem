@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
-import { CURRENCY_SYMBOL } from '../../../../lib/i18n';
+
 import { accionCrearProducto, accionGuardarProducto, type Estado } from '../../acciones';
 
 interface Inicial {
@@ -12,7 +12,7 @@ interface Inicial {
   precio: string;
   stock: string;
   publicado: boolean;
-  foto: string | null;
+  fotos: { id: string; preview: string }[];
 }
 
 export function FormularioProducto({
@@ -43,22 +43,39 @@ export function FormularioProducto({
         </div>
       ) : null}
 
+      {/* Varias fotos, no una. El comerciante pidió poder poner cinco: un
+          producto que solo se enseña por un lado no se vende. La primera es la
+          portada, y quitar una es una casilla, no un botón que borre al vuelo:
+          nada se pierde hasta que él guarda. */}
       <div className="pn-campo">
-        <label htmlFor="foto">{etiquetas.foto}</label>
-        <div className="pn-foto-fila">
-          <span className="pn-miniatura pn-miniatura--grande">
-            {inicial.foto ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={inicial.foto} alt="" />
-            ) : (
-              <span className="pn-sinfoto">{etiquetas.sinfoto}</span>
-            )}
-          </span>
-          <span>
-            <input id="foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" />
-            <span className="pn-ayuda">{etiquetas.fotoAyuda}</span>
-          </span>
-        </div>
+        <label htmlFor="fotos">{etiquetas.foto}</label>
+        {inicial.fotos.length > 0 ? (
+          <ul className="pn-fotos">
+            {inicial.fotos.map((f, i) => (
+              <li key={f.id}>
+                <span className="pn-foto-caja">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={f.preview} alt="" />
+                  {i === 0 ? <em className="pn-foto-portada">{etiquetas.portada}</em> : null}
+                </span>
+                <label className="pn-foto-quitar">
+                  <input type="checkbox" name="quitarFoto" value={f.id} />
+                  {etiquetas.quitar}
+                </label>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="pn-ayuda">{etiquetas.sinfoto}</p>
+        )}
+        <input
+          id="fotos"
+          name="fotos"
+          type="file"
+          multiple
+          accept="image/jpeg,image/png,image/webp"
+        />
+        <span className="pn-ayuda">{etiquetas.fotoAyuda}</span>
       </div>
 
       <div className="pn-campo">
@@ -74,7 +91,7 @@ export function FormularioProducto({
       <div className="pn-fila2">
         <div className="pn-campo">
           <label htmlFor="precio">
-            {etiquetas.precio} ({CURRENCY_SYMBOL})
+            {etiquetas.precio} ({etiquetas.simbolo})
           </label>
           <input id="precio" name="precio" type="number" min="0" step="0.01" inputMode="decimal" defaultValue={inicial.precio} required />
         </div>

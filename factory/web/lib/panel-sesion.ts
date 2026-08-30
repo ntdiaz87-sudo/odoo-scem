@@ -10,10 +10,21 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { DESIGN_PRESETS, type StoreDesign } from './designs';
+import { MONEDA_DE, type Locale } from './i18n';
 import { loadStoreInfo } from './store-design';
 import { ownerMe, type CanalDelDueno } from './vendure';
 
 export const COOKIE_PANEL = 'fabrica_panel';
+
+/**
+ * Idioma del CANAL de Vendure para cada mercado de la fábrica.
+ *
+ * Vive aquí y no en la ruta que crea tiendas porque lo usan los dos: quien crea
+ * la tienda y quien luego le cambia el mercado desde el panel. Con dos copias,
+ * una se queda atrás y el comerciante acaba con un canal en un idioma y un
+ * customField en otro.
+ */
+export const LANG_CANAL: Record<Locale, string> = { zh: 'zh_Hans', es: 'es', en: 'en' };
 
 export interface SesionPanel {
   token: string;
@@ -22,6 +33,11 @@ export interface SesionPanel {
   nombre: string;
   /** El diseño que eligió el dueño: su panel se pinta con él. */
   design: StoreDesign;
+  /** Mercado de su tienda: idioma y moneda que ven SUS clientes. */
+  mercado: Locale;
+  /** Moneda de su tienda. El panel enseñaba ¥ mientras su tienda cobraba en US$. */
+  moneda: string;
+  promesas: { entregaPlazo: string; entregaNota: string; pagoFormas: string; atencionNota: string };
 }
 
 export async function leerSesion(): Promise<SesionPanel | null> {
@@ -37,6 +53,9 @@ export async function leerSesion(): Promise<SesionPanel | null> {
     canal,
     nombre: info?.name || canal.code,
     design: info?.design ?? DESIGN_PRESETS[0],
+    mercado: info?.mercado ?? 'zh',
+    moneda: info?.moneda ?? MONEDA_DE[info?.mercado ?? 'zh'],
+    promesas: info?.promesas ?? { entregaPlazo: '', entregaNota: '', pagoFormas: '', atencionNota: '' },
   };
 }
 

@@ -688,3 +688,22 @@
   .w-bifurcacion { grid-template-columns: 1fr; }
   .w-bloque { padding: 20px; }
 }
+
+/* Selector de mercado del asistente: en qué idioma y moneda vende la tienda.
+   No es el selector de idioma de la cabecera —ese cambia lo que lee el
+   comerciante— sino lo que verán SUS clientes. */
+.w-mercado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.w-mercado button {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 12px 8px; min-height: 60px; cursor: pointer;
+  border: 1px solid var(--v-borde); border-radius: 12px;
+  background: var(--v-superficie); color: var(--v-texto);
+  font: inherit; transition: border-color .16s ease, background .16s ease;
+}
+.w-mercado button b { font-size: 15px; font-weight: 600; }
+.w-mercado button em { font-style: normal; font-size: 12.5px; color: var(--v-texto-suave); }
+.w-mercado button:hover { border-color: var(--v-acento); }
+.w-mercado button.is-on { border-color: var(--v-acento); background: var(--v-acento-suave); }
+.w-mercado button.is-on b, .w-mercado button.is-on em { color: var(--v-acento); }
+.w-mercado button:focus-visible { outline: 2px solid var(--v-acento); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .w-mercado button { transition: none; } }

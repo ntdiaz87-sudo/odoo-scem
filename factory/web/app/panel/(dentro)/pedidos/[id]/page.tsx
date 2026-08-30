@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function DetallePedido({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const s = await exigirSesionPagina();
-  const t = await getT();
+  const t = await getT(s.mercado);
   const { pedido } = await verPedido(s, id);
   if (!pedido) notFound();
   const e = etiquetaEstado(pedido.state, t);
@@ -37,12 +37,12 @@ export default async function DetallePedido({ params }: { params: Promise<{ id: 
               <span>
                 {l.nombre} <em>× {l.cantidad}</em>
               </span>
-              <b>{money(l.total)}</b>
+              <b>{money(l.total, s.moneda, s.mercado)}</b>
             </li>
           ))}
           <li className="pn-lineas-total">
             <span>{t('pn.pe.total')}</span>
-            <b>{money(pedido.totalWithTax)}</b>
+            <b>{money(pedido.totalWithTax, s.moneda, s.mercado)}</b>
           </li>
         </ul>
       </section>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { SIMBOLO_DE } from '../../../../../lib/i18n';
 import { getT } from '../../../../../lib/i18n-server';
 import { verProducto } from '../../../../../lib/panel-datos';
 import { exigirSesionPagina } from '../../../../../lib/panel-sesion';
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
 export default async function EditarProducto({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const s = await exigirSesionPagina();
-  const t = await getT();
+  const t = await getT(s.mercado);
   const { producto } = await verProducto(s, id);
   if (!producto) notFound();
   const v = producto.variants[0];
@@ -31,7 +32,7 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
           precio: v ? (v.price / 100).toFixed(2) : '',
           stock: String(v?.stockOnHand ?? 0),
           publicado: producto.enabled,
-          foto: producto.foto,
+          fotos: producto.fotos,
         }}
         etiquetas={{
           nombre: t('pn.pr.nombre'),
@@ -41,6 +42,9 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
           foto: t('pn.pr.foto'),
           fotoAyuda: t('pn.pr.foto.ayuda'),
           sinfoto: t('pn.pr.sinfoto'),
+            simbolo: SIMBOLO_DE[s.mercado],
+            portada: t('pn.pr.portada'),
+            quitar: t('pn.pr.quitarfoto'),
           publicado: t('pn.pr.publicado'),
           enviar: t('pn.pr.guardar'),
           enviando: t('pn.pr.guardando'),

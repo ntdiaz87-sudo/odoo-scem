@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { shopFetch } from '../../../../lib/shop-client';
-import { money, t } from '../../../../lib/i18n';
+import { useDinero, useTt } from '../../../../lib/tienda-locale';
 
 interface PlacedOrder {
   code: string;
@@ -13,6 +13,8 @@ interface PlacedOrder {
 }
 
 export function ThanksView({ slug, nombre }: { slug: string; nombre: string }) {
+  const t = useTt();
+  const money = useDinero();
   const [code, setCode] = useState('');
   const [order, setOrder] = useState<PlacedOrder | null>(null);
 

@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Pedidos() {
   const s = await exigirSesionPagina();
-  const t = await getT();
+  const t = await getT(s.mercado);
   const { pedidos } = await listarPedidos(s);
 
   return (
@@ -32,7 +32,7 @@ export default async function Pedidos() {
                       {p.cliente} · {p.orderPlacedAt ? fecha(p.orderPlacedAt) : '—'}
                     </span>
                   </span>
-                  <span className="pn-importe">{money(p.totalWithTax)}</span>
+                  <span className="pn-importe">{money(p.totalWithTax, s.moneda, s.mercado)}</span>
                   <span className={`pn-pill ${e.clase}`}>{e.txt}</span>
                 </Link>
               </li>

@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Tienda() {
   const s = await exigirSesionPagina();
-  const t = await getT();
+  const t = await getT(s.mercado);
   const url = storeUrl(s.canal.token);
 
   return (
@@ -16,9 +16,21 @@ export default async function Tienda() {
 
       <section className="pn-bloque">
         <FormularioTienda
-          nombre={s.nombre}
+          inicial={{ nombre: s.nombre, mercado: s.mercado, ...s.promesas }}
           etiquetas={{
             nombre: t('pn.ti.nombre'),
+            mercado: t('pn.ti.mercado'),
+            mercadoAyuda: t('pn.ti.mercado.ayuda'),
+            promesas: t('pn.ti.promesas'),
+            promesasAyuda: t('pn.ti.promesas.ayuda'),
+            entregaPlazo: t('pn.ti.entrega'),
+            entregaPlazoPh: t('pn.ti.entrega.ph'),
+            entregaNota: t('pn.ti.entrega.nota'),
+            entregaNotaPh: t('pn.ti.entrega.nota.ph'),
+            pagoFormas: t('pn.ti.pago'),
+            pagoFormasPh: t('pn.ti.pago.ph'),
+            atencionNota: t('pn.ti.atencion'),
+            atencionNotaPh: t('pn.ti.atencion.ph'),
             enviar: t('pn.pr.guardar'),
             enviando: t('pn.pr.guardando'),
           }}

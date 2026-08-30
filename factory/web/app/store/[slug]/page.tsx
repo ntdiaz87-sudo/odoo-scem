@@ -3,8 +3,9 @@ import { DESIGN_PRESETS } from '../../../lib/designs';
 import { shopQuery } from '../../../lib/vendure';
 import { rootDomain } from '../../../lib/tenant';
 import { loadStoreInfo } from '../../../lib/store-design';
-import { money, t } from '../../../lib/i18n';
-import { AddToCartButton, PwaSetup } from './storefront-ui';
+import { LOCALE, MONEDA_DE, esLocaleValido, money, translate, type Locale } from '../../../lib/i18n';
+import { MercadoProvider } from '../../../lib/tienda-locale';
+import { AddToCartButton, GaleriaProducto, PwaSetup } from './storefront-ui';
 import { SandboxBanner, StoreFooter, StoreHeader, StoreNotFound, storeVars } from './_shell';
 
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
@@ -29,16 +30,23 @@ interface ChannelData {
   activeChannel: {
     code: string;
     token: string;
+    currencyCode?: string | null;
     customFields?: {
       displayName?: string | null;
       design?: string | null;
       isSandbox?: boolean | null;
       expiresAt?: string | null;
+      mercado?: string | null;
+      entregaPlazo?: string | null;
+      entregaNota?: string | null;
+      pagoFormas?: string | null;
+      atencionNota?: string | null;
     } | null;
   };
   products: {
     totalItems: number;
     items: Array<{
+      assets?: { id: string; preview: string }[];
       id: string;
       name: string;
       slug: string;
@@ -59,11 +67,7 @@ function parseDesign(raw: string | null | undefined): StoreDesign {
   return DESIGN_PRESETS[0];
 }
 
-const VENTAJAS = [
-  { k: 'st.v1' },
-  { k: 'st.v2' },
-  { k: 'st.v3' },
-];
+
 
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -72,10 +76,20 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     data = await shopQuery<ChannelData>(
       slug,
       `{
-        activeChannel { code token customFields { displayName design isSandbox expiresAt } }
+        activeChannel {
+          code token currencyCode
+          customFields {
+            displayName design isSandbox expiresAt mercado
+            entregaPlazo entregaNota pagoFormas atencionNota
+          }
+        }
         products(options: { take: 12 }) {
           totalItems
-          items { id name slug description variants { id priceWithTax currencyCode } }
+          items {
+            id name slug description
+            assets { id preview }
+            variants { id priceWithTax currencyCode }
+          }
         }
       }`,
     );
@@ -88,12 +102,26 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
   const nombre = cf?.displayName || data.activeChannel.code;
   const productos = data.products.items;
 
+  // Esta tienda se sirve en SU idioma, el que eligió su dueño, no en el del
+  // build ni en el del visitante.
+  const mercado: Locale = esLocaleValido(cf?.mercado ?? undefined) ? (cf!.mercado as Locale) : LOCALE;
+  const moneda = data.activeChannel.currencyCode || MONEDA_DE[mercado];
+  const t = (k: string, v?: Record<string, string>) => translate(mercado, k, v);
+  const precio = (minor: number, m?: string) => money(minor, m || moneda, mercado);
+
+  const promesas = [
+    { t: cf?.entregaPlazo || '', d: cf?.entregaNota || '' },
+    { t: cf?.pagoFormas || '', d: '' },
+    { t: cf?.atencionNota || '', d: '' },
+  ].filter(v => v.t.trim().length > 0);
+
   return (
+    <MercadoProvider valor={{ locale: mercado, moneda }}>
     <div className="st" style={storeVars(design)}>
       <PwaSetup />
-      {cf?.isSandbox ? <SandboxBanner expiresAt={cf?.expiresAt} rootUrl={ROOT_URL} /> : null}
+      {cf?.isSandbox ? <SandboxBanner expiresAt={cf?.expiresAt} rootUrl={ROOT_URL} mercado={mercado} /> : null}
 
-      <StoreHeader slug={slug} nombre={nombre} activo="catalogo" />
+      <StoreHeader slug={slug} nombre={nombre} mercado={mercado} activo="catalogo" />
 
       <main>
         <section className="st-hero">
@@ -114,14 +142,21 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           </div>
         </section>
 
-        <ul className="st-ventajas">
-          {VENTAJAS.map(v => (
-            <li key={v.k}>
-              <span className="st-ventaja-t">{t(`${v.k}.t`)}</span>
-              <span className="st-ventaja-d">{t(`${v.k}.d`)}</span>
-            </li>
-          ))}
-        </ul>
+        {/* La tira de promesas la escribe el COMERCIANTE. Antes estaba en el
+            diccionario, así que su tienda prometía entrega en 24–48 h y pago
+            por WeChat o Alipay sin que él lo hubiera decidido ni pudiera
+            cambiarlo. Lo que no haya rellenado, no se enseña: una tienda no
+            promete nada en nombre de su dueño. */}
+        {promesas.length > 0 ? (
+          <ul className="st-ventajas">
+            {promesas.map(v => (
+              <li key={v.t}>
+                <span className="st-ventaja-t">{v.t}</span>
+                {v.d ? <span className="st-ventaja-d">{v.d}</span> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
 
         <section className="st-catalogo" id="catalogo">
           <div className="st-sec-cabeza">
@@ -139,14 +174,16 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
                 const v = p.variants[0];
                 return (
                   <article className="st-prod" key={p.id}>
-                    <div className={`st-prod-img st-prod-img--${i % 4}`} aria-hidden="true">
-                      <span>{p.name.charAt(0).toUpperCase()}</span>
-                    </div>
+                    <GaleriaProducto
+                      fotos={p.assets ?? []}
+                      inicial={p.name.charAt(0).toUpperCase()}
+                      variante={i % 4}
+                    />
                     <div className="st-prod-cuerpo">
                       <h3 className="st-prod-n">{p.name}</h3>
                       <p className="st-prod-d">{p.description}</p>
                       <p className="st-prod-p">
-                        {v ? money(v.priceWithTax, v.currencyCode) : '—'}
+                        {v ? precio(v.priceWithTax, v.currencyCode) : '—'}
                       </p>
                       {v ? <AddToCartButton slug={slug} variantId={v.id} /> : null}
                     </div>
@@ -158,7 +195,8 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
         </section>
       </main>
 
-      <StoreFooter nombre={nombre} rootUrl={ROOT_URL} />
+      <StoreFooter nombre={nombre} rootUrl={ROOT_URL} mercado={mercado} />
     </div>
+    </MercadoProvider>
   );
 }

@@ -82,6 +82,19 @@ export const config: VendureConfig = {
             { name: 'isSandbox', type: 'boolean', defaultValue: false },
             // Caducidad del sandbox (14 días desde su creación).
             { name: 'expiresAt', type: 'datetime', nullable: true },
+            // Mercado de la tienda: 'zh' | 'es' | 'en'. Lo elige el comerciante
+            // al crearla y decide en qué idioma y moneda ve la tienda SU
+            // cliente. El canal ya lleva defaultLanguageCode y
+            // defaultCurrencyCode, pero esos son códigos de Vendure; este es el
+            // mercado tal y como lo entiende la fábrica, y es el que lee el
+            // escaparate para traducirse.
+            { name: 'mercado', type: 'string', nullable: true },
+            // Lo que el comerciante promete a sus clientes. Vacío = no se
+            // enseña: la tienda no inventa plazos ni formas de pago por él.
+            { name: 'entregaPlazo', type: 'string', nullable: true },
+            { name: 'entregaNota', type: 'string', nullable: true },
+            { name: 'pagoFormas', type: 'string', nullable: true },
+            { name: 'atencionNota', type: 'string', nullable: true },
         ],
     },
     plugins: [

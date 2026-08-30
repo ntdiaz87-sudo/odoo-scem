@@ -21,12 +21,19 @@ export interface VarianteResumen {
   price: number;
   stockOnHand: number;
 }
+export interface Foto {
+  id: string;
+  preview: string;
+}
 export interface ProductoResumen {
   id: string;
   name: string;
   slug: string;
   enabled: boolean;
+  /** La foto de portada: la primera de `fotos`. */
   foto: string | null;
+  /** Todas las fotos del producto, en orden. La primera es la de portada. */
+  fotos: Foto[];
   variants: VarianteResumen[];
 }
 export interface ProductoDetalle extends ProductoResumen {
@@ -60,11 +67,12 @@ export interface PedidoDetalle extends PedidoResumen {
 const CAMPOS_PRODUCTO = `
   id name slug enabled
   featuredAsset { preview }
+  assets { id preview }
   variants { id sku price stockOnHand }
 `;
 
 export async function listarProductos(s: SesionPanel) {
-  const r = await panelRequest<{ products: { items: Array<Omit<ProductoResumen, 'foto'> & { featuredAsset: { preview: string } | null }>; totalItems: number } }>(
+  const r = await panelRequest<{ products: { items: Array<Omit<ProductoResumen, 'foto' | 'fotos'> & { featuredAsset: { preview: string } | null; assets: Foto[] }>; totalItems: number } }>(
     s.token,
     s.canal.token,
     `query Productos { products(options: { take: 100, sort: { createdAt: DESC } }) {
@@ -72,12 +80,16 @@ export async function listarProductos(s: SesionPanel) {
     } }`,
   );
   if (r.error || !r.data) return { productos: [] as ProductoResumen[], error: r.error };
-  const productos = r.data.products.items.map(p => ({ ...p, foto: p.featuredAsset?.preview ?? null }));
+  const productos = r.data.products.items.map(p => ({
+    ...p,
+    foto: p.featuredAsset?.preview ?? p.assets?.[0]?.preview ?? null,
+    fotos: p.assets ?? [],
+  }));
   return { productos, error: undefined };
 }
 
 export async function verProducto(s: SesionPanel, id: string) {
-  const r = await panelRequest<{ product: (Omit<ProductoDetalle, 'foto'> & { featuredAsset: { preview: string } | null }) | null }>(
+  const r = await panelRequest<{ product: (Omit<ProductoDetalle, 'foto' | 'fotos'> & { featuredAsset: { preview: string } | null; assets: Foto[] }) | null }>(
     s.token,
     s.canal.token,
     `query Producto($id: ID!) { product(id: $id) { ${CAMPOS_PRODUCTO} description } }`,
@@ -85,7 +97,14 @@ export async function verProducto(s: SesionPanel, id: string) {
   );
   if (r.error || !r.data?.product) return { producto: null, error: r.error };
   const p = r.data.product;
-  return { producto: { ...p, foto: p.featuredAsset?.preview ?? null }, error: undefined };
+  return {
+    producto: {
+      ...p,
+      foto: p.featuredAsset?.preview ?? p.assets?.[0]?.preview ?? null,
+      fotos: p.assets ?? [],
+    },
+    error: undefined,
+  };
 }
 
 export async function guardarProducto(
@@ -118,7 +137,7 @@ export async function guardarProducto(
 
 export async function crearProducto(
   s: SesionPanel,
-  datos: { nombre: string; descripcion: string; precio: number; stock: number; slug: string; assetId?: string },
+  datos: { nombre: string; descripcion: string; precio: number; stock: number; slug: string; assetIds?: string[] },
 ) {
   const p = await panelRequest<{ createProduct: { id: string } }>(
     s.token,
@@ -127,7 +146,7 @@ export async function crearProducto(
     {
       input: {
         enabled: true,
-        ...(datos.assetId ? { assetIds: [datos.assetId], featuredAssetId: datos.assetId } : {}),
+        ...(datos.assetIds?.length ? { assetIds: datos.assetIds, featuredAssetId: datos.assetIds[0] } : {}),
         translations: [
           { languageCode: IDIOMA_TRADUCCION, name: datos.nombre, slug: datos.slug, description: datos.descripcion },
         ],

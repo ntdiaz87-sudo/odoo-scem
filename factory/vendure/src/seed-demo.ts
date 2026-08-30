@@ -175,16 +175,24 @@ async function seed() {
 
         const ctx: RequestContext = await requestContextService.create({ apiType: 'admin' });
 
-        // Idiomas disponibles: el del mercado y el inglés.
+        // Idiomas disponibles: TODOS los mercados que ofrece la fábrica.
         //
-        // El inglés NO se usa para mostrar nada: se deja habilitado porque el
-        // panel de Vendure envía su propio idioma al guardar, y quitarlo hace
-        // que guardar un producto falle. Ver la nota de TRADUCCIONES abajo.
+        // Vendure no deja crear un canal en un idioma que no esté aquí: devuelve
+        // «Language "es" is not available» como ErrorResult, no como excepción.
+        // Costó encontrarlo porque quien creaba el canal se tragaba ese
+        // ErrorResult y le decía al comerciante que el nombre estaba ocupado.
+        // Si mañana se añade un mercado al diccionario, hay que añadirlo aquí:
+        // si no, ese mercado se puede elegir en el asistente y ninguna tienda
+        // llega a crearse.
+        //
+        // El inglés, además, no se puede quitar aunque no fuese un mercado: el
+        // panel de Vendure envía su propio idioma al guardar, y sin él guardar
+        // un producto falla. Ver la nota de TRADUCCIONES abajo.
         const globalSettingsService = app.get(GlobalSettingsService);
         await globalSettingsService.updateSettings(ctx, {
-            availableLanguages: [LanguageCode.zh_Hans, LanguageCode.en],
+            availableLanguages: [LanguageCode.zh_Hans, LanguageCode.es, LanguageCode.en],
         });
-        console.log('[seed] Idiomas habilitados: zh_Hans, en');
+        console.log('[seed] Idiomas habilitados: zh_Hans, es, en');
 
         const existing = await channelService.findAll(ctx);
         const existingCodes = existing.items.map(c => c.code);

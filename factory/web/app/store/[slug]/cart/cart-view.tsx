@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { ActiveOrder, adjustLine, fetchActiveOrder } from '../../../../lib/shop-client';
-import { money, t } from '../../../../lib/i18n';
+import { useDinero, useTt } from '../../../../lib/tienda-locale';
 
 export function CartView({ slug }: { slug: string }) {
+  const t = useTt();
+  const money = useDinero();
   const [order, setOrder] = useState<ActiveOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

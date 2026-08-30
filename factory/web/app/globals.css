@@ -1271,13 +1271,20 @@ a:hover { color: var(--accent-dark); }
   font-family: var(--font-sans); font-size: 13px; font-weight: 600; cursor: pointer;
   transition: background-color .16s ease, color .16s ease;
 }
+.fh-idiomas button b { font-weight: 600; }
+.fh-idiomas button i { display: none; font-style: normal; font-weight: 600; }
 .fh-idiomas button:hover { color: var(--v-texto); }
 .fh-idiomas button.es-activo { background: var(--v-texto); color: var(--v-bg); }
 .fh-idiomas button:focus-visible { outline: 2px solid var(--v-acento); outline-offset: 2px; }
 .fh-topbar-fin { display: inline-flex; align-items: center; gap: 14px; }
 
 @media (max-width: 760px) {
+  /* Con tres idiomas, los nombres completos desbordan la cabecera del móvil:
+     ahí van los códigos cortos. El nombre entero se queda para el lector de
+     pantalla, que es quien lo necesita. */
   .fh-idiomas button { padding: 0 9px; font-size: 12.5px; min-height: 30px; }
+  .fh-idiomas button b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .fh-idiomas button i { display: inline; }
   .fh-topbar-fin { gap: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .fh-idiomas button { transition: none; } }
@@ -1355,7 +1362,10 @@ a:hover { color: var(--accent-dark); }
 /* --- navegación --- */
 .pn-nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  /* minmax(0, 1fr) y no 1fr: `1fr` no baja del contenido mínimo, así que con
+     las etiquetas en español o inglés —más largas que 概览/商品/订单/店铺— la
+     barra se hacía más ancha que la pantalla y desbordaba el móvil entero. */
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   background: var(--pn-superficie); border-top: 1px solid var(--pn-borde);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -1363,6 +1373,7 @@ a:hover { color: var(--accent-dark); }
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   padding: 9px 4px 8px; font-size: 11.5px; font-weight: 600;
   color: var(--pn-apagado); text-decoration: none;
+  min-width: 0; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .pn-nav-item svg { width: 21px; height: 21px; }
 .pn-nav-item.is-on { color: var(--pn-acento); }
@@ -1390,7 +1401,7 @@ a:hover { color: var(--accent-dark); }
 }
 .pn-cifra-v { font-family: var(--pn-titulo); font-size: 25px; font-weight: 700; line-height: 1.1; }
 .pn-cifra-k { font-size: 12.5px; color: var(--pn-tinta-suave); }
-.pn-tareas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.pn-tareas { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 .pn-tarea {
   display: flex; align-items: center; justify-content: space-between;
   background: var(--pn-superficie); border: 1px solid var(--pn-borde);
@@ -1399,7 +1410,11 @@ a:hover { color: var(--accent-dark); }
 }
 
 /* --- listas de producto y pedido --- */
-.pn-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+/* minmax(0, 1fr) y no la columna implícita: un grid item no baja de su
+   contenido mínimo, así que una fila con importe y estado que no encogen hacía
+   la lista más ancha que la pantalla. Se vio con los importes en formato
+   español, que son más largos que los chinos. */
+.pn-lista { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 .pn-fila {
   display: flex; align-items: center; gap: 10px; max-width: 100%; overflow: hidden;
   background: var(--pn-superficie); border: 1px solid var(--pn-borde);
@@ -1416,7 +1431,15 @@ a:hover { color: var(--accent-dark); }
 .pn-fila-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .pn-fila-txt b { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pn-fila-sub { font-size: 12.5px; color: var(--pn-tinta-suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pn-importe { font-size: 14px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+/* El importe y la etiqueta de estado eran los dos flex-shrink: 0, así que en
+   cuanto la moneda se hizo más ancha —"32,00 US$" ocupa bastante más que
+   "¥32.00"— la fila empujaba y el móvil se desbordaba a lo ancho. Ahora pueden
+   encogerse y recortar con puntos suspensivos; lo que nunca se recorta es el
+   número, porque un importe a medias es peor que no verlo. */
+.pn-importe {
+  font-size: 14px; font-weight: 700; white-space: nowrap;
+  flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+}
 .pn-miniatura {
   flex: 0 0 auto; width: 46px; height: 46px; border-radius: 9px; overflow: hidden;
   background: var(--pn-tenue); display: grid; place-items: center;
@@ -1425,7 +1448,8 @@ a:hover { color: var(--accent-dark); }
 .pn-miniatura--grande { width: 84px; height: 84px; border-radius: 12px; }
 .pn-sinfoto { font-size: 10px; color: var(--pn-tinta-suave); text-align: center; padding: 2px; line-height: 1.2; }
 .pn-pill {
-  flex-shrink: 0; padding: 3px 9px; border-radius: 99px; font-size: 11.5px; font-weight: 700;
+  flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 3px 9px; border-radius: 99px; font-size: 11.5px; font-weight: 700;
   background: var(--pn-tenue); color: var(--pn-tinta-suave);
 }
 /* Los estados NO siguen la paleta del cliente: verde es cobrado y ámbar es
@@ -1450,9 +1474,34 @@ a:hover { color: var(--accent-dark); }
   outline: 2px solid var(--pn-acento); outline-offset: 1px; border-color: transparent;
 }
 .pn-fila2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* Selector de mercado: en qué idioma y moneda ve la tienda SU cliente. */
+.pn-mercado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pn-mercado label {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 12px 6px; min-height: 62px; cursor: pointer;
+  border: 1px solid var(--pn-borde-fuerte); border-radius: 12px;
+  background: var(--pn-superficie); color: var(--pn-tinta);
+}
+.pn-mercado label b { font-size: 14.5px; font-weight: 600; }
+.pn-mercado label em { font-style: normal; font-size: 12px; color: var(--pn-tinta-suave); }
+.pn-mercado label.is-on { border-color: var(--pn-acento); }
+.pn-mercado input { position: absolute; opacity: 0; width: 0; height: 0; }
+.pn-mercado label:has(input:checked) { border-color: var(--pn-acento); background: var(--pn-tenue); }
+.pn-mercado label:has(input:focus-visible) { outline: 2px solid var(--pn-acento); outline-offset: 2px; }
 .pn-check { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 600; }
 .pn-check input { width: 20px; height: 20px; accent-color: var(--pn-acento); }
 .pn-foto-fila { display: flex; align-items: center; gap: 14px; }
+/* Galería de fotos del producto. La primera es la portada. */
+.pn-fotos { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
+.pn-fotos li { display: flex; flex-direction: column; gap: 5px; }
+.pn-foto-caja { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--pn-tenue); }
+.pn-foto-caja img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pn-foto-portada {
+  position: absolute; left: 4px; bottom: 4px; font-style: normal; font-size: 10.5px; font-weight: 700;
+  padding: 2px 6px; border-radius: 99px; background: var(--pn-acento); color: var(--pn-acento-tinta);
+}
+.pn-foto-quitar { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--pn-tinta-suave); cursor: pointer; }
+.pn-foto-quitar input { width: 15px; height: 15px; accent-color: var(--pn-acento); }
 .pn-foto-fila input[type='file'] { font-size: 13px; max-width: 100%; color: var(--pn-tinta-suave); }
 .pn-ok {
   background: #dff3d0; color: #29521f; border-radius: 11px;
@@ -1491,3 +1540,18 @@ a:hover { color: var(--accent-dark); }
   .pn-contenido { padding: 30px 30px 60px; }
   .pn-cifras { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* --- galería de producto en el escaparate --- */
+.st-prod-galeria { display: flex; flex-direction: column; gap: 6px; }
+.st-prod-img--foto { padding: 0; overflow: hidden; background: var(--s-surface); }
+.st-prod-img--foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.st-prod-minis { list-style: none; margin: 0; padding: 0 6px; display: flex; gap: 5px; overflow-x: auto; }
+.st-prod-minis button {
+  width: 38px; height: 38px; padding: 0; border-radius: 7px; overflow: hidden; cursor: pointer;
+  border: 2px solid transparent; background: none; opacity: .62; transition: opacity .15s ease;
+}
+.st-prod-minis button img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.st-prod-minis button.es-activa { border-color: var(--s-brand); opacity: 1; }
+.st-prod-minis button:hover { opacity: 1; }
+.st-prod-minis button:focus-visible { outline: 2px solid var(--s-accent); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .st-prod-minis button { transition: none; } }
