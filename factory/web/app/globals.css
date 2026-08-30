@@ -1365,7 +1365,9 @@ a:hover { color: var(--accent-dark); }
   /* minmax(0, 1fr) y no 1fr: `1fr` no baja del contenido mínimo, así que con
      las etiquetas en español o inglés —más largas que 概览/商品/订单/店铺— la
      barra se hacía más ancha que la pantalla y desbordaba el móvil entero. */
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Una columna por pestaña: si esto se queda corto al añadir una pestaña,
+     la sobrante salta a una segunda fila y TAPA el contenido de abajo. */
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
   background: var(--pn-superficie); border-top: 1px solid var(--pn-borde);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -1637,3 +1639,68 @@ a:hover { color: var(--accent-dark); }
 .st-consulta-lineas li { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
 .st-consulta-lineas em { font-style: normal; color: var(--s-ink-soft); }
 .st-consulta-total { margin: 0; font-size: 14.5px; text-align: right; }
+
+/* ============================ Fase 3: marketing =========================== */
+
+/* -- storefront: cupón en el carrito -- */
+.st-cupon { margin: 14px 0 4px; display: grid; gap: 6px; }
+.st-cupon-l { font-size: .82rem; font-weight: 600; opacity: .8; }
+.st-cupon-fila { display: flex; gap: 8px; }
+.st-cupon-fila input {
+  flex: 1; min-width: 0; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  background: transparent; color: inherit; font: inherit;
+  text-transform: uppercase;
+}
+.st-cupon-fila .st-btn { padding-inline: 14px; }
+.st-cupon-mal { font-size: .82rem; color: #d64545; margin: 0; }
+.st-cupon-ok { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.st-cupon-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: .8rem; font-weight: 700; letter-spacing: .04em;
+  padding: 4px 10px; border-radius: 999px;
+  background: color-mix(in srgb, var(--st-marca, #16a34a) 16%, transparent);
+}
+.st-cupon-chip button {
+  border: 0; background: none; color: inherit; cursor: pointer;
+  font-size: 1rem; line-height: 1; padding: 0;
+}
+.st-fila--desc { color: #d64545; font-weight: 600; }
+.st-precio-antes { opacity: .55; font-weight: 400; }
+.st-sk-badge {
+  display: inline-block; font-size: .72rem; font-weight: 800;
+  letter-spacing: .04em; padding: 2px 8px; border-radius: 999px;
+  background: #d64545; color: #fff; vertical-align: 2px;
+}
+
+/* -- panel: pantalla de marketing -- */
+.pn-mk-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.pn-mk-promo {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+.pn-mk-tipo {
+  font-size: .72rem; font-weight: 800; letter-spacing: .05em;
+  padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+.pn-mk-nombre { flex: 1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pn-mk-codigo {
+  font-size: .8rem; padding: 2px 8px; border-radius: 8px;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  word-break: break-all;
+}
+.pn-mk-off { font-style: normal; font-size: .78rem; opacity: .6; }
+.pn-mk-borrar { color: #d64545; }
+.pn-mk-prods { display: grid; gap: 6px; border: 0; padding: 0; margin: 0; }
+.pn-mk-prods legend { font-size: .85rem; font-weight: 600; margin-bottom: 6px; }
+.pn-mk-prod { display: flex; align-items: center; gap: 8px; font-size: .92rem; }
+.pn-mk-prod input { width: 16px; height: 16px; }
+.pn-tabla-envuelta { overflow-x: auto; }
+.pn-tabla { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.pn-tabla th, .pn-tabla td {
+  text-align: left; padding: 8px 10px; white-space: nowrap;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+}
+.pn-tabla th { font-size: .78rem; letter-spacing: .04em; opacity: .7; }

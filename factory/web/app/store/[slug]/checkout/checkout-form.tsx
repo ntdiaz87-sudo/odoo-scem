@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import {
   ActiveOrder,
   ORDER_FIELDS,
+  distribuidorGuardado,
   fetchActiveOrder,
   notifyCartChanged,
   shopFetch,
@@ -167,6 +168,27 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
         );
         if (ship.setOrderShippingMethod.__typename !== 'Order') {
           throw new Error(ship.setOrderShippingMethod.message || 'No se pudo fijar el envío.');
+        }
+      }
+
+      // 分销: si el comprador llegó por el enlace de un distribuidor, el
+      // pedido queda atribuido. Si falla, la compra sigue: la atribución
+      // nunca puede tumbar un checkout.
+      const codigoDis = distribuidorGuardado(slug);
+      if (codigoDis) {
+        try {
+          await shopFetch(
+            slug,
+            `mutation Dis($input: UpdateOrderInput!) {
+              setOrderCustomFields(input: $input) {
+                __typename
+                ... on Order { id }
+              }
+            }`,
+            { input: { customFields: { distribuidor: codigoDis } } },
+          );
+        } catch {
+          /* sin atribución, pero con venta */
         }
       }
 
@@ -344,7 +366,13 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
                 <span>
                   {l.quantity} × {l.productVariant.name}
                 </span>
-                <span>{money(l.linePriceWithTax, order.currencyCode)}</span>
+                <span>{money(l.discountedLinePriceWithTax, order.currencyCode)}</span>
+              </div>
+            ))}
+            {order.discounts.map(d => (
+              <div className="st-fila st-fila--desc" key={d.description}>
+                <span>{t('c.descuento')} · {d.description}</span>
+                <span>{money(d.amountWithTax, order.currencyCode)}</span>
               </div>
             ))}
             <div className="st-fila st-fila--suave">

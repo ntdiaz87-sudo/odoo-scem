@@ -8,6 +8,7 @@ const ICONOS = {
   productos: 'M3 8h18v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1zM3 8l2-4h14l2 4M12 4v17',
   pedidos: 'M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM9 12h7M9 16h5',
   tienda: 'M4 9h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM3 9l2-5h14l2 5M9 21v-6h6v6',
+  marketing: 'M3 11l14-6v14L3 13v-2zM17 8a4 4 0 0 1 0 8M7 13v6h3v-5',
 };
 
 export function NavPanel({

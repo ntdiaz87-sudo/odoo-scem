@@ -102,6 +102,15 @@ export const config: VendureConfig = {
             { name: 'entregaNota', type: 'string', nullable: true },
             { name: 'pagoFormas', type: 'string', nullable: true },
             { name: 'atencionNota', type: 'string', nullable: true },
+            // 分销: los distribuidores de la tienda, como JSON
+            // [{codigo, nombre, comision}]. Volumen pequeño y siempre se lee
+            // entero: no amerita entidad propia todavía.
+            { name: 'distribuidores', type: 'text', nullable: true },
+        ],
+        Order: [
+            // 分销: el código del distribuidor que trajo este pedido. Se ata en
+            // el checkout desde la cookie y de ahí sale su comisión.
+            { name: 'distribuidor', type: 'string', nullable: true },
         ],
     },
     plugins: [

@@ -11,7 +11,7 @@
  * idioma de interfaz) dejaría de verse en la tienda.
  */
 import type { SesionPanel } from './panel-sesion';
-import { panelRequest } from './vendure';
+import { adminLogin, adminRequest, panelRequest } from './vendure';
 
 const IDIOMA_TRADUCCION = 'en';
 
@@ -445,4 +445,225 @@ export async function verEnvio(s: SesionPanel): Promise<{ tarifa: number; gratis
   if (!propio) return { tarifa: 1000, gratisDesde: 0, propio: false };
   const arg = (n: string) => Number(propio.calculator.args.find(a => a.name === n)?.value || 0);
   return { tarifa: arg('tarifa'), gratisDesde: arg('gratisDesde'), propio: true };
+}
+
+/* ------------------------------ marketing -------------------------------- */
+
+export interface PromoResumen {
+  id: string;
+  name: string;
+  enabled: boolean;
+  couponCode: string | null;
+  endsAt: string | null;
+  esSeckill: boolean;
+}
+
+/** Promociones de la tienda: cupones y 秒杀, juntos. */
+export async function listarPromos(s: SesionPanel): Promise<PromoResumen[]> {
+  const r = await panelRequest<{
+    promotions: { items: Array<{ id: string; name: string; enabled: boolean; couponCode: string | null; endsAt: string | null; actions: Array<{ code: string }> }> };
+  }>(
+    s.token,
+    s.canal.token,
+    `{ promotions(options: { take: 100, sort: { createdAt: DESC } }) {
+      items { id name enabled couponCode endsAt actions { code } }
+    } }`,
+  );
+  return (r.data?.promotions.items ?? []).map(p => ({
+    id: p.id,
+    name: p.name,
+    enabled: p.enabled,
+    couponCode: p.couponCode,
+    endsAt: p.endsAt,
+    esSeckill: p.actions.some(a => a.code === 'products_percentage_discount'),
+  }));
+}
+
+/**
+ * Cupón clásico: código, % o importe fijo, mínimo de pedido y caducidad.
+ * Sobre las Promotions nativas de Vendure: el carrito lo aplica solo.
+ */
+export async function crearCupon(
+  s: SesionPanel,
+  datos: { nombre: string; codigo: string; tipo: 'pct' | 'fijo'; valor: number; minimo: number; caduca: string | null },
+): Promise<string | undefined> {
+  const accion =
+    datos.tipo === 'pct'
+      ? { code: 'order_percentage_discount', arguments: [{ name: 'discount', value: String(datos.valor) }] }
+      : { code: 'order_fixed_discount', arguments: [{ name: 'discount', value: String(datos.valor) }] };
+  const condiciones =
+    datos.minimo > 0
+      ? [{
+          code: 'minimum_order_amount',
+          arguments: [
+            { name: 'amount', value: String(datos.minimo) },
+            { name: 'taxInclusive', value: 'true' },
+          ],
+        }]
+      : [];
+  const r = await panelRequest<{ createPromotion: { __typename: string; message?: string } }>(
+    s.token,
+    s.canal.token,
+    `mutation Cupon($input: CreatePromotionInput!) { createPromotion(input: $input) {
+      __typename ... on Promotion { id } ... on ErrorResult { message }
+    } }`,
+    {
+      input: {
+        enabled: true,
+        couponCode: datos.codigo,
+        ...(datos.caduca ? { endsAt: datos.caduca } : {}),
+        translations: [{ languageCode: IDIOMA_TRADUCCION, name: datos.nombre }],
+        conditions: condiciones,
+        actions: [accion],
+      },
+    },
+  );
+  if (r.error) return r.error;
+  const res = r.data?.createPromotion;
+  return res && res.__typename !== 'Promotion' ? res.message || res.__typename : undefined;
+}
+
+/**
+ * 秒杀: descuento automático sobre productos concretos con hora de fin.
+ * Sin cupón: el precio baja solo en el carrito mientras dura la ventana.
+ */
+export async function crearSeckill(
+  s: SesionPanel,
+  datos: { nombre: string; productIds: string[]; pct: number; termina: string },
+): Promise<string | undefined> {
+  // La acción de Vendure trabaja con VARIANTES, no con productos: se rebajan
+  // todas las variantes de cada producto elegido.
+  const variantIds: string[] = [];
+  for (const pid of datos.productIds) {
+    const rp = await panelRequest<{ product: { variants: Array<{ id: string }> } | null }>(
+      s.token,
+      s.canal.token,
+      `query V($id: ID!) { product(id: $id) { variants { id } } }`,
+      { id: pid },
+    );
+    for (const v of rp.data?.product?.variants ?? []) variantIds.push(v.id);
+  }
+  if (variantIds.length === 0) return 'sin variantes';
+  const r = await panelRequest<{ createPromotion: { __typename: string; message?: string } }>(
+    s.token,
+    s.canal.token,
+    `mutation Seckill($input: CreatePromotionInput!) { createPromotion(input: $input) {
+      __typename ... on Promotion { id } ... on ErrorResult { message }
+    } }`,
+    {
+      input: {
+        enabled: true,
+        startsAt: new Date().toISOString(),
+        endsAt: datos.termina,
+        translations: [{ languageCode: IDIOMA_TRADUCCION, name: datos.nombre }],
+        // Vendure exige condición o cupón. El 秒杀 no lleva cupón, así que va
+        // con una condición siempre cierta: pedido mínimo de 0.
+        conditions: [{
+          code: 'minimum_order_amount',
+          arguments: [
+            { name: 'amount', value: '0' },
+            { name: 'taxInclusive', value: 'true' },
+          ],
+        }],
+        actions: [{
+          code: 'products_percentage_discount',
+          arguments: [
+            { name: 'discount', value: String(datos.pct) },
+            { name: 'productVariantIds', value: JSON.stringify(variantIds) },
+          ],
+        }],
+      },
+    },
+  );
+  if (r.error) return r.error;
+  const res = r.data?.createPromotion;
+  return res && res.__typename !== 'Promotion' ? res.message || res.__typename : undefined;
+}
+
+/** Apagar o borrar una promoción. */
+export async function borrarPromo(s: SesionPanel, id: string): Promise<string | undefined> {
+  const r = await panelRequest<{ deletePromotion: { result: string } }>(
+    s.token,
+    s.canal.token,
+    `mutation Borrar($id: ID!) { deletePromotion(id: $id) { result } }`,
+    { id },
+  );
+  return r.error;
+}
+
+/* -------------------------------- 分销 ----------------------------------- */
+
+export interface Distribuidor {
+  codigo: string;
+  nombre: string;
+  comision: number; // en %
+}
+
+export function leerDistribuidores(json: string | null | undefined): Distribuidor[] {
+  if (!json) return [];
+  try {
+    const v = JSON.parse(json) as Distribuidor[];
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Pedidos atribuidos a cada distribuidor, con su comisión calculada. */
+export async function informeDistribuidores(s: SesionPanel): Promise<
+  Array<Distribuidor & { pedidos: number; vendido: number; comisionGanada: number }>
+> {
+  const canal = await panelRequest<{ activeChannel: { customFields?: { distribuidores?: string | null } | null } }>(
+    s.token,
+    s.canal.token,
+    `{ activeChannel { customFields { distribuidores } } }`,
+  );
+  const lista = leerDistribuidores(canal.data?.activeChannel.customFields?.distribuidores);
+  if (lista.length === 0) return [];
+  const r = await panelRequest<{
+    orders: { items: Array<{ totalWithTax: number; state: string; customFields?: { distribuidor?: string | null } | null }> };
+  }>(
+    s.token,
+    s.canal.token,
+    `{ orders(options: { take: 500, sort: { orderPlacedAt: DESC } }) {
+      items { totalWithTax state customFields { distribuidor } }
+    } }`,
+  );
+  const pedidos = r.data?.orders.items ?? [];
+  return lista.map(d => {
+    // Solo pedidos COBRADOS generan comisión: un pedido pendiente aún puede
+    // cancelarse y pagarle por él sería pagar dos veces el error.
+    const suyos = pedidos.filter(p => p.customFields?.distribuidor === d.codigo);
+    const cobrados = suyos.filter(p => ['PaymentSettled', 'Shipped', 'Delivered'].includes(p.state));
+    const vendido = cobrados.reduce((t, p) => t + p.totalWithTax, 0);
+    return { ...d, pedidos: suyos.length, vendido, comisionGanada: Math.round((vendido * d.comision) / 100) };
+  });
+}
+
+/**
+ * Guarda el plantel de distribuidores en el canal. El customField del canal
+ * solo puede escribirlo el superadmin, así que se escribe con sus credenciales
+ * pero SIEMPRE sobre el canal de la sesión: nadie edita el plantel ajeno.
+ */
+export async function guardarDistribuidores(
+  s: SesionPanel,
+  lista: Distribuidor[],
+): Promise<string | undefined> {
+  try {
+    const auth = await adminLogin();
+    await adminRequest(
+      auth,
+      `mutation Dis($input: UpdateChannelInput!) {
+        updateChannel(input: $input) {
+          __typename
+          ... on Channel { id }
+          ... on ErrorResult { message }
+        }
+      }`,
+      { input: { id: s.canal.id, customFields: { distribuidores: JSON.stringify(lista) } } },
+    );
+    return undefined;
+  } catch (err) {
+    return err instanceof Error ? err.message : 'x';
+  }
 }

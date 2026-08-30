@@ -157,3 +157,61 @@ export async function panelRequest<T>(
     return { error: err instanceof Error ? err.message : 'Error de red' };
   }
 }
+
+/* ------------------------------- 秒杀 público ------------------------------ */
+
+export interface SeckillActivo {
+  pct: number;
+  endsAt: string | null;
+  variantIds: string[];
+}
+
+/**
+ * Promociones 秒杀 vivas de una tienda (sin cupón, con descuento por
+ * producto y dentro de su ventana). El storefront las pinta como rebaja;
+ * el precio real lo aplica Vendure en el carrito. Si algo falla, la tienda
+ * se sirve sin rebajas: una promo nunca tumba el escaparate.
+ */
+export async function seckillActivos(slug: string): Promise<SeckillActivo[]> {
+  try {
+    const auth = await adminLogin();
+    const data = await adminRequest<{
+      promotions: {
+        items: Array<{
+          enabled: boolean;
+          startsAt: string | null;
+          endsAt: string | null;
+          couponCode: string | null;
+          actions: Array<{ code: string; args: Array<{ name: string; value: string }> }>;
+        }>;
+      };
+    }>(
+      auth,
+      `{ promotions(options: { take: 50 }) {
+        items { enabled startsAt endsAt couponCode actions { code args { name value } } }
+      } }`,
+      undefined,
+      slug,
+    );
+    const ahora = Date.now();
+    const activos: SeckillActivo[] = [];
+    for (const p of data.promotions.items) {
+      if (!p.enabled || p.couponCode) continue;
+      if (p.startsAt && Date.parse(p.startsAt) > ahora) continue;
+      if (p.endsAt && Date.parse(p.endsAt) < ahora) continue;
+      const accion = p.actions.find(a => a.code === 'products_percentage_discount');
+      if (!accion) continue;
+      const pct = Number(accion.args.find(a => a.name === 'discount')?.value || 0);
+      let ids: string[] = [];
+      try {
+        ids = (JSON.parse(accion.args.find(a => a.name === 'productVariantIds')?.value || '[]') as unknown[]).map(String);
+      } catch {
+        /* args corruptos: se ignora la promo */
+      }
+      if (pct > 0 && ids.length) activos.push({ pct, endsAt: p.endsAt, variantIds: ids });
+    }
+    return activos;
+  } catch {
+    return [];
+  }
+}

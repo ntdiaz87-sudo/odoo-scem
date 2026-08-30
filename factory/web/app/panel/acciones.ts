@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { MONEDA_DE, esLocaleValido } from '../../lib/i18n';
 import { getT } from '../../lib/i18n-server';
-import { cobrarPedido, crearGruposDeVariantes, crearProducto, enviarPedido, guardarProducto, guardarVariantes, verProducto } from '../../lib/panel-datos';
+import { borrarPromo, cobrarPedido, crearCupon, crearGruposDeVariantes, crearProducto, crearSeckill, enviarPedido, guardarDistribuidores, guardarProducto, guardarVariantes, informeDistribuidores, verProducto } from '../../lib/panel-datos';
 import { COOKIE_PANEL, LANG_CANAL, leerSesion, opcionesCookie } from '../../lib/panel-sesion';
 import { adminLogin, adminRequest, ownerLogin, ownerLogout, ownerMe, panelRequest } from '../../lib/vendure';
 
@@ -379,4 +379,79 @@ export async function accionAjustesTienda(_prev: Estado, datos: FormData): Promi
   }
   revalidatePath('/panel/tienda');
   return { ok: t('pn.pr.guardado') };
+}
+
+/* ------------------------------- marketing -------------------------------- */
+
+export async function accionCrearCupon(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const nombre = String(datos.get('nombre') || '').trim();
+  const codigo = String(datos.get('codigo') || '').trim().toUpperCase().replace(/\s+/g, '');
+  const tipo = datos.get('tipo') === 'fijo' ? ('fijo' as const) : ('pct' as const);
+  const bruto = Number(String(datos.get('valor') || '0').replace(',', '.'));
+  // El % va tal cual (30 = 30%); el importe fijo va en céntimos.
+  const valor = tipo === 'pct' ? Math.round(bruto) : Math.round(bruto * 100);
+  const minimo = aCentimos(datos.get('minimo'));
+  const caducaRaw = String(datos.get('caduca') || '').trim();
+  if (!nombre || !codigo || valor <= 0 || (tipo === 'pct' && valor > 100)) {
+    return { error: t('pn.mk.falta') };
+  }
+  const caduca = caducaRaw ? new Date(caducaRaw).toISOString() : null;
+  const error = await crearCupon(s, { nombre, codigo, tipo, valor, minimo, caduca });
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath('/panel/marketing');
+  return { ok: t('pn.mk.creado') };
+}
+
+export async function accionCrearSeckill(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const nombre = String(datos.get('nombre') || '').trim();
+  const pct = Math.round(Number(datos.get('pct') || 0));
+  const terminaRaw = String(datos.get('termina') || '').trim();
+  const productIds = datos.getAll('producto').map(String).filter(Boolean);
+  if (!nombre || pct <= 0 || pct > 90 || !terminaRaw || productIds.length === 0) {
+    return { error: t('pn.mk.falta') };
+  }
+  const termina = new Date(terminaRaw);
+  if (!(termina.getTime() > Date.now())) return { error: t('pn.mk.falta') };
+  const error = await crearSeckill(s, { nombre, productIds, pct, termina: termina.toISOString() });
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath('/panel/marketing');
+  return { ok: t('pn.mk.creado') };
+}
+
+export async function accionBorrarPromo(datos: FormData): Promise<void> {
+  const s = await exigirSesion();
+  const id = String(datos.get('id') || '');
+  if (id) await borrarPromo(s, id);
+  revalidatePath('/panel/marketing');
+}
+
+export async function accionAgregarDistribuidor(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const nombre = String(datos.get('nombre') || '').trim();
+  const codigo = String(datos.get('codigo') || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+  const comision = Math.round(Number(String(datos.get('comision') || '0').replace(',', '.')));
+  if (!nombre || !codigo || comision < 0 || comision > 50) return { error: t('pn.mk.falta') };
+  const lista = await informeDistribuidores(s);
+  if (lista.some(d => d.codigo === codigo)) return { error: t('pn.mk.falta') };
+  const plantel = [...lista.map(d => ({ codigo: d.codigo, nombre: d.nombre, comision: d.comision })), { codigo, nombre, comision }];
+  const error = await guardarDistribuidores(s, plantel);
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath('/panel/marketing');
+  return { ok: t('pn.mk.creado') };
+}
+
+export async function accionQuitarDistribuidor(datos: FormData): Promise<void> {
+  const s = await exigirSesion();
+  const codigo = String(datos.get('codigo') || '');
+  const lista = await informeDistribuidores(s);
+  const plantel = lista
+    .filter(d => d.codigo !== codigo)
+    .map(d => ({ codigo: d.codigo, nombre: d.nombre, comision: d.comision }));
+  await guardarDistribuidores(s, plantel);
+  revalidatePath('/panel/marketing');
 }

@@ -3,10 +3,21 @@
 /** Piezas interactivas de la tienda: registro PWA, contador y añadir al carrito. */
 
 import { useEffect, useState } from 'react';
-import { addToCart, fetchActiveOrder } from '../../../lib/shop-client';
+import { captarDistribuidor, addToCart, fetchActiveOrder } from '../../../lib/shop-client';
 import { useDinero, useTt } from '../../../lib/tienda-locale';
 
 /** Registra el service worker que hace instalable la tienda como app (PWA). */
+/**
+ * Si la visita llega con ?d=CODIGO (enlace de un 分销员), el código se
+ * guarda y el checkout atribuirá el pedido. Sin interfaz: solo memoria.
+ */
+export function CaptaDistribuidor({ slug }: { slug: string }) {
+  useEffect(() => {
+    captarDistribuidor(slug);
+  }, [slug]);
+  return null;
+}
+
 export function PwaSetup() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -155,10 +166,13 @@ export function CompraProducto({
   slug,
   nombreProducto,
   variantes,
+  seckill,
 }: {
   slug: string;
   nombreProducto: string;
   variantes: { id: string; name: string; priceWithTax: number; currencyCode: string }[];
+  /** 秒杀 activo sobre este producto: % de rebaja y hora de fin. */
+  seckill?: { pct: number; badge: string } | null;
 }) {
   const [elegida, setElegida] = useState(0);
   const money = useDinero();
@@ -184,7 +198,15 @@ export function CompraProducto({
           ))}
         </div>
       ) : null}
-      <p className="st-prod-p">{money(v.priceWithTax, v.currencyCode)}</p>
+      {seckill ? (
+        <p className="st-prod-p">
+          <span className="st-sk-badge">{seckill.badge}</span>{' '}
+          <s className="st-precio-antes">{money(v.priceWithTax, v.currencyCode)}</s>{' '}
+          {money(Math.round((v.priceWithTax * (100 - seckill.pct)) / 100), v.currencyCode)}
+        </p>
+      ) : (
+        <p className="st-prod-p">{money(v.priceWithTax, v.currencyCode)}</p>
+      )}
       <AddToCartButton slug={slug} variantId={v.id} />
     </>
   );

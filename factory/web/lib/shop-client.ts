@@ -11,6 +11,7 @@ export interface CartLine {
   id: string;
   quantity: number;
   linePriceWithTax: number;
+  discountedLinePriceWithTax: number;
   productVariant: { id: string; name: string; sku: string };
 }
 
@@ -23,12 +24,16 @@ export interface ActiveOrder {
   shippingWithTax: number;
   totalWithTax: number;
   currencyCode: string;
+  couponCodes: string[];
+  discounts: Array<{ description: string; amountWithTax: number }>;
   lines: CartLine[];
 }
 
 export const ORDER_FIELDS = `
   id code state totalQuantity subTotalWithTax shippingWithTax totalWithTax currencyCode
-  lines { id quantity linePriceWithTax productVariant { id name sku } }
+  couponCodes
+  discounts { description amountWithTax }
+  lines { id quantity linePriceWithTax discountedLinePriceWithTax productVariant { id name sku } }
 `;
 
 export async function shopFetch<T>(
@@ -128,6 +133,62 @@ export async function adjustLine(slug: string, lineId: string, quantity: number)
   }
   notifyCartChanged();
   return result as ActiveOrder;
+}
+
+/** Aplica un 优惠码; si Vendure lo rechaza, devuelve el error como excepción. */
+export async function applyCoupon(slug: string, code: string): Promise<ActiveOrder> {
+  const data = await shopFetch<{
+    applyCouponCode: { __typename: string; message?: string } & Partial<ActiveOrder>;
+  }>(
+    slug,
+    `mutation Cupon($code: String!) {
+      applyCouponCode(couponCode: $code) {
+        __typename
+        ... on Order { ${ORDER_FIELDS} }
+        ... on ErrorResult { message }
+      }
+    }`,
+    { code },
+  );
+  if (data.applyCouponCode.__typename !== 'Order') {
+    throw new Error(data.applyCouponCode.message || 'Cupón no válido.');
+  }
+  notifyCartChanged();
+  return data.applyCouponCode as ActiveOrder;
+}
+
+export async function removeCoupon(slug: string, code: string): Promise<ActiveOrder> {
+  const data = await shopFetch<{ removeCouponCode: ActiveOrder | null }>(
+    slug,
+    `mutation Quitar($code: String!) {
+      removeCouponCode(couponCode: $code) { ${ORDER_FIELDS} }
+    }`,
+    { code },
+  );
+  notifyCartChanged();
+  return data.removeCouponCode as ActiveOrder;
+}
+
+/* ----------------------------- 分销 (atribución) ---------------------------- */
+
+const disKey = (slug: string) => `fabrica-d-${slug}`;
+
+/** Guarda el código del distribuidor si la visita llegó con ?d=CODIGO. */
+export function captarDistribuidor(slug: string): void {
+  try {
+    const d = new URLSearchParams(window.location.search).get('d');
+    if (d && d.trim()) window.localStorage.setItem(disKey(slug), d.trim());
+  } catch {
+    /* almacenamiento bloqueado */
+  }
+}
+
+export function distribuidorGuardado(slug: string): string | null {
+  try {
+    return window.localStorage.getItem(disKey(slug));
+  } catch {
+    return null;
+  }
 }
 
 export function formatMoney(minor: number, currency: string): string {

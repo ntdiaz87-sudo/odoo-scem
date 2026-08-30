@@ -1,11 +1,11 @@
 import type { StoreDesign } from '../../../lib/designs';
 import { DESIGN_PRESETS } from '../../../lib/designs';
-import { shopQuery } from '../../../lib/vendure';
+import { seckillActivos, shopQuery } from '../../../lib/vendure';
 import { rootDomain } from '../../../lib/tenant';
 import { loadStoreInfo } from '../../../lib/store-design';
 import { LOCALE, MONEDA_DE, esLocaleValido, money, translate, type Locale } from '../../../lib/i18n';
 import { MercadoProvider } from '../../../lib/tienda-locale';
-import { CompraProducto, GaleriaProducto, PwaSetup } from './storefront-ui';
+import { CaptaDistribuidor, CompraProducto, GaleriaProducto, PwaSetup } from './storefront-ui';
 import { SandboxBanner, StoreFooter, StoreHeader, StoreNotFound, storeVars } from './_shell';
 
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
@@ -97,6 +97,16 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     return <StoreNotFound rootUrl={ROOT_URL} />;
   }
 
+  // 秒杀 vivos: variante → % de rebaja. Un producto luce el badge si alguna
+  // de sus variantes está en la promo (si hay varias, gana la mayor).
+  const seckills = await seckillActivos(slug);
+  const rebajaVar = new Map<string, number>();
+  for (const sk of seckills) {
+    for (const id of sk.variantIds) {
+      rebajaVar.set(id, Math.max(rebajaVar.get(id) ?? 0, sk.pct));
+    }
+  }
+
   const cf = data.activeChannel.customFields;
   const design = parseDesign(cf?.design);
   const nombre = cf?.displayName || data.activeChannel.code;
@@ -119,6 +129,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     <MercadoProvider valor={{ locale: mercado, moneda }}>
     <div className="st" style={storeVars(design)}>
       <PwaSetup />
+      <CaptaDistribuidor slug={slug} />
       {cf?.isSandbox ? <SandboxBanner expiresAt={cf?.expiresAt} rootUrl={ROOT_URL} mercado={mercado} /> : null}
 
       <StoreHeader slug={slug} nombre={nombre} mercado={mercado} activo="catalogo" />
@@ -183,7 +194,15 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
                       <h3 className="st-prod-n">{p.name}</h3>
                       <p className="st-prod-d">{p.description}</p>
                       {p.variants.length > 0 ? (
-                        <CompraProducto slug={slug} nombreProducto={p.name} variantes={p.variants} />
+                        <CompraProducto
+                          slug={slug}
+                          nombreProducto={p.name}
+                          variantes={p.variants}
+                          seckill={(() => {
+                            const pct = Math.max(0, ...p.variants.map(v => rebajaVar.get(v.id) ?? 0));
+                            return pct > 0 ? { pct, badge: t('st.sk.badge', { pct: String(pct) }) } : null;
+                          })()}
+                        />
                       ) : (
                         <p className="st-prod-p">—</p>
                       )}
