@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pyxel_container_list" model="ir.ui.view">
+        <field name="name">pyxel.container.list</field>
+        <field name="model">pyxel.container</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="overloaded" decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="container_type"/>
+                <field name="port_id"/>
+                <field name="supplier_count" string="Proveedores"/>
+                <field name="volume_pct" widget="percentage" string="Volumen %"/>
+                <field name="weight_pct" widget="percentage" string="Peso %"/>
+                <field name="free_volume" string="Libre m³"/>
+                <field name="state"/>
+                <field name="overloaded" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pyxel_container_form" model="ir.ui.view">
+        <field name="name">pyxel.container.form</field>
+        <field name="model">pyxel.container</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,open,closed,shipped"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="CUBA-0001"/></h1>
+                    </div>
+
+                    <div class="alert alert-danger" role="alert"
+                         invisible="not overloaded">
+                        El contenedor está sobrecargado. Se llena por volumen o
+                        por peso, lo que llegue antes: la carga voluminosa
+                        agota el espacio mucho antes que la báscula, y las
+                        baterías al revés.
+                    </div>
+
+                    <group>
+                        <group string="Contenedor">
+                            <field name="container_type"/>
+                            <field name="port_id"/>
+                            <field name="supplier_count"/>
+                        </group>
+                        <group string="Ocupación">
+                            <label for="used_volume"/>
+                            <div>
+                                <field name="used_volume" class="oe_inline"/> /
+                                <field name="capacity_volume" class="oe_inline"/> m³
+                                (<field name="volume_pct" class="oe_inline"/> %)
+                            </div>
+                            <label for="used_weight"/>
+                            <div>
+                                <field name="used_weight" class="oe_inline"/> /
+                                <field name="capacity_weight" class="oe_inline"/> kg
+                                (<field name="weight_pct" class="oe_inline"/> %)
+                            </div>
+                            <field name="free_volume"/>
+                            <field name="overloaded" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Carga" name="carga">
+                            <field name="line_ids">
+                                <list editable="bottom"
+                                      decoration-warning="measures_missing">
+                                    <field name="product_id"/>
+                                    <field name="supplier_id"/>
+                                    <field name="quantity"/>
+                                    <field name="volume_m3" string="m³"/>
+                                    <field name="weight_kg" string="kg"/>
+                                    <field name="measures_missing" string="Sin medidas"/>
+                                </list>
+                            </field>
+                            <div class="text-muted mt-2">
+                                Una línea marcada como «sin medidas» no suma a la
+                                ocupación porque el producto no tiene volumen o
+                                peso en su ficha. Es la causa más común de un
+                                contenedor que parecía caber y no cabe.
+                            </div>
+                        </page>
+                        <page string="Notas" name="notas">
+                            <field name="note" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pyxel_container" model="ir.actions.act_window">
+        <field name="name">Contenedores mixtos</field>
+        <field name="res_model">pyxel.container</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_pyxel_container" name="Contenedores mixtos"
+              parent="pyxel_trade_core.menu_pyxel_trade_root"
+              action="action_pyxel_container" sequence="20"/>
+
+</odoo>
