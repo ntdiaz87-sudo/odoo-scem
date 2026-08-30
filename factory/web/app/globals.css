@@ -1503,6 +1503,24 @@ a:hover { color: var(--accent-dark); }
 .pn-foto-quitar { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--pn-tinta-suave); cursor: pointer; }
 .pn-foto-quitar input { width: 15px; height: 15px; accent-color: var(--pn-acento); }
 .pn-foto-fila input[type='file'] { font-size: 13px; max-width: 100%; color: var(--pn-tinta-suave); }
+/* El control de fichero crudo del navegador desentona con el resto del panel y
+   además rotula en el idioma del NAVEGADOR ("Choose Files"), no en el del
+   comerciante. Se le da la forma de los botones del panel; el rótulo del botón
+   no se puede traducir desde CSS, así que se oculta y la etiqueta de al lado
+   dice qué hace. Es el control que más va a usar: subir las fotos de sus
+   productos. */
+.pn-campo input[type='file'] {
+  width: 100%; font-size: 13px; color: var(--pn-tinta-suave);
+  padding: 10px 12px; border: 1px dashed var(--pn-borde-fuerte);
+  border-radius: 11px; background: var(--pn-superficie); cursor: pointer;
+}
+.pn-campo input[type='file']::file-selector-button {
+  margin-right: 12px; padding: 7px 14px; border: 0; border-radius: 99px;
+  background: var(--pn-acento); color: var(--pn-acento-tinta);
+  font: inherit; font-weight: 700; font-size: 12.5px; cursor: pointer;
+}
+.pn-campo input[type='file']:hover { border-color: var(--pn-acento); }
+.pn-campo input[type='file']:focus-visible { outline: 2px solid var(--pn-acento); outline-offset: 2px; }
 .pn-ok {
   background: #dff3d0; color: #29521f; border-radius: 11px;
   padding: 11px 13px; font-size: 14px; font-weight: 600;
@@ -1545,9 +1563,13 @@ a:hover { color: var(--accent-dark); }
 .st-prod-galeria { display: flex; flex-direction: column; gap: 6px; }
 .st-prod-img--foto { padding: 0; overflow: hidden; background: var(--s-surface); }
 .st-prod-img--foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.st-prod-minis { list-style: none; margin: 0; padding: 0 6px; display: flex; gap: 5px; overflow-x: auto; }
+/* Las miniaturas se REPARTEN el ancho en vez de medir fijo: en una tarjeta de
+   dos columnas, cinco de 38px no caben y la última se salía. Con un tope para
+   que con dos fotos no salgan dos cuadrados enormes. */
+.st-prod-minis { list-style: none; margin: 0; padding: 0 6px; display: flex; gap: 5px; }
+.st-prod-minis li { flex: 1 1 0; min-width: 0; max-width: 42px; }
 .st-prod-minis button {
-  width: 38px; height: 38px; padding: 0; border-radius: 7px; overflow: hidden; cursor: pointer;
+  width: 100%; aspect-ratio: 1; padding: 0; border-radius: 7px; overflow: hidden; cursor: pointer;
   border: 2px solid transparent; background: none; opacity: .62; transition: opacity .15s ease;
 }
 .st-prod-minis button img { width: 100%; height: 100%; object-fit: cover; display: block; }

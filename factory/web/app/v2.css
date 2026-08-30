@@ -44,7 +44,22 @@
 .e-marca { font-family: var(--font-display); font-weight: 700; font-size: 1.35em; letter-spacing: .16em; }
 /* La barra de la tienda va SIEMPRE en una línea. Si envuelve, crece de alto
    y en las tarjetas pequeñas empuja el titular fuera de la ventana visible. */
-.e-nav { display: flex; gap: 1.6em; font-size: .95em; opacity: .78; min-width: 0; overflow: hidden; white-space: nowrap; }
+/* La barra de la tienda en miniatura.
+   Con las categorías en chino cabían las cuatro; en español o inglés son mucho
+   más largas y se cortaban a mitad de palabra, con un tajo seco que se leía
+   como un fallo de maquetación. Ahora la tarjeta pequeña enseña solo las que
+   caben de verdad, y el borde se desvanece para que el recorte parezca
+   intencionado y no un accidente. */
+.e-nav {
+  display: flex; gap: 1.6em; font-size: .95em; opacity: .78;
+  min-width: 0; overflow: hidden; white-space: nowrap;
+  mask-image: linear-gradient(90deg, #000 calc(100% - 1.6em), transparent);
+}
+/* En la tarjeta pequeña la barra no llega ni a 6px de ancho: la marca se queda
+   con todo el espacio. Un rastro de 6px de texto cortado no informa de nada y
+   se lee como un fallo, así que ahí no va: marca y bolsa bastan para que se
+   entienda que es la cabecera de una tienda. */
+.e--tarjeta .e-nav { display: none; }
 .e-bolsa { width: 1.1em; height: 1.25em; border: .12em solid currentColor; border-radius: .12em .12em .35em .35em; opacity: .8; }
 .e-menu { display: flex; flex-direction: column; gap: .28em; }
 .e-menu i { display: block; width: 1.3em; height: .13em; background: currentColor; opacity: .85; }
@@ -70,6 +85,22 @@
   display: flex; flex-direction: column; align-items: flex-start; gap: .5em;
 }
 .e--movil .e-hero-copy { max-width: 88%; padding: 1.6em; }
+/* La miniatura no da para titular + frase + botón: el bloque va anclado abajo,
+   crece hacia arriba y el hero se comía el titular entero. En la tarjeta se
+   queda lo que de verdad identifica a la tienda —titular y botón— con el
+   titular a dos líneas como mucho. Se veía en los dos idiomas: en español el
+   texto salía cortado a media letra, y en chino directamente no salía. */
+/* La tarjeta solo enseña los primeros ~112px del escaparate, y el bloque va
+   anclado ABAJO del hero: quedaba justo fuera de la ventana visible, con el
+   botón partido por el borde. En la tarjeta se ancla arriba y crece hacia
+   abajo, que es donde el comerciante lo está mirando. */
+.e--tarjeta .e-hero-copy { top: 0; bottom: auto; padding: .6em .8em; max-width: 88%; gap: .1em; }
+.e--tarjeta .e-cta { margin-top: .15em; padding: .42em 1em; font-size: .84em; }
+.e--tarjeta .e-sub { display: none; }
+.e--tarjeta .e-titular {
+  font-size: 1.45em; line-height: 1.04;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
 .e-titular {
   font-family: var(--font-display); font-weight: 700; font-size: 2.6em; line-height: 1.08;
   margin: 0; letter-spacing: -.01em; white-space: pre-line;
@@ -77,7 +108,9 @@
 }
 .e-sub { margin: 0; font-size: 1em; opacity: .78; color: var(--e-tinta); }
 .e-cta {
-  margin-top: .5em; padding: .7em 1.6em; border-radius: 99px;
+  /* Sin nowrap el botón se partía en un óvalo con las letras apiladas en
+     vertical cuando el ancho apretaba. */
+  margin-top: .5em; padding: .7em 1.6em; border-radius: 99px; white-space: nowrap;
   background: var(--e-acento); color: var(--e-acento-tinta);
   font-size: 1em; font-weight: 700;
 }
