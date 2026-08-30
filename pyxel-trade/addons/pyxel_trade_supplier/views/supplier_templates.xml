@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="gateway" name="PYXEL — Puerta del proveedor">
+    <t t-call="website.layout">
+        <t t-set="additional_title" t-value="c['meta_title']"/>
+        <div id="wrap" class="pyxel-supplier">
+
+            <!-- ══ Selector de idioma ════════════════════════════════ -->
+            <div class="ps-langbar">
+                <div class="container ps-container">
+                    <t t-foreach="idiomas" t-as="lang">
+                        <a t-attf-href="/suppliers/#{lang['code']}"
+                           t-attf-class="ps-lang#{' ps-lang--on' if lang['code'] == idioma else ''}"
+                           t-out="lang['short']"/>
+                    </t>
+                </div>
+            </div>
+
+            <!-- ══ Hero ══════════════════════════════════════════════
+                 El titular no es «pasarela digital» sino la única frase
+                 que responde a la objeción real de un fabricante chino:
+                 quién le paga, dónde y en qué moneda. -->
+            <section class="ps-hero">
+                <div class="container ps-container">
+                    <p class="ps-eyebrow" t-out="c['hero']['eyebrow']"/>
+                    <h1 class="ps-hero__title">
+                        <t t-out="c['hero']['title']"/><br/>
+                        <span class="ps-hero__sub" t-out="c['hero']['subtitle']"/>
+                    </h1>
+                    <p class="ps-hero__claim" t-out="c['hero']['claim']"/>
+                    <p class="ps-hero__lead" t-out="c['hero']['lead']"/>
+                    <a href="#contacto" class="ps-btn ps-btn--primary"
+                       t-out="c['hero']['cta']"/>
+                </div>
+            </section>
+
+            <!-- ══ Objeciones ════════════════════════════════════════ -->
+            <section class="ps-section">
+                <div class="container ps-container">
+                    <h2 class="ps-title" t-out="c['problem']['title']"/>
+                    <p class="ps-lead" t-out="c['problem']['intro']"/>
+                    <ul class="ps-objections">
+                        <t t-foreach="c['problem']['items']" t-as="item">
+                            <li class="ps-objection">
+                                <span class="ps-objection__mark" aria-hidden="true">✕</span>
+                                <t t-out="item"/>
+                            </li>
+                        </t>
+                    </ul>
+                    <p class="ps-outro" t-out="c['problem']['outro']"/>
+                </div>
+            </section>
+
+            <!-- ══ Los tres niveles ══════════════════════════════════ -->
+            <section class="ps-section ps-section--alt">
+                <div class="container ps-container">
+                    <h2 class="ps-title" t-out="c['levels']['title']"/>
+                    <p class="ps-lead" t-out="c['levels']['intro']"/>
+                    <div class="ps-levels">
+                        <t t-foreach="c['levels']['items']" t-as="nivel">
+                            <article class="ps-level">
+                                <span class="ps-level__tag" t-out="nivel['tag']"/>
+                                <h3 class="ps-level__name" t-out="nivel['name']"/>
+                                <p class="ps-level__claim" t-out="nivel['claim']"/>
+                                <p class="ps-level__body" t-out="nivel['body']"/>
+                            </article>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Servicios ═════════════════════════════════════════ -->
+            <section class="ps-section">
+                <div class="container ps-container">
+                    <h2 class="ps-title" t-out="c['services']['title']"/>
+                    <div class="ps-phases">
+                        <t t-foreach="c['services']['phases']" t-as="fase">
+                            <div class="ps-phase">
+                                <h3 class="ps-phase__name" t-out="fase['name']"/>
+                                <ul class="ps-phase__list">
+                                    <t t-foreach="fase['items']" t-as="servicio">
+                                        <li>
+                                            <span class="ps-phase__svc" t-out="servicio[0]"/>
+                                            <span class="ps-phase__why" t-out="servicio[1]"/>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Compatibilidad eléctrica ══════════════════════════
+                 Es lo que más nos diferencia en una feria: demuestra que
+                 conocemos el mercado y convierte el problema en una
+                 especificación OEM concreta que una fábrica puede cotizar. -->
+            <section class="ps-section ps-power">
+                <div class="container ps-container">
+                    <h2 class="ps-title ps-title--light" t-out="c['power']['title']"/>
+                    <p class="ps-power__lead" t-out="c['power']['lead']"/>
+                    <div class="ps-power__grid">
+                        <table class="ps-table">
+                            <thead>
+                                <tr>
+                                    <th t-out="c['power']['table_head'][0]"/>
+                                    <th t-out="c['power']['table_head'][1]"/>
+                                    <th t-out="c['power']['table_head'][2]"/>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="c['power']['table']" t-as="fila">
+                                    <tr>
+                                        <td t-out="fila[0]"/>
+                                        <td t-out="fila[1]"/>
+                                        <td class="ps-table__cuba" t-out="fila[2]"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                        <div class="ps-power__text">
+                            <p t-out="c['power']['detail']"/>
+                            <p class="ps-power__ask" t-out="c['power']['ask']"/>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Contenedor mixto ══════════════════════════════════ -->
+            <section class="ps-section">
+                <div class="container ps-container">
+                    <div class="ps-container-box">
+                        <span class="ps-tag" t-out="c['container']['tag']"/>
+                        <h2 class="ps-title" t-out="c['container']['title']"/>
+                        <p class="ps-lead" t-out="c['container']['body']"/>
+                        <p class="ps-example" t-out="c['container']['example']"/>
+                        <p class="ps-outro" t-out="c['container']['why']"/>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Categorías ════════════════════════════════════════ -->
+            <section class="ps-section ps-section--alt">
+                <div class="container ps-container">
+                    <h2 class="ps-title" t-out="c['categories']['title']"/>
+                    <p class="ps-lead" t-out="c['categories']['intro']"/>
+                    <div class="ps-cats">
+                        <t t-foreach="c['categories']['items']" t-as="cat">
+                            <div class="ps-cat">
+                                <h3 class="ps-cat__name" t-out="cat[1]"/>
+                                <p class="ps-cat__items" t-out="cat[2]"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Modelos de acuerdo ════════════════════════════════ -->
+            <section class="ps-section">
+                <div class="container ps-container">
+                    <h2 class="ps-title" t-out="c['partnership']['title']"/>
+                    <div class="ps-pills">
+                        <t t-foreach="c['partnership']['items']" t-as="modelo">
+                            <span class="ps-pill" t-out="modelo"/>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Formulario ════════════════════════════════════════ -->
+            <section class="ps-section ps-section--alt" id="contacto">
+                <div class="container ps-container">
+                    <div class="ps-form-box">
+                        <t t-if="enviado">
+                            <div class="ps-ok">
+                                <h2 class="ps-title" t-out="c['form']['success_title']"/>
+                                <p t-out="c['form']['success']"/>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <h2 class="ps-title" t-out="c['form']['title']"/>
+                            <p class="ps-lead" t-out="c['form']['lead']"/>
+
+                            <div class="ps-error" t-if="error" t-out="error"/>
+
+                            <form t-attf-action="/suppliers/#{idioma}/contact"
+                                  method="post" class="ps-form">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <!-- Trampa para robots: oculta y fuera del
+                                     recorrido de teclado. -->
+                                <input type="text" name="website_confirm"
+                                       class="ps-trap" tabindex="-1"
+                                       autocomplete="off" aria-hidden="true"/>
+
+                                <div class="ps-field">
+                                    <label for="ps-company" t-out="c['form']['company']"/>
+                                    <input id="ps-company" type="text" name="company"
+                                           required="required"
+                                           t-att-value="post.get('company')"/>
+                                </div>
+                                <div class="ps-field">
+                                    <label for="ps-contact" t-out="c['form']['contact']"/>
+                                    <input id="ps-contact" type="text" name="contact"
+                                           required="required"
+                                           t-att-value="post.get('contact')"/>
+                                </div>
+                                <div class="ps-field">
+                                    <label for="ps-email" t-out="c['form']['email']"/>
+                                    <input id="ps-email" type="email" name="email"
+                                           required="required"
+                                           t-att-value="post.get('email')"/>
+                                </div>
+                                <div class="ps-field">
+                                    <label for="ps-phone" t-out="c['form']['phone']"/>
+                                    <input id="ps-phone" type="text" name="phone"
+                                           t-att-value="post.get('phone')"/>
+                                </div>
+                                <div class="ps-field ps-field--wide">
+                                    <label for="ps-website" t-out="c['form']['website']"/>
+                                    <input id="ps-website" type="text" name="website"
+                                           t-att-value="post.get('website')"/>
+                                </div>
+                                <div class="ps-field ps-field--wide">
+                                    <label for="ps-type" t-out="c['form']['type']"/>
+                                    <select id="ps-type" name="supplier_type">
+                                        <option value="" t-out="c['form']['type_empty']"/>
+                                        <t t-foreach="tipos" t-as="tipo">
+                                            <option t-att-value="tipo['value']"
+                                                    t-att-selected="'selected' if post.get('supplier_type') == tipo['value'] else None"
+                                                    t-out="tipo['label']"/>
+                                        </t>
+                                    </select>
+                                </div>
+
+                                <fieldset class="ps-field ps-field--wide">
+                                    <legend t-out="c['form']['categories']"/>
+                                    <div class="ps-checks">
+                                        <t t-foreach="categorias_form" t-as="cat">
+                                            <label class="ps-check">
+                                                <input type="checkbox" name="categories"
+                                                       t-att-value="cat['value']"/>
+                                                <span t-out="cat['label']"/>
+                                            </label>
+                                        </t>
+                                    </div>
+                                </fieldset>
+
+                                <div class="ps-field ps-field--wide">
+                                    <label for="ps-message" t-out="c['form']['message']"/>
+                                    <textarea id="ps-message" name="message" rows="5"
+                                              t-att-placeholder="c['form']['message_hint']"
+                                              t-out="post.get('message')"/>
+                                </div>
+
+                                <div class="ps-field ps-field--wide">
+                                    <button type="submit" class="ps-btn ps-btn--primary"
+                                            t-out="c['form']['submit']"/>
+                                    <p class="ps-privacy" t-out="c['form']['privacy']"/>
+                                </div>
+                            </form>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Cierre ════════════════════════════════════════════ -->
+            <section class="ps-closing">
+                <div class="container ps-container">
+                    <p class="ps-closing__brand" t-out="c['closing']['brand']"/>
+                    <p class="ps-closing__line" t-out="c['closing']['line']"/>
+                    <p class="ps-closing__route" t-out="c['closing']['route']"/>
+                </div>
+            </section>
+
+        </div>
+    </t>
+</template>
+
+</odoo>
