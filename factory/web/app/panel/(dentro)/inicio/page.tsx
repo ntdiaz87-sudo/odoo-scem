@@ -44,7 +44,8 @@ export default async function Inicio() {
           {tareas.map(x => (
             <li key={x.txt}>
               <Link href={x.href} className="pn-tarea">
-                {x.txt} <span aria-hidden="true">→</span>
+                <span className="pn-tarea-txt">{x.txt}</span>
+                <span className="pn-tarea-txt" aria-hidden="true">→</span>
               </Link>
             </li>
           ))}

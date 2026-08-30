@@ -9,6 +9,7 @@
  */
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { DESIGN_PRESETS, type StoreDesign } from './designs';
 import { loadStoreInfo } from './store-design';
 import { ownerMe, type CanalDelDueno } from './vendure';
 
@@ -19,6 +20,8 @@ export interface SesionPanel {
   correo: string;
   canal: CanalDelDueno;
   nombre: string;
+  /** El diseño que eligió el dueño: su panel se pinta con él. */
+  design: StoreDesign;
 }
 
 export async function leerSesion(): Promise<SesionPanel | null> {
@@ -28,7 +31,13 @@ export async function leerSesion(): Promise<SesionPanel | null> {
   if (!yo || yo.canales.length === 0) return null;
   const canal = yo.canales[0];
   const info = await loadStoreInfo(canal.token);
-  return { token, correo: yo.identifier, canal, nombre: info?.name || canal.code };
+  return {
+    token,
+    correo: yo.identifier,
+    canal,
+    nombre: info?.name || canal.code,
+    design: info?.design ?? DESIGN_PRESETS[0],
+  };
 }
 
 export function opcionesCookie(maxAge: number) {

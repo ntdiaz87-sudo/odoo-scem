@@ -144,12 +144,16 @@ async function variantBySku(session: OwnerSession, sku: string): Promise<{ id: s
 async function callTool(session: OwnerSession, name: string, args: Record<string, unknown>): Promise<string> {
   switch (name) {
     case 'info_tienda': {
+      /* Esto listaba `channels(take: 100)` y buscaba el suyo por código. La
+         petición ya va con el vendure-token de su canal, así que activeChannel
+         devuelve exactamente ese, sin paginar y sin poder equivocarse. Con más
+         de 100 tiendas en la plataforma el canal del dueño se quedaba fuera de
+         la página y el agente contestaba que su tienda no tiene diseño y que
+         no es demo: no fallaba, mentía. */
       const data = await ownerRequest<{
-        channel: null;
-        channels: { items: Array<{ code: string; customFields?: { displayName?: string; isSandbox?: boolean; expiresAt?: string; design?: string } | null }> };
-      }>(session, `{ channels(options: { take: 100 }) { items { code customFields { displayName isSandbox expiresAt design } } } }`);
-      const ch = data.channels.items.find(c => c.code === session.channelCode);
-      const cf = ch?.customFields;
+        activeChannel: { code: string; customFields?: { displayName?: string; isSandbox?: boolean; expiresAt?: string; design?: string } | null };
+      }>(session, `{ activeChannel { code customFields { displayName isSandbox expiresAt design } } }`);
+      const cf = data.activeChannel?.customFields;
       let designLabel = '';
       try {
         designLabel = cf?.design ? (JSON.parse(cf.design) as { label?: string }).label || '' : '';

@@ -12,8 +12,22 @@ async function check(name, fn) {
 }
 const assert = (cond, msg) => { if (!cond) throw new Error(msg); };
 
+/* Cada creación de tienda gasta cupo del límite anti-abuso (3 por IP y hora).
+   Si la batería crea varias desde la misma IP, se corta a sí misma; y si se
+   lanza dos veces en la misma hora, la segunda arranca con el cupo ya gastado
+   por la primera. Por eso el navegador estrena IP en cada ejecución y las
+   creaciones que no van por el asistente llevan la suya. */
+/* Base aleatoria Y contador: el contador solo evita que dos creaciones de la
+   MISMA vuelta compartan IP; sin base aleatoria, dos vueltas seguidas empiezan
+   otra vez por la misma IP y la segunda arranca con el cupo ya gastado. */
+let nIP = Math.floor(Math.random() * 250);
+const ipSuelta = () => `198.51.100.${(nIP++ % 250) + 1}`; // rango distinto al de la prueba del cupo
+
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium' });
-const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+const ctx = await browser.newContext({
+  viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2,
+  extraHTTPHeaders: { 'x-forwarded-for': ipSuelta() },
+});
 const page = await ctx.newPage();
 
 // ---------- 1. LANDING ----------
@@ -131,7 +145,10 @@ await check('Tienda creada: banner sandbox, nombre, 4 productos y diseño oscuro
   assert(brightness < 100, `el fondo no es oscuro (${rgb})`);
 });
 await check('Wizard: nombre duplicado crea tienda con sufijo (no falla)', async () => {
-  const res = await ctx.request.post(BASE + '/api/demo', { data: { storeName: NAME, designKey: 'hoja-viva', ownerEmail: `dup-${STAMP}@test.local`, ownerPassword: PASS } });
+  const res = await ctx.request.post(BASE + '/api/demo', {
+    headers: { 'x-forwarded-for': ipSuelta() },
+    data: { storeName: NAME, designKey: 'hoja-viva', ownerEmail: `dup-${STAMP}@test.local`, ownerPassword: PASS },
+  });
   assert(res.status() === 200, `status ${res.status()}`);
   const { url } = await res.json();
   assert(url && url.includes(SLUG + '-'), `esperaba sufijo, vino ${url}`);
@@ -209,7 +226,7 @@ await check('Diseñador: el diseño elegido queda RETIRADO (409 al reutilizarlo)
   });
   const design = JSON.parse((await r.json()).data.activeChannel.customFields.design);
   const res = await ctx.request.post(BASE + '/api/demo', {
-    headers: { 'x-forwarded-for': '10.99.99.1' },
+    headers: { 'x-forwarded-for': ipSuelta() }, // IP fija = 429 a la cuarta vuelta del día
     data: { storeName: 'Copiona', design, ownerEmail: `copiona-${STAMP}@test.local`, ownerPassword: PASS },
   });
   assert(res.status() === 409, `status ${res.status()}`);
@@ -279,7 +296,10 @@ await check('El panel de canales ya no está abierto a quien acierte el slug', a
   assert((r.headers()['location'] || '').includes('/panel'), `redirige a ${r.headers()['location']}`);
 });
 await check('Fase 1: correo repetido rechazado con aviso claro', async () => {
-  const res = await ctx.request.post(BASE + '/api/demo', { data: { storeName: 'Otra Tienda', designKey: 'hoja-viva', ownerEmail: EMAIL, ownerPassword: PASS } });
+  const res = await ctx.request.post(BASE + '/api/demo', {
+    headers: { 'x-forwarded-for': ipSuelta() },
+    data: { storeName: 'Otra Tienda', designKey: 'hoja-viva', ownerEmail: EMAIL, ownerPassword: PASS },
+  });
   assert(res.status() === 409, `status ${res.status()}`);
   assert((await res.json()).error.includes('已经有商店'), 'mensaje inesperado');
 });
@@ -451,8 +471,14 @@ await check('Idioma: el visitante cambia a español y vuelve al chino', async ()
   const zh = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');
   assert(zh.includes('你的商店') && zh.includes('从这里开始'), `no arranca en chino: ${zh}`);
 
-  await page.getByRole('button', { name: 'Español' }).first().click();
-  await page.waitForTimeout(2200);
+  // El selector guarda la cookie y recarga. Esperar un tiempo fijo aquí hacía
+  // la prueba dependiente de lo cargado que estuviera el servidor: se esperan
+  // la recarga y el resultado, no un cronómetro.
+  await Promise.all([
+    page.waitForLoadState('networkidle'),
+    page.getByRole('button', { name: 'Español' }).first().click(),
+  ]);
+  await page.waitForFunction(() => document.documentElement.lang.startsWith('es'), null, { timeout: 20000 });
   const es = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');
   assert(/Tu tienda empieza aqu/.test(es), `no cambió a español: ${es}`);
   assert((await page.evaluate(() => document.documentElement.lang)) === 'es', 'el atributo lang no cambió');
@@ -462,12 +488,14 @@ await check('Idioma: el visitante cambia a español y vuelve al chino', async ()
 
   // Y el asistente, incluidas las etiquetas de la encuesta.
   await page.goto(BASE + '/demo?modo=ai', { waitUntil: 'networkidle' });
-  await page.waitForTimeout(1500);
-  assert(await page.getByRole('button', { name: 'Moda y accesorios' }).count() > 0, 'la encuesta sigue en chino');
+  await page.getByRole('button', { name: 'Moda y accesorios' }).first().waitFor({ timeout: 15000 });
 
-  await page.getByRole('button', { name: '中文' }).first().click();
-  await page.waitForTimeout(2200);
-  assert((await page.content()).includes('你卖什么'), 'no volvió al chino');
+  await Promise.all([
+    page.waitForLoadState('networkidle'),
+    page.getByRole('button', { name: '中文' }).first().click(),
+  ]);
+  await page.waitForFunction(() => document.documentElement.lang.startsWith('zh'), null, { timeout: 20000 });
+  await page.getByText('你卖什么').first().waitFor({ timeout: 15000 });
 });
 
 // ---------- 8. VÍA DE PLANTILLA ----------
@@ -493,7 +521,7 @@ await check('Plantilla: es REUTILIZABLE — una segunda tienda puede elegir la m
   // Esto es lo que separa una plantilla de un diseño exclusivo. Si el registro
   // de unicidad la retirase, la galería dejaría de tener sentido.
   const r = await ctx.request.post(BASE + '/api/demo', {
-    headers: { 'x-forwarded-for': `198.51.100.${1 + Math.floor(Math.random() * 250)}` },
+    headers: { 'x-forwarded-for': ipSuelta() },
     data: {
       storeName: `Plantilla Bis ${STAMP2}`,
       design: JSON.parse((await (await ctx.request.post(BASE + '/shop-api', {

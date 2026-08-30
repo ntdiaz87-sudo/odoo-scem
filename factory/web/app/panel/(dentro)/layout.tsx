@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getT } from '../../../lib/i18n-server';
+import { panelVars } from '../../../lib/panel-tema';
 import { leerSesion } from '../../../lib/panel-sesion';
 import { storeUrl } from '../../../lib/tenant';
 import { salir } from '../acciones';
@@ -21,7 +22,7 @@ export default async function LayoutPanel({ children }: { children: React.ReactN
   ];
 
   return (
-    <div className="pn">
+    <div className="pn" style={panelVars(s.design)}>
       <header className="pn-cabecera">
         <Link href="/panel/inicio" className="pn-marca">
           <span className="fh-marca">
