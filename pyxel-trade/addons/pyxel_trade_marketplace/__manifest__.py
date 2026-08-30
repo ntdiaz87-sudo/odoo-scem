@@ -21,6 +21,10 @@
         'data/market_signal_data.xml',
     ],
 
+    # Deja la raíz del dominio en /market. Va en un hook y no en un XML
+    # porque el sitio ya existe al instalar este módulo: ver __init__.py.
+    'post_init_hook': 'post_init_hook',
+
     'assets': {
         'web.assets_frontend': [
             'pyxel_trade_marketplace/static/src/scss/marketplace.scss',

@@ -133,7 +133,11 @@
                     </div>
                     <div class="px-categories">
                         <t t-foreach="categorias" t-as="fila">
-                            <a t-attf-href="/shop?category=#{fila['registro'].id}" class="px-category">
+                            <!-- /shop/category/<id> y no /shop?category=<id>:
+                                 Odoo 19 ya no lee el parámetro de consulta, lo
+                                 tira con un 301 a /shop y el visitante acaba en
+                                 el catálogo entero sin filtrar. -->
+                            <a t-attf-href="/shop/category/#{fila['registro'].id}" class="px-category">
                                 <span class="px-category__media">
                                     <!-- image_512 como fuente, no image_1920: se pide
                                          la imagen ya pequeña en vez de reducir una

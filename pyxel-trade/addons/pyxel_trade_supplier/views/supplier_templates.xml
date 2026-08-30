@@ -9,10 +9,16 @@
             <!-- ══ Selector de idioma ════════════════════════════════ -->
             <div class="ps-langbar">
                 <div class="container ps-container">
-                    <t t-foreach="idiomas" t-as="lang">
-                        <a t-attf-href="/suppliers/#{lang['code']}"
-                           t-attf-class="ps-lang#{' ps-lang--on' if lang['code'] == idioma else ''}"
-                           t-out="lang['short']"/>
+                    <!-- La variable NO puede llamarse `lang`: el cuerpo de un
+                         t-call se renderiza ANTES que la plantilla llamada y
+                         sobre el mismo contexto, así que al terminar el bucle
+                         `lang` queda valiendo un diccionario. website.layout
+                         hace `lang.replace('_','-')` para el atributo lang del
+                         <html> y la página entera revienta con un 500. -->
+                    <t t-foreach="idiomas" t-as="opcion_idioma">
+                        <a t-attf-href="/suppliers/#{opcion_idioma['code']}"
+                           t-attf-class="ps-lang#{' ps-lang--on' if opcion_idioma['code'] == idioma else ''}"
+                           t-out="opcion_idioma['short']"/>
                     </t>
                 </div>
             </div>
