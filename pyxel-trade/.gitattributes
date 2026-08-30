@@ -1,0 +1,17 @@
+# Estos ficheros viajan a un servidor Linux. Sin esta regla, Git para
+# Windows los convierte a CRLF al clonar, y en el servidor bash rechaza
+# los scripts con un "\r: command not found" que no dice nada, mientras
+# que el .env se vuelve ilegible al hacer source.
+#
+# Ya mordio una vez: el .env se creo desde un .env.example con CRLF y
+# render-config.sh murio en la primera linea.
+
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
