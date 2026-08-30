@@ -36,13 +36,31 @@ cómo quedó. Lo que sigue vigente son las reglas y el apartado final.
 | Stack (`pyxel_trade-db-1`, `pyxel_trade-odoo-1`) | Arriba y `healthy` |
 | Los cuatro módulos en Odoo 19 | Instalados, sin un solo error |
 | `trade.enetradex.com` con TLS | Vivo, certificado de Let's Encrypt |
+| Portada, `/market`, `/shop` | 200 |
+| `/suppliers` en es, en y 中文 | 200 (daban 500) |
 | Gestor de bases de datos | Cerrado (404), verificado |
 | Websocket del bus | `101 Switching Protocols`, verificado |
 | `web.base.url` | `https://trade.enetradex.com`, congelado |
 | Backup diario + copia fuera del servidor | Cron a las 4:15, probado |
 | Migración a Gitea con CI/CD | **Pendiente** |
 
-## Las dos cosas que hubo que arreglar
+## La trampa que muerde dos veces
+
+**Nunca hagas `chown -R root:root /opt/pyxel-trade`.** El contenedor de Odoo
+no corre como root y `config/odoo.conf` tiene que pertenecer al uid del
+usuario `odoo` de la imagen (hoy, 100). Si lo cambias, Odoo arranca viendo
+una configuración vacía. Pasó dos veces durante este despliegue, la segunda
+por sincronizar el código con `tar` y ordenar los permisos después.
+
+La cura es una línea, y el workflow de CI ya la lleva:
+
+```bash
+cd /opt/pyxel-trade && bash scripts/render-config.sh
+```
+
+Lánzala después de **cualquier** copia de ficheros al servidor.
+
+## Las cinco cosas que hubo que arreglar
 
 **1. `odoo.conf` ilegible para Odoo.** El contenedor no corre como root y el
 fichero quedaba en `600` propiedad de root: Odoo veía una configuración
@@ -67,6 +85,28 @@ sintaxis válida—, lo detectó `smoke.sh`, y `caddy adapt` confirmó el orden.
 Arreglado metiéndolo en su propio `handle`, colocado antes del resto. No es
 una precaución teórica: el Odoo del POS de este mismo grupo se comprometió
 por dejarlo abierto y apareció una base `pwn_`.
+
+**3. `/suppliers` devolvía 500 en los tres idiomas.** La puerta del
+proveedor chino —la mitad del producto que mira a China— no cargaba. El
+selector de idiomas hacía `t-foreach="idiomas" t-as="lang"`, y el cuerpo de
+un `t-call` se renderiza *antes* que la plantilla llamada y sobre el mismo
+contexto: al llegar a `website.layout`, `lang` valía un diccionario y el
+`lang.replace('_','-')` del atributo `lang` del `<html>` tiraba la página
+entera. Renombrada la variable del bucle. Es un fallo que ninguna revisión
+de código habría cazado y que sólo aparece con Odoo sirviendo.
+
+**4. Las fichas de categoría no filtraban.** Enlazaban a
+`/shop?category=<id>`; Odoo 19 ya no lee ese parámetro, contesta 301 a
+`/shop` y el visitante acaba en el catálogo entero. Ahora
+`/shop/category/<id>`.
+
+**5. La raíz del dominio servía una página en blanco.** `trade.enetradex.com`
+daba la página «Home» vacía que el módulo `website` crea de serie, mientras
+el marketplace vivía en `/market`. Un `post_init_hook` en
+`pyxel_trade_marketplace` deja la portada en `/market` y nombra el sitio,
+sin pisar nada que ya estuviera configurado. En XML no valía: el sitio ya
+existe cuando el módulo se instala, así que con `noupdate="1"` no se
+aplicaba nunca y sin él cada actualización pisaría al cliente.
 
 La única salvedad que queda es cosmética: `smoke.sh` marca el websocket como
 AVISO porque le manda un GET normal y el bus contesta 400. Con una petición
