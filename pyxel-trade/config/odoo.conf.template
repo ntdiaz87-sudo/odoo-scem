@@ -1,0 +1,46 @@
+[options]
+; ─────────────────────────────────────────────────────────────
+; Este fichero es una PLANTILLA. El script `scripts/bootstrap-hetzner.sh`
+; la renderiza a `config/odoo.conf` sustituyendo las variables desde `.env`.
+; El fichero renderizado contiene secretos y está excluido de git.
+; ─────────────────────────────────────────────────────────────
+
+; Contraseña maestra de gestión de bases de datos.
+admin_passwd = ${ODOO_ADMIN_PASSWD}
+
+; Las credenciales de PostgreSQL las inyecta el entrypoint de la imagen
+; oficial desde las variables HOST / USER / PASSWORD, por eso no se
+; escriben aquí: así no acaban en un fichero del repositorio.
+
+addons_path = /mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons
+data_dir = /var/lib/odoo
+
+; ── Seguridad ───────────────────────────────────────────────
+; Sin listado ni creación de bases desde la web. La base se crea una única
+; vez por línea de comandos (ver README). Deja el gestor de bases fuera
+; del alcance de Internet.
+list_db = False
+dbfilter = ^${ODOO_DB_NAME}$
+db_name = ${ODOO_DB_NAME}
+
+; Imprescindible detrás de Caddy: sin esto Odoo genera URLs http://
+; y las cookies de sesión no se marcan como seguras.
+proxy_mode = True
+
+; ── Rendimiento ─────────────────────────────────────────────
+; Con workers > 0 Odoo arranca en modo multiproceso y habilita el
+; websocket del bus en el puerto 8072.
+workers = ${ODOO_WORKERS}
+max_cron_threads = 2
+
+limit_memory_soft = 2147483648
+limit_memory_hard = 2684354560
+limit_request = 8192
+limit_time_cpu = 600
+limit_time_real = 1200
+; El cron largo (agregación de demanda, informes) necesita más margen.
+limit_time_real_cron = 1800
+
+; ── Registro ────────────────────────────────────────────────
+log_level = info
+logfile = None
