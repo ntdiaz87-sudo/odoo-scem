@@ -124,18 +124,40 @@ corta: **el frontend público no se puede quedar dentro de Odoo** si la
 plataforma tiene que funcionar en la red cubana. La fase 1 sigue valiendo
 para validar el negocio; la fase 2 ya no es una opción a evaluar.
 
-## Lo que falta
+## Lo que falta: Gitea, y a un comando de distancia
 
-Mover el proyecto a Gitea (`nilo/pyxel-trade`, rama `develop`) con su deploy
-key en `/opt/pyxel-trade_deploy_key`, para tener despliegue automático como
-el resto de proyectos de la casa. El workflow ya está escrito en
-`.gitea/workflows/deploy.yml`. Al clonar, no olvides
+Mover el proyecto a Gitea (`nilo/pyxel-trade`, rama `develop`) para tener
+despliegue automático como el resto de la casa. El workflow ya está escrito
+en `.gitea/workflows/deploy.yml` y el runner del GEX44 lleva la etiqueta
+`gex44` que pide. Falta un paso manual y luego uno solo:
+
+1. **Crea el repositorio vacío** `pyxel-trade` bajo el usuario `nilo` en
+   <https://git.enetradex.com> — sin README, sin .gitignore, sin licencia.
+2. En el servidor:
 
 ```bash
-git -C /opt/pyxel-trade config core.sshCommand "ssh -i /opt/pyxel-trade_deploy_key"
+bash /opt/pyxel-trade/scripts/migrar-a-gitea.sh
 ```
 
-o el CI falla en el primer paso.
+El script convierte `/opt/pyxel-trade` en un clon, comprueba que ni el
+`.env` ni el `odoo.conf` se cuelan en el índice, sube `develop` y enciende
+las Actions del repositorio.
+
+**El paso 1 no se puede automatizar.** Los tokens de Gitea que hay en el
+servidor (embebidos en los remotes de `/opt/fabrica` y `/opt/qbaprotic`)
+están limitados a repositorios que ya existen: crear uno pide el permiso
+`write:user`, que no tienen.
+
+**Y olvida la deploy key de `/opt/pyxel-trade_deploy_key`.** Este Gitea no
+publica SSH: corre en Docker exponiendo sólo `127.0.0.1:3000`, así que el
+puerto 22 de `git.enetradex.com` es el `sshd` del servidor, no el de Gitea.
+Clonar por SSH exigiría cambiar la publicación de puertos de un servicio
+compartido. El patrón real de la casa es token en la URL del remote, que es
+lo que hacen `/opt/qbaprotic` y `/opt/fabrica`.
+
+El token del remote será, por tanto, uno **compartido y pendiente de
+rotación**. El día que se rote, este repositorio deja de desplegar hasta
+que se rehaga el remote; el propio script termina diciendo cómo.
 
 Y dos cosas menores, para el día del lanzamiento:
 
