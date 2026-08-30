@@ -56,13 +56,32 @@ class PyxelMarketplaceHome(http.Controller):
                 ('is_company', '=', True), ('country_id.code', '=', 'CU')]),
         }
 
+    def _categorias_con_conteo(self, limite=6):
+        """Categorías de portada con su número de productos publicados.
+
+        El conteo se hace aquí y no en la plantilla porque una vista no debe
+        consultar la base: si mañana esto lo sirve una API, la lógica ya
+        está en el sitio correcto.
+        """
+        Categoria = request.env['product.public.category'].sudo()
+        Producto = request.env['product.template'].sudo()
+        filas = []
+        for categoria in Categoria.search([('parent_id', '=', False)], limit=limite):
+            filas.append({
+                'registro': categoria,
+                'conteo': Producto.search_count([
+                    ('public_categ_ids', 'child_of', categoria.id),
+                    ('is_published', '=', True),
+                ]),
+            })
+        return filas
+
     @http.route('/market', type='http', auth='public', website=True, sitemap=True)
     def marketplace_home(self, orden='popular', **kw):
-        Categoria = request.env['product.public.category'].sudo()
         Senal = request.env['pyxel.market.signal'].sudo()
 
         valores = {
-            'categorias': Categoria.search([('parent_id', '=', False)], limit=6),
+            'categorias': self._categorias_con_conteo(),
             'destacados': self._productos_destacados(orden),
             'orden_activo': orden if orden in self.ORDENES else 'popular',
             'senales': Senal.search([], limit=4),

@@ -145,6 +145,28 @@ crontab -e
 # 15 3 * * * /opt/backup_pyxel_trade.sh >> /var/log/backup_pyxel_trade.log 2>&1
 ```
 
+## Imágenes de la portada
+
+La portada usa tres fuentes de imagen. Ninguna apunta a un fichero que no
+exista: un 404 de estático deja la web a medias sin que nada falle.
+
+| Dónde | De dónde sale | Cómo se cambia |
+|---|---|---|
+| Hero | `static/src/img/hero.svg` | Es un marcador de posición vectorial de 4 KB. Para poner una fotografía, deja el fichero en esa carpeta y cambia el `src` en `views/home_templates.xml` |
+| Categorías | Campo `image_1920` de `product.public.category` | Desde Odoo, en cada categoría del catálogo |
+| Productos | Campo `image_1920` de `product.template` | Desde la ficha del producto |
+
+**Si pones una fotografía en el hero, cuida el peso.** Es la imagen más
+cara de la página y la primera que se descarga. Recomendado: 1600 px de
+ancho, WebP o AVIF, **por debajo de 120 KB**. Una foto de portada sin
+optimizar ronda los 400 KB, y en el tramo caro de ETECSA eso es casi un
+cuarto del presupuesto de la primera visita entero.
+
+Odoo redimensiona solo las de categorías y productos: se piden por
+`/web/image/...` en el tamaño exacto que se muestra.
+
+Quien active el **modo ligero** deja de recibir las tres.
+
 ## Día a día
 
 ```bash

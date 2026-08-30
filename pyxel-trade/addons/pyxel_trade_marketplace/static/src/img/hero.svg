@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 720" width="1600" height="720" role="img" aria-label="Puerto de contenedores">
+  <!--
+    Marcador de posición del hero. Es un fichero real y ligero (unos 2 KB)
+    para que la página nunca pida una imagen inexistente: un 404 de
+    estático deja la web a medias sin que nada falle.
+    Para poner la fotografía definitiva, ver el README del módulo.
+  -->
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#BBD3FA"/>
+      <stop offset="55%"  stop-color="#DCE8FB"/>
+      <stop offset="100%" stop-color="#EFF4FD"/>
+    </linearGradient>
+    <linearGradient id="agua" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5E86C6"/>
+      <stop offset="100%" stop-color="#2F4E86"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="720" fill="url(#cielo)"/>
+
+  <!-- Grúas del muelle -->
+  <g stroke="#8FA9D4" stroke-width="7" fill="none" opacity=".75">
+    <path d="M180 470 V150 H470 M300 150 V470 M180 150 L120 230"/>
+    <path d="M560 470 V170 H850 M680 170 V470 M560 170 L500 250"/>
+  </g>
+
+  <!-- Buque -->
+  <path d="M760 470 h700 l-60 90 H820 Z" fill="#123A72"/>
+  <rect x="1330" y="392" width="110" height="80" rx="6" fill="#1B4A8C"/>
+
+  <!-- Contenedores apilados en cubierta -->
+  <g>
+    <rect x="800"  y="404" width="112" height="66" fill="#1B63F5"/>
+    <rect x="924"  y="404" width="112" height="66" fill="#E8850C"/>
+    <rect x="1048" y="404" width="112" height="66" fill="#0FA25C"/>
+    <rect x="1172" y="404" width="112" height="66" fill="#1B63F5" opacity=".8"/>
+    <rect x="862"  y="332" width="112" height="66" fill="#0FA25C" opacity=".9"/>
+    <rect x="986"  y="332" width="112" height="66" fill="#1B63F5"/>
+    <rect x="1110" y="332" width="112" height="66" fill="#E8850C" opacity=".85"/>
+    <rect x="924"  y="260" width="112" height="66" fill="#1B63F5" opacity=".7"/>
+    <rect x="1048" y="260" width="112" height="66" fill="#0FA25C" opacity=".75"/>
+  </g>
+
+  <!-- Contenedores en tierra -->
+  <g opacity=".55">
+    <rect x="120" y="404" width="96" height="58" fill="#1B63F5"/>
+    <rect x="228" y="404" width="96" height="58" fill="#E8850C"/>
+    <rect x="336" y="404" width="96" height="58" fill="#0FA25C"/>
+    <rect x="174" y="342" width="96" height="58" fill="#0FA25C"/>
+    <rect x="282" y="342" width="96" height="58" fill="#1B63F5"/>
+  </g>
+
+  <!-- Agua -->
+  <rect y="560" width="1600" height="160" fill="url(#agua)"/>
+  <g stroke="#7FA0D8" stroke-width="4" opacity=".5" stroke-linecap="round">
+    <path d="M60 610 h150 M300 640 h190 M600 605 h130 M900 645 h210 M1250 615 h180"/>
+  </g>
+</svg>

@@ -6,43 +6,86 @@
         <t t-set="additional_title">PYXEL — Cuba Trade OS</t>
         <div id="wrap" class="pyxel-market">
 
-            <!-- ══ Hero e intención de búsqueda ══════════════════════ -->
+            <!-- ══ Hero ══════════════════════════════════════════════
+                 Fotografía de fondo, texto encima y las dos tarjetas
+                 flotantes de la maqueta: búsqueda por intención a la
+                 izquierda y Cuba Market Pulse a la derecha. El Pulse va
+                 aquí, sobre el pliegue, que es el sitio más visible de
+                 la página: es el dato que ningún competidor replica. -->
             <section class="px-hero">
                 <div class="container px-container">
-                    <p class="px-eyebrow">Your Digital Gateway to the Cuban Market</p>
-                    <h1 class="px-hero__title">
-                        De <span class="px-accent-china">China</span>
-                        a <span class="px-accent-cuba">Cuba</span>.<br/>
-                        Una plataforma para hacerlo realidad.
-                    </h1>
-                    <p class="px-hero__lead">
-                        Descubre fabricantes, encuentra productos, analiza la demanda
-                        y construye operaciones de importación en un solo lugar.
-                    </p>
+                    <div class="px-hero__card">
+                        <img t-if="not modo_ligero" class="px-hero__photo"
+                             src="/pyxel_trade_marketplace/static/src/img/hero.svg"
+                             alt="" aria-hidden="true"
+                             width="1600" height="720"
+                             fetchpriority="high" decoding="async"/>
+                        <span class="px-hero__veil" aria-hidden="true"/>
 
-                    <div class="px-intent">
-                        <label class="px-intent__label" for="px-intent-input">
-                            <span class="px-intent__spark" aria-hidden="true">✦</span>
-                            ¿Qué necesitas importar?
-                        </label>
-                        <form action="/shop" method="get" role="search" class="px-intent__form">
-                            <input id="px-intent-input" type="search" name="search"
-                                   class="px-intent__input"
-                                   placeholder="Describe un producto, pega un enlace o escribe lo que necesita tu empresa..."
-                                   aria-label="¿Qué necesitas importar?"/>
-                            <button type="submit" class="px-intent__submit"
-                                    aria-label="Buscar">
-                                <span aria-hidden="true">→</span>
-                            </button>
-                        </form>
-                        <div class="px-intent__examples">
-                            <span class="px-intent__examples-label">Ejemplos:</span>
-                            <t t-foreach="['Paneles solares 550W', 'A/C 12,000 BTU',
-                                           'Triciclos eléctricos', 'Equipamiento restaurante']"
-                               t-as="ejemplo">
-                                <button type="button" class="px-chip js-px-example"
-                                        t-out="ejemplo"/>
-                            </t>
+                        <div class="px-hero__grid">
+                            <div class="px-hero__content">
+                                <p class="px-eyebrow">
+                                    <span aria-hidden="true">✦</span>
+                                    Your Digital Gateway to the Cuban Market
+                                </p>
+                                <h1 class="px-hero__title">
+                                    De <span class="px-accent-china">China</span>
+                                    a <span class="px-accent-cuba">Cuba</span>.<br/>
+                                    Una plataforma para hacerlo realidad.
+                                </h1>
+                                <p class="px-hero__lead">
+                                    Descubre fabricantes, encuentra productos, analiza la
+                                    demanda y construye operaciones de importación en un
+                                    solo lugar.
+                                </p>
+
+                                <div class="px-intent">
+                                    <label class="px-intent__label" for="px-intent-input">
+                                        <span class="px-intent__spark" aria-hidden="true">✦</span>
+                                        ¿Qué necesitas importar?
+                                    </label>
+                                    <form action="/shop" method="get" role="search"
+                                          class="px-intent__form">
+                                        <input id="px-intent-input" type="search" name="search"
+                                               class="px-intent__input"
+                                               placeholder="Describe un producto, pega un enlace o escribe lo que necesita tu empresa..."
+                                               aria-label="¿Qué necesitas importar?"/>
+                                        <button type="submit" class="px-intent__submit"
+                                                aria-label="Buscar">
+                                            <span aria-hidden="true">→</span>
+                                        </button>
+                                    </form>
+                                    <div class="px-intent__examples">
+                                        <span class="px-intent__examples-label">Ejemplos:</span>
+                                        <t t-foreach="['Paneles solares 550W', 'A/C 12,000 BTU',
+                                                       'Triciclos eléctricos', 'Equipamiento restaurante']"
+                                           t-as="ejemplo">
+                                            <button type="button" class="px-chip js-px-example"
+                                                    t-out="ejemplo"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <aside class="px-pulse" t-if="senales">
+                                <h2 class="px-pulse__title">Cuba Market Pulse</h2>
+                                <p class="px-pulse__lead">Lo que más demanda tu mercado</p>
+                                <ul class="px-pulse__list">
+                                    <t t-foreach="senales" t-as="senal">
+                                        <li class="px-signal">
+                                            <span class="px-signal__name" t-out="senal.name"/>
+                                            <span t-attf-class="px-signal__trend px-signal__trend--#{senal.trend}">
+                                                <t t-if="senal.trend == 'high'">Demanda alta</t>
+                                                <t t-elif="senal.trend == 'rising'">Demanda en alza</t>
+                                                <t t-else="">Oportunidad</t>
+                                            </span>
+                                            <span class="px-signal__delta" t-if="senal.variation">
+                                                <t t-out="'%+.0f%%' % senal.variation"/>
+                                            </span>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </aside>
                         </div>
                     </div>
                 </div>
@@ -74,7 +117,7 @@
                         <div class="px-action px-action--soon">
                             <span class="px-action__icon px-action__icon--orange" aria-hidden="true">▣</span>
                             <span class="px-action__name">Crear contenedor MIX</span>
-                            <span class="px-action__desc">Combina productos de varias categorías y optimiza el contenedor.</span>
+                            <span class="px-action__desc">Combina categorías distintas y optimiza el contenedor.</span>
                             <span class="px-badge px-badge--soon">Próximamente</span>
                         </div>
                     </div>
@@ -89,21 +132,26 @@
                         <a href="/shop" class="px-link">Ver todas las categorías →</a>
                     </div>
                     <div class="px-categories">
-                        <t t-foreach="categorias" t-as="categoria">
-                            <a t-attf-href="/shop?category=#{categoria.id}" class="px-category">
+                        <t t-foreach="categorias" t-as="fila">
+                            <a t-attf-href="/shop?category=#{fila['registro'].id}" class="px-category">
                                 <span class="px-category__media">
-                                    <!-- image_512 en lugar de image_1920: se pide
-                                         la fuente ya pequeña, no una reducción de
-                                         una imagen enorme. width y height evitan
-                                         que la tarjeta salte al cargar. -->
-                                    <img t-if="categoria.image_1920 and not modo_ligero"
-                                         t-attf-src="/web/image/product.public.category/#{categoria.id}/image_512/480x320"
-                                         t-att-alt="categoria.name"
+                                    <!-- image_512 como fuente, no image_1920: se pide
+                                         la imagen ya pequeña en vez de reducir una
+                                         enorme. width y height evitan que la tarjeta
+                                         salte al cargar. -->
+                                    <img t-if="fila['registro'].image_1920 and not modo_ligero"
+                                         t-attf-src="/web/image/product.public.category/#{fila['registro'].id}/image_512/480x320"
+                                         t-att-alt="fila['registro'].name"
                                          width="480" height="320"
                                          loading="lazy" decoding="async"/>
                                     <span t-else="" class="px-category__placeholder" aria-hidden="true"/>
                                 </span>
-                                <span class="px-category__name" t-out="categoria.name"/>
+                                <span class="px-category__body">
+                                    <span class="px-category__name" t-out="fila['registro'].name"/>
+                                    <span class="px-category__count" t-if="fila['conteo']">
+                                        <t t-out="fila['conteo']"/> productos
+                                    </span>
+                                </span>
                             </a>
                         </t>
                     </div>
@@ -118,7 +166,7 @@
                         <a href="/shop" class="px-link">Ver todos →</a>
                     </div>
 
-                    <div class="px-tabs" role="tablist">
+                    <div class="px-tabs">
                         <t t-foreach="[('popular', 'Popular'), ('precio', 'Mejor precio'),
                                        ('nuevos', 'Nuevos'), ('demanda', 'Alta demanda')]"
                            t-as="pestana">
@@ -156,8 +204,8 @@
                                     <!-- Compatibilidad con la red eléctrica cubana.
                                          China es 220 V/50 Hz y Cuba 110/220 V a 60 Hz:
                                          el estándar chino no funciona tal cual aquí.
-                                         El icono acompaña al color para que la señal
-                                         se lea también sin distinguirlo. -->
+                                         El símbolo acompaña al color para que la señal
+                                         se lea sin distinguir verde de naranja. -->
                                     <t t-if="producto.pyxel_cuba_power_fit == 'ok'">
                                         <span class="px-power px-power--ok">
                                             <span aria-hidden="true">✓</span> Compatible 110V/60Hz
@@ -207,41 +255,12 @@
                 </div>
             </section>
 
-            <!-- ══ Cuba Market Pulse ═════════════════════════════════
-                 Se le da sección propia y no un panel lateral: es el único
-                 dato de esta página que ningún competidor puede replicar,
-                 porque sale de las ventas reales de los canales del grupo. -->
-            <section class="px-section px-pulse px-defer" t-if="senales">
-                <div class="container px-container">
-                    <div class="px-pulse__head">
-                        <h2 class="px-section__title px-section__title--light">Cuba Market Pulse</h2>
-                        <p class="px-pulse__lead">Qué está buscando Cuba esta semana.</p>
-                    </div>
-                    <div class="px-signals">
-                        <t t-foreach="senales" t-as="senal">
-                            <div class="px-signal">
-                                <span class="px-signal__name" t-out="senal.name"/>
-                                <span t-attf-class="px-signal__trend px-signal__trend--#{senal.trend}">
-                                    <t t-if="senal.trend == 'high'">Demanda alta</t>
-                                    <t t-elif="senal.trend == 'rising'">Demanda en alza</t>
-                                    <t t-else="">Oportunidad</t>
-                                </span>
-                                <span class="px-signal__delta" t-if="senal.variation">
-                                    <t t-out="'%+.0f%%' % senal.variation"/>
-                                </span>
-                                <p class="px-signal__note" t-if="senal.note" t-out="senal.note"/>
-                            </div>
-                        </t>
-                    </div>
-                </div>
-            </section>
-
             <!-- ══ Trade Builder ═════════════════════════════════════ -->
             <section class="px-section px-defer">
                 <div class="container px-container">
                     <div class="px-builder">
                         <div class="px-builder__text">
-                            <h2 class="px-section__title px-section__title--light">Pyxel Trade Builder</h2>
+                            <h2 class="px-builder__title">Pyxel Trade Builder</h2>
                             <p class="px-builder__lead">
                                 El mercado cubano no siempre necesita un contenedor completo
                                 de un solo producto. Combina categorías y fabricantes
@@ -254,7 +273,34 @@
                             </p>
                             <span class="px-badge px-badge--soon">Próximamente</span>
                         </div>
+                        <div class="px-builder__art" aria-hidden="true">
+                            <span class="px-builder__box px-builder__box--a"/>
+                            <span class="px-builder__box px-builder__box--b"/>
+                            <span class="px-builder__box px-builder__box--c"/>
+                            <span class="px-builder__box px-builder__box--d"/>
+                        </div>
                     </div>
+                </div>
+            </section>
+
+            <!-- ══ Por qué Pyxel ═════════════════════════════════════ -->
+            <section class="px-section px-defer">
+                <div class="container px-container">
+                    <h2 class="px-section__title">¿Por qué elegir Pyxel?</h2>
+                    <ul class="px-reasons">
+                        <t t-foreach="[
+                            'Acceso directo a fabricantes chinos verificados',
+                            'Infraestructura digital completa, de la búsqueda a la entrega',
+                            'Acompañamiento en todo el proceso de importación',
+                            'Integración logística y comercial dentro de Cuba',
+                            'Inteligencia de mercado con datos de venta reales']"
+                           t-as="razon">
+                            <li class="px-reason">
+                                <span class="px-reason__tick" aria-hidden="true">✓</span>
+                                <t t-out="razon"/>
+                            </li>
+                        </t>
+                    </ul>
                 </div>
             </section>
 
@@ -266,14 +312,17 @@
                 <div class="container px-container">
                     <div class="px-metrics">
                         <div class="px-metric">
+                            <span class="px-metric__icon" aria-hidden="true">▲</span>
                             <span class="px-metric__value" t-out="metricas['proveedores']"/>
                             <span class="px-metric__label">Fabricantes verificados</span>
                         </div>
                         <div class="px-metric">
+                            <span class="px-metric__icon" aria-hidden="true">▦</span>
                             <span class="px-metric__value" t-out="metricas['productos']"/>
                             <span class="px-metric__label">Productos publicados</span>
                         </div>
                         <div class="px-metric">
+                            <span class="px-metric__icon" aria-hidden="true">◉</span>
                             <span class="px-metric__value" t-out="metricas['empresas']"/>
                             <span class="px-metric__label">Empresas cubanas registradas</span>
                         </div>
