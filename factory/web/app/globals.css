@@ -1757,3 +1757,15 @@ a:hover { color: var(--accent-dark); }
 .pn-pt-estado { font-weight: 600; }
 .pn-pt-estado--completo { border-color: #16a34a; color: #16a34a; }
 .pn-pt-estado--caducado { border-color: #d64545; color: #d64545; }
+
+/* -- tienda: cuenta del comprador -- */
+.st-ac-form { max-width: 420px; }
+.st-ac-saldo { display: grid; gap: 4px; margin-bottom: 22px; }
+.st-ac-saldo-k { font-size: .85rem; opacity: .7; }
+.st-ac-saldo-v { font-size: 1.9rem; font-weight: 700; line-height: 1.1; }
+.st-ac-pedidos { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
+.st-ac-pedido a {
+  display: flex; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit;
+  padding: 12px 14px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}

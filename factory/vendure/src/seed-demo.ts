@@ -68,6 +68,13 @@ const initialData = {
                 arguments: [{ name: 'automaticSettle', value: 'false' }],
             },
         },
+        {
+            // 会员储值: solo elegible para clientes registrados con saldo
+            // suficiente (ver src/saldo.ts). Liquida al instante.
+            name: '会员储值',
+            handler: { code: 'saldo-fabrica', arguments: [] },
+            checker: { code: 'saldo-elegible', arguments: [] },
+        },
     ],
     collections: [],
 };

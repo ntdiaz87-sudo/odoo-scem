@@ -271,3 +271,93 @@ export async function comprarEnGrupo(
   }
   return actualizado;
 }
+
+/* --------------------------- cuenta del comprador -------------------------- */
+
+export interface ClienteActivo {
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  saldo: number;
+  pedidos: Array<{ code: string; state: string; totalWithTax: number; orderPlacedAt: string | null; currencyCode: string }>;
+}
+
+export async function clienteActivo(slug: string): Promise<ClienteActivo | null> {
+  const data = await shopFetch<{
+    activeCustomer: {
+      firstName: string;
+      lastName: string;
+      emailAddress: string;
+      customFields?: { saldo?: number | null } | null;
+      orders: { items: ClienteActivo['pedidos'] };
+    } | null;
+  }>(
+    slug,
+    `{ activeCustomer {
+      firstName lastName emailAddress
+      customFields { saldo }
+      orders(options: { take: 20, sort: { orderPlacedAt: DESC } }) {
+        items { code state totalWithTax orderPlacedAt currencyCode }
+      }
+    } }`,
+  );
+  const c = data.activeCustomer;
+  if (!c) return null;
+  return {
+    firstName: c.firstName,
+    lastName: c.lastName,
+    emailAddress: c.emailAddress,
+    saldo: c.customFields?.saldo ?? 0,
+    pedidos: c.orders.items,
+  };
+}
+
+export async function entrarCliente(slug: string, correo: string, clave: string): Promise<boolean> {
+  const data = await shopFetch<{ login: { __typename: string } }>(
+    slug,
+    `mutation Entrar($u: String!, $p: String!) {
+      login(username: $u, password: $p, rememberMe: true) {
+        __typename
+        ... on CurrentUser { id }
+      }
+    }`,
+    { u: correo, p: clave },
+  );
+  return data.login.__typename === 'CurrentUser';
+}
+
+/** Alta de cuenta. Devuelve 'ok', 'existe' o 'error'. */
+export async function registrarCliente(
+  slug: string,
+  datos: { correo: string; clave: string; nombre: string },
+): Promise<'ok' | 'existe' | 'error'> {
+  const data = await shopFetch<{
+    registerCustomerAccount: { __typename: string; message?: string };
+  }>(
+    slug,
+    `mutation Alta($input: RegisterCustomerInput!) {
+      registerCustomerAccount(input: $input) {
+        __typename
+        ... on Success { success }
+        ... on ErrorResult { message }
+      }
+    }`,
+    {
+      input: {
+        emailAddress: datos.correo,
+        password: datos.clave,
+        firstName: datos.nombre || datos.correo.split('@')[0],
+        lastName: '-',
+      },
+    },
+  ).catch(() => null);
+  if (!data) return 'error';
+  if (data.registerCustomerAccount.__typename === 'Success') return 'ok';
+  const msg = (data.registerCustomerAccount.message || '').toLowerCase();
+  return msg.includes('registered') || msg.includes('already') ? 'existe' : 'error';
+}
+
+export async function salirCliente(slug: string): Promise<void> {
+  await shopFetch(slug, `mutation { logout { success } }`).catch(() => undefined);
+  notifyCartChanged();
+}

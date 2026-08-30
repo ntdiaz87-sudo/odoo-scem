@@ -55,6 +55,7 @@ export function StoreHeader({
             {t('st.inicio')}
           </a>
           <a href="/#catalogo">{t('st.productos')}</a>
+          <a href="/cuenta">{t('st.ac.titulo')}</a>
         </nav>
         <CartBadge slug={slug} />
       </div>

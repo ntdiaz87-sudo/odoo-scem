@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import {
   ActiveOrder,
   ORDER_FIELDS,
+  clienteActivo,
   distribuidorGuardado,
   fetchActiveOrder,
   notifyCartChanged,
@@ -40,6 +41,7 @@ function pagoInfo(
   const id = `${m.code} ${m.name}`.toLowerCase();
   if (id.includes('微信') || id.includes('wechat')) return { ico: '💚', nota: t('ck.m.wechat') };
   if (id.includes('支付宝') || id.includes('alipay')) return { ico: '🔷', nota: t('ck.m.alipay') };
+  if (id.includes('储值') || id.includes('saldo')) return { ico: '👛', nota: t('ck.m.saldo') };
   if (id.includes('货到') || id.includes('dummy')) return { ico: '📦', nota: t('ck.m.contra') };
   return { ico: '💳', nota: '' };
 }
@@ -56,6 +58,9 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
   const [paymentCode, setPaymentCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Con sesión iniciada el pedido YA tiene cliente: setCustomerForOrder
+  // fallaría, así que ese paso se salta.
+  const [conCuenta, setConCuenta] = useState(false);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -83,6 +88,16 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
     ])
       .then(([o, meta]) => {
         setOrder(o);
+        // Con la sesión iniciada no se le piden otra vez sus datos.
+        clienteActivo(slug)
+          .then(c => {
+            if (!c) return;
+            setConCuenta(true);
+            setFirstName(v => v || c.firstName);
+            setLastName(v => v || (c.lastName === '-' ? '' : c.lastName));
+            setEmail(v => v || c.emailAddress);
+          })
+          .catch(() => undefined);
         setCountries(meta.availableCountries);
         setShippingMethods(meta.eligibleShippingMethods);
         if (meta.eligibleShippingMethods[0]) setShippingMethodId(meta.eligibleShippingMethods[0].id);
@@ -103,7 +118,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
     }
     setBusy(true);
     try {
-      const customer = await shopFetch<{
+      const customer = conCuenta ? null : await shopFetch<{
         setCustomerForOrder: { __typename: string; message?: string };
       }>(
         slug,
@@ -123,7 +138,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
           },
         },
       );
-      if (customer.setCustomerForOrder.__typename !== 'Order') {
+      if (customer && customer.setCustomerForOrder.__typename !== 'Order') {
         throw new Error(customer.setCustomerForOrder.message || 'No se pudieron guardar tus datos.');
       }
 

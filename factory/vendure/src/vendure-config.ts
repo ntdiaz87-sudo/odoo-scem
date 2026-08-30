@@ -13,6 +13,7 @@ import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
 import { alipayHandler, wechatPayHandler } from './payments-cn';
+import { saldoElegibilidad, saldoHandler } from './saldo';
 import { PintuanPlugin } from './plugins/pintuan';
 import { envioFabrica } from './envio';
 import path from 'path';
@@ -38,6 +39,10 @@ export const config: VendureConfig = {
     },
     authOptions: {
         tokenMethod: ['bearer', 'cookie'],
+        // Los compradores se registran desde la tienda y compran al momento:
+        // sin verificación por correo. Cuando haya un remitente real de
+        // correo, esto pasa a true y el flujo de verificación ya existe.
+        requireVerification: false,
         superadminCredentials: {
             identifier: process.env.SUPERADMIN_USERNAME,
             password: process.env.SUPERADMIN_PASSWORD,
@@ -63,7 +68,8 @@ export const config: VendureConfig = {
         // dummyPaymentHandler cubre el pago contra entrega / acordado con la
         // tienda; los dos chinos entran en cuanto haya credenciales (ver
         // payments-cn.ts).
-        paymentMethodHandlers: [dummyPaymentHandler, wechatPayHandler, alipayHandler],
+        paymentMethodHandlers: [dummyPaymentHandler, wechatPayHandler, alipayHandler, saldoHandler],
+        paymentMethodEligibilityCheckers: [saldoElegibilidad],
     },
     shippingOptions: {
         // defaultShippingCalculator se conserva: el método compartido de la

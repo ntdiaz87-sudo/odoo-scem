@@ -277,18 +277,43 @@ export async function POST(req: NextRequest) {
     // métodos de envío y de pago de la plataforma a su canal.
     const methods = await adminRequest<{
       shippingMethods: { items: Array<{ id: string }> };
-      paymentMethods: { items: Array<{ id: string; enabled: boolean }> };
+      paymentMethods: { items: Array<{ id: string; enabled: boolean; handler: { code: string } }> };
       stockLocations: { items: Array<{ id: string }> };
     }>(
       auth,
       `{
         shippingMethods { items { id } }
-        paymentMethods { items { id enabled } }
+        paymentMethods { items { id enabled handler { code } } }
         stockLocations { items { id } }
       }`,
     );
     const shippingMethodIds = methods.shippingMethods.items.map(m => m.id);
     const paymentMethodIds = methods.paymentMethods.items.filter(m => m.enabled).map(m => m.id);
+    // 会员储值: la semilla lo crea en bases nuevas; en una base anterior a la
+    // función no existe, así que se crea aquí una sola vez y de paso queda
+    // para las tiendas siguientes.
+    if (!methods.paymentMethods.items.some(m => m.handler.code === 'saldo-fabrica')) {
+      try {
+        const nuevo = await adminRequest<{ createPaymentMethod: { id: string } }>(
+          auth,
+          `mutation Saldo($input: CreatePaymentMethodInput!) {
+            createPaymentMethod(input: $input) { id }
+          }`,
+          {
+            input: {
+              code: 'saldo-fabrica',
+              enabled: true,
+              translations: [{ languageCode: 'en', name: '会员储值' }],
+              handler: { code: 'saldo-fabrica', arguments: [] },
+              checker: { code: 'saldo-elegible', arguments: [] },
+            },
+          },
+        );
+        paymentMethodIds.push(nuevo.createPaymentMethod.id);
+      } catch {
+        /* sin el método la tienda sigue vendiendo con los otros tres */
+      }
+    }
     if (shippingMethodIds.length) {
       await adminRequest(
         auth,
