@@ -466,6 +466,39 @@ await check('MCP: la herramienta rechaza SKU de otra tienda (aislamiento)', asyn
 });
 
 // ---------- 7. IDIOMA DEL VISITANTE ----------
+await check('Menú móvil: tapa la página entera y no se derrama sobre el hero', async () => {
+  // Este fallo se vio en un móvil de verdad: al abrir el menú, los enlaces
+  // aparecían encima del hero, sin fondo. La causa es de libro y vale la pena
+  // dejarla escrita: la cabecera lleva backdrop-filter, y eso la convierte en
+  // bloque contenedor de sus hijos position:fixed, así que el panel se medía
+  // contra la cabecera (67px de alto) y no contra la pantalla.
+  await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+  await page.locator('.v-cab-menu').click();
+  await page.locator('.v-cab-panel').waitFor({ timeout: 10000 });
+  const m = await page.evaluate(() => {
+    const el = document.querySelector('.v-cab-panel');
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    const x = Math.round(r.x + r.width / 2);
+    const tapa = [0.1, 0.35, 0.6, 0.85, 0.97].every(f => {
+      const e = document.elementFromPoint(x, Math.round(r.y + r.height * f));
+      return e && (e === el || el.contains(e));
+    });
+    const ultimo = [...el.querySelectorAll('a')].pop().getBoundingClientRect();
+    return {
+      alto: r.height,
+      llegaAbajo: r.y + r.height >= window.innerHeight - 1,
+      opaco: cs.backgroundColor !== 'rgba(0, 0, 0, 0)' && !/^rgba\(.*, 0\)$/.test(cs.backgroundColor),
+      tapa,
+      ultimoDentro: ultimo.bottom <= r.bottom + 1,
+    };
+  });
+  assert(m.alto > 300, `el panel mide ${Math.round(m.alto)}px de alto`);
+  assert(m.llegaAbajo, 'el panel no llega al fondo de la pantalla');
+  assert(m.opaco, 'el panel no tiene fondo opaco: se ve la página por debajo');
+  assert(m.tapa, 'hay puntos del panel donde se toca la página de detrás');
+  assert(m.ultimoDentro, 'el último enlace se sale del panel');
+});
 await check('Idioma: el visitante cambia a español y vuelve al chino', async () => {
   await page.goto(BASE + '/', { waitUntil: 'networkidle' });
   const zh = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');

@@ -248,15 +248,15 @@
 
 /* ============================= CABECERA ============================= */
 .v-cab {
+  --v-cab-alto: 70px;
   position: sticky; top: 0; z-index: 60;
   background: color-mix(in srgb, var(--v-bg) 76%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid transparent;
   transition: background .25s ease, border-color .25s ease, backdrop-filter .25s ease;
 }
-.v-cab.is-compacta { background: color-mix(in srgb, var(--v-bg) 92%, transparent); backdrop-filter: blur(18px); border-bottom-color: var(--v-borde); }
-.v-cab-fila { display: flex; align-items: center; gap: 22px; height: 70px; transition: height .25s ease; }
-.v-cab.is-compacta .v-cab-fila { height: 62px; }
+.v-cab.is-compacta { --v-cab-alto: 62px; background: color-mix(in srgb, var(--v-bg) 92%, transparent); backdrop-filter: blur(18px); border-bottom-color: var(--v-borde); }
+.v-cab-fila { display: flex; align-items: center; gap: 22px; height: var(--v-cab-alto); transition: height .25s ease; }
 .v-cab-nav { display: flex; gap: 26px; margin-left: 12px; flex: 1; }
 .v-cab-nav a { font-size: 14.5px; font-weight: 500; color: var(--v-texto-suave); text-decoration: none; }
 .v-cab-nav a:hover { color: var(--v-texto); }
@@ -274,8 +274,16 @@
 .v-cab-menu span.is-x { background: transparent; }
 .v-cab-menu span.is-x::before { transform: translateY(7px) rotate(45deg); }
 .v-cab-menu span.is-x::after { transform: translateY(-7px) rotate(-45deg); }
+/* OJO: el panel NO puede ir con position:fixed. La cabecera lleva
+   backdrop-filter, y eso la convierte en bloque contenedor de sus hijos fijos
+   (igual que filter, transform o perspective): el panel se medía contra la
+   cabecera y no contra la pantalla, así que salía de 67px de alto y, sin
+   recorte, los enlaces se derramaban por encima del hero. Va absoluto respecto
+   a la cabecera, que sí es un ancestro posicionado, con la altura restante. */
 .v-cab-panel {
-  position: fixed; inset: 70px 0 0; z-index: 55; background: var(--v-bg);
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 55;
+  height: calc(100dvh - var(--v-cab-alto));
+  background: var(--v-bg); overflow-y: auto; overscroll-behavior: contain;
   padding: 26px var(--v-canal) 40px; display: flex; flex-direction: column; gap: 18px;
   border-top: 1px solid var(--v-borde);
 }
