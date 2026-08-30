@@ -24,6 +24,11 @@ jobs:
           git -C /opt/pyxel-trade reset --hard origin/develop
           git -C /opt/pyxel-trade log -1 --oneline
 
+      - name: Lint + comprobaciones
+        run: |
+          set -e
+          bash /opt/pyxel-trade/infra/ci.sh
+
       - name: Regenerar la configuración de Odoo
         run: |
           set -e

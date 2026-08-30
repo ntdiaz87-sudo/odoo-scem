@@ -41,7 +41,12 @@ volúmenes propios y techo de recursos ya da el aislamiento que importa. Lo
 que no da aislamiento es el Caddy, y ahí la protección es el procedimiento,
 no la tecnología.
 
-**Puertos elegidos: 8310 (web) y 8311 (websocket).** Libres según el mapa del
+**Puertos elegidos: 8310 (web) y 8311 (websocket).** Comprobados contra la
+lista de ocupados del runbook de la casa —`8000 8080 8098 8099 8210-8212
+8220-8222 8230 8240-8245 8300`— y libres. El entorno de desarrollo, si se
+monta algún día, iría en 8320 y 8321, siguiendo el patrón de un clon por
+entorno (`/opt/pyxel-trade` y `/opt/pyxel-trade-dev`) con `.env` y secretos
+distintos. Libres según el mapa del
 runbook, verificado el 2026-08-28. **Vuelve a comprobarlo el día del
 despliegue** con `scripts/recon.sh`.
 
@@ -236,6 +241,45 @@ Dos cambios de Odoo 19 que obligaron a corregir código ya escrito:
   las vistas reales de Odoo 19.
 - Que el websocket responde en `/websocket`.
 - Que 8310 y 8311 siguen libres (`scripts/recon.sh`).
+
+## Lecciones del runbook de la casa que aplican aquí
+
+El precedente de un Odoo en este servidor es **`/opt/seric`**, no Qbaprotic.
+De ahí salen estas cuatro, todas pagadas ya por otro proyecto del grupo.
+
+**El gestor de bases de datos no puede quedar abierto.** El Odoo del POS se
+comprometió por eso y apareció una base `pwn_`. Aquí hay doble candado:
+`list_db = False` en la configuración y un 404 en Caddy. No se toca ninguno
+de los dos.
+
+**El filestore se respalda aparte del volcado de PostgreSQL.** Un `pg_dump`
+restaura una plataforma sin imágenes de producto ni documentos de
+acreditación. `scripts/backup.sh` cubre los dos, y a propósito no depende
+del `/opt/sync_filestore_minio.sh` compartido: ese script tuvo la ruta rota
+una vez y ENETRADEX estuvo tiempo sin respaldarse sin que nadie lo notara.
+
+**Contraseñas generadas, nunca `odoo/odoo`.** Los PostgreSQL de ENETRADEX y
+Gran Comercial siguen con la contraseña por defecto. Aquí salen de
+`openssl rand -base64 32` y viven sólo en el `.env` del servidor.
+
+**Si el websocket da problemas, sospecha de los workers.** En SERIC el POS
+se desatascó poniendo `workers = 0`. Aquí no debería hacer falta —Caddy
+enruta `/websocket` al puerto gevent 8072, que es el montaje correcto— pero
+si las notificaciones en vivo fallan, ese es el primer sitio donde mirar.
+
+## Cuando el CI diga que falló
+
+**La interfaz de Gitea miente sobre el estado del run**, por un fallo de
+gRPC entre act_runner 0.2.13 y Gitea 1.22. La verdad está en el servidor:
+
+```bash
+tail -100 /opt/act_runner.log
+ls /opt/gitea/data/gitea/actions_log/nilo/pyxel-trade/
+```
+
+Y un aviso que costó trece días en Qbaprotic: **que el clon esté en el
+commit correcto no significa que el stack esté al día.** Si la web se ve
+rara, compara antes que nada lo que corre con el head del repositorio.
 
 ## Riesgos abiertos
 
