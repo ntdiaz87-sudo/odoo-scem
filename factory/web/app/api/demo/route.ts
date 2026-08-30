@@ -46,19 +46,53 @@ const OWNER_PERMISSIONS = [
 
 const SANDBOX_DAYS = 14;
 
-// Límite simple anti-abuso del demo: 3 tiendas por IP por hora.
+/**
+ * Válvula anti-inundación por IP.
+ *
+ * OJO con lo que esto es y lo que NO es. El límite de producto —una tienda por
+ * comerciante— NO vive aquí: lo impone el propio catálogo, que rechaza un
+ * correo que ya tiene tienda comprobándolo contra la base. Ese sí es durable y
+ * ese sí es el que cuenta.
+ *
+ * Esto de aquí solo existe para que nadie monte un guion y cree tiendas en
+ * bucle con correos inventados. Por eso es ancho: en China la mayoría del
+ * tráfico móvil sale por CGNAT, o sea que una IP pública puede ser un edificio
+ * entero, una oficina o media facultad. Un límite estrecho por IP no frena al
+ * que abusa —le sobra con cambiar de red— y en cambio deja fuera a
+ * comerciantes de verdad que no han hecho nada, por culpa de un vecino.
+ *
+ * Dos cosas que estaban mal y costaron una tarde de pruebas:
+ *
+ * - Contaba INTENTOS, no tiendas. Se llamaba antes de validar nada, así que
+ *   equivocarse dos veces de correo —que no crea ninguna tienda— gastaba dos
+ *   de los tres huecos. Ahora solo se apunta la creación que sale bien.
+ * - No decía cuándo se podía reintentar. Ahora devuelve los minutos que faltan
+ *   y la cabecera Retry-After.
+ *
+ * El contador vive en memoria: se reinicia en cada despliegue y no se comparte
+ * entre instancias. Para una válvula de este ancho es suficiente; el día que
+ * haya más de una instancia, esto se muda a la base (o a Redis) y el límite
+ * de producto no se entera, porque no está aquí.
+ */
+const MAX_POR_IP = 10;
+const VENTANA_MS = 60 * 60 * 1000;
 const creationsByIp = new Map<string, number[]>();
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const windowStart = now - 60 * 60 * 1000;
-  const recent = (creationsByIp.get(ip) || []).filter(t => t > windowStart);
-  if (recent.length >= 3) {
-    creationsByIp.set(ip, recent);
-    return true;
-  }
-  recent.push(now);
-  creationsByIp.set(ip, recent);
-  return false;
+
+/** Minutos que faltan para tener hueco, o 0 si lo hay. */
+function esperaPorIp(ip: string): number {
+  const ahora = Date.now();
+  const recientes = (creationsByIp.get(ip) || []).filter(t => t > ahora - VENTANA_MS);
+  creationsByIp.set(ip, recientes);
+  if (recientes.length < MAX_POR_IP) return 0;
+  const libera = recientes[0] + VENTANA_MS;
+  return Math.max(1, Math.ceil((libera - ahora) / 60000));
+}
+
+/** Se apunta SOLO cuando la tienda existe de verdad. */
+function apuntarCreacion(ip: string) {
+  const recientes = creationsByIp.get(ip) || [];
+  recientes.push(Date.now());
+  creationsByIp.set(ip, recientes);
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -93,10 +127,16 @@ export async function POST(req: NextRequest) {
   // el primero, cualquiera saltaba el límite mandando una cabecera al azar.
   const reenviado = (req.headers.get('x-forwarded-for') || '').split(',').map(v => v.trim()).filter(Boolean);
   const ip = reenviado[reenviado.length - 1] || 'local';
-  if (rateLimited(ip)) {
+  const esperaMin = esperaPorIp(ip);
+  if (esperaMin > 0) {
     return NextResponse.json(
-      { error: ZH ? '你刚刚连续创建了多家体验店，请稍后再试。' : 'Has creado varias tiendas demo seguidas. Espera un rato e inténtalo de nuevo.' },
-      { status: 429 },
+      {
+        error: ZH
+          ? `这个网络刚创建了很多体验店。请 ${esperaMin} 分钟后再试，或换个网络。`
+          : `Se han creado muchas tiendas demo desde esta red. Vuelve a intentarlo en ${esperaMin} min, o desde otra conexión.`,
+        reintentarEnMin: esperaMin,
+      },
+      { status: 429, headers: { 'Retry-After': String(esperaMin * 60) } },
     );
   }
 
@@ -318,6 +358,9 @@ export async function POST(req: NextRequest) {
         },
       },
     );
+
+    // La tienda existe: ahora sí gasta hueco de la válvula (ver esperaPorIp).
+    apuntarCreacion(ip);
 
     const base = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
     return NextResponse.json({

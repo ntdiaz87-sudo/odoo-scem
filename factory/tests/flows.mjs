@@ -12,7 +12,7 @@ async function check(name, fn) {
 }
 const assert = (cond, msg) => { if (!cond) throw new Error(msg); };
 
-/* Cada creación de tienda gasta cupo del límite anti-abuso (3 por IP y hora).
+/* Cada creación de tienda gasta cupo de la válvula anti-inundación por IP.
    Si la batería crea varias desde la misma IP, se corta a sí misma; y si se
    lanza dos veces en la misma hora, la segunda arranca con el cupo ya gastado
    por la primera. Por eso el navegador estrena IP en cada ejecución y las
@@ -303,22 +303,42 @@ await check('Fase 1: correo repetido rechazado con aviso claro', async () => {
   assert(res.status() === 409, `status ${res.status()}`);
   assert((await res.json()).error.includes('已经有商店'), 'mensaje inesperado');
 });
-await check('Fase 1: límite anti-abuso del demo (429 a la cuarta)', async () => {
-  // La prueba gasta su propio cupo desde una IP inventada, así no depende de
-  // cuántas tiendas haya creado el resto de la batería. Reutiliza el correo
-  // del dueño ya existente: el contador sube igual y el intento muere en el
-  // 409 de correo repetido, sin dejar tiendas de más en la base.
+await check('Anti-abuso: equivocarse NO gasta cupo (solo cuentan las tiendas creadas)', async () => {
+  // El límite de producto —una tienda por correo— lo impone el catálogo contra
+  // la base, no esta válvula. La válvula por IP solo frena inundaciones, y
+  // contaba INTENTOS: quien se equivocaba dos veces de correo se quedaba sin
+  // huecos sin haber creado nada. Doce intentos fallidos seguidos, desde una
+  // sola IP, no pueden cerrarle la puerta a nadie.
   const ip = `203.0.113.${1 + Math.floor(Math.random() * 250)}`;
   const pedir = (n) => ctx.request.post(BASE + '/api/demo', {
     headers: { 'x-forwarded-for': ip },
     data: { storeName: `Cupo ${n}`, designKey: 'hoja-viva', ownerEmail: EMAIL, ownerPassword: PASS },
   });
-  for (let n = 1; n <= 3; n++) {
+  for (let n = 1; n <= 12; n++) {
     const r = await pedir(n);
     assert(r.status() === 409, `el intento ${n} debía morir en el correo repetido, dio ${r.status()}`);
   }
-  const cuarta = await pedir(4);
-  assert(cuarta.status() === 429, `status ${cuarta.status()}`);
+});
+await check('Anti-abuso: si la válvula corta, dice en cuántos minutos volver', async () => {
+  // Un 429 sin plazo deja al comerciante adivinando. Se comprueba el contrato
+  // de la respuesta, no el número de huecos: ese se ajusta sin tocar pruebas.
+  const ip = `203.0.113.${1 + Math.floor(Math.random() * 250)}`;
+  let corte = null;
+  for (let n = 1; n <= 14 && !corte; n++) {
+    const r = await ctx.request.post(BASE + '/api/demo', {
+      headers: { 'x-forwarded-for': ip },
+      data: {
+        storeName: `Valvula ${STAMP} ${n}`, designKey: 'hoja-viva',
+        ownerEmail: `valvula-${STAMP}-${n}@test.local`, ownerPassword: PASS,
+      },
+    });
+    if (r.status() === 429) corte = r;
+  }
+  assert(corte, 'la válvula no cortó ni tras 14 creaciones seguidas desde una IP');
+  const cuerpo = await corte.json();
+  assert(cuerpo.reintentarEnMin > 0, `no dice los minutos: ${JSON.stringify(cuerpo)}`);
+  assert(/\d+/.test(cuerpo.error), `el aviso no lleva el plazo: ${cuerpo.error}`);
+  assert(corte.headers()['retry-after'], 'falta la cabecera Retry-After');
 });
 
 // ---------- 5. FASE 3: CARRITO Y CHECKOUT ----------
