@@ -20,6 +20,8 @@ export interface StoreInfo {
   mercado: Locale;
   moneda: string;
   promesas: PromesasTienda;
+  /** Dominio propio VERIFICADO de la tienda, si lo hay: manda como canónico. */
+  dominio: string | null;
 }
 
 export async function loadStoreInfo(slug: string): Promise<StoreInfo | null> {
@@ -36,13 +38,15 @@ export async function loadStoreInfo(slug: string): Promise<StoreInfo | null> {
           entregaNota?: string | null;
           pagoFormas?: string | null;
           atencionNota?: string | null;
+          dominio?: string | null;
+          dominioVerificado?: boolean | null;
         } | null;
       };
     }>(
       slug,
       `{ activeChannel {
         code currencyCode
-        customFields { displayName design mercado entregaPlazo entregaNota pagoFormas atencionNota }
+        customFields { displayName design mercado entregaPlazo entregaNota pagoFormas atencionNota dominio dominioVerificado }
       } }`,
     );
     const cf = data.activeChannel.customFields;
@@ -73,6 +77,7 @@ export async function loadStoreInfo(slug: string): Promise<StoreInfo | null> {
         pagoFormas: cf?.pagoFormas || '',
         atencionNota: cf?.atencionNota || '',
       },
+      dominio: cf?.dominioVerificado === true && cf?.dominio ? cf.dominio : null,
     };
   } catch {
     return null;

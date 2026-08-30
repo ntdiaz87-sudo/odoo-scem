@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { canalPorDominio } from '../../../lib/dominios';
 import { rootDomain } from '../../../lib/tenant';
 import { shopQuery } from '../../../lib/vendure';
 
@@ -22,6 +23,11 @@ export async function GET(req: NextRequest) {
         /* canal inexistente */
       }
     }
+  }
+  // Dominio propio del comerciante: solo si está VERIFICADO. Así Caddy no
+  // emite certificados para dominios que alguien apuntó aquí sin ser suyos.
+  if (await canalPorDominio(domain)) {
+    return new NextResponse(null, { status: 200 });
   }
   return new NextResponse(null, { status: 404 });
 }

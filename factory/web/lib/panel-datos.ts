@@ -667,3 +667,60 @@ export async function guardarDistribuidores(
     return err instanceof Error ? err.message : 'x';
   }
 }
+
+/* ------------------------------ dominio propio ---------------------------- */
+
+export interface DominioEstado {
+  dominio: string | null;
+  verificado: boolean;
+  txt: string | null;
+}
+
+export async function verDominio(s: SesionPanel): Promise<DominioEstado> {
+  const r = await panelRequest<{
+    activeChannel: { customFields?: { dominio?: string | null; dominioVerificado?: boolean | null; dominioTxt?: string | null } | null };
+  }>(
+    s.token,
+    s.canal.token,
+    `{ activeChannel { customFields { dominio dominioVerificado dominioTxt } } }`,
+  );
+  const cf = r.data?.activeChannel.customFields;
+  return {
+    dominio: cf?.dominio ?? null,
+    verificado: cf?.dominioVerificado === true,
+    txt: cf?.dominioTxt ?? null,
+  };
+}
+
+/** Los campos de dominio del canal los escribe el superadmin, siempre sobre el canal de la sesión. */
+export async function guardarDominio(
+  s: SesionPanel,
+  campos: DominioEstado,
+): Promise<string | undefined> {
+  try {
+    const auth = await adminLogin();
+    await adminRequest(
+      auth,
+      `mutation Dom($input: UpdateChannelInput!) {
+        updateChannel(input: $input) {
+          __typename
+          ... on Channel { id }
+          ... on ErrorResult { message }
+        }
+      }`,
+      {
+        input: {
+          id: s.canal.id,
+          customFields: {
+            dominio: campos.dominio,
+            dominioVerificado: campos.verificado,
+            dominioTxt: campos.txt,
+          },
+        },
+      },
+    );
+    return undefined;
+  } catch (err) {
+    return err instanceof Error ? err.message : 'x';
+  }
+}

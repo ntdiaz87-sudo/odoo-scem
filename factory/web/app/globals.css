@@ -1704,3 +1704,8 @@ a:hover { color: var(--accent-dark); }
   border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
 }
 .pn-tabla th { font-size: .78rem; letter-spacing: .04em; opacity: .7; }
+
+/* -- panel: dominio propio -- */
+.pn-do-actual { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0; }
+.pn-do-ok { color: #16a34a; font-weight: 700; font-size: .88rem; }
+.pn-do-pend { opacity: .65; font-size: .88rem; }

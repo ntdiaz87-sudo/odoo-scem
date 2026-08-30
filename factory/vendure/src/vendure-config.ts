@@ -106,6 +106,13 @@ export const config: VendureConfig = {
             // [{codigo, nombre, comision}]. Volumen pequeño y siempre se lee
             // entero: no amerita entidad propia todavía.
             { name: 'distribuidores', type: 'text', nullable: true },
+            // Dominio propio del comerciante (Fase 4). Tres campos y nada
+            // más: el dominio, si demostró que es suyo (TXT), y el testigo
+            // que debe publicar. Un esquema mayor sin casos reales sería
+            // adivinar.
+            { name: 'dominio', type: 'string', nullable: true },
+            { name: 'dominioVerificado', type: 'boolean', defaultValue: false },
+            { name: 'dominioTxt', type: 'string', nullable: true },
         ],
         Order: [
             // 分销: el código del distribuidor que trajo este pedido. Se ata en

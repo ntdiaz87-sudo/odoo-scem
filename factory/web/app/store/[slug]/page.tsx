@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import type { StoreDesign } from '../../../lib/designs';
 import { DESIGN_PRESETS } from '../../../lib/designs';
 import { seckillActivos, shopQuery } from '../../../lib/vendure';
@@ -17,12 +18,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const info = await loadStoreInfo(slug);
   if (!info) return { title: 'Tienda no encontrada' };
+  // Con dominio propio verificado, ESE es el canónico: el subdominio técnico
+  // sigue sirviendo (enlaces viejos, QR impresos) pero deja de indexarse.
+  const host = (await headers()).get('host')?.split(':')[0].toLowerCase() ?? '';
+  const conDominio = info.dominio && host !== info.dominio;
   return {
     title: info.name,
     description: info.name,
     manifest: '/manifest.webmanifest',
     icons: { icon: '/icon.svg' },
     appleWebApp: { capable: true, title: info.name },
+    ...(info.dominio ? { alternates: { canonical: `https://${info.dominio}/` } } : {}),
+    ...(conDominio ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

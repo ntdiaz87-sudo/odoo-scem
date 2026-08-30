@@ -1,8 +1,10 @@
 import { SIMBOLO_DE } from '../../../../lib/i18n';
 import { getT } from '../../../../lib/i18n-server';
-import { verEnvio } from '../../../../lib/panel-datos';
+import { verDominio, verEnvio } from '../../../../lib/panel-datos';
 import { exigirSesionPagina } from '../../../../lib/panel-sesion';
 import { storeUrl } from '../../../../lib/tenant';
+import { nombreTxt } from '../../../../lib/dominios';
+import { FormularioDominio } from './dominio-form';
 import { FormularioEnvio } from './envio-form';
 import { FormularioTienda } from './form';
 
@@ -13,6 +15,7 @@ export default async function Tienda() {
   const t = await getT(s.mercado);
   const url = storeUrl(s.canal.token);
   const envio = await verEnvio(s);
+  const dominio = await verDominio(s);
 
   return (
     <>
@@ -46,6 +49,29 @@ export default async function Tienda() {
         <a className="pn-url" href={url}>
           {url}
         </a>
+      </section>
+
+      <section className="pn-bloque">
+        <h2 className="pn-h2">{t('pn.do.t')}</h2>
+        <p className="pn-ayuda">{t('pn.do.d')}</p>
+        <FormularioDominio
+          estado={dominio}
+          ip={process.env.SERVIDOR_IP || '46.4.98.13'}
+          txtNombre={dominio.dominio ? nombreTxt(dominio.dominio) : null}
+          etiquetas={{
+            campo: t('pn.do.campo'),
+            guardar: t('pn.do.guardar'),
+            pasos: t('pn.do.pasos'),
+            tipo: t('pn.do.tipo'),
+            nombre: t('pn.do.nombre'),
+            valor: t('pn.do.valor'),
+            comprobar: t('pn.do.comprobar'),
+            estadoOk: t('pn.do.estado.ok'),
+            estadoNo: t('pn.do.estado.no'),
+            quitar: t('pn.do.quitar'),
+            enviando: t('pn.pr.guardando'),
+          }}
+        />
       </section>
 
       <section className="pn-bloque">

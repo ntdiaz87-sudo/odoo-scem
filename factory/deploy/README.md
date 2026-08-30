@@ -94,6 +94,31 @@ fabrica.enetradex.com, *.fabrica.enetradex.com {
 }
 ```
 
+**c)** Bloque comodín para los dominios PROPIOS de los comerciantes (Fase 4).
+Va después del bloque del sitio. Caddy solo emitirá certificado si
+`/api/tls-check` da el visto bueno, y ese endpoint solo acepta dominios
+**verificados por TXT** en el panel:
+
+```
+https:// {
+    encode zstd gzip
+    tls {
+        on_demand
+    }
+    @vendure path /admin-api* /shop-api* /assets* /dashboard* /graphiql* /mailbox*
+    handle @vendure {
+        reverse_proxy 127.0.0.1:8261
+    }
+    handle {
+        reverse_proxy 127.0.0.1:8260
+    }
+}
+```
+
+El comerciante, por su parte, crea dos registros en su DNS (el panel se los
+enseña): un `A` apuntando a la IP del servidor y el `TXT` de verificación en
+`_fabrica.<su dominio>`.
+
 ```bash
 caddy validate --config /etc/caddy/Caddyfile
 systemctl reload caddy

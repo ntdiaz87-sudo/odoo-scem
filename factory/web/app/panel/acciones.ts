@@ -3,9 +3,10 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { dominioOcupado, nombreTxt, normalizarDominio, nuevoTestigo } from '../../lib/dominios';
 import { MONEDA_DE, esLocaleValido } from '../../lib/i18n';
 import { getT } from '../../lib/i18n-server';
-import { borrarPromo, cobrarPedido, crearCupon, crearGruposDeVariantes, crearProducto, crearSeckill, enviarPedido, guardarDistribuidores, guardarProducto, guardarVariantes, informeDistribuidores, verProducto } from '../../lib/panel-datos';
+import { borrarPromo, cobrarPedido, crearCupon, crearGruposDeVariantes, crearProducto, crearSeckill, enviarPedido, guardarDistribuidores, guardarDominio, guardarProducto, guardarVariantes, informeDistribuidores, verDominio, verProducto } from '../../lib/panel-datos';
 import { COOKIE_PANEL, LANG_CANAL, leerSesion, opcionesCookie } from '../../lib/panel-sesion';
 import { adminLogin, adminRequest, ownerLogin, ownerLogout, ownerMe, panelRequest } from '../../lib/vendure';
 
@@ -454,4 +455,45 @@ export async function accionQuitarDistribuidor(datos: FormData): Promise<void> {
     .map(d => ({ codigo: d.codigo, nombre: d.nombre, comision: d.comision }));
   await guardarDistribuidores(s, plantel);
   revalidatePath('/panel/marketing');
+}
+
+/* ---------------------------- dominio propio ------------------------------ */
+
+export async function accionDominio(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const dominio = normalizarDominio(String(datos.get('dominio') || ''));
+  if (!dominio) return { error: t('pn.do.mal') };
+  if (await dominioOcupado(dominio, s.canal.token)) return { error: t('pn.do.ocupado') };
+  const error = await guardarDominio(s, { dominio, verificado: false, txt: nuevoTestigo() });
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath('/panel/tienda');
+  return { ok: t('pn.do.guardado') };
+}
+
+export async function accionVerificarDominio(_prev: Estado, _datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const actual = await verDominio(s);
+  if (!actual.dominio || !actual.txt) return { error: t('pn.do.mal') };
+  let registros: string[][] = [];
+  try {
+    const { resolveTxt } = await import('node:dns/promises');
+    registros = await resolveTxt(nombreTxt(actual.dominio));
+  } catch {
+    // NXDOMAIN, timeout… al comerciante le vale con "aún no se ve".
+    return { error: t('pn.do.noverificado') };
+  }
+  const visto = registros.some(r => r.join('') === actual.txt);
+  if (!visto) return { error: t('pn.do.noverificado') };
+  const error = await guardarDominio(s, { ...actual, verificado: true });
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath('/panel/tienda');
+  return { ok: t('pn.do.verificado') };
+}
+
+export async function accionQuitarDominio(_datos: FormData): Promise<void> {
+  const s = await exigirSesion();
+  await guardarDominio(s, { dominio: null, verificado: false, txt: null });
+  revalidatePath('/panel/tienda');
 }
