@@ -22,6 +22,9 @@ class PyxelPort(models.Model):
     country_id = fields.Many2one('res.country', string="País", required=True)
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', "Ya existe un puerto con ese código UN/LOCODE."),
-    ]
+    # Odoo 19 retiró el atributo _sql_constraints: las restricciones se
+    # declaran como atributos de clase de tipo models.Constraint.
+    _code_uniq = models.Constraint(
+        'UNIQUE(code)',
+        "Ya existe un puerto con ese código UN/LOCODE.",
+    )

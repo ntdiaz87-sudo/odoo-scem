@@ -33,7 +33,7 @@ services:
     networks: [internal]
 
   odoo:
-    image: odoo:19
+    image: ${ODOO_IMAGE}
     restart: unless-stopped
     depends_on:
       db:
@@ -52,6 +52,15 @@ services:
       - odoo-data:/var/lib/odoo
       - ../config/odoo.conf:/etc/odoo/odoo.conf:ro
       - ../addons:/mnt/extra-addons
+    # /web/health comprueba además la conexión a PostgreSQL, así que un
+    # contenedor sano aquí significa pila sana, no sólo proceso vivo.
+    healthcheck:
+      test: ["CMD", "python3", "-c",
+             "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8069/web/health?db_server_status=1', timeout=5).read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     networks: [internal]
 
 volumes:

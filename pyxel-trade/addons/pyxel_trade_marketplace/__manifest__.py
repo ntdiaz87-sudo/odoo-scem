@@ -16,6 +16,7 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'views/market_signal_views.xml',
         'views/home_templates.xml',
         'data/market_signal_data.xml',
     ],

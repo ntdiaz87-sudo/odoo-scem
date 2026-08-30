@@ -33,7 +33,9 @@ comprobar() {
 
 echo "Prueba de humo contra $BASE"
 
-comprobar "Página de acceso"       "$BASE/web/login"
+comprobar "Salud del proceso"       "$BASE/web/health"
+comprobar "Salud con PostgreSQL"    "$BASE/web/health?db_server_status=1"
+comprobar "Página de acceso"        "$BASE/web/login"
 comprobar "Gestor de bases cerrado" "$BASE/web/database/manager" 404
 
 # ── Estáticos ───────────────────────────────────────────────

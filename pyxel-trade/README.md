@@ -149,14 +149,49 @@ valores viven en el servidor.
 | `ODOO_ADMIN_PASSWD` | `/opt/pyxel-trade/.env` | `openssl rand -base64 32` |
 | `GITEA_TOKEN` | Secreto de GitHub Actions | Sólo si se activa el puente (`docs/sync-pyxel-trade.yml.example`) |
 
+## Verificado contra Odoo 19
+
+Comprobado con fuentes del código y la documentación de la rama 19.0:
+
+| Cosa | Resultado |
+|---|---|
+| Imagen `odoo:19` | Existe. Se fija `odoo:19.0-20260817` para que el despliegue sea reproducible |
+| PostgreSQL 16 | Admitida (Odoo 19 pide 13 o superior) |
+| Credenciales por `HOST`/`USER`/`PASSWORD` | El entrypoint las sigue leyendo |
+| `uom.uom`, `account.incoterms`, `product.supplierinfo`, `res.country.state` | Sin cambios de nombre |
+| `product.template.volume` y `.weight` | Existen |
+| `/web/login`, `/web/database/manager`, `/web/assets/…`, `/websocket` | Sin cambios |
+| `/web/health` | Existe; con `?db_server_status=1` comprueba también PostgreSQL |
+| Módulos `website`, `website_sale`, `crm`, `stock`, `purchase`, `delivery`… | Todos en Community |
+
+Dos cambios de Odoo 19 que obligaron a corregir código ya escrito:
+
+- **`_sql_constraints` dejó de estar soportado.** Se sustituyó por
+  `models.Constraint` en `pyxel.port`. Sin esta corrección el módulo no
+  instalaba.
+- **`<tree>` pasó a `<list>`**, y `tree,form` a `list,form`. Las vistas de
+  backend se escribieron ya con la sintaxis nueva.
+
 ## Pendiente de comprobar en el primer arranque
 
-- Que 8310 y 8311 siguen libres (`scripts/recon.sh`).
-- Que la imagen `odoo:19` es la versión esperada.
-- Que `pyxel_trade_core` instala sin error. `uom.uom` y `account.incoterms`
-  llevan muchas versiones estables, pero no se ha podido ejecutar Odoo 19
-  para confirmarlo.
+- Que `pyxel_trade_core` y `pyxel_trade_marketplace` instalan sin traceback,
+  y que actualizan con `-u`.
+- Que los `xpath` sobre el notebook del contacto y del producto encajan en
+  las vistas reales de Odoo 19.
 - Que el websocket responde en `/websocket`.
-- **`l10n_cu` para Odoo 19.** En este repositorio existe para Odoo 17 y hace
-  falta para facturar en Cuba. Si no hay versión migrada, migrarla es
-  trabajo previo, no algo que se resuelva sobre la marcha.
+- Que 8310 y 8311 siguen libres (`scripts/recon.sh`).
+
+## Riesgos abiertos
+
+**`l10n_cu` para Odoo 19: existe, pero en beta.** Hay rama `19.0` en
+`cuba-odoo/l10n-cuba`, con `l10n_cu` declarando versión `19.0.1`, y también
+`l10n_cu_address`, `l10n_cu_banks`, `l10n_cu_reports` y
+`l10n_cu_website_sale`. No es localización oficial de Odoo: es un addon
+comunitario marcado como beta, y su README de la rama 19.0 todavía cita la
+V18. Hay que instalarlo en una base limpia y revisar plan contable,
+impuestos y reportes antes de facturar nada.
+
+**Las unidades de `volume` y `weight` son configurables.** Odoo puede estar
+en metros cúbicos o pies cúbicos, y en kilogramos o libras. El constructor
+de contenedores debe normalizar internamente a m³ y kg en lugar de asumir
+la unidad, o calculará mal la ocupación.

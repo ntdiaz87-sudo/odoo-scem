@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══ Puertos de origen ═══════════════════════════════════ -->
+    <record id="view_pyxel_port_list" model="ir.ui.view">
+        <field name="name">pyxel.port.list</field>
+        <field name="model">pyxel.port</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="country_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pyxel_port_form" model="ir.ui.view">
+        <field name="name">pyxel.port.form</field>
+        <field name="model">pyxel.port</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code" placeholder="CNSZX"/>
+                        <field name="country_id"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pyxel_port" model="ir.actions.act_window">
+        <field name="name">Puertos de origen</field>
+        <field name="res_model">pyxel.port</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ═══ Proveedor: pestaña en el contacto ═══════════════════ -->
+    <record id="view_partner_form_pyxel_supplier" model="ir.ui.view">
+        <field name="name">res.partner.form.pyxel.supplier</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Se ancla al notebook y no a un campo concreto: el notebook
+                 existe con seguridad, un campo puede moverse entre versiones. -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Proveedor PYXEL" name="pyxel_supplier"
+                      invisible="not pyxel_is_supplier">
+                    <group>
+                        <group string="Perfil">
+                            <field name="pyxel_supplier_type"/>
+                            <field name="pyxel_port_id"/>
+                        </group>
+                        <group string="Verificación">
+                            <field name="pyxel_verified"/>
+                            <field name="pyxel_verified_date"/>
+                            <field name="pyxel_verified_by_id"/>
+                        </group>
+                    </group>
+                    <group string="Qué se comprobó">
+                        <field name="pyxel_verification_notes" nolabel="1"
+                               placeholder="Licencia de exportación, visita a fábrica, certificaciones, referencias comerciales..."/>
+                    </group>
+                    <div class="oe_button_box">
+                        <button name="action_pyxel_verify" type="object"
+                                string="Marcar como verificado" class="btn-primary"
+                                invisible="pyxel_verified"/>
+                        <button name="action_pyxel_unverify" type="object"
+                                string="Retirar verificación"
+                                invisible="not pyxel_verified"/>
+                    </div>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="pyxel_is_supplier"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ═══ Producto: pestaña de comercio B2B ═══════════════════ -->
+    <record id="view_product_template_form_pyxel_trade" model="ir.ui.view">
+        <field name="name">product.template.form.pyxel.trade</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Comercio B2B" name="pyxel_trade">
+                    <group>
+                        <group string="Condiciones comerciales">
+                            <field name="pyxel_incoterm_id"/>
+                            <field name="pyxel_port_id"/>
+                            <label for="pyxel_moq_qty"/>
+                            <div class="o_row">
+                                <field name="pyxel_moq_qty"/>
+                                <field name="pyxel_moq_uom_id"/>
+                            </div>
+                        </group>
+                        <group string="Precio indicativo">
+                            <field name="pyxel_price_min"/>
+                            <field name="pyxel_price_max"/>
+                            <field name="pyxel_price_unit_label" placeholder="W, unidad, palé"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Mercado cubano">
+                            <field name="pyxel_demand_signal"/>
+                        </group>
+                        <group string="Red eléctrica">
+                            <field name="pyxel_power_spec"/>
+                            <field name="pyxel_cuba_power_fit"/>
+                        </group>
+                    </group>
+                    <div class="text-muted">
+                        China es 220 V / 50 Hz y Cuba 110 y 220 V a 60 Hz. La
+                        compatibilidad se deriva de la especificación: no se
+                        teclea a mano.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ═══ Menú ════════════════════════════════════════════════ -->
+    <menuitem id="menu_pyxel_trade_root" name="PYXEL Trade" sequence="15"/>
+    <menuitem id="menu_pyxel_trade_config" name="Configuración"
+              parent="menu_pyxel_trade_root" sequence="90"/>
+    <menuitem id="menu_pyxel_port" name="Puertos de origen"
+              parent="menu_pyxel_trade_config" action="action_pyxel_port" sequence="10"/>
+
+</odoo>

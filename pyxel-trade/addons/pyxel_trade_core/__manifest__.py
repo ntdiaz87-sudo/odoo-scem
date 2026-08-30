@@ -14,6 +14,7 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'views/pyxel_trade_views.xml',
     ],
 
     'installable': True,
