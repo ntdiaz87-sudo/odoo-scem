@@ -1577,3 +1577,9 @@ a:hover { color: var(--accent-dark); }
 .st-prod-minis button:hover { opacity: 1; }
 .st-prod-minis button:focus-visible { outline: 2px solid var(--s-accent); outline-offset: 1px; }
 @media (prefers-reduced-motion: reduce) { .st-prod-minis button { transition: none; } }
+
+/* Aviso del requisito de cobro del mini programa: visible, no letra pequeña. */
+.fh-mp-requisito {
+  margin: 0 0 14px; padding: 11px 13px; border-radius: 11px; font-size: 13.5px; line-height: 1.55;
+  background: #fff4e0; color: #6a4708; border: 1px solid #f0d9a8;
+}

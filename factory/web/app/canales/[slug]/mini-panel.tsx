@@ -50,6 +50,9 @@ export function MiniProgramPanel({ slug, nombre }: { slug: string; nombre: strin
       <p className="fh-mp-d">
         {t('mp.desc.a', { tienda: nombre })} {t('mp.desc.b')}
       </p>
+      {/* La condición para COBRAR va antes del botón de generar, no al final
+          de los pasos: descubrirla con el código ya subido es perder días. */}
+      <p className="fh-mp-requisito">{t('mp.aviso')}</p>
 
       {!datos ? (
         <button className="fh-btn fh-btn--lima fh-btn--grande" onClick={generar} disabled={cargando}>

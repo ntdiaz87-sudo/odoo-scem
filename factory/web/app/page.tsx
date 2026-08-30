@@ -11,29 +11,66 @@ import { Revelar } from './_v2/revelar';
 
 export const dynamic = 'force-dynamic';
 
+/* Contenido del home que no está en el diccionario porque lleva estructura
+   (cifras, precios, banderas). Cada texto va en los TRES idiomas.
+   El tercer elemento de una función de plan marca "aún no disponible": la IA
+   se vende en los planes pero todavía no existe, y cobrarla sin ese aviso es
+   la promesa falsa más cara del sitio. Al activar el equipo de IA, se quita. */
+type Trio = { zh: string; es: string; en: string };
+const T3 = (zh: string, es: string, en: string): Trio => ({ zh, es, en });
+
 const AGENTES = [
-  { id: 'xiaomei', img: '/img/agente-xiaomei.png', zh: '小美', es: 'Xiaomei', rzh: '客服 AI', res: 'Atención al cliente', datos: [['47', '客户对话', 'Conversaciones'], ['3', '成交订单', 'Ventas cerradas']] },
-  { id: 'xiaolin', img: '/img/agente-xiaolin.png', zh: '小林', es: 'Xiaolin', rzh: '运营 AI', res: 'Operaciones', datos: [['3', '库存预警', 'Avisos de stock'], ['1', '促销待审', 'Promoción lista']] },
-  { id: 'xiaoan', img: '/img/agente-xiaoan.png', zh: '小安', es: 'Xiaoan', rzh: '内容 AI', res: 'Contenido', datos: [['6', '优化商品', 'Fichas mejoradas'], ['3', '内容已生成', 'Contenidos creados']] },
+  { id: 'xiaomei', img: '/img/agente-xiaomei.png', n: T3('小美', 'Xiaomei', 'Xiaomei'), r: T3('客服 AI', 'Atención al cliente', 'Customer service'), datos: [['47', T3('客户对话', 'Conversaciones', 'Conversations')], ['3', T3('成交订单', 'Ventas cerradas', 'Sales closed')]] },
+  { id: 'xiaolin', img: '/img/agente-xiaolin.png', n: T3('小林', 'Xiaolin', 'Xiaolin'), r: T3('运营 AI', 'Operaciones', 'Operations'), datos: [['3', T3('库存预警', 'Avisos de stock', 'Stock alerts')], ['1', T3('促销待审', 'Promoción lista', 'Promo awaiting review')]] },
+  { id: 'xiaoan', img: '/img/agente-xiaoan.png', n: T3('小安', 'Xiaoan', 'Xiaoan'), r: T3('内容 AI', 'Contenido', 'Content'), datos: [['6', T3('优化商品', 'Fichas mejoradas', 'Listings improved')], ['3', T3('内容已生成', 'Contenidos creados', 'Content created')]] },
 ];
 
-const PLANES = [
-  { id: 'trial', zh: '体验版', es: 'Demo', precio: '¥0', pzh: '14 天', pes: '14 días', f: [['完整体验店', 'Tienda demo completa'], ['模板与专属设计', 'Plantillas y diseño exclusivo'], ['免费二级域名', 'Subdominio gratis'], ['AI 功能试用', 'Prueba de funciones IA']] },
-  { id: 'store', zh: '开店版', es: 'Store', precio: '¥199', anual: '¥1,990', f: [['Web + H5', 'Web + H5'], ['模板或专属设计', 'Plantilla o diseño exclusivo'], ['订单、库存与客户', 'Pedidos, inventario y clientes'], ['SSL 与托管', 'SSL y alojamiento'], ['0% 平台交易佣金', '0 % de comisión']] },
-  { id: 'ai', zh: 'AI 商家版', es: 'AI Business', precio: '¥399', anual: '¥3,990', reco: true, f: [['开店版全部功能', 'Todo lo de Store'], ['客服 AI + 内容 AI', 'IA de atención y contenido'], ['运营 AI（建议模式）', 'IA de operaciones en modo sugerencia'], ['数据分析', 'Analítica']] },
-  { id: 'omni', zh: '全渠道版', es: 'Omnichannel', precio: '¥699', anual: '¥6,990', f: [['AI 商家版全部功能', 'Todo lo de AI Business'], ['微信小程序', 'Mini programa de WeChat'], ['完整 AI 团队', 'Equipo de IA completo'], ['更高用量与自动化', 'Más uso y automatización']] },
+type Funcion = { t: Trio; pronto?: boolean };
+const PLANES: Array<{
+  id: string; n: Trio; precio: string; anual?: string; reco?: boolean;
+  nota?: Trio; f: Funcion[];
+}> = [
+  { id: 'trial', n: T3('体验版', 'Demo', 'Trial'), precio: '¥0', nota: T3('14 天', '14 días', '14 days'), f: [
+    { t: T3('完整体验店', 'Tienda demo completa', 'Full trial store') },
+    { t: T3('模板与专属设计', 'Plantillas y diseño exclusivo', 'Templates and exclusive design') },
+    { t: T3('免费二级域名', 'Subdominio gratis', 'Free subdomain') },
+    { t: T3('AI 功能试用', 'Prueba de funciones IA', 'AI features to try'), pronto: true },
+  ] },
+  { id: 'store', n: T3('开店版', 'Store', 'Store'), precio: '¥199', anual: '¥1,990', f: [
+    { t: T3('Web + H5', 'Web + H5', 'Web + H5') },
+    { t: T3('模板或专属设计', 'Plantilla o diseño exclusivo', 'Template or exclusive design') },
+    { t: T3('订单、库存与客户', 'Pedidos, inventario y clientes', 'Orders, inventory and customers') },
+    { t: T3('SSL 与托管', 'SSL y alojamiento', 'SSL and hosting') },
+    { t: T3('0% 平台交易佣金', '0 % de comisión', '0% platform commission') },
+  ] },
+  { id: 'ai', n: T3('AI 商家版', 'AI Business', 'AI Business'), precio: '¥399', anual: '¥3,990', reco: true, f: [
+    { t: T3('开店版全部功能', 'Todo lo de Store', 'Everything in Store') },
+    { t: T3('客服 AI + 内容 AI', 'IA de atención y contenido', 'Customer-service and content AI'), pronto: true },
+    { t: T3('运营 AI（建议模式）', 'IA de operaciones en modo consejo', 'Operations AI (advice mode)'), pronto: true },
+    { t: T3('数据分析', 'Analítica', 'Analytics') },
+  ] },
+  { id: 'omni', n: T3('全渠道版', 'Omnichannel', 'Omnichannel'), precio: '¥699', anual: '¥6,990', f: [
+    { t: T3('AI 商家版全部功能', 'Todo lo de AI Business', 'Everything in AI Business') },
+    { t: T3('微信小程序', 'Mini programa de WeChat', 'WeChat Mini Program') },
+    { t: T3('完整 AI 团队', 'Equipo de IA completo', 'Full AI team'), pronto: true },
+    { t: T3('更高用量与自动化', 'Más uso y automatización', 'Higher usage and automation') },
+  ] },
 ];
 
 const FAQ = [
-  { qzh: '我可以先选模板，再让 AI 调整吗？', azh: '可以。模板是快速起点，AI 可以基于你的品牌、产品和风格继续定制。', qes: '¿Puedo elegir una plantilla y luego ajustarla con IA?', aes: 'Sí. La plantilla es un punto de partida rápido y la IA puede personalizarla con tu marca, tus productos y tu estilo.' },
-  { qzh: '专属设计和模板有什么区别？', azh: '模板可以被多个商家使用；专属设计为你的品牌生成，登记后不再提供给其他商家。', qes: '¿Cuál es la diferencia entre plantilla y diseño exclusivo?', aes: 'Las plantillas pueden reutilizarlas varios comercios. El diseño exclusivo se genera para tu marca y, una vez registrado, no vuelve a ofrecerse a nadie más.' },
-  { qzh: 'Web、H5 和微信小程序共享商品和订单吗？', azh: '是。它们连接同一个核心，商品、价格、库存、客户和订单保持同步。', qes: '¿Web, H5 y WeChat comparten productos y pedidos?', aes: 'Sí. Los tres canales se conectan al mismo núcleo y comparten productos, precios, inventario, clientes y pedidos.' },
-  { qzh: 'AI 会自动修改价格吗？', azh: '只有在你授权的范围内。默认支持建议、待批准执行和自动执行三种权限级别。', qes: '¿La IA cambia precios automáticamente?', aes: 'Solo dentro de los permisos que le des. Hay tres niveles: recomendar, dejar preparado para tu aprobación, y ejecutar lo que hayas autorizado.' },
+  { q: T3('我可以先选模板，再让 AI 调整吗？', '¿Puedo elegir una plantilla y luego ajustarla con IA?', 'Can I pick a template and have the AI adjust it later?'),
+    a: T3('可以。模板是快速起点，AI 可以基于你的品牌、产品和风格继续定制。', 'Sí. La plantilla es un punto de partida rápido y la IA puede personalizarla con tu marca, tus productos y tu estilo.', 'Yes. The template is a fast starting point, and the AI can tailor it with your brand, products and style.') },
+  { q: T3('专属设计和模板有什么区别？', '¿Cuál es la diferencia entre plantilla y diseño exclusivo?', 'What is the difference between a template and an exclusive design?'),
+    a: T3('模板可以被多个商家使用；专属设计为你的品牌生成，登记后不再提供给其他商家。', 'Las plantillas pueden reutilizarlas varios comercios. El diseño exclusivo se genera para tu marca y, una vez registrado, no vuelve a ofrecerse a nadie más.', 'Templates can be reused by several merchants. An exclusive design is generated for your brand and, once registered, is never offered to anyone else.') },
+  { q: T3('Web、H5 和微信小程序共享商品和订单吗？', '¿Web, H5 y WeChat comparten productos y pedidos?', 'Do Web, H5 and WeChat share products and orders?'),
+    a: T3('是。它们连接同一个核心，商品、价格、库存、客户和订单保持同步。', 'Sí. Los tres canales se conectan al mismo núcleo y comparten productos, precios, inventario, clientes y pedidos.', 'Yes. All three channels connect to the same core and share products, prices, inventory, customers and orders.') },
+  { q: T3('AI 会自动修改价格吗？', '¿La IA cambia precios automáticamente?', 'Does the AI change prices automatically?'),
+    a: T3('只有在你授权的范围内。默认支持建议、待批准执行和自动执行三种权限级别。', 'Solo dentro de los permisos que le des. Hay tres niveles: recomendar, dejar preparado para tu aprobación, y ejecutar lo que hayas autorizado.', 'Only within the permissions you grant. There are three levels: recommend, prepare for your approval, and run what you authorised.') },
 ];
 
 export default async function Home() {
   const [locale, t] = await Promise.all([getLocale(), getT()]);
-  const zh = locale === 'zh';
+  const tx = (v: { zh: string; es: string; en: string }) => v[locale];
   const rot = ROTACION_HERO.map(id => PLANTILLAS_POR_ID[id]);
   const canal = PLANTILLAS_POR_ID.lumina;
 
@@ -179,7 +216,7 @@ export default async function Home() {
                 <Telefono clase="v-canal-tel v-canal-tel--h5" etiqueta="H5">
                   <Escaparate p={canal} locale={locale} variante="movil" />
                 </Telefono>
-                <Telefono clase="v-canal-tel v-canal-tel--wx" etiqueta={zh ? '微信小程序' : 'WeChat'}>
+                <Telefono clase="v-canal-tel v-canal-tel--wx" etiqueta={tx(T3('微信小程序', 'WeChat', 'WeChat'))}>
                   <Escaparate p={canal} locale={locale} variante="movil" />
                 </Telefono>
               </div>
@@ -223,7 +260,7 @@ export default async function Home() {
                   c1: t('v.fab.c1'), c2: t('v.fab.c2'), c3: t('v.fab.c3'),
                   c4: t('v.fab.c4'), c5: t('v.fab.c5'), c6: t('v.fab.c6'),
                   publicar: t('v.fab.publicar'),
-                  salidaN: zh ? '无线降噪耳机' : 'Auriculares con cancelación',
+                  salidaN: tx(T3('无线降噪耳机', 'Auriculares con cancelación', 'Noise-cancelling earbuds')),
                 }}
               />
             </Revelar>
@@ -248,18 +285,18 @@ export default async function Home() {
                     <Image src={a.img} alt="" width={200} height={200} sizes="76px" />
                   </span>
                   <span className="v-agente-id">
-                    <em>{zh ? a.rzh : a.res}</em>
-                    <b>{zh ? a.zh : a.es}</b>
+                    <em>{tx(a.r)}</em>
+                    <b>{tx(a.n)}</b>
                     <span className="v-agente-estado">
                       <i />
                       {t('v.ai.trabajando')}
                     </span>
                   </span>
                   <span className="v-agente-datos">
-                    {a.datos.map(([n, dzh, des]) => (
-                      <span key={n + dzh}>
-                        <b>{n}</b>
-                        <em>{zh ? dzh : des}</em>
+                    {a.datos.map(([n, d]) => (
+                      <span key={String(n)}>
+                        <b>{n as string}</b>
+                        <em>{tx(d as { zh: string; es: string; en: string })}</em>
                       </span>
                     ))}
                   </span>
@@ -323,17 +360,22 @@ export default async function Home() {
               {PLANES.map((pl, k) => (
                 <Revelar key={pl.id} etiqueta="li" clase={`v-plan${pl.reco ? ' is-reco' : ''}`} retardo={k * 60}>
                   {pl.reco ? <span className="v-plan-sello">{t('v.pr.reco')}</span> : null}
-                  <p className="v-plan-n">{zh ? pl.zh : pl.es}</p>
+                  <p className="v-plan-n">{tx(pl.n)}</p>
                   <p className="v-plan-precio">
                     {pl.precio}
                     {pl.anual ? <em>{t('v.pr.mes')}</em> : null}
                   </p>
                   <p className="v-plan-nota">
-                    {pl.anual ? t('v.pr.anual', { precio: pl.anual }) : (zh ? pl.pzh! : pl.pes!)}
+                    {pl.anual ? t('v.pr.anual', { precio: pl.anual }) : tx(pl.nota!)}
                   </p>
                   <ul className="v-lista-check">
-                    {pl.f.map(([fz, fe]) => (
-                      <li key={fz}>{zh ? fz : fe}</li>
+                    {pl.f.map(f => (
+                      <li key={f.t.zh} className={f.pronto ? 'is-pronto' : undefined}>
+                        {tx(f.t)}
+                        {/* La IA se vende en los planes pero AÚN no existe: se
+                            dice en la propia función, no en letra pequeña. */}
+                        {f.pronto ? <em className="v-pronto">{t('v.pr.pronto')}</em> : null}
+                      </li>
                     ))}
                   </ul>
                   <Link className={`v-btn ${pl.reco ? 'v-btn--acento' : 'v-btn--linea'}`} href="/demo">
@@ -353,9 +395,9 @@ export default async function Home() {
             </Revelar>
             <Revelar etiqueta="div" clase="v-faq">
               {FAQ.map(f => (
-                <details key={f.qzh}>
-                  <summary>{zh ? f.qzh : f.qes}</summary>
-                  <p>{zh ? f.azh : f.aes}</p>
+                <details key={f.q.zh}>
+                  <summary>{tx(f.q)}</summary>
+                  <p>{tx(f.a)}</p>
                 </details>
               ))}
             </Revelar>
@@ -387,7 +429,7 @@ export default async function Home() {
             <span className="v-marca">
               fábrica<span>.</span>
             </span>
-            <p>{zh ? '你的 AI 商店工厂' : 'Tu fábrica de tiendas con IA'}</p>
+            <p>{t('marca.tagline')}</p>
           </div>
           <nav>
             <p className="v-pie-t">{t('v.pie.producto')}</p>

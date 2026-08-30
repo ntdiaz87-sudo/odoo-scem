@@ -740,3 +740,11 @@
 .w-mercado button.is-on b, .w-mercado button.is-on em { color: var(--v-acento); }
 .w-mercado button:focus-visible { outline: 2px solid var(--v-acento); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .w-mercado button { transition: none; } }
+
+/* Función de plan aún no disponible: se dice al lado, no en letra pequeña. */
+.v-lista-check li.is-pronto { color: var(--v-texto-suave); }
+.v-pronto {
+  font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  margin-left: 7px; padding: 2px 7px; border-radius: 99px; vertical-align: 1px;
+  background: var(--v-acento-suave); color: var(--v-acento); white-space: nowrap;
+}
