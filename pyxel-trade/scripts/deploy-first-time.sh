@@ -34,8 +34,18 @@ ip_real=$(curl -4 -fsS --max-time 10 ifconfig.me || echo "")
 [ "$ip_real" = "$IP_ESPERADA" ] || abortar "esto no es el GEX44 (IP $ip_real)"
 echo "  servidor correcto ($ip_real)"
 
-[ -e "$RAIZ" ] && abortar "$RAIZ ya existe; alguien empezo antes y no lo piso"
-echo "  $RAIZ libre"
+# Dos caminos validos: el codigo ya copiado con scp desde el portatil, o
+# clonarlo aqui con un token. Cualquier otra cosa en $RAIZ es que alguien
+# empezo antes, y eso no se pisa.
+if [ -f "$RAIZ/infra/docker-compose.prod.yml" ]; then
+    CODIGO_YA_ESTA=1
+    echo "  el codigo ya esta en $RAIZ, no se clona"
+elif [ -e "$RAIZ" ]; then
+    abortar "$RAIZ existe pero no tiene el proyecto dentro; reviselo a mano"
+else
+    CODIGO_YA_ESTA=0
+    echo "  $RAIZ libre"
+fi
 
 for p in "$PUERTO_WEB" "$PUERTO_WS"; do
     ss -ltn | grep -q ":$p " && abortar "el puerto $p esta ocupado"
@@ -60,6 +70,9 @@ echo "  $DOMINIO resuelve correctamente"
 
 # ═══ 2. Codigo ═══════════════════════════════════════════════════
 paso "2/8 · Traer el codigo"
+if [ "$CODIGO_YA_ESTA" = "1" ]; then
+    echo "  omitido: el codigo ya estaba"
+else
 echo "Pega un token de GitHub con permiso de lectura sobre el repositorio."
 echo "(no se ve al escribir, y no queda guardado en ningun sitio)"
 read -rsp "Token: " TOKEN; echo
@@ -73,6 +86,7 @@ unset TOKEN
 [ -d "$TMP/repo/pyxel-trade" ] || abortar "el repositorio no trae pyxel-trade/"
 cp -a "$TMP/repo/pyxel-trade" "$RAIZ"
 echo "  codigo en $RAIZ"
+fi
 # Nota: en este primer despliegue $RAIZ NO es un repositorio git. El
 # despliegue automatico llega cuando el proyecto viva en Gitea; entonces
 # se reclona ahi y el workflow ya podra hacer fetch.
@@ -80,6 +94,7 @@ echo "  codigo en $RAIZ"
 # ═══ 3. Secretos ═════════════════════════════════════════════════
 paso "3/8 · Entorno"
 cd "$RAIZ"
+[ -f .env ] && abortar "ya hay un .env; no lo sobrescribo"
 cp .env.example .env
 sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$(openssl rand -base64 32)|" .env
 sed -i "s|^ODOO_ADMIN_PASSWD=.*|ODOO_ADMIN_PASSWD=$(openssl rand -base64 32)|" .env
