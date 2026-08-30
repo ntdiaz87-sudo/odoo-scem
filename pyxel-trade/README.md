@@ -108,7 +108,8 @@ $compose up -d db
 # La base se crea una sola vez por línea de comandos: list_db está
 # desactivado y el gestor web devuelve 404.
 $compose run --rm odoo odoo -d "$ODOO_DB" \
-    -i base,pyxel_trade_core,pyxel_trade_marketplace --stop-after-init
+    -i base,pyxel_trade_core,pyxel_trade_marketplace,pyxel_trade_supplier,pyxel_trade_container \
+    --stop-after-init
 $compose up -d
 ```
 
@@ -229,7 +230,7 @@ Dos cambios de Odoo 19 que obligaron a corregir código ya escrito:
 
 ## Pendiente de comprobar en el primer arranque
 
-- Que `pyxel_trade_core` y `pyxel_trade_marketplace` instalan sin traceback,
+- Que los cuatro módulos instalan sin traceback,
   y que actualizan con `-u`.
 - Que los `xpath` sobre el notebook del contacto y del producto encajan en
   las vistas reales de Odoo 19.

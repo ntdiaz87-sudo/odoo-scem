@@ -12,7 +12,7 @@ un producto distinto, sobre la misma base de datos.
 | **Idioma** | Español | 中文 e inglés |
 | **Qué quiere** | Encontrar producto, cotizar, importar | Vender, y saber qué demanda Cuba |
 | **Gancho** | Catálogo y contenedor MIX | Cobra en su banco en China |
-| **Estado** | En diseño | Pendiente |
+| **Estado** | Escrita | Escrita |
 
 ## Aplicaciones estándar de Odoo
 
@@ -38,10 +38,10 @@ Se instalan de Odoo y no se reescriben:
 | `pyxel_trade_core` | Proveedores, puertos, MOQ, incoterms, señal de demanda y compatibilidad eléctrica | **Escrito** |
 | `pyxel_trade_marketplace` | Home pública, descubrimiento, ficha de producto y de proveedor | Espera diseño |
 | `pyxel_trade_rfq` | Solicitudes de cotización y comparación de ofertas | Pendiente |
-| `pyxel_trade_container` | Mixed Container Builder: volumen, peso, consolidación | Pendiente |
+| `pyxel_trade_container` | Contenedor mixto: volumen, peso, consolidación | **Escrito** |
 | `pyxel_trade_operations` | Operación de importación con línea de tiempo | Pendiente |
 | `pyxel_trade_intelligence` | Cuba Market Pulse | Pendiente |
-| `pyxel_trade_supplier` | Puerta del proveedor chino y su panel | Pendiente |
+| `pyxel_trade_supplier` | Puerta del proveedor chino, trilingüe, con captación al CRM | **Escrito** |
 
 ## Decisiones tomadas
 
