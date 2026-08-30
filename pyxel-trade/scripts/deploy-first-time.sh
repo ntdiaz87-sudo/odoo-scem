@@ -94,13 +94,20 @@ fi
 # ═══ 3. Secretos ═════════════════════════════════════════════════
 paso "3/8 · Entorno"
 cd "$RAIZ"
-[ -f .env ] && abortar "ya hay un .env; no lo sobrescribo"
-cp .env.example .env
-sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$(openssl rand -base64 32)|" .env
-sed -i "s|^ODOO_ADMIN_PASSWD=.*|ODOO_ADMIN_PASSWD=$(openssl rand -base64 32)|" .env
-sed -i "s|^PYXEL_HOST=.*|PYXEL_HOST=$DOMINIO|" .env
-chmod 600 .env
-echo "  .env creado con contrasenas generadas (chmod 600)"
+# Si ya hay un .env se conserva. Regenerarlo cambiaria DB_PASSWORD, y
+# PostgreSQL ya se creo con la actual: Odoo dejaria de poder conectarse a
+# su propia base. Conservarlo es ademas lo que hace este script
+# relanzable, que importa cuando un paso falla a mitad.
+if [ -f .env ]; then
+    echo "  .env ya existe, se conserva (PostgreSQL depende de su contrasena)"
+else
+    cp .env.example .env
+    sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$(openssl rand -base64 32)|" .env
+    sed -i "s|^ODOO_ADMIN_PASSWD=.*|ODOO_ADMIN_PASSWD=$(openssl rand -base64 32)|" .env
+    sed -i "s|^PYXEL_HOST=.*|PYXEL_HOST=$DOMINIO|" .env
+    chmod 600 .env
+    echo "  .env creado con contrasenas generadas (chmod 600)"
+fi
 
 bash scripts/render-config.sh
 

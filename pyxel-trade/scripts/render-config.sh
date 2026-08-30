@@ -47,7 +47,20 @@ else
     exit 1
 fi
 
-chmod 600 "$SALIDA"
+# El contenedor de Odoo NO corre como root: si el fichero queda en 600 y
+# propiedad de root, Odoo no puede leerlo, ve una configuracion vacia y
+# muere con un NoSectionError que no explica nada. Se le da al usuario
+# odoo de la imagen, cuyo uid se consulta en vez de adivinarlo.
+IMAGEN=$(grep -E '^ODOO_IMAGE=' .env | cut -d= -f2)
+UID_ODOO=$(docker run --rm --entrypoint id "$IMAGEN" -u odoo 2>/dev/null || echo "")
+if [ -n "$UID_ODOO" ]; then
+    chown "$UID_ODOO:$UID_ODOO" "$SALIDA"
+    chmod 640 "$SALIDA"
+else
+    # Sin poder consultar el uid, legible para todos: peor que 640, pero
+    # arrancar es mejor que un fallo incomprensible.
+    chmod 644 "$SALIDA"
+fi
 
 # Si queda alguna variable sin sustituir, Odoo arrancaría con basura en la
 # configuración. Mejor fallar aquí y en voz alta.
