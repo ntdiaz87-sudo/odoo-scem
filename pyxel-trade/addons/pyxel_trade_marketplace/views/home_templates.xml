@@ -82,7 +82,7 @@
             </section>
 
             <!-- ══ Categorías ════════════════════════════════════════ -->
-            <section class="px-section" t-if="categorias">
+            <section class="px-section px-defer" t-if="categorias">
                 <div class="container px-container">
                     <div class="px-section__head">
                         <h2 class="px-section__title">Explora oportunidades por categoría</h2>
@@ -92,9 +92,15 @@
                         <t t-foreach="categorias" t-as="categoria">
                             <a t-attf-href="/shop?category=#{categoria.id}" class="px-category">
                                 <span class="px-category__media">
-                                    <img t-if="categoria.image_1920"
-                                         t-attf-src="/web/image/product.public.category/#{categoria.id}/image_1920/480x320"
-                                         t-att-alt="categoria.name" loading="lazy"/>
+                                    <!-- image_512 en lugar de image_1920: se pide
+                                         la fuente ya pequeña, no una reducción de
+                                         una imagen enorme. width y height evitan
+                                         que la tarjeta salte al cargar. -->
+                                    <img t-if="categoria.image_1920 and not modo_ligero"
+                                         t-attf-src="/web/image/product.public.category/#{categoria.id}/image_512/480x320"
+                                         t-att-alt="categoria.name"
+                                         width="480" height="320"
+                                         loading="lazy" decoding="async"/>
                                     <span t-else="" class="px-category__placeholder" aria-hidden="true"/>
                                 </span>
                                 <span class="px-category__name" t-out="categoria.name"/>
@@ -105,7 +111,7 @@
             </section>
 
             <!-- ══ Productos destacados ══════════════════════════════ -->
-            <section class="px-section" t-if="destacados">
+            <section class="px-section px-defer" t-if="destacados">
                 <div class="container px-container">
                     <div class="px-section__head">
                         <h2 class="px-section__title">Productos destacados</h2>
@@ -126,8 +132,12 @@
                         <t t-foreach="destacados" t-as="producto">
                             <article class="px-product">
                                 <a t-att-href="producto.website_url" class="px-product__media">
-                                    <img t-attf-src="/web/image/product.template/#{producto.id}/image_512/400x400"
-                                         t-att-alt="producto.name" loading="lazy"/>
+                                    <img t-if="not modo_ligero"
+                                         t-attf-src="/web/image/product.template/#{producto.id}/image_256/300x300"
+                                         t-att-alt="producto.name"
+                                         width="300" height="300"
+                                         loading="lazy" decoding="async"/>
+                                    <span t-else="" class="px-product__placeholder" aria-hidden="true"/>
                                     <t t-if="producto.pyxel_demand_signal == 'high'">
                                         <span class="px-badge px-badge--demand">Alta demanda</span>
                                     </t>
@@ -201,7 +211,7 @@
                  Se le da sección propia y no un panel lateral: es el único
                  dato de esta página que ningún competidor puede replicar,
                  porque sale de las ventas reales de los canales del grupo. -->
-            <section class="px-section px-pulse" t-if="senales">
+            <section class="px-section px-pulse px-defer" t-if="senales">
                 <div class="container px-container">
                     <div class="px-pulse__head">
                         <h2 class="px-section__title px-section__title--light">Cuba Market Pulse</h2>
@@ -227,7 +237,7 @@
             </section>
 
             <!-- ══ Trade Builder ═════════════════════════════════════ -->
-            <section class="px-section">
+            <section class="px-section px-defer">
                 <div class="container px-container">
                     <div class="px-builder">
                         <div class="px-builder__text">
@@ -252,7 +262,7 @@
                  Cifras contadas de la base, no inventadas. Al principio
                  serán pequeñas: preferible a un número que el primer
                  comprador que pregunte va a desmontar. -->
-            <section class="px-section px-trust">
+            <section class="px-section px-trust px-defer">
                 <div class="container px-container">
                     <div class="px-metrics">
                         <div class="px-metric">
@@ -270,6 +280,24 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ══ Modo ligero ═══════════════════════════════════════
+                 Visible, no escondido en ajustes: para quien paga el dato
+                 a 1.120 CUP el giga, esto es una función, no una opción. -->
+            <div class="px-datamode">
+                <div class="container px-container">
+                    <a href="/market/ligero?volver=/market" class="px-datamode__link">
+                        <t t-if="modo_ligero">
+                            <span class="px-datamode__on">Modo ligero activado</span>
+                            — no se descargan imágenes. Desactivar
+                        </t>
+                        <t t-else="">
+                            Activar <span class="px-datamode__on">modo ligero</span>
+                            y dejar de descargar imágenes
+                        </t>
+                    </a>
+                </div>
+            </div>
 
         </div>
     </t>

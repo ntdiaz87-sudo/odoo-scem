@@ -61,6 +61,50 @@
 
 .px-container { max-width: 1320px; }
 
+// Las secciones bajo el pliegue no se maquetan hasta que se acercan a la
+// pantalla. En un móvil de gama baja con red lenta, esto es la diferencia
+// entre pintar la portada de inmediato o esperar a que el navegador
+// resuelva la página entera. contain-intrinsic-size reserva el alto para
+// que la barra de desplazamiento no dé saltos.
+.px-defer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 640px;
+}
+
+// Respaldo del modo ligero: cuando no se sirve la imagen, la tarjeta
+// mantiene su forma en lugar de colapsar.
+.px-product__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #E8EDF7 0%, #F4F6FB 100%);
+}
+
+// Interruptor de modo ligero.
+.px-datamode {
+    border-top: 1px solid var(--px-border);
+    padding: 1.25rem 0 2.5rem;
+
+    &__link {
+        font-size: .875rem;
+        color: var(--px-text-2);
+        text-decoration: none;
+        &:hover { color: var(--px-blue); }
+    }
+    &__on { font-weight: 700; color: var(--px-blue); }
+}
+
+// En un teléfono modesto, las transiciones cuestan cuadros. Quien pide
+// menos movimiento no las recibe.
+@media (prefers-reduced-motion: reduce) {
+    .pyxel-market * {
+        transition: none !important;
+        animation: none !important;
+    }
+    .pyxel-market .px-action--live:hover,
+    .pyxel-market .px-category:hover { transform: none; }
+}
+
 .px-section {
     padding: 4rem 0;
     &__head {
