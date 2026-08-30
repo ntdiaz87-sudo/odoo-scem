@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pyxel_market_signal_public,pyxel.market.signal.public,model_pyxel_market_signal,,1,0,0,0
+access_pyxel_market_signal_manager,pyxel.market.signal.manager,model_pyxel_market_signal,base.group_system,1,1,1,1

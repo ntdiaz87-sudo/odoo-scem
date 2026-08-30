@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Señales de partida de Cuba Market Pulse.
+         noupdate="1" para que las ediciones desde la interfaz sobrevivan a
+         las actualizaciones del módulo. Son un punto de partida editable,
+         no un dato fijo: en cuanto haya histórico de ventas, estas señales
+         deben salir de ahí y no de una lista escrita a mano. -->
+    <data noupdate="1">
+
+        <record id="signal_aires" model="pyxel.market.signal">
+            <field name="name">Aires acondicionados</field>
+            <field name="trend">high</field>
+            <field name="sequence">10</field>
+            <field name="note">Categoría con rotación sostenida. Verificar
+                compatibilidad a 60 Hz antes de cotizar.</field>
+        </record>
+
+        <record id="signal_baterias" model="pyxel.market.signal">
+            <field name="name">Baterías LiFePO4</field>
+            <field name="trend">rising</field>
+            <field name="sequence">20</field>
+            <field name="note">Impulsada por el respaldo energético doméstico.</field>
+        </record>
+
+        <record id="signal_triciclos" model="pyxel.market.signal">
+            <field name="name">Triciclos eléctricos</field>
+            <field name="trend">opportunity</field>
+            <field name="sequence">30</field>
+            <field name="note">Demanda por encima de la oferta disponible en el país.</field>
+        </record>
+
+        <record id="signal_inversores" model="pyxel.market.signal">
+            <field name="name">Inversores híbridos</field>
+            <field name="trend">rising</field>
+            <field name="sequence">40</field>
+            <field name="note">Sólo sincronizan con la red cubana los modelos de 60 Hz.</field>
+        </record>
+
+    </data>
+</odoo>

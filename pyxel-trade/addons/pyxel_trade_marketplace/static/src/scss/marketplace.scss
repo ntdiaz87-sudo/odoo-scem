@@ -1,0 +1,462 @@
+// ═══════════════════════════════════════════════════════════════
+// PYXEL — Cuba Trade OS · Portada del marketplace
+//
+// Los valores se expresan como propiedades personalizadas de CSS para
+// poder ajustar la paleta sin recompilar cada regla. Todo se apoya en la
+// rejilla de Bootstrap que ya trae Odoo: aquí no se define rejilla propia.
+//
+// Sin @font-face: no se sirven ficheros de tipografía todavía, y declarar
+// una fuente inexistente produce 404 de estáticos — la web se ve a medias
+// sin que nada falle. Cuando se añadan los .woff2 a static/src/fonts/, se
+// declaran aquí y se antepone la familia a --px-font.
+// ═══════════════════════════════════════════════════════════════
+
+.pyxel-market {
+    // ── Color ──────────────────────────────────────────────────
+    --px-bg:            #F7F8FA;
+    --px-surface:       #FFFFFF;
+    --px-border:        #E4E8F0;
+    --px-text:          #0A1633;
+    --px-text-2:        #55607A;
+    --px-muted:         #8B94A8;
+
+    --px-blue:          #1B63F5;   // acción
+    --px-blue-hover:    #1550D8;
+    --px-blue-active:   #1240AE;
+    --px-blue-soft:     #EDF3FF;
+
+    --px-violet:        #6246F5;   // IA
+    --px-green:         #0FA25C;   // oportunidad y demanda
+    --px-green-soft:    #E8F7EF;
+    --px-orange:        #E8850C;   // logística y avisos
+    --px-orange-soft:   #FDF2E3;
+    --px-red:           #D92D20;
+
+    // ── Forma ──────────────────────────────────────────────────
+    --px-r-sm:  8px;
+    --px-r:     12px;
+    --px-r-lg:  16px;
+    --px-pill:  999px;
+
+    --px-shadow-1: 0 1px 2px rgba(10, 22, 51, .06);
+    --px-shadow-2: 0 4px 16px rgba(10, 22, 51, .08);
+
+    // Pila con respaldo para 简体中文: sin estas familias, los caracteres
+    // han caen en una fuente arbitraria y la jerarquía se descuadra.
+    --px-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+               Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+               "Noto Sans SC", sans-serif;
+
+    background: var(--px-bg);
+    color: var(--px-text);
+    font-family: var(--px-font);
+    line-height: 1.55;
+
+    *:focus-visible {
+        outline: 2px solid var(--px-blue);
+        outline-offset: 2px;
+        border-radius: var(--px-r-sm);
+    }
+}
+
+.px-container { max-width: 1320px; }
+
+.px-section {
+    padding: 4rem 0;
+    &__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.75rem;
+    }
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -.01em;
+        margin: 0 0 1.75rem;
+        &--light { margin-bottom: .5rem; }
+    }
+}
+
+.px-link {
+    color: var(--px-blue);
+    font-weight: 600;
+    text-decoration: none;
+    &:hover { color: var(--px-blue-hover); text-decoration: underline; }
+}
+
+// ── Hero ───────────────────────────────────────────────────────
+.px-hero {
+    padding: 4.5rem 0 3.5rem;
+    background: linear-gradient(180deg, #EEF3FC 0%, var(--px-bg) 100%);
+
+    &__title {
+        font-size: clamp(2rem, 4.4vw, 3.25rem);
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: -.02em;
+        margin: 0 0 1rem;
+        max-width: 20ch;
+    }
+    &__lead {
+        font-size: 1.0625rem;
+        color: var(--px-text-2);
+        max-width: 58ch;
+        margin: 0 0 2rem;
+    }
+}
+
+.px-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--px-blue);
+    margin: 0 0 1rem;
+}
+
+.px-accent-china { color: var(--px-blue); }
+.px-accent-cuba  { color: var(--px-green); }
+
+// ── Búsqueda por intención ─────────────────────────────────────
+.px-intent {
+    background: var(--px-surface);
+    border: 1px solid var(--px-border);
+    border-radius: var(--px-r-lg);
+    box-shadow: var(--px-shadow-2);
+    padding: 1.5rem;
+    max-width: 46rem;
+
+    &__label {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        font-weight: 700;
+        font-size: 1.0625rem;
+        margin-bottom: .875rem;
+    }
+    &__spark { color: var(--px-violet); }
+
+    &__form { display: flex; gap: .625rem; }
+
+    &__input {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid var(--px-border);
+        border-radius: var(--px-r-sm);
+        padding: .875rem 1rem;
+        font-size: .9375rem;
+        color: var(--px-text);
+        background: var(--px-bg);
+        &::placeholder { color: var(--px-muted); }
+        &:focus { background: var(--px-surface); border-color: var(--px-blue); }
+    }
+
+    &__submit {
+        flex: 0 0 auto;
+        min-width: 44px;
+        min-height: 44px;
+        border: 0;
+        border-radius: var(--px-r-sm);
+        background: var(--px-blue);
+        color: #fff;
+        font-size: 1.125rem;
+        cursor: pointer;
+        &:hover  { background: var(--px-blue-hover); }
+        &:active { background: var(--px-blue-active); }
+    }
+
+    &__examples {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    &__examples-label { font-size: .8125rem; color: var(--px-muted); }
+}
+
+.px-chip {
+    border: 1px solid var(--px-border);
+    background: var(--px-surface);
+    border-radius: var(--px-pill);
+    padding: .375rem .875rem;
+    font-size: .8125rem;
+    color: var(--px-text-2);
+    cursor: pointer;
+    &:hover { border-color: var(--px-blue); color: var(--px-blue); }
+}
+
+// ── Acciones principales ───────────────────────────────────────
+.px-actions {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    @media (min-width: 576px) { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 992px) { grid-template-columns: repeat(4, 1fr); }
+}
+
+.px-action {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    background: var(--px-surface);
+    border: 1px solid var(--px-border);
+    border-radius: var(--px-r);
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+
+    &__icon {
+        width: 44px; height: 44px;
+        display: grid; place-items: center;
+        border-radius: var(--px-r-sm);
+        font-size: 1.125rem;
+        &--blue   { background: var(--px-blue-soft);   color: var(--px-blue); }
+        &--green  { background: var(--px-green-soft);  color: var(--px-green); }
+        &--violet { background: #EFEBFE;               color: var(--px-violet); }
+        &--orange { background: var(--px-orange-soft); color: var(--px-orange); }
+    }
+    &__name { font-weight: 700; font-size: 1rem; }
+    &__desc { font-size: .875rem; color: var(--px-text-2); flex: 1; }
+    &__cta  { font-weight: 600; font-size: .875rem; color: var(--px-blue); }
+
+    &--live:hover {
+        border-color: var(--px-blue);
+        box-shadow: var(--px-shadow-2);
+        transform: translateY(-2px);
+    }
+    &--live { transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+
+    // Lo que aún no existe se muestra apagado y sin enlace, en lugar de
+    // ofrecer un destino que devolvería 404.
+    &--soon { opacity: .72; }
+}
+
+// ── Categorías ─────────────────────────────────────────────────
+.px-categories {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 1200px) { grid-template-columns: repeat(6, 1fr); }
+}
+
+.px-category {
+    display: block;
+    background: var(--px-surface);
+    border: 1px solid var(--px-border);
+    border-radius: var(--px-r);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .15s ease, box-shadow .15s ease;
+    &:hover { transform: translateY(-2px); box-shadow: var(--px-shadow-2); color: inherit; }
+
+    &__media { display: block; aspect-ratio: 3 / 2; overflow: hidden; }
+    &__media img { width: 100%; height: 100%; object-fit: cover; }
+
+    // Respaldo cuando la categoría no tiene imagen cargada: un degradado,
+    // no un fichero inexistente.
+    &__placeholder {
+        display: block; width: 100%; height: 100%;
+        background: linear-gradient(135deg, #DCE6FA 0%, #EEF3FC 100%);
+    }
+    &__name { display: block; padding: .875rem 1rem; font-weight: 600; font-size: .9375rem; }
+}
+
+// ── Pestañas ───────────────────────────────────────────────────
+.px-tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+
+.px-tab {
+    border: 1px solid var(--px-border);
+    background: var(--px-surface);
+    border-radius: var(--px-pill);
+    padding: .4375rem 1rem;
+    font-size: .875rem;
+    color: var(--px-text-2);
+    text-decoration: none;
+    &:hover { border-color: var(--px-blue); color: var(--px-blue); }
+    &--active {
+        background: var(--px-blue);
+        border-color: var(--px-blue);
+        color: #fff;
+        font-weight: 600;
+        &:hover { color: #fff; }
+    }
+}
+
+// ── Producto ───────────────────────────────────────────────────
+.px-products {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    @media (min-width: 768px)  { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 1200px) { grid-template-columns: repeat(5, 1fr); }
+}
+
+.px-product {
+    display: flex;
+    flex-direction: column;
+    background: var(--px-surface);
+    border: 1px solid var(--px-border);
+    border-radius: var(--px-r);
+    overflow: hidden;
+
+    &__media {
+        position: relative;
+        display: block;
+        aspect-ratio: 1 / 1;
+        background: var(--px-bg);
+        img { width: 100%; height: 100%; object-fit: contain; }
+    }
+
+    &__body { display: flex; flex-direction: column; gap: .5rem; padding: .875rem; flex: 1; }
+
+    &__name {
+        font-weight: 600;
+        font-size: .9375rem;
+        color: var(--px-text);
+        text-decoration: none;
+        &:hover { color: var(--px-blue); }
+    }
+
+    &__price { display: flex; align-items: baseline; gap: .25rem; flex-wrap: wrap; }
+    &__amount { font-weight: 700; font-size: 1.0625rem; }
+    &__unit   { font-size: .875rem; color: var(--px-text-2); }
+    &__hint   { flex-basis: 100%; font-size: .6875rem; color: var(--px-muted); }
+
+    &__meta {
+        display: flex; flex-wrap: wrap; gap: .5rem;
+        font-size: .75rem; color: var(--px-muted);
+        margin-top: auto;
+    }
+}
+
+// ── Insignias ──────────────────────────────────────────────────
+.px-badge {
+    display: inline-block;
+    border-radius: var(--px-pill);
+    padding: .1875rem .625rem;
+    font-size: .6875rem;
+    font-weight: 700;
+
+    &--demand,
+    &--rising      { position: absolute; top: .625rem; left: .625rem;
+                     background: var(--px-green-soft); color: var(--px-green); }
+    &--opportunity { position: absolute; top: .625rem; left: .625rem;
+                     background: var(--px-orange-soft); color: var(--px-orange); }
+    &--soon        { align-self: flex-start; background: #EEF0F5; color: var(--px-text-2); }
+}
+
+// Compatibilidad eléctrica. El símbolo acompaña siempre al color: la señal
+// tiene que leerse sin depender de distinguir verde de naranja.
+.px-power {
+    display: inline-flex;
+    align-items: center;
+    gap: .3125rem;
+    align-self: flex-start;
+    border-radius: var(--px-r-sm);
+    padding: .1875rem .5rem;
+    font-size: .6875rem;
+    font-weight: 600;
+
+    &--ok      { background: var(--px-green-soft);  color: var(--px-green); }
+    &--partial { background: var(--px-blue-soft);   color: var(--px-blue); }
+    &--adapt   { background: var(--px-orange-soft); color: var(--px-orange); }
+}
+
+// ── Botones ────────────────────────────────────────────────────
+.px-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: var(--px-r-sm);
+    padding: .625rem 1.125rem;
+    font-size: .875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+
+    &--primary {
+        background: var(--px-blue);
+        color: #fff;
+        &:hover  { background: var(--px-blue-hover); color: #fff; }
+        &:active { background: var(--px-blue-active); }
+    }
+    &--block { width: 100%; }
+}
+
+// ── Cuba Market Pulse ──────────────────────────────────────────
+.px-pulse {
+    background: linear-gradient(135deg, #0A1633 0%, #14275C 100%);
+    color: #fff;
+
+    &__head { margin-bottom: 1.75rem; }
+    &__lead { color: #B9C4DE; margin: 0; }
+}
+
+.px-signals {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    @media (min-width: 576px) { grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 992px) { grid-template-columns: repeat(4, 1fr); }
+}
+
+.px-signal {
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: var(--px-r);
+    padding: 1.25rem;
+
+    &__name  { display: block; font-weight: 700; font-size: 1rem; margin-bottom: .5rem; }
+    &__trend {
+        display: inline-block;
+        border-radius: var(--px-pill);
+        padding: .125rem .5rem;
+        font-size: .6875rem;
+        font-weight: 700;
+        &--high        { background: rgba(15, 162, 92, .22);  color: #6EE7A8; }
+        &--rising      { background: rgba(27, 99, 245, .25);  color: #9DBEFF; }
+        &--opportunity { background: rgba(232, 133, 12, .22); color: #FFC178; }
+    }
+    &__delta { margin-left: .5rem; font-size: .8125rem; font-weight: 700; color: #6EE7A8; }
+    &__note  { margin: .75rem 0 0; font-size: .8125rem; color: #B9C4DE; }
+}
+
+// ── Trade Builder ──────────────────────────────────────────────
+.px-builder {
+    background: linear-gradient(135deg, #14275C 0%, #1B63F5 100%);
+    border-radius: var(--px-r-lg);
+    color: #fff;
+    padding: 2.5rem;
+
+    &__lead    { color: #DCE6FA; max-width: 62ch; margin: 0 0 1rem; }
+    &__example { font-weight: 600; color: #fff; margin: 0 0 1.25rem; }
+}
+
+// ── Confianza ──────────────────────────────────────────────────
+.px-trust { padding-bottom: 5rem; }
+
+.px-metrics {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    @media (min-width: 576px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.px-metric {
+    background: var(--px-surface);
+    border: 1px solid var(--px-border);
+    border-radius: var(--px-r);
+    padding: 1.5rem;
+    text-align: center;
+
+    &__value { display: block; font-size: 2rem; font-weight: 800; letter-spacing: -.02em; }
+    &__label { display: block; font-size: .875rem; color: var(--px-text-2); }
+}

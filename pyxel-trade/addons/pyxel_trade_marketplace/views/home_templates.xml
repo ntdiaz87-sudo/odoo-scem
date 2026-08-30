@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="home" name="PYXEL — Portada del marketplace">
+    <t t-call="website.layout">
+        <t t-set="additional_title">PYXEL — Cuba Trade OS</t>
+        <div id="wrap" class="pyxel-market">
+
+            <!-- ══ Hero e intención de búsqueda ══════════════════════ -->
+            <section class="px-hero">
+                <div class="container px-container">
+                    <p class="px-eyebrow">Your Digital Gateway to the Cuban Market</p>
+                    <h1 class="px-hero__title">
+                        De <span class="px-accent-china">China</span>
+                        a <span class="px-accent-cuba">Cuba</span>.<br/>
+                        Una plataforma para hacerlo realidad.
+                    </h1>
+                    <p class="px-hero__lead">
+                        Descubre fabricantes, encuentra productos, analiza la demanda
+                        y construye operaciones de importación en un solo lugar.
+                    </p>
+
+                    <div class="px-intent">
+                        <label class="px-intent__label" for="px-intent-input">
+                            <span class="px-intent__spark" aria-hidden="true">✦</span>
+                            ¿Qué necesitas importar?
+                        </label>
+                        <form action="/shop" method="get" role="search" class="px-intent__form">
+                            <input id="px-intent-input" type="search" name="search"
+                                   class="px-intent__input"
+                                   placeholder="Describe un producto, pega un enlace o escribe lo que necesita tu empresa..."
+                                   aria-label="¿Qué necesitas importar?"/>
+                            <button type="submit" class="px-intent__submit"
+                                    aria-label="Buscar">
+                                <span aria-hidden="true">→</span>
+                            </button>
+                        </form>
+                        <div class="px-intent__examples">
+                            <span class="px-intent__examples-label">Ejemplos:</span>
+                            <t t-foreach="['Paneles solares 550W', 'A/C 12,000 BTU',
+                                           'Triciclos eléctricos', 'Equipamiento restaurante']"
+                               t-as="ejemplo">
+                                <button type="button" class="px-chip js-px-example"
+                                        t-out="ejemplo"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Acciones principales ══════════════════════════════ -->
+            <section class="px-section">
+                <div class="container px-container">
+                    <h2 class="px-section__title">¿Qué quieres hacer hoy?</h2>
+                    <div class="px-actions">
+                        <a href="/shop" class="px-action px-action--live">
+                            <span class="px-action__icon px-action__icon--blue" aria-hidden="true">▦</span>
+                            <span class="px-action__name">Encontrar productos</span>
+                            <span class="px-action__desc">Explora el catálogo de fabricantes verificados.</span>
+                            <span class="px-action__cta">Explorar ahora →</span>
+                        </a>
+                        <div class="px-action px-action--soon">
+                            <span class="px-action__icon px-action__icon--green" aria-hidden="true">▲</span>
+                            <span class="px-action__name">Encontrar fabricante</span>
+                            <span class="px-action__desc">Conecta con fabricantes, OEM, marcas y distribuidores.</span>
+                            <span class="px-badge px-badge--soon">Próximamente</span>
+                        </div>
+                        <div class="px-action px-action--soon">
+                            <span class="px-action__icon px-action__icon--violet" aria-hidden="true">▤</span>
+                            <span class="px-action__name">Crear una importación</span>
+                            <span class="px-action__desc">Describe tu necesidad y recibe propuestas de proveedores.</span>
+                            <span class="px-badge px-badge--soon">Próximamente</span>
+                        </div>
+                        <div class="px-action px-action--soon">
+                            <span class="px-action__icon px-action__icon--orange" aria-hidden="true">▣</span>
+                            <span class="px-action__name">Crear contenedor MIX</span>
+                            <span class="px-action__desc">Combina productos de varias categorías y optimiza el contenedor.</span>
+                            <span class="px-badge px-badge--soon">Próximamente</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Categorías ════════════════════════════════════════ -->
+            <section class="px-section" t-if="categorias">
+                <div class="container px-container">
+                    <div class="px-section__head">
+                        <h2 class="px-section__title">Explora oportunidades por categoría</h2>
+                        <a href="/shop" class="px-link">Ver todas las categorías →</a>
+                    </div>
+                    <div class="px-categories">
+                        <t t-foreach="categorias" t-as="categoria">
+                            <a t-attf-href="/shop?category=#{categoria.id}" class="px-category">
+                                <span class="px-category__media">
+                                    <img t-if="categoria.image_1920"
+                                         t-attf-src="/web/image/product.public.category/#{categoria.id}/image_1920/480x320"
+                                         t-att-alt="categoria.name" loading="lazy"/>
+                                    <span t-else="" class="px-category__placeholder" aria-hidden="true"/>
+                                </span>
+                                <span class="px-category__name" t-out="categoria.name"/>
+                            </a>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Productos destacados ══════════════════════════════ -->
+            <section class="px-section" t-if="destacados">
+                <div class="container px-container">
+                    <div class="px-section__head">
+                        <h2 class="px-section__title">Productos destacados</h2>
+                        <a href="/shop" class="px-link">Ver todos →</a>
+                    </div>
+
+                    <div class="px-tabs" role="tablist">
+                        <t t-foreach="[('popular', 'Popular'), ('precio', 'Mejor precio'),
+                                       ('nuevos', 'Nuevos'), ('demanda', 'Alta demanda')]"
+                           t-as="pestana">
+                            <a t-attf-href="/market?orden=#{pestana[0]}"
+                               t-attf-class="px-tab#{' px-tab--active' if pestana[0] == orden_activo else ''}"
+                               t-out="pestana[1]"/>
+                        </t>
+                    </div>
+
+                    <div class="px-products">
+                        <t t-foreach="destacados" t-as="producto">
+                            <article class="px-product">
+                                <a t-att-href="producto.website_url" class="px-product__media">
+                                    <img t-attf-src="/web/image/product.template/#{producto.id}/image_512/400x400"
+                                         t-att-alt="producto.name" loading="lazy"/>
+                                    <t t-if="producto.pyxel_demand_signal == 'high'">
+                                        <span class="px-badge px-badge--demand">Alta demanda</span>
+                                    </t>
+                                    <t t-elif="producto.pyxel_demand_signal == 'rising'">
+                                        <span class="px-badge px-badge--rising">Demanda en alza</span>
+                                    </t>
+                                    <t t-elif="producto.pyxel_demand_signal == 'opportunity'">
+                                        <span class="px-badge px-badge--opportunity">Oportunidad</span>
+                                    </t>
+                                </a>
+
+                                <div class="px-product__body">
+                                    <a t-att-href="producto.website_url"
+                                       class="px-product__name" t-out="producto.name"/>
+
+                                    <!-- Compatibilidad con la red eléctrica cubana.
+                                         China es 220 V/50 Hz y Cuba 110/220 V a 60 Hz:
+                                         el estándar chino no funciona tal cual aquí.
+                                         El icono acompaña al color para que la señal
+                                         se lea también sin distinguirlo. -->
+                                    <t t-if="producto.pyxel_cuba_power_fit == 'ok'">
+                                        <span class="px-power px-power--ok">
+                                            <span aria-hidden="true">✓</span> Compatible 110V/60Hz
+                                        </span>
+                                    </t>
+                                    <t t-elif="producto.pyxel_cuba_power_fit == 'partial'">
+                                        <span class="px-power px-power--partial">
+                                            <span aria-hidden="true">≈</span> Compatible parcial · 220V
+                                        </span>
+                                    </t>
+                                    <t t-elif="producto.pyxel_cuba_power_fit == 'adapt'">
+                                        <span class="px-power px-power--adapt">
+                                            <span aria-hidden="true">!</span> Requiere adaptación · 50Hz
+                                        </span>
+                                    </t>
+
+                                    <div class="px-product__price" t-if="producto.pyxel_price_min">
+                                        <span class="px-product__amount">
+                                            US$ <t t-out="'%.2f' % producto.pyxel_price_min"/><t
+                                                t-if="producto.pyxel_price_max and producto.pyxel_price_max != producto.pyxel_price_min">
+                                                – <t t-out="'%.2f' % producto.pyxel_price_max"/></t>
+                                        </span>
+                                        <span class="px-product__unit" t-if="producto.pyxel_price_unit_label">
+                                            / <t t-out="producto.pyxel_price_unit_label"/>
+                                        </span>
+                                        <span class="px-product__hint">precio indicativo</span>
+                                    </div>
+
+                                    <div class="px-product__meta">
+                                        <span t-if="producto.pyxel_moq_qty">
+                                            MOQ: <t t-out="int(producto.pyxel_moq_qty)"/>
+                                            <t t-if="producto.pyxel_moq_uom_id"
+                                               t-out="producto.pyxel_moq_uom_id.name"/>
+                                        </span>
+                                        <span t-if="producto.pyxel_incoterm_id"
+                                              t-out="producto.pyxel_incoterm_id.code"/>
+                                        <span t-if="producto.pyxel_port_id"
+                                              t-out="producto.pyxel_port_id.name"/>
+                                    </div>
+
+                                    <a t-att-href="producto.website_url"
+                                       class="px-btn px-btn--primary px-btn--block">Solicitar cotización</a>
+                                </div>
+                            </article>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Cuba Market Pulse ═════════════════════════════════
+                 Se le da sección propia y no un panel lateral: es el único
+                 dato de esta página que ningún competidor puede replicar,
+                 porque sale de las ventas reales de los canales del grupo. -->
+            <section class="px-section px-pulse" t-if="senales">
+                <div class="container px-container">
+                    <div class="px-pulse__head">
+                        <h2 class="px-section__title px-section__title--light">Cuba Market Pulse</h2>
+                        <p class="px-pulse__lead">Qué está buscando Cuba esta semana.</p>
+                    </div>
+                    <div class="px-signals">
+                        <t t-foreach="senales" t-as="senal">
+                            <div class="px-signal">
+                                <span class="px-signal__name" t-out="senal.name"/>
+                                <span t-attf-class="px-signal__trend px-signal__trend--#{senal.trend}">
+                                    <t t-if="senal.trend == 'high'">Demanda alta</t>
+                                    <t t-elif="senal.trend == 'rising'">Demanda en alza</t>
+                                    <t t-else="">Oportunidad</t>
+                                </span>
+                                <span class="px-signal__delta" t-if="senal.variation">
+                                    <t t-out="'%+.0f%%' % senal.variation"/>
+                                </span>
+                                <p class="px-signal__note" t-if="senal.note" t-out="senal.note"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Trade Builder ═════════════════════════════════════ -->
+            <section class="px-section">
+                <div class="container px-container">
+                    <div class="px-builder">
+                        <div class="px-builder__text">
+                            <h2 class="px-section__title px-section__title--light">Pyxel Trade Builder</h2>
+                            <p class="px-builder__lead">
+                                El mercado cubano no siempre necesita un contenedor completo
+                                de un solo producto. Combina categorías y fabricantes
+                                distintos en una misma operación, y aprovecha el espacio
+                                que de otro modo viajaría vacío.
+                            </p>
+                            <p class="px-builder__example">
+                                Paneles solares + inversores + baterías + ventiladores
+                                + pequeños electrodomésticos + herramientas.
+                            </p>
+                            <span class="px-badge px-badge--soon">Próximamente</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ══ Confianza ═════════════════════════════════════════
+                 Cifras contadas de la base, no inventadas. Al principio
+                 serán pequeñas: preferible a un número que el primer
+                 comprador que pregunte va a desmontar. -->
+            <section class="px-section px-trust">
+                <div class="container px-container">
+                    <div class="px-metrics">
+                        <div class="px-metric">
+                            <span class="px-metric__value" t-out="metricas['proveedores']"/>
+                            <span class="px-metric__label">Fabricantes verificados</span>
+                        </div>
+                        <div class="px-metric">
+                            <span class="px-metric__value" t-out="metricas['productos']"/>
+                            <span class="px-metric__label">Productos publicados</span>
+                        </div>
+                        <div class="px-metric">
+                            <span class="px-metric__value" t-out="metricas['empresas']"/>
+                            <span class="px-metric__label">Empresas cubanas registradas</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </t>
+</template>
+
+</odoo>
