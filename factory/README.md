@@ -61,7 +61,7 @@ Todo se comprueba de punta a punta con navegador real contra la réplica local.
 El detalle está en [`tests/README.md`](tests/README.md).
 
 ```bash
-node tests/todas.mjs        # las 15 baterías, con resumen
+node tests/todas.mjs        # las 16 baterías, con resumen
 ./tests/subir.sh "mensaje"  # tipos + build + baterías y, solo si todo va verde, push
 ```
 

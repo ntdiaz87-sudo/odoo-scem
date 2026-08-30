@@ -36,6 +36,7 @@ const BATERIAS = [
   ['qa-clientes', 'Clientes, segmentos y 会员储值'],
   ['qa-cuenta', 'Cuenta del comprador y pago con saldo'],
   ['qa-dominio', 'Dominio propio del comerciante'],
+  ['qa-cruce', 'Cruces: 拼团 y 储值 tienen que cuadrar juntos'],
   ['qa-mcp', 'API unificada: el agente ve lo mismo que el panel'],
   ['qa-edge', 'Casos límite y anti-abuso'],
 ];

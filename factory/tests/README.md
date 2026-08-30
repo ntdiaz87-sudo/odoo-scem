@@ -7,7 +7,7 @@ pasa, ese camino funciona; si falla, algo se rompió de verdad.
 ## El loop
 
 ```bash
-node tests/todas.mjs              # las 15 baterías, con resumen al final
+node tests/todas.mjs              # las 16 baterías, con resumen al final
 node tests/todas.mjs marketing    # solo las que casen con el filtro
 ```
 
@@ -33,6 +33,19 @@ cd factory/web     && setsid nohup npx next dev -p 8300  > /tmp/next.log    2>&1
 
 `todas.mjs` comprueba que ambos responden y se planta si no.
 
+**No corras nada más contra la réplica mientras el loop va.** Compiten por el
+mismo motor y salen timeouts que parecen regresiones y no lo son.
+
+**Si el loop empieza a tardar de más** (flows pasa de ~110 s a varios minutos),
+la réplica está ahogada, no el producto: el servidor de desarrollo de Next se
+hincha tras cientos de tiendas y el worker de Vendure acumula reindexaciones.
+Se arregla reiniciando ambos y vaciando la cola de trabajos de prueba:
+
+```bash
+pkill -f "next dev"; pkill -f "dist/index"
+psql ... -c "DELETE FROM job_record WHERE state IN ('PENDING','FAILED')"
+```
+
 ## Qué cubre cada una
 
 | Batería | Qué demuestra |
@@ -50,6 +63,7 @@ cd factory/web     && setsid nohup npx next dev -p 8300  > /tmp/next.log    2>&1
 | `qa-clientes` | Clientes, segmentos y 会员储值 desde el panel |
 | `qa-cuenta` | Cuenta del comprador y pago con su saldo |
 | `qa-dominio` | Dominio propio: TXT, verificación, certificado y canónico |
+| `qa-cruce` | Las funciones que nacieron por separado y deben cuadrar juntas: 拼团 + 储值 (sin navegador, rápida) |
 | `qa-mcp` | El agente ve exactamente lo mismo que el panel (API unificada) |
 | `qa-edge` | Casos límite y la válvula anti-abuso |
 
