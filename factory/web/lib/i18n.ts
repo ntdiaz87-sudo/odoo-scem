@@ -401,6 +401,7 @@ const D: Dict = {
   'pn.mk.cupon.d': { zh: '买家在购物车输入优惠码即享折扣。', es: 'El cliente escribe el código en el carrito y el descuento se aplica solo.', en: 'Customers type the code in the cart and the discount applies automatically.' },
   'pn.mk.cupon.nombre': { zh: '活动名称', es: 'Nombre de la campaña', en: 'Campaign name' },
   'pn.mk.cupon.codigo': { zh: '优惠码', es: 'Código', en: 'Code' },
+  'pn.mk.cupon.tipo': { zh: '优惠方式', es: 'Tipo de descuento', en: 'Discount type' },
   'pn.mk.cupon.tipo.pct': { zh: '按百分比 (%)', es: 'Porcentaje (%)', en: 'Percentage (%)' },
   'pn.mk.cupon.tipo.fijo': { zh: '按金额', es: 'Importe fijo', en: 'Fixed amount' },
   'pn.mk.cupon.valor': { zh: '优惠力度', es: 'Valor del descuento', en: 'Discount value' },

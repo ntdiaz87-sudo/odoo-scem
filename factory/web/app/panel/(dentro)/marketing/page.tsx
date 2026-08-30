@@ -62,7 +62,7 @@ export default async function Marketing() {
           etiquetas={{
             nombre: t('pn.mk.cupon.nombre'),
             codigo: t('pn.mk.cupon.codigo'),
-            tipo: t('pn.mk.cupon.valor'),
+            tipo: t('pn.mk.cupon.tipo'),
             tipoPct: t('pn.mk.cupon.tipo.pct'),
             tipoFijo: t('pn.mk.cupon.tipo.fijo'),
             valor: t('pn.mk.cupon.valor'),

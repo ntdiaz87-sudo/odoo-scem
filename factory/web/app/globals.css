@@ -1727,3 +1727,4 @@ a:hover { color: var(--accent-dark); }
 .pn-mov-fecha { font-size: .78rem; opacity: .6; white-space: nowrap; }
 .pn-mov-neg { color: #d64545; }
 .pn-mov-pos { color: #16a34a; }
+.pn-bloque .pn-form + .pn-h2 { margin-top: 18px; }

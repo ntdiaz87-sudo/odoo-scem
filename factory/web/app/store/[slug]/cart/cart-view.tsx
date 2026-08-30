@@ -121,7 +121,11 @@ export function CartView({ slug }: { slug: string }) {
             </div>
             <div className="st-fila">
               <span>{t('c.subtotal')}</span>
-              <span data-testid="cart-total">{money(order.subTotalWithTax, order.currencyCode)}</span>
+              {/* Vendure prorratea los descuentos DENTRO del subtotal; aquí se
+                  enseña el importe sin rebajas para que la resta cuadre a ojo. */}
+              <span data-testid="cart-total">
+                {money(order.subTotalWithTax - order.discounts.reduce((t2, d) => t2 + d.amountWithTax, 0), order.currencyCode)}
+              </span>
             </div>
             {order.discounts.map(d => (
               <div className="st-fila st-fila--desc" key={d.description}>

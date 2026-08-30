@@ -366,7 +366,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
                 <span>
                   {l.quantity} × {l.productVariant.name}
                 </span>
-                <span>{money(l.discountedLinePriceWithTax, order.currencyCode)}</span>
+                <span>{money(l.linePriceWithTax, order.currencyCode)}</span>
               </div>
             ))}
             {order.discounts.map(d => (
