@@ -1,9 +1,9 @@
-# Despliegue automático en el GEX44.
+# Despliegue automático en el GEX44, calcado del patrón que ya funciona en
+# la fábrica de tiendas (factory/.gitea/workflows/deploy-test.yml).
 #
 # El runner `gex44` corre en MODO HOST, como root, sobre el servidor real.
-# De ahí las tres reglas del patrón de la casa que este workflow respeta:
+# De ahí las tres reglas de la casa que este workflow respeta:
 #   - Sólo pasos `run:`. Ninguna acción JS, ni siquiera actions/checkout.
-#     Por eso el primer paso hace `git fetch` a mano.
 #   - Nada de `services:`.
 #   - Ve /opt y habla con el Docker de verdad.
 
@@ -17,16 +17,16 @@ jobs:
   deploy:
     runs-on: gex44
     steps:
-      - name: Traer el código
+      - name: Traer develop
         run: |
-          set -euo pipefail
-          cd /opt/pyxel-trade
-          git fetch origin develop
-          git reset --hard origin/develop
+          set -e
+          git -C /opt/pyxel-trade fetch origin --prune --force
+          git -C /opt/pyxel-trade reset --hard origin/develop
+          git -C /opt/pyxel-trade log -1 --oneline
 
       - name: Regenerar la configuración de Odoo
         run: |
-          set -euo pipefail
+          set -e
           cd /opt/pyxel-trade
           # Los secretos entran desde el .env del servidor; al repositorio
           # sólo va la plantilla. El script tolera que no haya envsubst.
@@ -34,7 +34,7 @@ jobs:
 
       - name: Actualizar los módulos
         run: |
-          set -euo pipefail
+          set -e
           cd /opt/pyxel-trade
           set -a; . ./.env; set +a
           cd infra
@@ -48,11 +48,28 @@ jobs:
               odoo -d "$ODOO_DB" -u "$ODOO_UPDATE_MODULES" --stop-after-init
           $compose up -d
 
-      - name: Prueba de humo
+      - name: Verificar
         run: |
-          set -euo pipefail
+          set -e
           cd /opt/pyxel-trade
           set -a; . ./.env; set +a
-          # Margen para que Odoo arranque y regenere los assets.
-          sleep 25
-          bash scripts/smoke.sh "$PYXEL_DOMAIN"
+          compose="docker compose --env-file /opt/pyxel-trade/.env -f /opt/pyxel-trade/infra/docker-compose.prod.yml"
+
+          # Espera activa en vez de un sleep fijo: tras actualizar módulos,
+          # Odoo tarda lo que tarde en regenerar los assets, y un sleep
+          # corto daría por fallido un despliegue que iba bien.
+          COD=000
+          for i in $(seq 1 45); do
+            COD=$(curl -s -o /dev/null -w "%{http_code}" "https://$PYXEL_HOST/web/health" || true)
+            [ "$COD" = "200" ] && break
+            sleep 4
+          done
+
+          if [ "$COD" != "200" ]; then
+            echo "FALLO: /web/health devolvió $COD"
+            $compose logs --tail 60 odoo || true
+            $compose logs --tail 30 db || true
+            exit 1
+          fi
+          echo "Odoo responde ($COD). Prueba de humo:"
+          bash scripts/smoke.sh "$PYXEL_HOST"

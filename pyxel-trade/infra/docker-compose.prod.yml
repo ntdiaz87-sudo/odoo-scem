@@ -14,6 +14,9 @@ name: ${STACK}
 
 services:
   db:
+    # postgres:16 y no la variante alpine que usa la fábrica: Odoo depende
+    # del ordenamiento de la base, y musl no ofrece las mismas
+    # intercalaciones que glibc. Aquí el peso extra sale barato.
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -49,9 +52,9 @@ services:
       USER: ${POSTGRES_USER}
       PASSWORD: ${DB_PASSWORD}
     ports:
-      - "127.0.0.1:${PORT_WEB}:8069"
+      - "127.0.0.1:${WEB_PORT}:8069"
       # Bus de Odoo 19 (gevent). Sin esto no hay notificaciones en vivo.
-      - "127.0.0.1:${PORT_WEBSOCKET}:8072"
+      - "127.0.0.1:${WEBSOCKET_PORT}:8072"
     volumes:
       - odoo-data:/var/lib/odoo
       - ../config/odoo.conf:/etc/odoo/odoo.conf:ro

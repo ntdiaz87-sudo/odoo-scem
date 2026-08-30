@@ -10,7 +10,7 @@
 
 set -uo pipefail
 
-DOMINIO="${1:-${PYXEL_DOMAIN:-}}"
+DOMINIO="${1:-${PYXEL_HOST:-}}"
 if [[ -z "$DOMINIO" ]]; then
     echo "Uso: bash scripts/smoke.sh <dominio>" >&2
     exit 2

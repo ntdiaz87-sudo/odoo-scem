@@ -16,7 +16,7 @@ ningún Odoo 19 ni se ha tocado el GEX44. Lo que falta comprobar está al final.
 
 | Regla de la casa | Cómo se cumple |
 |---|---|
-| Puertos sólo en `127.0.0.1` | `PORT_WEB` y `PORT_WEBSOCKET` en loopback; la base no publica nada |
+| Puertos sólo en `127.0.0.1` | `WEB_PORT` y `WEBSOCKET_PORT` en loopback; la base no publica nada |
 | Caddy es del host | `infra/caddy-site.conf` es **un bloque** para añadir, no un proxy propio |
 | Un stack por proyecto | `name: ${STACK}` aísla contenedores, redes y volúmenes |
 | DNS en gris | Registro A de `trade.enetradex.com` → `46.4.98.13`, sin nube naranja |
@@ -78,6 +78,10 @@ cat /opt/pyxel-trade_deploy_key.pub     # pegar en Gitea como deploy key de SOLO
 
 GIT_SSH_COMMAND='ssh -i /opt/pyxel-trade_deploy_key' \
   git clone -b develop git@git.enetradex.com:nilo/pyxel-trade.git /opt/pyxel-trade
+
+# Sin esto, el `git fetch` del despliegue automático no encuentra la llave
+# y el CI falla en el primer paso. Es el error que más cuesta diagnosticar.
+git -C /opt/pyxel-trade config core.sshCommand "ssh -i /opt/pyxel-trade_deploy_key"
 ```
 
 ### 4. Entorno
@@ -131,6 +135,9 @@ para que no vuelva a cambiar solo.
 
 ```bash
 bash scripts/smoke.sh trade.enetradex.com
+
+# Nada de este stack puede escuchar fuera de loopback. Debe salir vacío.
+ss -ltnp | grep -v 127.0.0.1 | grep -E ':83[0-9]{2}'
 ```
 
 Comprueba la página de acceso, que el gestor de bases devuelve 404 y que
