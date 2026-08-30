@@ -28,6 +28,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    # Techo de recursos: el GEX44 es compartido y sin límite un pico de
+    # este stack puede dejar sin memoria a los proyectos vecinos.
+    mem_limit: ${DB_MEM_LIMIT}
+    cpus: ${DB_CPUS}
     # Sin `ports`: la base no se publica ni en loopback. Sólo la ve Odoo,
     # por la red interna del stack.
     networks: [internal]
@@ -61,6 +65,10 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+    # Instalar módulos y regenerar assets son los picos de memoria de
+    # Odoo. Con techo, un descontrol aquí no puede tumbar a los vecinos.
+    mem_limit: ${ODOO_MEM_LIMIT}
+    cpus: ${ODOO_CPUS}
     networks: [internal]
 
 volumes:

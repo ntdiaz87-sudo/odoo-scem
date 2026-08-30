@@ -28,11 +28,9 @@ jobs:
         run: |
           set -euo pipefail
           cd /opt/pyxel-trade
-          set -a; . ./.env; set +a
-          # Los secretos entran aquí desde el .env del servidor; al
-          # repositorio sólo va la plantilla.
-          envsubst < config/odoo.conf.template > config/odoo.conf
-          chmod 600 config/odoo.conf
+          # Los secretos entran desde el .env del servidor; al repositorio
+          # sólo va la plantilla. El script tolera que no haya envsubst.
+          bash scripts/render-config.sh
 
       - name: Actualizar los módulos
         run: |

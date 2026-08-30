@@ -23,6 +23,24 @@ ningún Odoo 19 ni se ha tocado el GEX44. Lo que falta comprobar está al final.
 | El `.env` real no se comitea | Sólo se versiona `.env.example` y `config/odoo.conf.template` |
 | Runner en modo host | El workflow usa **sólo** pasos `run:`; el checkout es un `git fetch` a mano |
 
+## Qué está aislado y qué se comparte
+
+El GEX44 es compartido. Esto es exactamente lo que este proyecto tiene
+propio y lo que toca de los demás.
+
+| | |
+|---|---|
+| **Propio** | Contenedores, red de Docker, volúmenes, PostgreSQL, filestore y puertos. `name: ${STACK}` los separa de todo lo demás: `docker compose down` aquí no puede tocar a un vecino |
+| **Propio** | Techo de memoria y CPU (`mem_limit`, `cpus`). Sin él, instalar módulos o regenerar assets puede dejar sin memoria a Qbaprotic o a la fábrica |
+| **Compartido** | El **Caddy del host**. Es el único punto real de fallo común: un Caddyfile roto deja sin servicio a todos. Por eso se hace copia antes de editar y `caddy validate` antes de recargar, siempre |
+| **Compartido** | El **demonio de Docker**. Nunca `docker system prune` ni `down -v`: se llevarían volúmenes ajenos |
+| **Compartido** | Kernel, disco y red. Mitigado con los límites de recursos |
+
+No hace falta una máquina aparte: un stack de Docker con nombre propio,
+volúmenes propios y techo de recursos ya da el aislamiento que importa. Lo
+que no da aislamiento es el Caddy, y ahí la protección es el procedimiento,
+no la tecnología.
+
 **Puertos elegidos: 8310 (web) y 8311 (websocket).** Libres según el mapa del
 runbook, verificado el 2026-08-28. **Vuelve a comprobarlo el día del
 despliegue** con `scripts/recon.sh`.
@@ -77,9 +95,7 @@ nano .env          # dominio, puertos y las tres contraseñas
 
 ```bash
 cd /opt/pyxel-trade
-set -a; . ./.env; set +a
-envsubst < config/odoo.conf.template > config/odoo.conf
-chmod 600 config/odoo.conf
+bash scripts/render-config.sh
 
 cd infra
 compose="docker compose --env-file ../.env -f docker-compose.prod.yml"
@@ -87,7 +103,8 @@ compose="docker compose --env-file ../.env -f docker-compose.prod.yml"
 $compose up -d db
 # La base se crea una sola vez por línea de comandos: list_db está
 # desactivado y el gestor web devuelve 404.
-$compose run --rm odoo odoo -d "$ODOO_DB" -i base,pyxel_trade_core --stop-after-init
+$compose run --rm odoo odoo -d "$ODOO_DB" \
+    -i base,pyxel_trade_core,pyxel_trade_marketplace --stop-after-init
 $compose up -d
 ```
 
@@ -101,7 +118,16 @@ sudo systemctl reload caddy
 
 Un Caddyfile roto tumba los sitios de todos los proyectos del servidor.
 
-### 7. Verificar
+### 7. Fijar la URL base
+
+Odoo fija `web.base.url` con lo que ve en la primera petición. Si no se
+corrige, los enlaces de los correos salen apuntando a `localhost:8069`.
+
+Ajustes → Técnico → Parámetros del sistema → `web.base.url` →
+`https://trade.enetradex.com`. Y añadir `web.base.url.freeze` a `True`
+para que no vuelva a cambiar solo.
+
+### 8. Verificar
 
 ```bash
 bash scripts/smoke.sh trade.enetradex.com
@@ -111,7 +137,7 @@ Comprueba la página de acceso, que el gestor de bases devuelve 404 y que
 **la hoja de estilos carga de verdad** — los estáticos rotos dan una web a
 medias sin que falle nada.
 
-### 8. Copias de seguridad
+### 9. Copias de seguridad
 
 ```bash
 ln -s /opt/pyxel-trade/scripts/backup.sh /opt/backup_pyxel_trade.sh

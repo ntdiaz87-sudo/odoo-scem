@@ -31,6 +31,35 @@ echo "escuche en 0.0.0.0."
 ss -ltnp 2>/dev/null | awk 'NR==1 || /LISTEN/'
 
 echo
+echo "=== Puertos que necesita PYXEL ==========================="
+for p in 8310 8311; do
+    if ss -ltn 2>/dev/null | grep -q ":$p "; then
+        echo "  $p  OCUPADO  <-- hay que elegir otro"
+    else
+        echo "  $p  libre"
+    fi
+done
+
+echo
+echo "=== Dependencias del despliegue =========================="
+for c in docker envsubst python3 git curl; do
+    if command -v "$c" >/dev/null 2>&1; then
+        echo "  $c  presente"
+    else
+        echo "  $c  AUSENTE"
+    fi
+done
+echo "  (basta con envsubst O python3: render-config.sh usa el que haya)"
+
+echo
+echo "=== ¿Existe ya el proyecto? =============================="
+if [ -e /opt/pyxel-trade ]; then
+    echo "  /opt/pyxel-trade YA EXISTE  <-- PARAR, alguien empezó antes"
+else
+    echo "  /opt/pyxel-trade no existe: camino libre"
+fi
+
+echo
 echo "=== Ocupación de /opt ===================================="
 ls -1 /opt 2>/dev/null
 

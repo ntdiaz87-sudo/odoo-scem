@@ -59,6 +59,25 @@ else
     fi
 fi
 
+# ── Websocket ───────────────────────────────────────────────
+# El bus de Odoo vive en el puerto gevent, no en el de web. Si Caddy no
+# separa la ruta /websocket, las notificaciones en vivo no funcionan y
+# nada más lo delata.
+codigo=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
+    -H "Connection: Upgrade" -H "Upgrade: websocket" \
+    -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: eHl6enkxMjM0NTY3OA==" \
+    "$BASE/websocket" || echo "000")
+case "$codigo" in
+    101) printf '  OK    %-38s %s\n' "Websocket" "$codigo (sube)" ;;
+    200) printf '  FALLO %-38s %s\n' "Websocket" "$codigo — Caddy no enruta /websocket al 8311"
+         fallos=$((fallos + 1)) ;;
+    404) printf '  FALLO %-38s %s\n' "Websocket" "$codigo — el proceso de websocket no está levantado"
+         fallos=$((fallos + 1)) ;;
+    502) printf '  FALLO %-38s %s\n' "Websocket" "$codigo — Caddy enruta, pero nadie escucha en 8311"
+         fallos=$((fallos + 1)) ;;
+    *)   printf '  AVISO %-38s %s\n' "Websocket" "$codigo — revisar a mano" ;;
+esac
+
 echo
 if [[ $fallos -eq 0 ]]; then
     echo "Todo correcto."
