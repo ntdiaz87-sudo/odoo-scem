@@ -55,6 +55,16 @@ cd factory/web && npm install && npm run dev   # http://localhost:8300
 | `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USERNAME` / `DB_PASSWORD` | vendure | `localhost` / `5432` / `vendure`×3 | Conexión PostgreSQL. |
 | `SUPERADMIN_USERNAME` / `SUPERADMIN_PASSWORD` | ambos | `superadmin` | Credenciales de administración (el web las usa para provisionar demos). |
 
+## Pruebas
+
+Todo se comprueba de punta a punta con navegador real contra la réplica local.
+El detalle está en [`tests/README.md`](tests/README.md).
+
+```bash
+node tests/todas.mjs        # las 15 baterías, con resumen
+./tests/subir.sh "mensaje"  # tipos + build + baterías y, solo si todo va verde, push
+```
+
 ## Avisos de la Fase 0 (pendientes para fases siguientes)
 
 - Credenciales y `COOKIE_SECRET` son de desarrollo: **cambiarlas antes de

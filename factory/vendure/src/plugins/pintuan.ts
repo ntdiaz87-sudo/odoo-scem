@@ -63,10 +63,27 @@ export class Grupo extends VendureEntity {
 /** Pedidos que cuentan para el grupo: los que llegaron a comprometerse. */
 const ESTADOS_QUE_CUENTAN = ['PaymentAuthorized', 'PaymentSettled', 'Shipped', 'Delivered'];
 
-async function contarUnidos(connection: TransactionalConnection, codigo: string): Promise<number> {
+/**
+ * Cuántos pedidos cuentan ya para el grupo.
+ *
+ * El filtro por canal NO es decorativo: el código del grupo se ata al pedido
+ * con setOrderCustomFields, que cualquier comprador de CUALQUIER tienda puede
+ * llamar con el código que quiera. Sin este filtro, un comprador de otra
+ * tienda completaría el grupo ajeno y su comerciante enviaría creyendo que
+ * hubo 成团.
+ */
+async function contarUnidos(
+  connection: TransactionalConnection,
+  codigo: string,
+  channelToken: string,
+): Promise<number> {
   const filas = (await connection.rawConnection.query(
-    `SELECT count(*)::int AS n FROM "order" WHERE "customFieldsGrupo" = $1 AND state = ANY($2)`,
-    [codigo, ESTADOS_QUE_CUENTAN],
+    `SELECT count(*)::int AS n
+       FROM "order" o
+       JOIN order_channels_channel oc ON oc."orderId" = o.id
+       JOIN channel ch ON ch.id = oc."channelId"
+      WHERE o."customFieldsGrupo" = $1 AND o.state = ANY($2) AND ch.token = $3`,
+    [codigo, ESTADOS_QUE_CUENTAN, channelToken],
   )) as Array<{ n: number }>;
   return filas[0]?.n ?? 0;
 }
@@ -159,7 +176,7 @@ export class PintuanShopResolver {
       .getRepository(ctx, Grupo)
       .findOne({ where: { codigo: args.codigo } });
     if (!grupo || grupo.channelToken !== ctx.channel.token) return null;
-    const unidos = await contarUnidos(this.connection, grupo.codigo);
+    const unidos = await contarUnidos(this.connection, grupo.codigo, grupo.channelToken);
     return { ...grupo, unidos, estado: estadoDe(grupo, unidos) };
   }
 

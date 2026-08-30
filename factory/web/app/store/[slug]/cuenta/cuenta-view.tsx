@@ -104,7 +104,7 @@ export function CuentaView({ slug }: { slug: string }) {
           </ul>
         )}
 
-        <button type="button" className="st-seguir" onClick={salir}>
+        <button type="button" className="st-ac-cambiar" onClick={salir}>
           {t('st.ac.salir')}
         </button>
       </>
@@ -152,7 +152,7 @@ export function CuentaView({ slug }: { slug: string }) {
 
       <button
         type="button"
-        className="st-seguir"
+        className="st-ac-cambiar"
         onClick={() => {
           setAviso(null);
           setModo(modo === 'alta' ? 'entrar' : 'alta');

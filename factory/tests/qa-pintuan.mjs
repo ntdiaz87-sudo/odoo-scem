@@ -97,6 +97,35 @@ const c4=await movil();
 await c4.goto(`http://${slug}.${HOST}/?g=noexiste`,{waitUntil:'networkidle'});
 check('Un código falso no enseña banner ni rompe', (await c4.locator('.st-pt-banner').count())===0 && (await c4.locator('.st-prod').count())>0);
 
+// --- aislamiento: otra tienda NO puede completar este grupo ---
+// El código del grupo se ata al pedido con setOrderCustomFields, que cualquier
+// comprador de cualquier tienda puede llamar con el código que quiera. Si el
+// conteo no filtrase por canal, un pedido ajeno haría 成团 aquí y el
+// comerciante enviaría sin tener a la gente.
+const otraIp=`10.228.${Math.floor(Math.random()*250)}.${Math.floor(Math.random()*250)}`;
+const jv=await (await fetch(BASE+'/api/demo',{method:'POST',
+  headers:{'content-type':'application/json','x-forwarded-for':otraIp},
+  body:JSON.stringify({storeName:`Vecina ${R}`,designKey:'hoja-viva',mercado:'zh',ownerEmail:`pv-${R}@t.local`,ownerPassword:CLAVE})})).json();
+const slugVecino=jv.url.replace(/^https?:\/\//,'').split('.')[0];
+const V='http://localhost:3000';
+const tienda=async(tk,q,v,auth)=>{
+  const r=await fetch(V+'/shop-api',{method:'POST',
+    headers:{'content-type':'application/json','vendure-token':tk,...(auth?{authorization:`Bearer ${auth}`}:{})},
+    body:JSON.stringify({query:q,variables:v})});
+  return {json:await r.json(), auth:r.headers.get('vendure-auth-token')};
+};
+// estado del grupo ANTES de la intromisión
+const antes=(await tienda(slug,`query($c:String!){grupo(codigo:$c){unidos}}`,{c:codigo})).json.data.grupo.unidos;
+// un comprador de la tienda vecina ata NUESTRO código a su pedido
+const pv=(await tienda(slugVecino,`{products(options:{take:1}){items{variants{id}}}}`)).json.data.products.items[0].variants[0].id;
+const add=await tienda(slugVecino,`mutation($id:ID!){addItemToOrder(productVariantId:$id,quantity:1){__typename}}`,{id:pv});
+await tienda(slugVecino,`mutation($input:UpdateOrderInput!){setOrderCustomFields(input:$input){__typename}}`,{input:{customFields:{grupo:codigo}}},add.auth);
+const despues=(await tienda(slug,`query($c:String!){grupo(codigo:$c){unidos}}`,{c:codigo})).json.data.grupo.unidos;
+check('Un pedido de OTRA tienda no cuenta para este grupo', antes===despues, `antes ${antes}, después ${despues}`);
+// y el grupo ajeno tampoco es visible desde la tienda vecina
+const ajeno=(await tienda(slugVecino,`query($c:String!){grupo(codigo:$c){codigo}}`,{c:codigo})).json.data.grupo;
+check('El grupo no se consulta desde otra tienda', ajeno===null);
+
 // --- el panel le dice al comerciante que puede cobrar ---
 await p.goto(BASE+'/panel/pedidos',{waitUntil:'networkidle'});
 await p.locator('.pn-fila').first().click();

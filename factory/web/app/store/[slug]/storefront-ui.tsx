@@ -265,7 +265,9 @@ function BotonGrupo({
   return (
     <button type="button" className="st-btn st-pt-btn" onClick={comprar} disabled={ocupado}>
       <span className="st-pt-badge">{pintuan.badge}</span>
-      {grupoActivo ? pintuan.unirse : pintuan.abrir} · {precio}
+      <span className="st-pt-txt">
+        {grupoActivo ? pintuan.unirse : pintuan.abrir} · {precio}
+      </span>
     </button>
   );
 }

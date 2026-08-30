@@ -15,7 +15,7 @@ import {
   notifyCartChanged,
   shopFetch,
 } from '../../../../lib/shop-client';
-import { useDinero, useTt } from '../../../../lib/tienda-locale';
+import { useDinero, useMercado, useTt } from '../../../../lib/tienda-locale';
 
 interface ShippingMethodOption {
   id: string;
@@ -46,9 +46,17 @@ function pagoInfo(
   return { ico: '💳', nota: '' };
 }
 
+/**
+ * País que se propone según el mercado de la tienda. Una tienda que vende
+ * en ¥ proponía "United States" y el comprador chino tenía que corregirlo
+ * en cada compra.
+ */
+const PAIS_DE: Record<string, string> = { zh: 'CN', es: 'ES', en: 'US' };
+
 export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string }) {
   const t = useTt();
   const money = useDinero();
+  const { locale } = useMercado();
   const [order, setOrder] = useState<ActiveOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
@@ -68,7 +76,7 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
   const [phone, setPhone] = useState('');
   const [street, setStreet] = useState('');
   const [city, setCity] = useState('');
-  const [countryCode, setCountryCode] = useState('US');
+  const [countryCode, setCountryCode] = useState(PAIS_DE[locale] || 'US');
 
   useEffect(() => {
     Promise.all([
@@ -99,6 +107,11 @@ export function CheckoutForm({ slug, nombre }: { slug: string; nombre: string })
           })
           .catch(() => undefined);
         setCountries(meta.availableCountries);
+        // Si el país del mercado no está habilitado en este canal, se cae al
+        // primero disponible en vez de dejar un valor que el <select> ignora.
+        if (meta.availableCountries.length && !meta.availableCountries.some(c => c.code === (PAIS_DE[locale] || 'US'))) {
+          setCountryCode(meta.availableCountries[0].code);
+        }
         setShippingMethods(meta.eligibleShippingMethods);
         if (meta.eligibleShippingMethods[0]) setShippingMethodId(meta.eligibleShippingMethods[0].id);
         const pagos = meta.eligiblePaymentMethods.filter(m => m.isEligible);

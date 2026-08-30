@@ -1731,14 +1731,17 @@ a:hover { color: var(--accent-dark); }
 
 /* ================================ 拼团 ==================================== */
 .st-pt-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; margin-top: 8px;
+  /* En columna y no en fila: con el texto chino ("3人团 -25%" + "发起拼团 ·
+     ¥149.25") la fila se partía en tres renglones y quedaba ilegible. */
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  width: 100%; margin-top: 8px; padding: 9px 10px; line-height: 1.25;
   background: #d64545; color: #fff; border: 0; font-weight: 700;
+  white-space: nowrap;
 }
 .st-pt-btn:hover { background: #b93a3a; }
 .st-pt-badge {
-  font-size: .7rem; font-weight: 800; padding: 2px 7px; border-radius: 999px;
-  background: rgba(255, 255, 255, .22);
+  font-size: .68rem; font-weight: 800; padding: 1px 8px; border-radius: 999px;
+  background: rgba(255, 255, 255, .22); letter-spacing: .02em;
 }
 .st-pt-banner {
   margin: 18px auto 0; max-width: 680px; padding: 12px 18px; border-radius: 12px;
@@ -1768,4 +1771,13 @@ a:hover { color: var(--accent-dark); }
   display: flex; justify-content: space-between; gap: 12px; text-decoration: none; color: inherit;
   padding: 12px 14px; border-radius: 12px;
   border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+.st-pt-txt { font-size: .95rem; }
+/* El cambio entre entrar y registrarse es un enlace, no un botón de sistema:
+   sin estilo propio el navegador lo pintaba como un cuadrito gris. */
+.st-ac-cambiar {
+  display: block; margin: 14px auto 0; padding: 8px 4px;
+  background: none; border: 0; cursor: pointer; font: inherit;
+  font-size: .92rem; font-weight: 600; color: inherit;
+  text-decoration: underline; text-underline-offset: 3px;
 }

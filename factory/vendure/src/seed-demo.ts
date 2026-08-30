@@ -301,6 +301,28 @@ async function seed() {
             WHERE id NOT IN (SELECT min(id) FROM payment_method GROUP BY code);
         `);
 
+        // 会员储值 como método de pago. populate() solo corre en bases nuevas,
+        // así que en una base ya sembrada (la de producción) el método no
+        // existiría nunca. Se crea aquí, idempotente, y el bloque siguiente lo
+        // reparte a todos los canales.
+        await connection.rawConnection.query(`
+            INSERT INTO payment_method (code, enabled, "handler", "checker", "createdAt", "updatedAt")
+            SELECT 'saldo-fabrica', true,
+                   '{"code":"saldo-fabrica","args":[]}',
+                   '{"code":"saldo-elegible","args":[]}',
+                   now(), now()
+            WHERE NOT EXISTS (SELECT 1 FROM payment_method WHERE code = 'saldo-fabrica');
+        `);
+        await connection.rawConnection.query(`
+            INSERT INTO payment_method_translation ("languageCode", name, description, "baseId", "createdAt", "updatedAt")
+            SELECT 'en', '会员储值', '', p.id, now(), now()
+            FROM payment_method p
+            WHERE p.code = 'saldo-fabrica'
+              AND NOT EXISTS (
+                SELECT 1 FROM payment_method_translation t WHERE t."baseId" = p.id
+              );
+        `);
+
         // Todos los canales deben poder vender: método de envío y de pago
         // asignados a cada canal (idempotente; cubre también los canales que
         // ya existían sin métodos).
