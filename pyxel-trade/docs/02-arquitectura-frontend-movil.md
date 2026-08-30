@@ -235,6 +235,38 @@ estos, medidos en el despliegue real y no en local:
 | Primer contenido pintado, 3G lento | **≤ 2,5 s** | Es la red real |
 | Imagen de producto en listado | **≤ 25 KB**, AVIF o WebP | Es el 80 % del peso |
 
+### Medición real — 30 de agosto de 2026
+
+`scripts/measure.sh https://trade.enetradex.com/market`, con Odoo 19 recién
+desplegado y la portada todavía sin imágenes de producto. Los tamaños son
+**en red**, es decir ya comprimidos por Caddy:
+
+| Recurso | Crudo | En red |
+|---|---|---|
+| Documento HTML | 6,7 KB | 6,7 KB |
+| `web.assets_frontend_minimal.min.js` | 31 KB | 9,2 KB |
+| `web.assets_frontend.min.css` | 1,0 MB | 142,5 KB |
+| `web.assets_frontend_lazy.min.js` | 2,5 MB | 597,8 KB |
+| **Total primera visita** | **3,5 MB** | **756,2 KB** |
+
+Contra el presupuesto: el JS del primer render va a **607 KB frente a los
+150 KB** del objetivo, cuatro veces por encima; y la primera visita a
+**756 KB frente a 500 KB**. Y esto es el suelo, no el techo: aún no hay ni
+una foto de producto.
+
+Qué significa: **el paquete de Odoo no cabe en el presupuesto y podarlo no
+va a bastar.** Los 597 KB son `web.assets_frontend_lazy`, el bulto del
+frontend de Odoo, que no se puede recortar a la tercera parte sin romper
+website. La fase 1 sirve para validar el negocio, pero la decisión de la
+fase 2 ya está tomada por el número: **el catálogo público tendrá que salir
+de Odoo** si se quiere cumplir el objetivo en la red cubana. Lo que sigue en
+pie es la condición de la fase 1: la lógica en modelos Python, para que ese
+día el frontend nuevo tenga de dónde leer.
+
+Pendiente de medir con navegador: la visita repetida. Los assets llevan
+hash en la URL y `Cache-Control: public, max-age=31536000, immutable`
+(comprobado), así que el objetivo de ≤ 50 KB debería cumplirse solo.
+
 Y una función de producto, no sólo técnica: **un modo de bajo consumo**
 visible, que sirva miniaturas y desactive imágenes de fondo. En Cuba eso no
 es un ajuste escondido, es una razón para elegir tu plataforma.

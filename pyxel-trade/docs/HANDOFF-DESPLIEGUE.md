@@ -1,14 +1,11 @@
-# Traspaso — terminar el despliegue de PYXEL Cuba Trade OS
+# Despliegue de PYXEL Cuba Trade OS — hecho el 30/08/2026
 
-> Para una sesión de Claude Code que corra **en el portátil de Nilo**, con
-> `ssh gex44` funcionando. La sesión que escribió el código corre en la nube
-> y no tiene salida de red hacia el servidor.
+**La plataforma está en pie en <https://trade.enetradex.com>**, en el GEX44
+(`46.4.98.13`, alias `ssh gex44`), servidor compartido con Qbaprotic, la
+fábrica de tiendas, seric y otros.
 
----
-
-Retoma el despliegue de **PYXEL Cuba Trade OS** en el GEX44
-(`46.4.98.13`, alias `ssh gex44`). El servidor es **compartido**: ahí corren
-Qbaprotic, la fábrica de tiendas, seric y otros. **No rompas nada.**
+Este documento era un traspaso con lo que faltaba. Ahora es el registro de
+cómo quedó. Lo que sigue vigente son las reglas y el apartado final.
 
 ## Reglas que no se negocian
 
@@ -20,117 +17,88 @@ Qbaprotic, la fábrica de tiendas, seric y otros. **No rompas nada.**
   `127.0.0.1:8311` (websocket).
 - Ignora el aviso `*** System restart required ***`. Reiniciar tumbaría tres
   proyectos en producción.
+- **No regeneres el `.env`.** PostgreSQL se creó con ese `DB_PASSWORD` y
+  Odoo dejaría de poder conectarse.
 
 ## Dónde está todo
 
 - Código en el servidor: `/opt/pyxel-trade`
 - Repositorio: `github.com/ntdiaz87-sudo/odoo-scem`, rama
   `claude/pyxel-solutions-platform-j2c87s`, subcarpeta `pyxel-trade/`
-- Dominio: `trade.enetradex.com` → ya resuelve a `46.4.98.13`, en gris
-- Registro del intento anterior: `/root/pyxel-deploy-20260830-1451.log`
+- Base de datos: `pyxel_trade`, en el contenedor `pyxel_trade-db-1`
+- Backups: `/opt/backups/pyxel_trade/` y MinIO
+  `enetradex/enetradex-prod/backups/pyxel_trade/`
 
-## Qué ya está hecho
+## Cómo quedó
 
-1. Código copiado a `/opt/pyxel-trade` y finales de línea normalizados.
-2. `.env` creado con contraseñas generadas. **NO lo regeneres**: PostgreSQL
-   ya se creó con ese `DB_PASSWORD` y Odoo dejaría de poder conectarse.
-3. `config/odoo.conf` renderizado.
-4. Lint (`infra/ci.sh`) pasado entero.
-5. Contenedor `pyxel_trade-db-1` levantado y sano.
-6. Imagen `odoo:19.0-20260817` descargada.
+| Pieza | Estado |
+|---|---|
+| Stack (`pyxel_trade-db-1`, `pyxel_trade-odoo-1`) | Arriba y `healthy` |
+| Los cuatro módulos en Odoo 19 | Instalados, sin un solo error |
+| `trade.enetradex.com` con TLS | Vivo, certificado de Let's Encrypt |
+| Gestor de bases de datos | Cerrado (404), verificado |
+| Websocket del bus | `101 Switching Protocols`, verificado |
+| `web.base.url` | `https://trade.enetradex.com`, congelado |
+| Backup diario + copia fuera del servidor | Cron a las 4:15, probado |
+| Migración a Gitea con CI/CD | **Pendiente** |
 
-## Qué falló, y por qué
+## Las dos cosas que hubo que arreglar
 
-La instalación de módulos murió con:
+**1. `odoo.conf` ilegible para Odoo.** El contenedor no corre como root y el
+fichero quedaba en `600` propiedad de root: Odoo veía una configuración
+vacía y moría con un `NoSectionError` que no explicaba nada. Arreglado en
+`scripts/render-config.sh`, que ahora consulta el uid del usuario `odoo` a
+la propia imagen y le da el fichero en `640`. Con eso, los cuatro módulos
+entraron a la primera: ningún `xpath` se rompió en Odoo 19, ni el del
+`<notebook>` del contacto ni el del producto.
+
+**2. El gestor de bases de datos seguía abierto.** El bloque de Caddy tenía
 
 ```
-grep: /etc/odoo/odoo.conf: Permission denied
-configparser.NoSectionError: No section: 'options'
+handle { reverse_proxy … }
+@dbmanager path /web/database/*
+respond @dbmanager 404
 ```
 
-El contenedor de Odoo **no corre como root** y el fichero estaba en `600`
-propiedad de root. Odoo veía una configuración vacía. Ya está corregido en el
-repositorio (`render-config.sh` consulta el uid del usuario `odoo` a la propia
-imagen), pero **la copia del servidor puede ser anterior**.
+y **no funcionaba**: en el orden de directivas de Caddy, `respond` se ordena
+*después* de los `handle`, así que el `handle` sin matcher se tragaba la
+petición antes de llegar al candado. `caddy validate` no lo detecta —es
+sintaxis válida—, lo detectó `smoke.sh`, y `caddy adapt` confirmó el orden.
+Arreglado metiéndolo en su propio `handle`, colocado antes del resto. No es
+una precaución teórica: el Odoo del POS de este mismo grupo se comprometió
+por dejarlo abierto y apareció una base `pwn_`.
 
-## Lo que hay que hacer
+La única salvedad que queda es cosmética: `smoke.sh` marca el websocket como
+AVISO porque le manda un GET normal y el bus contesta 400. Con una petición
+de upgrade real (y HTTP/1.1, que en HTTP/2 la cabecera `Upgrade` no
+significa nada) contesta `101`. Comprobado a mano.
 
-### 1. Traer los arreglos
+## Lo que dijo la medición
 
-Vuelve a copiar `pyxel-trade/` de la rama al servidor, o al menos
-`scripts/render-config.sh` y `scripts/deploy-first-time.sh`. Conserva el
-`.env` que ya existe.
+`scripts/measure.sh https://trade.enetradex.com/market` da **756 KB en la
+primera visita, 607 KB de ellos JavaScript**, contra un presupuesto de 500 y
+150 KB. Cuatro veces por encima, y sin una sola foto de producto todavía.
 
-### 2. Permisos y modulos
+El detalle está en `docs/02-arquitectura-frontend-movil.md`. La conclusión
+corta: **el frontend público no se puede quedar dentro de Odoo** si la
+plataforma tiene que funcionar en la red cubana. La fase 1 sigue valiendo
+para validar el negocio; la fase 2 ya no es una opción a evaluar.
+
+## Lo que falta
+
+Mover el proyecto a Gitea (`nilo/pyxel-trade`, rama `develop`) con su deploy
+key en `/opt/pyxel-trade_deploy_key`, para tener despliegue automático como
+el resto de proyectos de la casa. El workflow ya está escrito en
+`.gitea/workflows/deploy.yml`. Al clonar, no olvides
 
 ```bash
-cd /opt/pyxel-trade
-UIDO=$(docker run --rm --entrypoint id odoo:19.0-20260817 -u odoo)
-chown "$UIDO:$UIDO" config/odoo.conf
-chmod 640 config/odoo.conf
-set -a; . ./.env; set +a
-docker compose --env-file /opt/pyxel-trade/.env \
-  -f /opt/pyxel-trade/infra/docker-compose.prod.yml run --rm odoo \
-  odoo -d "$ODOO_DB" \
-  -i base,pyxel_trade_core,pyxel_trade_marketplace,pyxel_trade_supplier,pyxel_trade_container \
-  --stop-after-init
+git -C /opt/pyxel-trade config core.sshCommand "ssh -i /opt/pyxel-trade_deploy_key"
 ```
 
-**Es la primera vez que estos cuatro módulos corren en un Odoo 19 real.**
-Espera errores. El más probable son los `xpath` sobre el `<notebook>` del
-formulario de contacto (`base.view_partner_form`) y del de producto
-(`product.product_template_only_form_view`), en
-`addons/pyxel_trade_core/views/pyxel_trade_views.xml`. Si Odoo 19 reorganizó
-esas vistas, hay que cambiar el ancla. Otros sospechosos: el campo
-`website_url` de `product.template` y el parámetro `?category=` del
-controlador `/shop`.
+o el CI falla en el primer paso.
 
-Arregla, vuelve a lanzar, y **sube los arreglos a la rama**.
+Y dos cosas menores, para el día del lanzamiento:
 
-### 3. Levantar el stack
-
-```bash
-docker compose --env-file /opt/pyxel-trade/.env \
-  -f /opt/pyxel-trade/infra/docker-compose.prod.yml up -d
-```
-
-### 4. Caddy
-
-```bash
-cp /etc/caddy/Caddyfile /etc/caddy/Caddyfile.bak.$(date +%Y%m%d-%H%M%S)
-cat /opt/pyxel-trade/infra/caddy-site.conf >> /etc/caddy/Caddyfile
-caddy validate --config /etc/caddy/Caddyfile && systemctl reload caddy
-```
-
-Si no valida: restaura la copia y **no recargues**.
-
-### 5. Verificar
-
-```bash
-cd /opt/pyxel-trade
-bash scripts/smoke.sh trade.enetradex.com
-bash scripts/measure.sh https://trade.enetradex.com/market
-ss -ltn | grep -v 127.0.0.1 | grep -E ':83[0-9][0-9] '   # debe salir vacio
-```
-
-`measure.sh` da el número que decide si el frontend puede quedarse dentro de
-Odoo. Guárdalo.
-
-### 6. Rematar
-
-- `web.base.url` → `https://trade.enetradex.com` en Ajustes → Técnico →
-  Parámetros del sistema. Sin esto los enlaces de los correos apuntan a
-  `localhost:8069`.
-- `ln -s /opt/pyxel-trade/scripts/backup.sh /opt/backup_pyxel_trade.sh` y su
-  cron. Los backups **no se añaden solos**: la fábrica lleva días sin ninguno.
-- Mover el proyecto a Gitea (`nilo/pyxel-trade`, rama `develop`) con su deploy
-  key en `/opt/pyxel-trade_deploy_key`, para tener despliegue automático.
-  Al clonar, no olvides
-  `git -C /opt/pyxel-trade config core.sshCommand "ssh -i /opt/pyxel-trade_deploy_key"`,
-  o el CI falla en el primer paso.
-
-## Qué reportar
-
-La salida de la instalación de módulos (tracebacks enteros), la de
-`smoke.sh`, la tabla de `measure.sh`, y cualquier cosa que te obligara a
-apartarte de este guion.
+- Quitar la cabecera `X-Robots-Tag: noindex` de `infra/caddy-site.conf`.
+- Medir la visita repetida con navegador. Los assets ya llevan
+  `Cache-Control: immutable`, así que debería cumplirse solo.
