@@ -5,6 +5,7 @@ import { getT } from '../../../../../lib/i18n-server';
 import { verProducto } from '../../../../../lib/panel-datos';
 import { exigirSesionPagina } from '../../../../../lib/panel-sesion';
 import { FormularioProducto } from '../form';
+import { FormularioVariantes } from '../variantes-form';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +34,12 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
           stock: String(v?.stockOnHand ?? 0),
           publicado: producto.enabled,
           fotos: producto.fotos,
+          variantes: producto.variants.map(x => ({
+            id: x.id,
+            name: x.name.replace(producto.name, '').trim() || x.name,
+            precio: (x.price / 100).toFixed(2),
+            stock: String(x.stockOnHand),
+          })),
         }}
         etiquetas={{
           nombre: t('pn.pr.nombre'),
@@ -46,10 +53,23 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
             portada: t('pn.pr.portada'),
             quitar: t('pn.pr.quitarfoto'),
           publicado: t('pn.pr.publicado'),
+          variantes: t('pn.va.titulo'),
           enviar: t('pn.pr.guardar'),
           enviando: t('pn.pr.guardando'),
         }}
       />
+      {producto.variants.length <= 1 ? (
+        <section className="pn-bloque">
+          <h2 className="pn-h2">{t('pn.va.crear.t')}</h2>
+          <p className="pn-ayuda">{t('pn.va.crear.d')}</p>
+          <FormularioVariantes productoId={producto.id} etiquetas={{
+            g1n: t('pn.va.g1n'), g1v: t('pn.va.g1v'),
+            g2n: t('pn.va.g2n'), g2v: t('pn.va.g2v'),
+            phN: t('pn.va.ph.nombre'), phV: t('pn.va.ph.valores'),
+            enviar: t('pn.va.generar'), enviando: t('pn.pr.guardando'),
+          }} />
+        </section>
+      ) : null}
     </>
   );
 }

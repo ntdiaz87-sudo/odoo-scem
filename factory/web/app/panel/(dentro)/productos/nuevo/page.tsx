@@ -17,7 +17,7 @@ export default async function NuevoProducto() {
       <h1 className="pn-h1">{t('pn.pr.nuevo')}</h1>
       <FormularioProducto
         modo="crear"
-        inicial={{ id: '', varianteId: '', nombre: '', descripcion: '', precio: '', stock: '10', publicado: true, fotos: [] }}
+        inicial={{ id: '', varianteId: '', nombre: '', descripcion: '', precio: '', stock: '10', publicado: true, fotos: [], variantes: [] }}
         etiquetas={{
           nombre: t('pn.pr.nombre'),
           desc: t('pn.pr.desc'),

@@ -22,6 +22,7 @@ export default async function Inicio() {
     r.porCobrar > 0 ? { href: '/panel/pedidos', txt: `${t('pn.porcobrar')} · ${r.porCobrar}` } : null,
     r.porEnviar > 0 ? { href: '/panel/pedidos', txt: `${t('pn.porenviar')} · ${r.porEnviar}` } : null,
     r.agotados > 0 ? { href: '/panel/productos', txt: `${t('pn.sinstock')} · ${r.agotados}` } : null,
+    r.stockBajo > 0 ? { href: '/panel/productos', txt: `${t('pn.stockbajo')} · ${r.stockBajo}` } : null,
   ].filter(Boolean) as { href: string; txt: string }[];
 
   return (

@@ -1583,3 +1583,57 @@ a:hover { color: var(--accent-dark); }
   margin: 0 0 14px; padding: 11px 13px; border-radius: 11px; font-size: 13.5px; line-height: 1.55;
   background: #fff4e0; color: #6a4708; border: 1px solid #f0d9a8;
 }
+
+/* --- variantes en el formulario de producto --- */
+.pn-campo-titulo { font-size: 13px; font-weight: 600; }
+.pn-variantes { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 8px; }
+.pn-variantes li {
+  display: flex; flex-direction: column; gap: 7px;
+  background: var(--pn-tenue); border-radius: 11px; padding: 10px 12px;
+}
+.pn-variante-n { font-size: 13.5px; font-weight: 700; }
+.pn-variante-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pn-variante-campos label { display: grid; gap: 3px; }
+.pn-variante-campos em { font-style: normal; font-size: 11.5px; color: var(--pn-tinta-suave); }
+.pn-variante-campos input {
+  width: 100%; padding: 9px 11px; font: inherit; font-size: 15px;
+  border: 1px solid var(--pn-borde-fuerte); border-radius: 9px;
+  background: var(--pn-superficie); color: var(--pn-tinta);
+}
+
+/* --- selector de variantes en la tarjeta de producto --- */
+.st-variantes { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 6px; }
+.st-variantes button {
+  padding: 5px 11px; border-radius: 99px; font: inherit; font-size: 12.5px; font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--s-ink) 24%, transparent);
+  background: var(--s-surface); color: var(--s-ink); cursor: pointer;
+}
+.st-variantes button.es-activa {
+  border-color: var(--s-brand); background: var(--s-brand); color: var(--s-brand-ink);
+}
+.st-variantes button:focus-visible { outline: 2px solid var(--s-accent); outline-offset: 1px; }
+
+/* --- consulta pública de pedido --- */
+.st-consulta { max-width: 30rem; margin: 0 auto; width: 100%; }
+.st-consulta-sub { color: var(--s-ink-soft); font-size: 14.5px; margin: 6px 0 18px; }
+.st-consulta-form { display: grid; gap: 12px; }
+.st-consulta-form label { display: grid; gap: 5px; font-size: 13.5px; font-weight: 600; color: var(--s-ink); }
+.st-consulta-form input {
+  width: 100%; padding: 12px 13px; font: inherit; font-size: 16px; border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--s-ink) 25%, transparent);
+  background: var(--s-surface); color: var(--s-ink);
+}
+.st-consulta-error { margin: 14px 0 0; font-size: 14px; color: #b3261e; }
+.st-consulta-pedido {
+  margin-top: 20px; padding: 16px; border-radius: var(--s-radio);
+  background: var(--s-surface); border: 1px solid color-mix(in srgb, var(--s-ink) 12%, transparent);
+}
+.st-consulta-estado { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin: 0 0 8px; }
+.st-consulta-estado b { font-size: 16px; }
+.st-consulta-estado span { font-size: 12.5px; color: var(--s-ink-soft); }
+.st-consulta-seguimiento { font-size: 13.5px; margin: 0 0 10px; }
+.st-consulta-lineas { list-style: none; margin: 0 0 10px; padding: 10px 0; display: grid; gap: 6px;
+  border-block: 1px solid color-mix(in srgb, var(--s-ink) 10%, transparent); }
+.st-consulta-lineas li { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+.st-consulta-lineas em { font-style: normal; color: var(--s-ink-soft); }
+.st-consulta-total { margin: 0; font-size: 14.5px; text-align: right; }

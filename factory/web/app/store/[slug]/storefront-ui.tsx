@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from 'react';
 import { addToCart, fetchActiveOrder } from '../../../lib/shop-client';
-import { useTt } from '../../../lib/tienda-locale';
+import { useDinero, useTt } from '../../../lib/tienda-locale';
 
 /** Registra el service worker que hace instalable la tienda como app (PWA). */
 export function PwaSetup() {
@@ -140,5 +140,52 @@ export function GaleriaProducto({
         </ul>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Precio + variantes + añadir al carrito, juntos porque comparten estado.
+ *
+ * Con una sola variante no se enseña ningún selector: la mayoría de productos
+ * de una tienda pequeña no tienen tallas y no hay que hacerles pensar. Con
+ * varias, chips con el nombre corto de cada una (lo que no repite el nombre
+ * del producto) y el precio cambia con la elegida.
+ */
+export function CompraProducto({
+  slug,
+  nombreProducto,
+  variantes,
+}: {
+  slug: string;
+  nombreProducto: string;
+  variantes: { id: string; name: string; priceWithTax: number; currencyCode: string }[];
+}) {
+  const [elegida, setElegida] = useState(0);
+  const money = useDinero();
+  const v = variantes[elegida];
+  if (!v) return null;
+
+  const corto = (n: string) => n.replace(nombreProducto, '').trim() || n;
+
+  return (
+    <>
+      {variantes.length > 1 ? (
+        <div className="st-variantes" role="group">
+          {variantes.map((x, i) => (
+            <button
+              key={x.id}
+              type="button"
+              className={i === elegida ? 'es-activa' : ''}
+              aria-pressed={i === elegida}
+              onClick={() => setElegida(i)}
+            >
+              {corto(x.name)}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      <p className="st-prod-p">{money(v.priceWithTax, v.currencyCode)}</p>
+      <AddToCartButton slug={slug} variantId={v.id} />
+    </>
   );
 }

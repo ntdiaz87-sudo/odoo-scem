@@ -1,6 +1,9 @@
+import { SIMBOLO_DE } from '../../../../lib/i18n';
 import { getT } from '../../../../lib/i18n-server';
+import { verEnvio } from '../../../../lib/panel-datos';
 import { exigirSesionPagina } from '../../../../lib/panel-sesion';
 import { storeUrl } from '../../../../lib/tenant';
+import { FormularioEnvio } from './envio-form';
 import { FormularioTienda } from './form';
 
 export const dynamic = 'force-dynamic';
@@ -9,6 +12,7 @@ export default async function Tienda() {
   const s = await exigirSesionPagina();
   const t = await getT(s.mercado);
   const url = storeUrl(s.canal.token);
+  const envio = await verEnvio(s);
 
   return (
     <>
@@ -42,6 +46,22 @@ export default async function Tienda() {
         <a className="pn-url" href={url}>
           {url}
         </a>
+      </section>
+
+      <section className="pn-bloque">
+        <h2 className="pn-h2">{t('pn.en.titulo')}</h2>
+        <p className="pn-ayuda">{t('pn.en.sub')}</p>
+        <FormularioEnvio
+          inicial={{ tarifa: (envio.tarifa / 100).toFixed(2), gratisDesde: (envio.gratisDesde / 100).toFixed(2) }}
+          etiquetas={{
+            tarifa: t('pn.en.tarifa'),
+            gratis: t('pn.en.gratis'),
+            gratisAyuda: t('pn.en.gratis.ayuda'),
+            simbolo: SIMBOLO_DE[s.mercado],
+            enviar: t('pn.pr.guardar'),
+            enviando: t('pn.pr.guardando'),
+          }}
+        />
       </section>
 
       <section className="pn-bloque">

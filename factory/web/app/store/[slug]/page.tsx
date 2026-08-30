@@ -5,7 +5,7 @@ import { rootDomain } from '../../../lib/tenant';
 import { loadStoreInfo } from '../../../lib/store-design';
 import { LOCALE, MONEDA_DE, esLocaleValido, money, translate, type Locale } from '../../../lib/i18n';
 import { MercadoProvider } from '../../../lib/tienda-locale';
-import { AddToCartButton, GaleriaProducto, PwaSetup } from './storefront-ui';
+import { CompraProducto, GaleriaProducto, PwaSetup } from './storefront-ui';
 import { SandboxBanner, StoreFooter, StoreHeader, StoreNotFound, storeVars } from './_shell';
 
 const ROOT_URL = process.env.NEXT_PUBLIC_ROOT_URL || `http://${rootDomain()}`;
@@ -51,7 +51,7 @@ interface ChannelData {
       name: string;
       slug: string;
       description: string;
-      variants: Array<{ id: string; priceWithTax: number; currencyCode: string }>;
+      variants: Array<{ id: string; name: string; priceWithTax: number; currencyCode: string }>;
     }>;
   };
 }
@@ -88,7 +88,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           items {
             id name slug description
             assets { id preview }
-            variants { id priceWithTax currencyCode }
+            variants { id name priceWithTax currencyCode }
           }
         }
       }`,
@@ -182,10 +182,11 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
                     <div className="st-prod-cuerpo">
                       <h3 className="st-prod-n">{p.name}</h3>
                       <p className="st-prod-d">{p.description}</p>
-                      <p className="st-prod-p">
-                        {v ? precio(v.priceWithTax, v.currencyCode) : '—'}
-                      </p>
-                      {v ? <AddToCartButton slug={slug} variantId={v.id} /> : null}
+                      {p.variants.length > 0 ? (
+                        <CompraProducto slug={slug} nombreProducto={p.name} variantes={p.variants} />
+                      ) : (
+                        <p className="st-prod-p">—</p>
+                      )}
                     </div>
                   </article>
                 );

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { MONEDA_DE, esLocaleValido } from '../../lib/i18n';
 import { getT } from '../../lib/i18n-server';
-import { cobrarPedido, crearProducto, enviarPedido, guardarProducto, verProducto } from '../../lib/panel-datos';
+import { cobrarPedido, crearGruposDeVariantes, crearProducto, enviarPedido, guardarProducto, guardarVariantes, verProducto } from '../../lib/panel-datos';
 import { COOKIE_PANEL, LANG_CANAL, leerSesion, opcionesCookie } from '../../lib/panel-sesion';
 import { adminLogin, adminRequest, ownerLogin, ownerLogout, ownerMe, panelRequest } from '../../lib/vendure';
 
@@ -159,8 +159,126 @@ export async function accionGuardarProducto(_prev: Estado, datos: FormData): Pro
     stock: Math.max(0, Math.round(Number(datos.get('stock') || 0))),
   });
   if (error) return { error: t('pn.error', { msg: error }) };
+
+  // Con varias variantes, cada fila del formulario trae precio-<id> y
+  // stock-<id>: se guardan de una tacada.
+  const cambios = actual.producto.variants
+    .filter(v => datos.has(`precio-${v.id}`))
+    .map(v => ({
+      id: v.id,
+      precio: aCentimos(datos.get(`precio-${v.id}`)),
+      stock: Math.max(0, Math.round(Number(datos.get(`stock-${v.id}`) || 0))),
+    }));
+  const errV = await guardarVariantes(s, cambios);
+  if (errV) return { error: t('pn.error', { msg: errV }) };
+
   revalidatePath('/panel/productos');
   return { ok: t('pn.pr.guardado') };
+}
+
+/**
+ * Envío de la tienda: tarifa plana y "gratis a partir de".
+ *
+ * Cada tienda tiene SU método de envío (envio-<slug>) con la calculadora
+ * envio-fabrica. La primera vez se crea en el canal del comerciante y se
+ * retiran de ese canal los métodos compartidos de la semilla, para que el
+ * comprador vea UNA opción con la tarifa que puso el dueño y no dos. Las
+ * mutaciones van con la credencial del servidor porque el rol del dueño no
+ * llega a métodos de envío, pero el canal sale de SU sesión, nunca del
+ * navegador.
+ */
+export async function accionEnvio(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const tarifa = aCentimos(datos.get('envioTarifa'));
+  const gratisDesde = aCentimos(datos.get('envioGratisDesde'));
+  const codigo = `envio-${s.canal.token}`;
+  const args = {
+    checker: { code: 'default-shipping-eligibility-checker', arguments: [{ name: 'orderMinimum', value: '0' }] },
+    calculator: {
+      code: 'envio-fabrica',
+      arguments: [
+        { name: 'tarifa', value: String(tarifa) },
+        { name: 'gratisDesde', value: String(gratisDesde) },
+      ],
+    },
+  };
+  try {
+    const superAuth = await adminLogin();
+    const lista = await adminRequest<{ shippingMethods: { items: Array<{ id: string; code: string }> } }>(
+      superAuth,
+      `{ shippingMethods(options: { take: 100 }) { items { id code } } }`,
+      undefined,
+      s.canal.token,
+    );
+    const propio = lista.shippingMethods.items.find(m => m.code === codigo);
+    if (propio) {
+      await adminRequest(
+        superAuth,
+        `mutation Envio($input: UpdateShippingMethodInput!) { updateShippingMethod(input: $input) { id } }`,
+        { input: { id: propio.id, ...args } },
+        s.canal.token,
+      );
+    } else {
+      await adminRequest(
+        superAuth,
+        `mutation Envio($input: CreateShippingMethodInput!) { createShippingMethod(input: $input) { id } }`,
+        {
+          input: {
+            code: codigo,
+            fulfillmentHandler: 'manual-fulfillment',
+            translations: [{ languageCode: 'en', name: t('pn.en.metodo') }],
+            ...args,
+          },
+        },
+        s.canal.token,
+      );
+      // Fuera los métodos compartidos: si se quedan, el comprador ve dos
+      // tarifas y una no la puso el dueño.
+      const ajenos = lista.shippingMethods.items.filter(m => m.code !== codigo);
+      if (ajenos.length) {
+        await adminRequest(
+          superAuth,
+          `mutation Quitar($input: RemoveShippingMethodsFromChannelInput!) {
+            removeShippingMethodsFromChannel(input: $input) { id }
+          }`,
+          { input: { channelId: s.canal.id, shippingMethodIds: ajenos.map(m => m.id) } },
+        );
+      }
+    }
+  } catch (err) {
+    return { error: t('pn.error', { msg: err instanceof Error ? err.message : 'x' }) };
+  }
+  revalidatePath('/panel/tienda');
+  return { ok: t('pn.pr.guardado') };
+}
+
+/**
+ * Convierte un producto simple en uno con variantes (颜色 / 尺码…).
+ * Los valores llegan separados por coma o por 、 (el separador chino).
+ */
+export async function accionCrearVariantes(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const id = String(datos.get('id') || '');
+  if (!id) return { error: t('pn.pr.falta') };
+
+  const grupos: Array<{ nombre: string; valores: string[] }> = [];
+  for (const n of [1, 2]) {
+    const nombre = String(datos.get(`grupo${n}nombre`) || '').trim();
+    const valores = String(datos.get(`grupo${n}valores`) || '')
+      .split(/[,，、]/)
+      .map(v => v.trim())
+      .filter(Boolean)
+      .slice(0, 12);
+    if (nombre && valores.length >= 2) grupos.push({ nombre, valores });
+  }
+  if (grupos.length === 0) return { error: t('pn.va.falta') };
+
+  const error = await crearGruposDeVariantes(s, id, grupos);
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath(`/panel/productos/${id}`);
+  return { ok: t('pn.va.creadas') };
 }
 
 export async function accionCrearProducto(_prev: Estado, datos: FormData): Promise<Estado> {

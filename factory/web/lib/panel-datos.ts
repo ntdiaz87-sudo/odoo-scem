@@ -16,6 +16,7 @@ import { panelRequest } from './vendure';
 const IDIOMA_TRADUCCION = 'en';
 
 export interface VarianteResumen {
+  name: string;
   id: string;
   sku: string;
   price: number;
@@ -68,7 +69,7 @@ const CAMPOS_PRODUCTO = `
   id name slug enabled
   featuredAsset { preview }
   assets { id preview }
-  variants { id sku price stockOnHand }
+  variants { id name sku price stockOnHand }
 `;
 
 export async function listarProductos(s: SesionPanel) {
@@ -126,6 +127,9 @@ export async function guardarProducto(
     },
   );
   if (p.error) return p.error;
+  // Con varias variantes, el formulario ya no trae la fila única: los precios
+  // van por variante (ver guardarVariantes) y aquí no hay nada que tocar.
+  if (!datos.varianteId) return undefined;
   const v = await panelRequest(
     s.token,
     s.canal.token,
@@ -308,5 +312,137 @@ export async function resumen(s: SesionPanel) {
     porEnviar: pedidos.filter(p => p.state === 'PaymentSettled').length,
     enVenta: productos.filter(p => p.enabled).length,
     agotados: productos.filter(p => p.variants.every(v => v.stockOnHand <= 0)).length,
+    // "Queda poco" avisa ANTES de agotarse, que es cuando aún se puede reponer.
+    stockBajo: productos.filter(
+      p => p.enabled && p.variants.some(v => v.stockOnHand > 0 && v.stockOnHand <= 5),
+    ).length,
   };
+}
+
+/* ------------------------------- variantes ------------------------------- */
+
+/**
+ * Convierte un producto simple en uno con variantes (颜色, 尺码…).
+ *
+ * El orden importa y Vendure no perdona: primero se crean los grupos de
+ * opciones y se atan al producto, después las variantes —una por combinación—
+ * y SOLO al final se borra la variante original sin opciones. Al revés, el
+ * producto queda un instante sin variantes y la tienda enseña un catálogo
+ * vacío.
+ *
+ * Cada variante nace con el precio y el stock de la original: el comerciante
+ * ajusta después las que difieran, que suele ser ninguna o una.
+ */
+export async function crearGruposDeVariantes(
+  s: SesionPanel,
+  productoId: string,
+  grupos: Array<{ nombre: string; valores: string[] }>,
+): Promise<string | undefined> {
+  const actual = await verProducto(s, productoId);
+  if (!actual.producto) return actual.error || 'producto no encontrado';
+  const base = actual.producto.variants[0];
+  if (!base) return 'el producto no tiene variante base';
+
+  const sufijo = Date.now().toString(36);
+  const gruposCreados: Array<{ id: string; opciones: Array<{ id: string; nombre: string }> }> = [];
+
+  for (const [gi, g] of grupos.entries()) {
+    const r = await panelRequest<{ createProductOptionGroup: { id: string; options: Array<{ id: string; name: string }> } }>(
+      s.token,
+      s.canal.token,
+      `mutation Grupo($input: CreateProductOptionGroupInput!) {
+        createProductOptionGroup(input: $input) { id options { id name } }
+      }`,
+      {
+        input: {
+          code: `g${gi}-${productoId}-${sufijo}`,
+          translations: [{ languageCode: IDIOMA_TRADUCCION, name: g.nombre }],
+          options: g.valores.map((v, vi) => ({
+            code: `o${gi}-${vi}-${sufijo}`,
+            translations: [{ languageCode: IDIOMA_TRADUCCION, name: v }],
+          })),
+        },
+      },
+    );
+    if (r.error || !r.data) return r.error || 'no se pudo crear el grupo';
+    gruposCreados.push({
+      id: r.data.createProductOptionGroup.id,
+      opciones: r.data.createProductOptionGroup.options.map(o => ({ id: o.id, nombre: o.name })),
+    });
+    const a = await panelRequest(
+      s.token,
+      s.canal.token,
+      `mutation Atar($productId: ID!, $optionGroupId: ID!) {
+        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) { id }
+      }`,
+      { productId: productoId, optionGroupId: r.data.createProductOptionGroup.id },
+    );
+    if (a.error) return a.error;
+  }
+
+  // Todas las combinaciones (1 grupo → sus valores; 2 grupos → producto cartesiano).
+  let combos: Array<Array<{ id: string; nombre: string }>> = gruposCreados[0].opciones.map(o => [o]);
+  for (const g of gruposCreados.slice(1)) {
+    combos = combos.flatMap(c => g.opciones.map(o => [...c, o]));
+  }
+
+  const nv = await panelRequest<{ createProductVariants: Array<{ id: string }> }>(
+    s.token,
+    s.canal.token,
+    `mutation Variantes($input: [CreateProductVariantInput!]!) { createProductVariants(input: $input) { id } }`,
+    {
+      input: combos.map((combo, i) => ({
+        productId: productoId,
+        sku: `${base.sku}-${i + 1}`,
+        price: base.price,
+        stockOnHand: base.stockOnHand,
+        trackInventory: 'TRUE',
+        optionIds: combo.map(o => o.id),
+        translations: [
+          { languageCode: IDIOMA_TRADUCCION, name: `${actual.producto!.name} ${combo.map(o => o.nombre).join(' / ')}` },
+        ],
+      })),
+    },
+  );
+  if (nv.error) return nv.error;
+
+  const del = await panelRequest(
+    s.token,
+    s.canal.token,
+    `mutation Borrar($ids: [ID!]!) { deleteProductVariants(ids: $ids) { result message } }`,
+    { ids: [base.id] },
+  );
+  return del.error;
+}
+
+/** Guarda precio y stock de VARIAS variantes de un producto, de una vez. */
+export async function guardarVariantes(
+  s: SesionPanel,
+  cambios: Array<{ id: string; precio: number; stock: number }>,
+): Promise<string | undefined> {
+  if (cambios.length === 0) return undefined;
+  const r = await panelRequest(
+    s.token,
+    s.canal.token,
+    `mutation Variantes($input: [UpdateProductVariantInput!]!) { updateProductVariants(input: $input) { id } }`,
+    { input: cambios.map(c => ({ id: c.id, price: c.precio, stockOnHand: c.stock })) },
+  );
+  return r.error;
+}
+
+/* --------------------------------- envío --------------------------------- */
+
+/** La tarifa configurada por la tienda, si ya tiene método propio. */
+export async function verEnvio(s: SesionPanel): Promise<{ tarifa: number; gratisDesde: number; propio: boolean }> {
+  const r = await panelRequest<{
+    shippingMethods: { items: Array<{ code: string; calculator: { code: string; args: Array<{ name: string; value: string }> } }> };
+  }>(
+    s.token,
+    s.canal.token,
+    `{ shippingMethods(options: { take: 100 }) { items { code calculator { code args { name value } } } } }`,
+  );
+  const propio = r.data?.shippingMethods.items.find(m => m.code === `envio-${s.canal.token}`);
+  if (!propio) return { tarifa: 1000, gratisDesde: 0, propio: false };
+  const arg = (n: string) => Number(propio.calculator.args.find(a => a.name === n)?.value || 0);
+  return { tarifa: arg('tarifa'), gratisDesde: arg('gratisDesde'), propio: true };
 }

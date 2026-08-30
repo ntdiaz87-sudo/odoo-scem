@@ -89,6 +89,9 @@ export function StoreFooter({
           <li>
             <a href="/cart">{t('st.carrito')}</a>
           </li>
+          <li>
+            <a href="/pedido">{t('st.mi.pedido')}</a>
+          </li>
         </ul>
         <p className="st-pie-sello">
           {t('st.creada')}{' '}

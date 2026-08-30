@@ -1,4 +1,5 @@
 import {
+    defaultShippingCalculator,
     dummyPaymentHandler,
     DefaultJobQueuePlugin,
     DefaultSchedulerPlugin,
@@ -12,6 +13,7 @@ import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
 import { alipayHandler, wechatPayHandler } from './payments-cn';
+import { envioFabrica } from './envio';
 import path from 'path';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
@@ -61,6 +63,11 @@ export const config: VendureConfig = {
         // tienda; los dos chinos entran en cuanto haya credenciales (ver
         // payments-cn.ts).
         paymentMethodHandlers: [dummyPaymentHandler, wechatPayHandler, alipayHandler],
+    },
+    shippingOptions: {
+        // defaultShippingCalculator se conserva: el método compartido de la
+        // semilla lo usa. envioFabrica es el de cada tienda (ver envio.ts).
+        shippingCalculators: [defaultShippingCalculator, envioFabrica],
     },
     catalogOptions: {
         // La estrategia multicanal por defecto cachea 7 días qué canales ven
