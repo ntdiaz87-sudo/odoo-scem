@@ -441,7 +441,7 @@ await check('MCP: initialize y tools/list con credenciales del dueño', async ()
   assert(init.body.result?.serverInfo?.name === 'fabrica-tiendas-mcp', 'initialize raro');
   const tools = await mcp('tools/list', {}, OWNER_AUTH);
   const names = tools.body.result?.tools?.map(t => t.name) || [];
-  for (const t of ['info_tienda', 'ver_catalogo', 'ver_pedidos', 'cambiar_precio', 'ajustar_stock']) {
+  for (const t of ['info_tienda', 'resumen_hoy', 'ver_catalogo', 'ver_pedidos', 'ver_pedido', 'ver_promociones', 'ver_clientes', 'ver_distribuidores', 'cambiar_precio', 'ajustar_stock', 'cobrar_pedido', 'enviar_pedido']) {
     assert(names.includes(t), `falta herramienta ${t}`);
   }
 });
@@ -461,11 +461,13 @@ await check('MCP: el agente lee catálogo y pedidos de SU tienda', async () => {
   assert(pedidos.some(p => p.codigo === ORDER_CODE && p.estado === 'PaymentAuthorized'), `no aparece el pedido ${ORDER_CODE}`);
   const info = await mcp('tools/call', { name: 'info_tienda', arguments: {} }, OWNER_AUTH);
   const tienda = JSON.parse(info.body.result.content[0].text);
-  assert(tienda.slug === SLUG && tienda.es_demo === true, `info_tienda: ${info.body.result.content[0].text}`);
+  // El MCP habla la MONEDA de la tienda: antes decía "usd" a una tienda en ¥.
+  assert(tienda.slug === SLUG && tienda.moneda === 'CNY', `info_tienda: ${info.body.result.content[0].text}`);
+  assert(items.every(i => i.precio?.moneda === 'CNY'), 'el catálogo no viene en la moneda de la tienda');
 });
 await check('MCP: cambiar precio y stock se refleja en la tienda pública', async () => {
   const sku = `${SLUG}-producto-estrella`;
-  const precio = await mcp('tools/call', { name: 'cambiar_precio', arguments: { sku, precio_usd: 42.5 } }, OWNER_AUTH);
+  const precio = await mcp('tools/call', { name: 'cambiar_precio', arguments: { sku, precio: 42.5 } }, OWNER_AUTH);
   assert(JSON.parse(precio.body.result.content[0].text).ok === true, 'cambiar_precio falló');
   const stock = await mcp('tools/call', { name: 'ajustar_stock', arguments: { sku, unidades: 7 } }, OWNER_AUTH);
   assert(JSON.parse(stock.body.result.content[0].text).ok === true, 'ajustar_stock falló');
@@ -480,7 +482,7 @@ await check('MCP: cambiar precio y stock se refleja en la tienda pública', asyn
   assert(variant.priceWithTax === 4250, `precio público ${variant.priceWithTax}, esperaba 4250`);
 });
 await check('MCP: la herramienta rechaza SKU de otra tienda (aislamiento)', async () => {
-  const ajeno = await mcp('tools/call', { name: 'cambiar_precio', arguments: { sku: 'qingzhu-guibeizhu', precio_usd: 1 } }, OWNER_AUTH);
+  const ajeno = await mcp('tools/call', { name: 'cambiar_precio', arguments: { sku: 'qingzhu-guibeizhu', precio: 1 } }, OWNER_AUTH);
   assert(ajeno.body.result.isError === true, 'debió fallar con SKU ajeno');
   const vr = await fetch(API + '/shop-api', {
     method: 'POST',

@@ -12,33 +12,26 @@
  * Métodos: initialize, tools/list, tools/call. Sin dependencias nuevas.
  */
 import { NextRequest, NextResponse } from 'next/server';
+import { money } from '../../../lib/i18n';
+import {
+  cobrarPedido,
+  enviarPedido,
+  informeDistribuidores,
+  listarClientes,
+  listarPedidos,
+  listarProductos,
+  guardarVariantes,
+  listarPromos,
+  resumen,
+  verPedido,
+} from '../../../lib/panel-datos';
+import { sesionPorCredenciales } from '../../../lib/panel-sesion-mcp';
+import type { SesionPanel } from '../../../lib/panel-sesion';
 
-const API_URL = process.env.VENDURE_API_URL || 'http://localhost:3000';
 const PROTOCOL_VERSION = '2025-03-26';
 
-interface OwnerSession {
-  bearer: string;
-  channelToken: string;
-  channelCode: string;
-}
-
-async function vendureAdmin<T>(
-  query: string,
-  variables: Record<string, unknown> | undefined,
-  headers: Record<string, string>,
-): Promise<{ data?: T; errors?: Array<{ message: string }>; authToken?: string }> {
-  const res = await fetch(`${API_URL}/admin-api`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', ...headers },
-    body: JSON.stringify({ query, variables }),
-    cache: 'no-store',
-  });
-  const body = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
-  return { ...body, authToken: res.headers.get('vendure-auth-token') || undefined };
-}
-
-/** Valida las credenciales Basic del dueño y devuelve su canal. */
-async function loginOwner(req: NextRequest): Promise<OwnerSession | null> {
+/** La sesión del dueño desde el HTTP Basic: la MISMA que usa su panel. */
+async function loginOwner(req: NextRequest): Promise<SesionPanel | null> {
   const header = req.headers.get('authorization') || '';
   if (!header.toLowerCase().startsWith('basic ')) return null;
   let user = '';
@@ -52,33 +45,12 @@ async function loginOwner(req: NextRequest): Promise<OwnerSession | null> {
   } catch {
     return null;
   }
-  const login = await vendureAdmin<{
-    login: { __typename: string; channels?: Array<{ code: string; token: string }> };
-  }>(
-    `mutation Login($u: String!, $p: String!) {
-      login(username: $u, password: $p) {
-        __typename
-        ... on CurrentUser { channels { code token } }
-      }
-    }`,
-    { u: user, p: pass },
-    {},
-  );
-  if (login.data?.login.__typename !== 'CurrentUser' || !login.authToken) return null;
-  // El dueño de una tienda tiene exactamente su canal; el superadmin usa el primero no-default.
-  const channels = login.data.login.channels || [];
-  const own = channels.find(c => c.code !== '__default_channel__') || channels[0];
-  if (!own) return null;
-  return { bearer: login.authToken, channelToken: own.token, channelCode: own.code };
+  return sesionPorCredenciales(user, pass);
 }
 
-async function ownerRequest<T>(session: OwnerSession, query: string, variables?: Record<string, unknown>): Promise<T> {
-  const { data, errors } = await vendureAdmin<T>(query, variables, {
-    authorization: `Bearer ${session.bearer}`,
-    'vendure-token': session.channelToken,
-  });
-  if (errors?.length) throw new Error(errors.map(e => e.message).join('; '));
-  return data as T;
+/** Importe en la moneda REAL de la tienda. El agente decía "usd" a tiendas que cobran en ¥. */
+function importe(s: SesionPanel, minor: number) {
+  return { valor: +(minor / 100).toFixed(2), moneda: s.moneda, texto: money(minor, s.moneda, s.mercado) };
 }
 
 /* ---------------- herramientas ---------------- */
@@ -86,36 +58,65 @@ async function ownerRequest<T>(session: OwnerSession, query: string, variables?:
 const TOOLS = [
   {
     name: 'info_tienda',
-    description: 'Datos generales de la tienda: nombre, diseño y si es demo (sandbox).',
+    description: 'Datos generales de la tienda: nombre, diseño, mercado, moneda y si es demo (sandbox).',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'resumen_hoy',
+    description: 'Las cifras que ve el comerciante al entrar: pedidos e ingresos de hoy, productos a la venta, agotados, stock bajo y lo que está por cobrar o por enviar.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   },
   {
     name: 'ver_catalogo',
-    description: 'Lista los productos de la tienda con su SKU, precio (USD) y stock disponible.',
+    description: 'Productos de la tienda con sus variantes: SKU, precio en la moneda de la tienda, stock y si están publicados.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   },
   {
     name: 'ver_pedidos',
-    description:
-      'Lista los pedidos de la tienda (código, estado, total USD, comprador). Los estados típicos: PaymentAuthorized = pendiente de cobrar, PaymentSettled = cobrado.',
+    description: 'Pedidos de la tienda (código, estado, total, comprador). PaymentAuthorized = pendiente de cobrar; PaymentSettled = cobrado; Shipped = enviado.',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'ver_pedido',
+    description: 'Detalle de UN pedido por su código: artículos, dirección de entrega, estado del pago y del envío.',
+    inputSchema: {
+      type: 'object',
+      properties: { codigo: { type: 'string', description: 'Código del pedido (ver ver_pedidos)' } },
+      required: ['codigo'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'ver_promociones',
+    description: 'Promociones vivas de la tienda: cupones (优惠券) y ofertas relámpago (秒杀).',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'ver_clientes',
+    description: 'Clientes de la tienda con su número de pedidos, última compra y saldo prepagado (会员储值).',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+  {
+    name: 'ver_distribuidores',
+    description: 'Distribuidores (分销) con los pedidos que trajeron y la comisión que se les debe.',
     inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   },
   {
     name: 'cambiar_precio',
-    description: 'Cambia el precio (en USD) del producto identificado por su SKU.',
+    description: 'Cambia el precio de un producto identificado por su SKU. El importe va en la MONEDA DE LA TIENDA (ver info_tienda).',
     inputSchema: {
       type: 'object',
       properties: {
         sku: { type: 'string', description: 'SKU exacto del producto (ver ver_catalogo)' },
-        precio_usd: { type: 'number', description: 'Nuevo precio en dólares, p. ej. 19.99' },
+        precio: { type: 'number', description: 'Nuevo precio en la moneda de la tienda, p. ej. 199.00' },
       },
-      required: ['sku', 'precio_usd'],
+      required: ['sku', 'precio'],
       additionalProperties: false,
     },
   },
   {
     name: 'ajustar_stock',
-    description: 'Fija las unidades en existencia (stock) del producto identificado por su SKU.',
+    description: 'Fija las unidades en existencia del producto identificado por su SKU.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -126,90 +127,170 @@ const TOOLS = [
       additionalProperties: false,
     },
   },
+  {
+    name: 'cobrar_pedido',
+    description: 'Marca como COBRADO un pedido cuyo pago estaba pendiente, cuando el comerciante confirma que recibió el dinero. Acción con efecto: confírmala con el comerciante antes de usarla.',
+    inputSchema: {
+      type: 'object',
+      properties: { codigo: { type: 'string', description: 'Código del pedido' } },
+      required: ['codigo'],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: 'enviar_pedido',
+    description: 'Marca un pedido como enviado, con su número de seguimiento. Acción con efecto: confírmala con el comerciante antes de usarla.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        codigo: { type: 'string', description: 'Código del pedido' },
+        seguimiento: { type: 'string', description: 'Número de seguimiento del transportista (opcional)' },
+      },
+      required: ['codigo'],
+      additionalProperties: false,
+    },
+  },
 ];
 
-async function variantBySku(session: OwnerSession, sku: string): Promise<{ id: string; name: string } | null> {
-  const data = await ownerRequest<{
-    productVariants: { items: Array<{ id: string; name: string; sku: string }> };
-  }>(
-    session,
-    `query BySku($sku: String!) {
-      productVariants(options: { filter: { sku: { eq: $sku } } }) { items { id name sku } }
-    }`,
-    { sku },
-  );
-  return data.productVariants.items[0] ?? null;
+/** Busca la variante por SKU dentro del catálogo del comerciante. */
+async function porSku(sesion: SesionPanel, sku: string) {
+  const { productos } = await listarProductos(sesion);
+  for (const p of productos) {
+    const v = p.variants.find(x => x.sku === sku);
+    if (v) return { producto: p, variante: v };
+  }
+  return null;
 }
 
-async function callTool(session: OwnerSession, name: string, args: Record<string, unknown>): Promise<string> {
+async function pedidoPorCodigo(sesion: SesionPanel, codigo: string) {
+  const { pedidos } = await listarPedidos(sesion);
+  return pedidos.find(p => p.code === codigo) ?? null;
+}
+
+async function callTool(sesion: SesionPanel, name: string, args: Record<string, unknown>): Promise<string> {
   switch (name) {
     case 'info_tienda': {
-      /* Esto listaba `channels(take: 100)` y buscaba el suyo por código. La
-         petición ya va con el vendure-token de su canal, así que activeChannel
-         devuelve exactamente ese, sin paginar y sin poder equivocarse. Con más
-         de 100 tiendas en la plataforma el canal del dueño se quedaba fuera de
-         la página y el agente contestaba que su tienda no tiene diseño y que
-         no es demo: no fallaba, mentía. */
-      const data = await ownerRequest<{
-        activeChannel: { code: string; customFields?: { displayName?: string; isSandbox?: boolean; expiresAt?: string; design?: string } | null };
-      }>(session, `{ activeChannel { code customFields { displayName isSandbox expiresAt design } } }`);
-      const cf = data.activeChannel?.customFields;
-      let designLabel = '';
-      try {
-        designLabel = cf?.design ? (JSON.parse(cf.design) as { label?: string }).label || '' : '';
-      } catch { /* sin nombre de diseño */ }
       return JSON.stringify({
-        tienda: cf?.displayName || session.channelCode,
-        slug: session.channelCode,
-        diseno: designLabel,
-        es_demo: cf?.isSandbox ?? false,
-        demo_caduca: cf?.expiresAt ?? null,
+        tienda: sesion.nombre,
+        slug: sesion.canal.token,
+        diseno: sesion.design.label ?? '',
+        mercado: sesion.mercado,
+        moneda: sesion.moneda,
+        promesas: sesion.promesas,
+      });
+    }
+    case 'resumen_hoy': {
+      const r = await resumen(sesion);
+      return JSON.stringify({
+        pedidos_hoy: r.pedidosHoy,
+        ingresos_hoy: importe(sesion, r.ingresosHoy),
+        productos_en_venta: r.enVenta,
+        agotados: r.agotados,
+        stock_bajo: r.stockBajo,
+        por_cobrar: r.porCobrar,
+        por_enviar: r.porEnviar,
       });
     }
     case 'ver_catalogo': {
-      const data = await ownerRequest<{
-        productVariants: { items: Array<{ sku: string; name: string; price: number; stockOnHand: number; enabled: boolean }> };
-      }>(session, `{ productVariants(options: { take: 100 }) { items { sku name price stockOnHand enabled } } }`);
+      const { productos } = await listarProductos(sesion);
       return JSON.stringify(
-        data.productVariants.items.map(v => ({
-          sku: v.sku,
-          producto: v.name,
-          precio_usd: +(v.price / 100).toFixed(2),
-          stock: v.stockOnHand,
-          activo: v.enabled,
-        })),
+        productos.flatMap(p =>
+          p.variants.map(v => ({
+            sku: v.sku,
+            producto: p.name,
+            variante: v.name === p.name ? null : v.name.replace(p.name, '').trim() || v.name,
+            precio: importe(sesion, v.price),
+            stock: v.stockOnHand,
+            publicado: p.enabled,
+          })),
+        ),
       );
     }
     case 'ver_pedidos': {
-      const data = await ownerRequest<{
-        orders: { items: Array<{ code: string; state: string; totalWithTax: number; orderPlacedAt: string | null; customer?: { firstName: string; lastName: string; emailAddress: string } | null }> };
-      }>(session, `{ orders(options: { take: 50, sort: { createdAt: DESC } }) { items { code state totalWithTax orderPlacedAt customer { firstName lastName emailAddress } } } }`);
+      const { pedidos } = await listarPedidos(sesion);
       return JSON.stringify(
-        data.orders.items.map(o => ({
+        pedidos.map(o => ({
           codigo: o.code,
           estado: o.state,
-          total_usd: +(o.totalWithTax / 100).toFixed(2),
+          total: importe(sesion, o.totalWithTax),
           fecha: o.orderPlacedAt,
-          comprador: o.customer ? `${o.customer.firstName} ${o.customer.lastName} <${o.customer.emailAddress}>` : null,
+          comprador: o.cliente,
+        })),
+      );
+    }
+    case 'ver_pedido': {
+      const codigo = String(args.codigo || '');
+      const cabecera = await pedidoPorCodigo(sesion, codigo);
+      if (!cabecera) throw new Error(`No hay ningún pedido con código "${codigo}" en esta tienda.`);
+      const { pedido } = await verPedido(sesion, cabecera.id);
+      if (!pedido) throw new Error(`No se pudo leer el pedido "${codigo}".`);
+      return JSON.stringify({
+        codigo: pedido.code,
+        estado: pedido.state,
+        total: importe(sesion, pedido.totalWithTax),
+        fecha: pedido.orderPlacedAt,
+        comprador: pedido.cliente,
+        contacto: { correo: pedido.correo, telefono: pedido.telefono },
+        entrega: pedido.direccion,
+        articulos: pedido.lineas.map(l => ({
+          producto: l.nombre,
+          cantidad: l.cantidad,
+          importe: importe(sesion, l.total),
+        })),
+        cobrado: !pedido.pagoPendienteId,
+        enviado: pedido.enviado,
+      });
+    }
+    case 'ver_promociones': {
+      const promos = await listarPromos(sesion);
+      return JSON.stringify(
+        promos.map(p => ({
+          nombre: p.name,
+          tipo: p.esSeckill ? 'seckill' : 'cupon',
+          codigo: p.couponCode,
+          activa: p.enabled,
+          termina: p.endsAt,
+        })),
+      );
+    }
+    case 'ver_clientes': {
+      const clientes = await listarClientes(sesion);
+      return JSON.stringify(
+        clientes.map(c => ({
+          nombre: c.nombre,
+          correo: c.correo,
+          pedidos: c.pedidos,
+          ultima_compra: c.ultimo,
+          saldo: importe(sesion, c.saldo),
+        })),
+      );
+    }
+    case 'ver_distribuidores': {
+      const lista = await informeDistribuidores(sesion);
+      return JSON.stringify(
+        lista.map(d => ({
+          nombre: d.nombre,
+          codigo: d.codigo,
+          comision_pct: d.comision,
+          pedidos: d.pedidos,
+          vendido: importe(sesion, d.vendido),
+          comision: importe(sesion, d.comisionGanada),
         })),
       );
     }
     case 'cambiar_precio': {
       const sku = String(args.sku || '');
-      const precio = Number(args.precio_usd);
+      const precio = Number(args.precio);
       if (!sku || !Number.isFinite(precio) || precio <= 0 || precio > 1000000) {
-        throw new Error('Parámetros inválidos: se necesita sku y precio_usd > 0.');
+        throw new Error('Parámetros inválidos: se necesita sku y precio > 0.');
       }
-      const variant = await variantBySku(session, sku);
-      if (!variant) throw new Error(`No hay ningún producto con SKU "${sku}" en esta tienda.`);
-      await ownerRequest(
-        session,
-        `mutation Precio($input: [UpdateProductVariantInput!]!) {
-          updateProductVariants(input: $input) { ... on ProductVariant { id } }
-        }`,
-        { input: [{ id: variant.id, price: Math.round(precio * 100) }] },
-      );
-      return JSON.stringify({ ok: true, sku, producto: variant.name, nuevo_precio_usd: +precio.toFixed(2) });
+      const hallado = await porSku(sesion, sku);
+      if (!hallado) throw new Error(`No hay ningún producto con SKU "${sku}" en esta tienda.`);
+      const error = await guardarVariantes(sesion, [
+        { id: hallado.variante.id, precio: Math.round(precio * 100), stock: hallado.variante.stockOnHand },
+      ]);
+      if (error) throw new Error(error);
+      return JSON.stringify({ ok: true, sku, producto: hallado.producto.name, nuevo_precio: importe(sesion, Math.round(precio * 100)) });
     }
     case 'ajustar_stock': {
       const sku = String(args.sku || '');
@@ -217,16 +298,32 @@ async function callTool(session: OwnerSession, name: string, args: Record<string
       if (!sku || !Number.isInteger(unidades) || unidades < 0 || unidades > 1000000) {
         throw new Error('Parámetros inválidos: se necesita sku y unidades >= 0.');
       }
-      const variant = await variantBySku(session, sku);
-      if (!variant) throw new Error(`No hay ningún producto con SKU "${sku}" en esta tienda.`);
-      await ownerRequest(
-        session,
-        `mutation Stock($input: [UpdateProductVariantInput!]!) {
-          updateProductVariants(input: $input) { ... on ProductVariant { id } }
-        }`,
-        { input: [{ id: variant.id, stockOnHand: unidades }] },
-      );
-      return JSON.stringify({ ok: true, sku, producto: variant.name, stock: unidades });
+      const hallado = await porSku(sesion, sku);
+      if (!hallado) throw new Error(`No hay ningún producto con SKU "${sku}" en esta tienda.`);
+      const error = await guardarVariantes(sesion, [
+        { id: hallado.variante.id, precio: hallado.variante.price, stock: unidades },
+      ]);
+      if (error) throw new Error(error);
+      return JSON.stringify({ ok: true, sku, producto: hallado.producto.name, stock: unidades });
+    }
+    case 'cobrar_pedido': {
+      const codigo = String(args.codigo || '');
+      const cabecera = await pedidoPorCodigo(sesion, codigo);
+      if (!cabecera) throw new Error(`No hay ningún pedido con código "${codigo}" en esta tienda.`);
+      const { pedido } = await verPedido(sesion, cabecera.id);
+      if (!pedido?.pagoPendienteId) throw new Error(`El pedido "${codigo}" no tiene ningún pago pendiente de cobrar.`);
+      const error = await cobrarPedido(sesion, pedido.pagoPendienteId);
+      if (error) throw new Error(error);
+      return JSON.stringify({ ok: true, codigo, estado: 'cobrado' });
+    }
+    case 'enviar_pedido': {
+      const codigo = String(args.codigo || '');
+      const seguimiento = String(args.seguimiento || '');
+      const cabecera = await pedidoPorCodigo(sesion, codigo);
+      if (!cabecera) throw new Error(`No hay ningún pedido con código "${codigo}" en esta tienda.`);
+      const error = await enviarPedido(sesion, cabecera.id, seguimiento);
+      if (error) throw new Error(error);
+      return JSON.stringify({ ok: true, codigo, estado: 'enviado', seguimiento: seguimiento || null });
     }
     default:
       throw new Error(`Herramienta desconocida: ${name}`);
