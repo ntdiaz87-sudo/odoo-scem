@@ -1,0 +1,62 @@
+# PYXEL Cuba Trade OS — producción en el GEX44 (servidor compartido).
+#
+# Invocar SIEMPRE con --env-file:
+#   cd /opt/pyxel-trade/infra
+#   docker compose --env-file ../.env -f docker-compose.prod.yml up -d
+#
+# Dos reglas del patrón de la casa que este fichero respeta:
+#   1. Los puertos se publican sólo en 127.0.0.1. El único proceso que ve
+#      internet es el Caddy del host.
+#   2. No hay proxy propio. El TLS y el enrutado los pone Caddy, con un
+#      único bloque en /etc/caddy/Caddyfile (ver infra/caddy-site.conf).
+
+name: ${STACK}
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Sin `ports`: la base no se publica ni en loopback. Sólo la ve Odoo,
+    # por la red interna del stack.
+    networks: [internal]
+
+  odoo:
+    image: odoo:19
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # El entrypoint de la imagen oficial toma de aquí las credenciales de
+      # PostgreSQL, así no hacen falta en odoo.conf ni en el repositorio.
+      HOST: db
+      USER: ${POSTGRES_USER}
+      PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:${PORT_WEB}:8069"
+      # Bus de Odoo 19 (gevent). Sin esto no hay notificaciones en vivo.
+      - "127.0.0.1:${PORT_WEBSOCKET}:8072"
+    volumes:
+      - odoo-data:/var/lib/odoo
+      - ../config/odoo.conf:/etc/odoo/odoo.conf:ro
+      - ../addons:/mnt/extra-addons
+    networks: [internal]
+
+volumes:
+  db-data:
+  odoo-data:
+
+networks:
+  internal:

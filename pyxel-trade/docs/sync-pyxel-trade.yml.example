@@ -1,0 +1,41 @@
+# Puente GitHub → Gitea para el subdirectorio pyxel-trade/ de este monorepo.
+#
+# NO está activo. Se entrega como plantilla a propósito: si se colocara ya
+# en .github/workflows/, se ejecutaría en el siguiente push y fallaría en
+# bucle hasta que exista el secreto GITEA_TOKEN.
+#
+# Para activarlo:
+#   1. Crear el token en Gitea: avatar → Settings → Applications →
+#      Access Tokens. Nombre github-sync-pyxel-trade, permiso
+#      repository: write y nada más. Cópialo: Gitea no lo repite.
+#   2. GitHub → repo → Settings → Secrets and variables → Actions →
+#      New repository secret, nombre GITEA_TOKEN.
+#   3. cp docs/sync-pyxel-trade.yml.example ../.github/workflows/sync-pyxel-trade.yml
+#
+# Si el proyecto acaba viviendo directamente en Gitea, este puente sobra.
+
+name: sync-pyxel-trade
+
+on:
+  push:
+    branches: [main]
+    paths: ['pyxel-trade/**']
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # git subtree split necesita el historial entero. Sin esto falla.
+          fetch-depth: 0
+
+      - name: Extraer pyxel-trade/ y empujarlo a Gitea
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+        run: |
+          set -euo pipefail
+          rama=$(git subtree split --prefix=pyxel-trade main)
+          git push --force \
+            "https://oauth2:${GITEA_TOKEN}@git.enetradex.com/nilo/pyxel-trade.git" \
+            "${rama}:develop"

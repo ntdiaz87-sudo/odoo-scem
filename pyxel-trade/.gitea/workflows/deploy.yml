@@ -1,0 +1,60 @@
+# Despliegue automático en el GEX44.
+#
+# El runner `gex44` corre en MODO HOST, como root, sobre el servidor real.
+# De ahí las tres reglas del patrón de la casa que este workflow respeta:
+#   - Sólo pasos `run:`. Ninguna acción JS, ni siquiera actions/checkout.
+#     Por eso el primer paso hace `git fetch` a mano.
+#   - Nada de `services:`.
+#   - Ve /opt y habla con el Docker de verdad.
+
+name: deploy
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    runs-on: gex44
+    steps:
+      - name: Traer el código
+        run: |
+          set -euo pipefail
+          cd /opt/pyxel-trade
+          git fetch origin develop
+          git reset --hard origin/develop
+
+      - name: Regenerar la configuración de Odoo
+        run: |
+          set -euo pipefail
+          cd /opt/pyxel-trade
+          set -a; . ./.env; set +a
+          # Los secretos entran aquí desde el .env del servidor; al
+          # repositorio sólo va la plantilla.
+          envsubst < config/odoo.conf.template > config/odoo.conf
+          chmod 600 config/odoo.conf
+
+      - name: Actualizar los módulos
+        run: |
+          set -euo pipefail
+          cd /opt/pyxel-trade
+          set -a; . ./.env; set +a
+          cd infra
+          compose="docker compose --env-file ../.env -f docker-compose.prod.yml"
+
+          $compose up -d db
+          # Se para el web antes de migrar el esquema: actualizar con
+          # workers sirviendo peticiones da errores intermitentes.
+          $compose stop odoo || true
+          $compose run --rm --no-deps odoo \
+              odoo -d "$ODOO_DB" -u "$ODOO_UPDATE_MODULES" --stop-after-init
+          $compose up -d
+
+      - name: Prueba de humo
+        run: |
+          set -euo pipefail
+          cd /opt/pyxel-trade
+          set -a; . ./.env; set +a
+          # Margen para que Odoo arranque y regenere los assets.
+          sleep 25
+          bash scripts/smoke.sh "$PYXEL_DOMAIN"

@@ -20,8 +20,8 @@ data_dir = /var/lib/odoo
 ; vez por línea de comandos (ver README). Deja el gestor de bases fuera
 ; del alcance de Internet.
 list_db = False
-dbfilter = ^${ODOO_DB_NAME}$
-db_name = ${ODOO_DB_NAME}
+dbfilter = ^${ODOO_DB}$
+db_name = ${ODOO_DB}
 
 ; Imprescindible detrás de Caddy: sin esto Odoo genera URLs http://
 ; y las cookies de sesión no se marcan como seguras.
