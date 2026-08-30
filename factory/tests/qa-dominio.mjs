@@ -74,8 +74,10 @@ const tok=login.headers.get('vendure-auth-token');
 const gql=async(q,v)=>(await (await fetch(V+'/admin-api',{method:'POST',
   headers:{'content-type':'application/json',authorization:`Bearer ${tok}`},
   body:JSON.stringify({query:q,variables:v})})).json());
-const canales=await gql(`{channels(options:{take:500}){items{id token}}}`);
-const idA=canales.data.channels.items.find(c=>c.token===slugA).id;
+// Se pregunta por el canal, no se lista: con cientos de tiendas el nuestro
+// cae fuera de cualquier página y la prueba moría con "undefined".
+const canales=await gql(`query($t:String!){channels(options:{filter:{token:{eq:$t}},take:1}){items{id token}}}`,{t:slugA});
+const idA=canales.data.channels.items[0].id;
 await gql(`mutation($input:UpdateChannelInput!){updateChannel(input:$input){__typename}}`,
   {input:{id:idA,customFields:{dominioVerificado:true}}});
 

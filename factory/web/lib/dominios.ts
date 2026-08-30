@@ -62,14 +62,20 @@ export async function canalPorDominio(hostname: string): Promise<string | null> 
   let slug: string | null = null;
   try {
     const auth = await adminLogin();
+    // Se pregunta POR EL DOMINIO, no se listan los canales: con una lista
+    // paginada, el dominio del canal 501 en adelante era invisible (su tienda
+    // no respondía en su propio dominio) y la consulta pesaba en cada petición.
     const data = await adminRequest<{ channels: { items: CanalConDominio[] } }>(
       auth,
-      `{ channels(options: { take: 500 }) { items { token customFields { dominio dominioVerificado } } } }`,
+      `query PorDominio($d: String!) {
+        channels(options: {
+          filter: { dominio: { eq: $d }, dominioVerificado: { eq: true } },
+          take: 2
+        }) { items { token customFields { dominio dominioVerificado } } }
+      }`,
+      { d: clave },
     );
-    const canal = data.channels.items.find(
-      c => c.customFields?.dominio === clave && c.customFields?.dominioVerificado === true,
-    );
-    slug = canal?.token ?? null;
+    slug = data.channels.items[0]?.token ?? null;
   } catch {
     // Vendure caído o sin permisos: se responde "no hay tienda" y se
     // reintenta pronto (TTL corto). Nunca se tumba la petición.
@@ -86,9 +92,14 @@ export async function dominioOcupado(hostname: string, tokenPropio: string): Pro
     const auth = await adminLogin();
     const data = await adminRequest<{ channels: { items: CanalConDominio[] } }>(
       auth,
-      `{ channels(options: { take: 500 }) { items { token customFields { dominio } } } }`,
+      `query Ocupado($d: String!) {
+        channels(options: { filter: { dominio: { eq: $d } }, take: 5 }) {
+          items { token customFields { dominio } }
+        }
+      }`,
+      { d: hostname },
     );
-    return data.channels.items.some(c => c.customFields?.dominio === hostname && c.token !== tokenPropio);
+    return data.channels.items.some(c => c.token !== tokenPropio);
   } catch {
     return true; // en la duda, mejor negar el alta que regalar un dominio pisado
   }
