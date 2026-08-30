@@ -1728,3 +1728,32 @@ a:hover { color: var(--accent-dark); }
 .pn-mov-neg { color: #d64545; }
 .pn-mov-pos { color: #16a34a; }
 .pn-bloque .pn-form + .pn-h2 { margin-top: 18px; }
+
+/* ================================ 拼团 ==================================== */
+.st-pt-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; margin-top: 8px;
+  background: #d64545; color: #fff; border: 0; font-weight: 700;
+}
+.st-pt-btn:hover { background: #b93a3a; }
+.st-pt-badge {
+  font-size: .7rem; font-weight: 800; padding: 2px 7px; border-radius: 999px;
+  background: rgba(255, 255, 255, .22);
+}
+.st-pt-banner {
+  margin: 18px auto 0; max-width: 680px; padding: 12px 18px; border-radius: 12px;
+  background: #d64545; color: #fff; font-size: .92rem; text-align: center;
+}
+.st-pt-banner--fin { background: color-mix(in srgb, currentColor 12%, transparent); color: inherit; }
+.st-pt-compartir {
+  margin: 18px 0 6px; padding: 16px; border-radius: 14px; text-align: center;
+  border: 1.5px dashed #d64545; display: grid; gap: 8px; justify-items: center;
+}
+.st-pt-compartir > b { color: #d64545; }
+.st-pt-enlace {
+  font-size: .8rem; padding: 6px 10px; border-radius: 8px; word-break: break-all;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.pn-pt-estado { font-weight: 600; }
+.pn-pt-estado--completo { border-color: #16a34a; color: #16a34a; }
+.pn-pt-estado--caducado { border-color: #d64545; color: #d64545; }

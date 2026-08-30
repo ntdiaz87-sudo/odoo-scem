@@ -13,6 +13,7 @@ import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
 import { alipayHandler, wechatPayHandler } from './payments-cn';
+import { PintuanPlugin } from './plugins/pintuan';
 import { envioFabrica } from './envio';
 import path from 'path';
 
@@ -130,6 +131,7 @@ export const config: VendureConfig = {
         ],
     },
     plugins: [
+        PintuanPlugin,
         GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',

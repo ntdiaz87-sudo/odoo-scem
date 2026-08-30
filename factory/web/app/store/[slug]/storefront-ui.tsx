@@ -3,7 +3,7 @@
 /** Piezas interactivas de la tienda: registro PWA, contador y añadir al carrito. */
 
 import { useEffect, useState } from 'react';
-import { captarDistribuidor, addToCart, fetchActiveOrder } from '../../../lib/shop-client';
+import { captarDistribuidor, comprarEnGrupo, iniciarGrupo, notifyCartChanged, addToCart, fetchActiveOrder } from '../../../lib/shop-client';
 import { useDinero, useTt } from '../../../lib/tienda-locale';
 
 /** Registra el service worker que hace instalable la tienda como app (PWA). */
@@ -167,12 +167,20 @@ export function CompraProducto({
   nombreProducto,
   variantes,
   seckill,
+  pintuan,
+  grupoActivo,
+  productId,
 }: {
+  productId: string;
   slug: string;
   nombreProducto: string;
   variantes: { id: string; name: string; priceWithTax: number; currencyCode: string }[];
   /** 秒杀 activo sobre este producto: % de rebaja y hora de fin. */
   seckill?: { pct: number; badge: string } | null;
+  /** 拼团 configurado en el producto. */
+  pintuan?: { tamano: number; pct: number; badge: string; abrir: string; unirse: string } | null;
+  /** Código de grupo si el visitante llegó por un enlace de 拼团 de ESTE producto. */
+  grupoActivo?: string | null;
 }) {
   const [elegida, setElegida] = useState(0);
   const money = useDinero();
@@ -208,6 +216,56 @@ export function CompraProducto({
         <p className="st-prod-p">{money(v.priceWithTax, v.currencyCode)}</p>
       )}
       <AddToCartButton slug={slug} variantId={v.id} />
+      {pintuan ? (
+        <BotonGrupo
+          slug={slug}
+          productId={productId}
+          variantId={v.id}
+          precio={money(Math.round((v.priceWithTax * (100 - pintuan.pct)) / 100), v.currencyCode)}
+          pintuan={pintuan}
+          grupoActivo={grupoActivo}
+        />
+      ) : null}
     </>
+  );
+}
+
+/**
+ * 拼团 en la tarjeta: enseña el precio de grupo y, según cómo llegó el
+ * visitante, ABRE un grupo nuevo o SE UNE al del enlace. En ambos casos la
+ * compra sale al precio de grupo y el carrito lleva el código.
+ */
+function BotonGrupo({
+  slug,
+  productId,
+  variantId,
+  precio,
+  pintuan,
+  grupoActivo,
+}: {
+  slug: string;
+  productId: string;
+  variantId: string;
+  precio: string;
+  pintuan: { tamano: number; pct: number; badge: string; abrir: string; unirse: string };
+  grupoActivo?: string | null;
+}) {
+  const [ocupado, setOcupado] = useState(false);
+  async function comprar() {
+    if (ocupado) return;
+    setOcupado(true);
+    try {
+      const codigo = grupoActivo || (await iniciarGrupo(slug, productId)).codigo;
+      await comprarEnGrupo(slug, variantId, codigo);
+      window.location.href = '/cart';
+    } catch {
+      setOcupado(false);
+    }
+  }
+  return (
+    <button type="button" className="st-btn st-pt-btn" onClick={comprar} disabled={ocupado}>
+      <span className="st-pt-badge">{pintuan.badge}</span>
+      {grupoActivo ? pintuan.unirse : pintuan.abrir} · {precio}
+    </button>
   );
 }

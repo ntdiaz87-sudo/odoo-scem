@@ -2,9 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SIMBOLO_DE } from '../../../../../lib/i18n';
 import { getT } from '../../../../../lib/i18n-server';
-import { verProducto } from '../../../../../lib/panel-datos';
+import { verPintuan, verProducto } from '../../../../../lib/panel-datos';
 import { exigirSesionPagina } from '../../../../../lib/panel-sesion';
 import { FormularioProducto } from '../form';
+import { FormularioPintuan } from '../pintuan-form';
 import { FormularioVariantes } from '../variantes-form';
 
 export const dynamic = 'force-dynamic';
@@ -15,6 +16,7 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
   const t = await getT(s.mercado);
   const { producto } = await verProducto(s, id);
   if (!producto) notFound();
+  const pt = await verPintuan(s, id);
   const v = producto.variants[0];
 
   return (
@@ -58,6 +60,23 @@ export default async function EditarProducto({ params }: { params: Promise<{ id:
           enviando: t('pn.pr.guardando'),
         }}
       />
+      <section className="pn-bloque">
+        <h2 className="pn-h2">{t('pn.pt.t')}</h2>
+        <p className="pn-ayuda">{t('pn.pt.d')}</p>
+        <FormularioPintuan
+          productId={producto.id}
+          inicial={{ tamano: String(pt.tamano), pct: String(pt.pct), horas: String(pt.horas) }}
+          etiquetas={{
+            tamano: t('pn.pt.tamano'),
+            pct: t('pn.pt.pct'),
+            horas: t('pn.pt.horas'),
+            enviar: t('pn.pr.guardar'),
+            enviando: t('pn.pr.guardando'),
+          }}
+        />
+        <p className="pn-ayuda">{t('pn.pt.aviso')}</p>
+      </section>
+
       {producto.variants.length <= 1 ? (
         <section className="pn-bloque">
           <h2 className="pn-h2">{t('pn.va.crear.t')}</h2>

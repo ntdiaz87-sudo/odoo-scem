@@ -194,3 +194,80 @@ export function distribuidorGuardado(slug: string): string | null {
 export function formatMoney(minor: number, currency: string): string {
   return new Intl.NumberFormat('es', { style: 'currency', currency }).format(minor / 100);
 }
+
+/* -------------------------------- 拼团 ------------------------------------ */
+
+export interface GrupoPintuan {
+  codigo: string;
+  productId: string;
+  tamano: number;
+  unidos: number;
+  pct: number;
+  expiraEn: string;
+  estado: 'abierto' | 'completo' | 'caducado';
+}
+
+export async function verGrupo(slug: string, codigo: string): Promise<GrupoPintuan | null> {
+  const data = await shopFetch<{ grupo: GrupoPintuan | null }>(
+    slug,
+    `query G($c: String!) { grupo(codigo: $c) { codigo productId tamano unidos pct expiraEn estado } }`,
+    { c: codigo },
+  );
+  return data.grupo;
+}
+
+export async function iniciarGrupo(slug: string, productId: string): Promise<GrupoPintuan> {
+  const data = await shopFetch<{ iniciarGrupo: GrupoPintuan }>(
+    slug,
+    `mutation IG($id: ID!) { iniciarGrupo(productId: $id) { codigo productId tamano unidos pct expiraEn estado } }`,
+    { id: productId },
+  );
+  return data.iniciarGrupo;
+}
+
+const grupoKey = (slug: string) => `fabrica-g-${slug}`;
+
+/** El grupo del pedido en curso, para enseñar el enlace de compartir. */
+export function grupoGuardado(slug: string): string | null {
+  try {
+    return window.localStorage.getItem(grupoKey(slug));
+  } catch {
+    return null;
+  }
+}
+
+export function olvidarGrupo(slug: string): void {
+  try {
+    window.localStorage.removeItem(grupoKey(slug));
+  } catch {
+    /* nada */
+  }
+}
+
+/**
+ * Compra al precio de grupo: añade la variante, ata el código al pedido y
+ * fuerza el recálculo (Vendure solo re-aplica promociones cuando el carrito
+ * cambia, así que se reajusta la línea a su MISMA cantidad).
+ */
+export async function comprarEnGrupo(
+  slug: string,
+  variantId: string,
+  codigo: string,
+): Promise<ActiveOrder | null> {
+  const order = await addToCart(slug, variantId);
+  await shopFetch(
+    slug,
+    `mutation AG($input: UpdateOrderInput!) {
+      setOrderCustomFields(input: $input) { __typename ... on Order { id } }
+    }`,
+    { input: { customFields: { grupo: codigo } } },
+  );
+  const linea = order.lines.find(l => l.productVariant.id === variantId) || order.lines[0];
+  const actualizado = linea ? await adjustLine(slug, linea.id, linea.quantity) : order;
+  try {
+    window.localStorage.setItem(grupoKey(slug), codigo);
+  } catch {
+    /* sin memoria: el pedido igual lleva el grupo */
+  }
+  return actualizado;
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { shopFetch } from '../../../../lib/shop-client';
+import { GrupoPintuan, grupoGuardado, olvidarGrupo, shopFetch, verGrupo } from '../../../../lib/shop-client';
 import { useDinero, useTt } from '../../../../lib/tienda-locale';
 
 interface PlacedOrder {
@@ -17,6 +17,30 @@ export function ThanksView({ slug, nombre }: { slug: string; nombre: string }) {
   const money = useDinero();
   const [code, setCode] = useState('');
   const [order, setOrder] = useState<PlacedOrder | null>(null);
+  const [grupo, setGrupo] = useState<GrupoPintuan | null>(null);
+  const [copiado, setCopiado] = useState(false);
+
+  useEffect(() => {
+    const codigo = grupoGuardado(slug);
+    if (!codigo) return;
+    verGrupo(slug, codigo)
+      .then(gr => {
+        // Abierto: se comparte. Completo: se celebra. Caducado: ni una ni otra.
+        if (gr && gr.estado !== 'caducado') setGrupo(gr);
+        else olvidarGrupo(slug);
+      })
+      .catch(() => undefined);
+  }, [slug]);
+
+  async function copiarEnlace() {
+    if (!grupo) return;
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/?g=${grupo.codigo}`);
+      setCopiado(true);
+    } catch {
+      /* sin permiso de portapapeles: el enlace queda visible para copiarlo a mano */
+    }
+  }
 
   useEffect(() => {
     const c = new URLSearchParams(window.location.search).get('pedido') || '';
@@ -60,6 +84,28 @@ export function ThanksView({ slug, nombre }: { slug: string; nombre: string }) {
             </>
           ) : null}
         </dl>
+      ) : null}
+
+      {grupo ? (
+        <div className="st-pt-compartir" data-testid="pt-compartir">
+          <b>{t('st.pt.banner.t')}</b>
+          <p className="st-caja-txt">
+            {t('st.pt.progreso', { u: String(grupo.unidos), n: String(grupo.tamano) })}
+            {grupo.unidos < grupo.tamano
+              ? ` · ${t('st.pt.faltan', { f: String(grupo.tamano - grupo.unidos) })}`
+              : ` · ${t('st.pt.completo')}`}
+          </p>
+          {grupo.estado === 'abierto' ? (
+            <>
+              <p className="st-caja-txt">{t('st.pt.comparte')}</p>
+              <code className="st-pt-enlace">{typeof window !== 'undefined' ? `${window.location.origin}/?g=${grupo.codigo}` : ''}</code>
+              <button type="button" className="st-btn" onClick={copiarEnlace}>
+                {copiado ? t('st.pt.copiado') : t('st.pt.copiar')}
+              </button>
+              <p className="st-gracias-nota">{t('st.pt.nota')}</p>
+            </>
+          ) : null}
+        </div>
       ) : null}
 
       <p className="st-gracias-nota">{t('g.nota')}</p>

@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { dominioOcupado, nombreTxt, normalizarDominio, nuevoTestigo } from '../../lib/dominios';
 import { MONEDA_DE, esLocaleValido } from '../../lib/i18n';
 import { getT } from '../../lib/i18n-server';
-import { borrarPromo, cobrarPedido, crearCupon, crearGruposDeVariantes, crearProducto, crearSeckill, enviarPedido, ajustarSaldo, cobrarConSaldo, guardarDistribuidores, guardarDominio, guardarProducto, guardarVariantes, informeDistribuidores, verDominio, verProducto } from '../../lib/panel-datos';
+import { borrarPromo, cobrarPedido, crearCupon, crearGruposDeVariantes, crearProducto, crearSeckill, enviarPedido, ajustarSaldo, cobrarConSaldo, guardarDistribuidores, guardarDominio, guardarPintuan, guardarProducto, guardarVariantes, informeDistribuidores, verDominio, verProducto } from '../../lib/panel-datos';
 import { COOKIE_PANEL, LANG_CANAL, leerSesion, opcionesCookie } from '../../lib/panel-sesion';
 import { adminLogin, adminRequest, ownerLogin, ownerLogout, ownerMe, panelRequest } from '../../lib/vendure';
 
@@ -523,4 +523,22 @@ export async function accionCobrarConSaldo(_prev: Estado, datos: FormData): Prom
   if (error) return { error: t('pn.error', { msg: error }) };
   revalidatePath(`/panel/pedidos/${pedidoId}`);
   return { ok: t('pn.pe.saldo.ok') };
+}
+
+/* --------------------------------- 拼团 ----------------------------------- */
+
+export async function accionPintuan(_prev: Estado, datos: FormData): Promise<Estado> {
+  const s = await exigirSesion();
+  const t = await getT(s.mercado);
+  const productId = String(datos.get('productId') || '');
+  const tamano = Math.max(0, Math.round(Number(datos.get('tamano') || 0)));
+  const pct = Math.max(0, Math.round(Number(datos.get('pct') || 0)));
+  const horas = Math.max(1, Math.round(Number(datos.get('horas') || 24)));
+  if (!productId || tamano > 50 || pct > 90 || (tamano >= 2 && pct <= 0)) {
+    return { error: t('pn.mk.falta') };
+  }
+  const error = await guardarPintuan(s, productId, { tamano, pct, horas });
+  if (error) return { error: t('pn.error', { msg: error }) };
+  revalidatePath(`/panel/productos/${productId}`);
+  return { ok: t('pn.pr.guardado') };
 }

@@ -11,7 +11,7 @@
  * idioma de interfaz) dejaría de verse en la tienda.
  */
 import type { SesionPanel } from './panel-sesion';
-import { adminLogin, adminRequest, panelRequest } from './vendure';
+import { adminLogin, adminRequest, panelRequest, shopQuery } from './vendure';
 
 const IDIOMA_TRADUCCION = 'en';
 
@@ -910,4 +910,101 @@ export async function saldoDelPedido(
   if (!o?.customer) return null;
   if (!(o.payments || []).some(p => p.state === 'Authorized')) return null;
   return { saldo: o.customer.customFields?.saldo ?? 0, total: o.totalWithTax };
+}
+
+/* --------------------------------- 拼团 ----------------------------------- */
+
+export interface PintuanConfig {
+  tamano: number;
+  pct: number;
+  horas: number;
+}
+
+export async function verPintuan(s: SesionPanel, productId: string): Promise<PintuanConfig> {
+  const r = await panelRequest<{
+    product: { customFields?: { ptTamano?: number | null; ptPct?: number | null; ptHoras?: number | null } | null } | null;
+  }>(
+    s.token,
+    s.canal.token,
+    `query Pt($id: ID!) { product(id: $id) { customFields { ptTamano ptPct ptHoras } } }`,
+    { id: productId },
+  );
+  const cf = r.data?.product?.customFields;
+  return { tamano: cf?.ptTamano ?? 0, pct: cf?.ptPct ?? 0, horas: cf?.ptHoras ?? 24 };
+}
+
+/**
+ * Guarda el 拼团 del producto y garantiza que el canal tiene SU promoción
+ * (condición + acción propias del plugin). La promoción es una por canal y
+ * se crea una sola vez, con el superadmin porque lleva componentes que el
+ * rol del dueño no conoce.
+ */
+export async function guardarPintuan(
+  s: SesionPanel,
+  productId: string,
+  cfg: PintuanConfig,
+): Promise<string | undefined> {
+  const r = await panelRequest<{ updateProduct: { id: string } }>(
+    s.token,
+    s.canal.token,
+    `mutation Pt($input: UpdateProductInput!) { updateProduct(input: $input) { id } }`,
+    { input: { id: productId, customFields: { ptTamano: cfg.tamano, ptPct: cfg.pct, ptHoras: cfg.horas } } },
+  );
+  if (r.error) return r.error;
+  if (cfg.tamano < 2 || cfg.pct <= 0) return undefined; // apagado: no hace falta promoción
+  try {
+    const auth = await adminLogin();
+    const lista = await adminRequest<{ promotions: { items: Array<{ actions: Array<{ code: string }> }> } }>(
+      auth,
+      `{ promotions(options: { take: 100 }) { items { actions { code } } } }`,
+      undefined,
+      s.canal.token,
+    );
+    const ya = lista.promotions.items.some(p => p.actions.some(a => a.code === 'descuento-pintuan'));
+    if (!ya) {
+      await adminRequest(
+        auth,
+        `mutation Promo($input: CreatePromotionInput!) { createPromotion(input: $input) {
+          __typename ... on Promotion { id } ... on ErrorResult { message }
+        } }`,
+        {
+          input: {
+            enabled: true,
+            translations: [{ languageCode: IDIOMA_TRADUCCION, name: '拼团' }],
+            conditions: [{ code: 'grupo-pintuan', arguments: [] }],
+            actions: [{ code: 'descuento-pintuan', arguments: [] }],
+          },
+        },
+        s.canal.token,
+      );
+    }
+    return undefined;
+  } catch (err) {
+    return err instanceof Error ? err.message : 'x';
+  }
+}
+
+/** Estado del grupo de un pedido, para que el comerciante sepa si cobrar. */
+export async function grupoDelPedido(
+  s: SesionPanel,
+  pedidoId: string,
+): Promise<{ codigo: string; unidos: number; tamano: number; estado: string } | null> {
+  const r = await panelRequest<{ order: { customFields?: { grupo?: string | null } | null } | null }>(
+    s.token,
+    s.canal.token,
+    `query G($id: ID!) { order(id: $id) { customFields { grupo } } }`,
+    { id: pedidoId },
+  );
+  const codigo = r.data?.order?.customFields?.grupo;
+  if (!codigo) return null;
+  try {
+    const g = await shopQuery<{ grupo: { codigo: string; unidos: number; tamano: number; estado: string } | null }>(
+      s.canal.token,
+      `query G($c: String!) { grupo(codigo: $c) { codigo unidos tamano estado } }`,
+      { c: codigo },
+    );
+    return g.grupo;
+  } catch {
+    return null;
+  }
 }

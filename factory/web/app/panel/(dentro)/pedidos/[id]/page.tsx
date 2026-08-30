@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getT } from '../../../../../lib/i18n-server';
 import { fecha, money } from '../../../../../lib/i18n';
-import { saldoDelPedido, verPedido } from '../../../../../lib/panel-datos';
+import { grupoDelPedido, saldoDelPedido, verPedido } from '../../../../../lib/panel-datos';
 import { exigirSesionPagina } from '../../../../../lib/panel-sesion';
 import { etiquetaEstado } from '../../../../../lib/panel-estados';
 import { AccionesPedido } from './acciones-pedido';
@@ -20,6 +20,7 @@ export default async function DetallePedido({ params }: { params: Promise<{ id: 
   // 会员储值: si el cliente tiene saldo que cubre el pedido, se ofrece cobrar
   // contra él en vez de esperar una transferencia.
   const saldoInfo = await saldoDelPedido(s, id);
+  const grupoInfo = await grupoDelPedido(s, id);
   const conSaldo = saldoInfo && saldoInfo.saldo >= saldoInfo.total && saldoInfo.total > 0;
 
   return (
@@ -66,6 +67,16 @@ export default async function DetallePedido({ params }: { params: Promise<{ id: 
         </dl>
       </section>
 
+      {grupoInfo ? (
+        <section className={`pn-bloque pn-pt-estado pn-pt-estado--${grupoInfo.estado}`}>
+          {t('pn.pe.grupo', {
+            c: grupoInfo.codigo,
+            u: String(grupoInfo.unidos),
+            n: String(grupoInfo.tamano),
+            e: t(`pn.pt.e.${grupoInfo.estado}`),
+          })}
+        </section>
+      ) : null}
       {conSaldo ? (
         <CobroConSaldo
           pedidoId={id}

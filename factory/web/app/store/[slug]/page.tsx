@@ -58,6 +58,7 @@ interface ChannelData {
       name: string;
       slug: string;
       description: string;
+      customFields?: { ptTamano?: number | null; ptPct?: number | null } | null;
       variants: Array<{ id: string; name: string; priceWithTax: number; currencyCode: string }>;
     }>;
   };
@@ -76,8 +77,25 @@ function parseDesign(raw: string | null | undefined): StoreDesign {
 
 
 
-export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
+interface GrupoInfo {
+  codigo: string;
+  productId: string;
+  tamano: number;
+  unidos: number;
+  pct: number;
+  expiraEn: string;
+  estado: string;
+}
+
+export default async function StorePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ g?: string }>;
+}) {
   const { slug } = await params;
+  const { g } = await searchParams;
   let data: ChannelData;
   try {
     data = await shopQuery<ChannelData>(
@@ -94,6 +112,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           totalItems
           items {
             id name slug description
+            customFields { ptTamano ptPct }
             assets { id preview }
             variants { id name priceWithTax currencyCode }
           }
@@ -111,6 +130,22 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
   for (const sk of seckills) {
     for (const id of sk.variantIds) {
       rebajaVar.set(id, Math.max(rebajaVar.get(id) ?? 0, sk.pct));
+    }
+  }
+
+  // 拼团: si la visita llega por el enlace de un grupo, se consulta su estado
+  // para el banner y para que la tarjeta del producto ofrezca UNIRSE.
+  let grupo: GrupoInfo | null = null;
+  if (g) {
+    try {
+      const rg = await shopQuery<{ grupo: GrupoInfo | null }>(
+        slug,
+        `query G($c: String!) { grupo(codigo: $c) { codigo productId tamano unidos pct expiraEn estado } }`,
+        { c: g },
+      );
+      grupo = rg.grupo;
+    } catch {
+      /* código inventado: sin banner */
     }
   }
 
@@ -176,6 +211,17 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
           </ul>
         ) : null}
 
+        {grupo ? (
+          <aside className={`st-pt-banner${grupo.estado !== 'abierto' ? ' st-pt-banner--fin' : ''}`}>
+            <b>{t('st.pt.banner.t')}</b>{' '}
+            {grupo.estado === 'completo'
+              ? t('st.pt.completo')
+              : grupo.estado === 'caducado'
+                ? t('st.pt.caducado')
+                : `${t('st.pt.progreso', { u: String(grupo.unidos), n: String(grupo.tamano) })} · ${t('st.pt.faltan', { f: String(grupo.tamano - grupo.unidos) })}`}
+          </aside>
+        ) : null}
+
         <section className="st-catalogo" id="catalogo">
           <div className="st-sec-cabeza">
             <h2 className="st-h2">{t('st.nuestros')}</h2>
@@ -203,8 +249,17 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
                       {p.variants.length > 0 ? (
                         <CompraProducto
                           slug={slug}
+                          productId={p.id}
                           nombreProducto={p.name}
                           variantes={p.variants}
+                          pintuan={(p.customFields?.ptTamano ?? 0) >= 2 && (p.customFields?.ptPct ?? 0) > 0 ? {
+                            tamano: p.customFields!.ptTamano!,
+                            pct: p.customFields!.ptPct!,
+                            badge: t('st.pt.badge', { n: String(p.customFields!.ptTamano), pct: String(p.customFields!.ptPct) }),
+                            abrir: t('st.pt.abrir'),
+                            unirse: t('st.pt.unirse'),
+                          } : null}
+                          grupoActivo={grupo && grupo.estado === 'abierto' && grupo.productId === p.id ? grupo.codigo : null}
                           seckill={(() => {
                             const pct = Math.max(0, ...p.variants.map(v => rebajaVar.get(v.id) ?? 0));
                             return pct > 0 ? { pct, badge: t('st.sk.badge', { pct: String(pct) }) } : null;
