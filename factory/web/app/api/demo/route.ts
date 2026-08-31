@@ -4,11 +4,17 @@ import { takenDesignKeys } from '../../../lib/design-registry';
 import { esPlantilla } from '../../../lib/plantillas';
 import { findDesign, type StoreDesign } from '../../../lib/designs';
 import { LOCALE, MONEDA_DE, esLocaleValido, type Locale } from '../../../lib/i18n';
+import { getT } from '../../../lib/i18n-server';
 import { rootDomain, slugify, storeUrl } from '../../../lib/tenant';
 import { LANG_CANAL } from '../../../lib/panel-sesion';
 import { adminLogin, adminRequest } from '../../../lib/vendure';
 
-const ZH = LOCALE === 'zh';
+/**
+ * Los errores de esta ruta salían de una constante fijada AL COMPILAR
+ * (`LOCALE === 'zh'`), así que un comerciante que estaba viendo la página en
+ * español recibía el aviso en chino, y uno en inglés también. Ahora se
+ * resuelven con el idioma del visitante, como el resto del sitio.
+ */
 
 // El idioma de canal por mercado vive en lib/panel-sesion: lo usan también los
 // ajustes del panel, y con dos copias una se queda atrás.
@@ -108,6 +114,9 @@ function apuntarCreacion(ip: string) {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export async function POST(req: NextRequest) {
+  // Idioma del visitante: sus avisos salen en el idioma en el que está
+  // mirando la página, no en el del build.
+  const t = await getT();
   let payload: {
     storeName?: string;
     designKey?: string;
@@ -119,7 +128,7 @@ export async function POST(req: NextRequest) {
   try {
     payload = await req.json();
   } catch {
-    return NextResponse.json({ error: ZH ? '请求无效。' : 'Petición inválida.' }, { status: 400 });
+    return NextResponse.json({ error: t('demo.err.peticion') }, { status: 400 });
   }
   const storeName = (payload.storeName || '').trim();
   const ownerEmail = (payload.ownerEmail || '').trim().toLowerCase();
@@ -130,13 +139,13 @@ export async function POST(req: NextRequest) {
   const lang = LANG_CANAL[mercado];
   const moneda = MONEDA_DE[mercado];
   if (storeName.length < 2 || storeName.length > 40) {
-    return NextResponse.json({ error: ZH ? '商店名称需要 2 到 40 个字。' : 'El nombre debe tener entre 2 y 40 caracteres.' }, { status: 400 });
+    return NextResponse.json({ error: t('demo.err.nombre') }, { status: 400 });
   }
   if (!EMAIL_RE.test(ownerEmail)) {
-    return NextResponse.json({ error: ZH ? '请填写有效邮箱：这是你登录后台的账号。' : 'Escribe un correo válido: será tu usuario del panel.' }, { status: 400 });
+    return NextResponse.json({ error: t('demo.err.correo') }, { status: 400 });
   }
   if (ownerPassword.length < 8) {
-    return NextResponse.json({ error: ZH ? '密码至少 8 位。' : 'La contraseña debe tener al menos 8 caracteres.' }, { status: 400 });
+    return NextResponse.json({ error: t('demo.err.clave') }, { status: 400 });
   }
   // El ÚLTIMO valor de x-forwarded-for es el que añade nuestro proxy (Caddy
   // lo apila), así que es el único que el visitante no puede inventarse. Con
@@ -147,9 +156,7 @@ export async function POST(req: NextRequest) {
   if (esperaMin > 0) {
     return NextResponse.json(
       {
-        error: ZH
-          ? `这个网络刚创建了很多体验店。请 ${esperaMin} 分钟后再试，或换个网络。`
-          : `Se han creado muchas tiendas demo desde esta red. Vuelve a intentarlo en ${esperaMin} min, o desde otra conexión.`,
+        error: t('demo.err.valvula', { min: String(esperaMin) }),
         reintentarEnMin: esperaMin,
       },
       { status: 429, headers: { 'Retry-After': String(esperaMin * 60) } },
@@ -173,7 +180,7 @@ export async function POST(req: NextRequest) {
       const taken = await takenDesignKeys(auth);
       if (taken.has(customDesign.key)) {
         return NextResponse.json(
-          { error: ZH ? '这套设计刚被别的商店选走了，请换一批。' : 'Ese diseño acaba de ser tomado por otra tienda. Pide nuevas propuestas.' },
+          { error: t('demo.err.disenotomado') },
           { status: 409 },
         );
       }
@@ -189,7 +196,7 @@ export async function POST(req: NextRequest) {
     );
     if (existing.administrators.totalItems > 0) {
       return NextResponse.json(
-        { error: ZH ? '这个邮箱已经有商店了。请换一个邮箱，或联系我们找回。' : 'Ese correo ya tiene una tienda. Usa otro correo o escríbenos para recuperarla.' },
+        { error: t('demo.err.correoconTienda') },
         { status: 409 },
       );
     }
@@ -266,7 +273,7 @@ export async function POST(req: NextRequest) {
     if (!channel) {
       return NextResponse.json(
         {
-          error: ZH ? '这个名称已被占用，换一个试试。' : 'Ese nombre ya está en uso. Prueba con otro.',
+          error: t('demo.err.nombretomado'),
           detalle: ultimoError,
         },
         { status: 409 },
@@ -431,7 +438,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error('[demo] Error creando tienda sandbox:', err);
     return NextResponse.json(
-      { error: ZH ? '创建失败，请稍后重试。' : 'No se pudo crear la tienda demo. Inténtalo de nuevo en un momento.' },
+      { error: t('demo.err.general') },
       { status: 500 },
     );
   }
