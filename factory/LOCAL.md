@@ -1,4 +1,4 @@
-# La fábrica en tu portátil
+# Fábrica de tiendas online — copia local
 
 Guía para tener **todo el sistema corriendo en local**: el motor de comercio,
 la web pública, el asistente de creación, el panel del comerciante y las
@@ -111,6 +111,11 @@ cosa, cámbialos en `docker-compose.yml` (la parte izquierda de `'8300:3000'`).
 - **El dominio propio del comerciante**: en local no hay certificados ni DNS.
   El código está, pero se prueba en el servidor.
 - **El agente de IA**: necesita una clave de modelo.
+
+## Traer cambios nuevos
+
+Cuando haya trabajo nuevo en la rama, se actualiza con dos comandos. Está en
+[`ACTUALIZAR.md`](ACTUALIZAR.md).
 
 ## Las pruebas
 

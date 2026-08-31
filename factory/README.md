@@ -59,7 +59,7 @@ cd factory/web && npm install && npm run dev   # http://localhost:8300
 
 Todo el sistema levanta con Docker en tres comandos. Está en
 [`LOCAL.md`](LOCAL.md), con el detalle de por dónde entrar y qué hacer si algo
-no arranca.
+no arranca. Para traer cambios nuevos después, [`ACTUALIZAR.md`](ACTUALIZAR.md).
 
 ## Pruebas
 
