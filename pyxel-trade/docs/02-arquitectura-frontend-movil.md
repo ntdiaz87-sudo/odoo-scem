@@ -335,7 +335,19 @@ técnica.
 **Recursos del GEX44.** Es compartido. Añadir un proceso Node de SSR en la
 fase 3 hay que presupuestarlo, no improvisarlo.
 
-**Sin medir todavía.** El peso real del paquete de Odoo 19 y la latencia
-China → Alemania son los dos números que faltan, y ambos pueden mover la
-fase 3 hacia adelante o hacia atrás. Se miden el día que el servidor esté
-en pie.
+**Ya no falta el peso: falta la latencia.** De los dos números que este
+documento dejaba pendientes, el del paquete de Odoo se midió el 30 de
+agosto sobre el despliegue real y está arriba — 756 KB en la primera
+visita, con la portada aún sin una sola foto. Ese dato ya no admite
+lectura: la fase 2 pasó de opción a consecuencia.
+
+El que sigue sin medir es la **latencia China → Alemania**, y no se puede
+medir desde el servidor: haría falta un punto de observación en China. Si
+resulta molesta, la respuesta es un borde en Hong Kong o Singapur para la
+puerta del proveedor, no mover el servidor.
+
+**Y queda una medición barata pendiente:** la visita repetida. Los assets
+llevan hash en la URL y `Cache-Control: public, max-age=31536000,
+immutable` — comprobado en producción—, así que el objetivo de ≤ 50 KB
+debería cumplirse solo. Basta con abrir la portada dos veces con las
+herramientas del navegador.
