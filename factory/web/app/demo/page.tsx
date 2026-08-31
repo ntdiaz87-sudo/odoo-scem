@@ -129,7 +129,13 @@ export default function DemoWizard() {
         body: JSON.stringify({ storeName: storeName.trim(), design, mercado, ownerEmail: ownerEmail.trim(), ownerPassword }),
       });
       const data = await res.json();
-      if (!res.ok || !data.url) throw new Error(data.error || t('val.error'));
+      if (!res.ok || !data.url) {
+        // El servidor dice en qué paso se rompió y con qué motivo. Se enseña
+        // junto al aviso porque este servicio corre en un servidor cuyo log
+        // no siempre está a mano, y sin esto un fallo es indiagnosticable.
+        const pista = data.paso ? ` [${data.paso}${data.motivo ? `: ${data.motivo}` : ''}]` : '';
+        throw new Error((data.error || t('val.error')) + pista);
+      }
       setCreated(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('val.error'));

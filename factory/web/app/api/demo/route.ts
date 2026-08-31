@@ -117,6 +117,7 @@ export async function POST(req: NextRequest) {
   // Idioma del visitante: sus avisos salen en el idioma en el que está
   // mirando la página, no en el del build.
   const t = await getT();
+  let paso = 'inicio';
   let payload: {
     storeName?: string;
     designKey?: string;
@@ -170,6 +171,11 @@ export async function POST(req: NextRequest) {
   const baseSlug = slugify(storeName) || 'tienda';
 
   try {
+    // Este servicio se despliega en un servidor al que no siempre se tiene
+    // acceso para leer logs. Cuando algo revienta, el usuario recibe un aviso
+    // genérico y el motivo se queda dentro; con el paso en la respuesta, la
+    // propia pantalla dice DÓNDE se rompió, que es la mitad del diagnóstico.
+    paso = 'conectar-motor';
     const auth = await adminLogin();
 
     // Registro de unicidad: la huella elegida no puede pertenecer ya a otra
@@ -187,6 +193,7 @@ export async function POST(req: NextRequest) {
     }
 
     // El correo del dueño debe estar libre ANTES de crear nada.
+    paso = 'comprobar-correo';
     const existing = await adminRequest<{ administrators: { totalItems: number } }>(
       auth,
       `query CheckEmail($email: String!) {
@@ -201,6 +208,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    paso = 'zonas';
     const zonesData = await adminRequest<{ zones: { items: Array<{ id: string; name: string }> } }>(
       auth,
       `{ zones(options: { take: 10 }) { items { id name } } }`,
@@ -261,6 +269,7 @@ export async function POST(req: NextRequest) {
         console.error('[demo] createChannel falló:', ultimoError);
         continue;
       }
+      paso = 'crear-canal';
       if (result.createChannel.__typename === 'Channel') {
         channel = { id: result.createChannel.id!, token: result.createChannel.token! };
       } else {
@@ -282,6 +291,7 @@ export async function POST(req: NextRequest) {
 
     // La tienda debe poder vender desde el minuto uno: se le asignan los
     // métodos de envío y de pago de la plataforma a su canal.
+    paso = 'metodos';
     const methods = await adminRequest<{
       shippingMethods: { items: Array<{ id: string }> };
       paymentMethods: { items: Array<{ id: string; enabled: boolean; handler: { code: string } }> };
@@ -322,6 +332,7 @@ export async function POST(req: NextRequest) {
       }
     }
     if (shippingMethodIds.length) {
+      paso = 'asignar-envio';
       await adminRequest(
         auth,
         `mutation AssignShipping($input: AssignShippingMethodsToChannelInput!) {
@@ -331,6 +342,7 @@ export async function POST(req: NextRequest) {
       );
     }
     if (paymentMethodIds.length) {
+      paso = 'asignar-pago';
       await adminRequest(
         auth,
         `mutation AssignPayment($input: AssignPaymentMethodsToChannelInput!) {
@@ -350,6 +362,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    paso = 'impuestos';
     const taxData = await adminRequest<{ taxCategories: { items: Array<{ id: string }> } }>(
       auth,
       `{ taxCategories { items { id } } }`,
@@ -357,6 +370,7 @@ export async function POST(req: NextRequest) {
     const taxCategoryId = taxData.taxCategories.items[0]?.id;
 
     for (const p of CATALOGO[mercado]) {
+      paso = 'productos';
       const created = await adminRequest<{ createProduct: { id: string } }>(
         auth,
         `mutation CreateProduct($input: CreateProductInput!) {
@@ -394,6 +408,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Cuenta del dueño: rol restringido a SU canal + administrador.
+    paso = 'rol-del-dueno';
     const role = await adminRequest<{ createRole: { id: string } }>(
       auth,
       `mutation CreateRole($input: CreateRoleInput!) {
@@ -408,6 +423,7 @@ export async function POST(req: NextRequest) {
         },
       },
     );
+    paso = 'cuenta-del-dueno';
     await adminRequest(
       auth,
       `mutation CreateAdmin($input: CreateAdministratorInput!) {
@@ -436,9 +452,13 @@ export async function POST(req: NextRequest) {
       expiresAt,
     });
   } catch (err) {
-    console.error('[demo] Error creando tienda sandbox:', err);
+    const motivo = err instanceof Error ? err.message : String(err);
+    console.error(`[demo] Error creando tienda sandbox en el paso "${paso}":`, err);
     return NextResponse.json(
-      { error: t('demo.err.general') },
+      // `paso` y `motivo` vienen de NUESTRO propio API de administración, no
+      // de la base ni del sistema: no hay nada sensible que filtrar y sin
+      // ellos un fallo en el servidor es indiagnosticable desde fuera.
+      { error: t('demo.err.general'), paso, motivo: motivo.slice(0, 300) },
       { status: 500 },
     );
   }
