@@ -39,22 +39,26 @@ export class Grupo extends VendureEntity {
     super(input);
   }
 
-  @Column({ unique: true })
+  // OJO: el tipo de cada columna va EXPLÍCITO. Sin él, TypeORM lo deduce de
+  // los metadatos del decorador, que `tsc` emite pero `tsx` no — y la semilla
+  // corre con `tsx`. En producción el arranque es `seed && start`, así que
+  // una entidad sin tipos tumbaba la semilla y con ella el motor entero.
+  @Column({ type: 'varchar', unique: true })
   codigo: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   channelToken: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   productId: string;
 
-  @Column('int')
+  @Column({ type: 'int' })
   tamano: number;
 
-  @Column('int')
+  @Column({ type: 'int' })
   pct: number;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   expiraEn: Date;
 }
 
