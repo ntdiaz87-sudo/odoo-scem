@@ -27,6 +27,10 @@ cd odoo-scem/factory
 docker compose up -d --build
 ```
 
+Si solo quieres ejecutarlo y no te hace falta el historial, el clon va mucho
+más rápido con `--depth 1` añadido al `git clone`. Para actualizar después
+sirve igual.
+
 La primera construcción tarda **entre 5 y 15 minutos**: descarga las imágenes
 base, instala dependencias y compila las dos aplicaciones. Las siguientes veces
 arranca en segundos.
@@ -62,8 +66,16 @@ Si usas otro navegador y no cargan, esa es la causa.
 4. Al terminar te da tres enlaces: tu tienda, tu panel y tus canales.
 
 Ese correo y esa contraseña son tu usuario del panel. La tienda nace con cuatro
-productos de ejemplo para que puedas probar el flujo entero: comprar, cobrar,
-enviar.
+productos de ejemplo —sin foto todavía— para que puedas probar el flujo entero:
+comprar, cobrar, enviar.
+
+### Dos límites que verás probando, y no son fallos
+
+- **Un correo, una tienda.** Si repites el correo, te dice que ya tiene tienda.
+  Usa otro para crear la siguiente.
+- **Diez tiendas por hora.** El asistente tiene una válvula anti-abuso por
+  dirección de red y en tu portátil todas salen de la misma. A la undécima te
+  dirá cuántos minutos faltan. Se libera sola; no hay nada que reiniciar.
 
 ## El día a día
 
@@ -102,6 +114,10 @@ la propia pantalla también verás entre corchetes en qué paso se rompió.
 cosa, cámbialos en `docker-compose.yml` (la parte izquierda de `'8300:3000'`).
 
 **Se quedó sin espacio.** `docker system prune -a` libera imágenes viejas.
+
+**Windows: el reloj de los contenedores.** Si Docker Desktop lleva días
+suspendido, el reloj interno se desfasa y las promociones con hora de fin
+(秒杀, 拼团) se comportan raro. Reiniciar Docker Desktop lo corrige.
 
 ## Lo que NO se lleva la copia local
 

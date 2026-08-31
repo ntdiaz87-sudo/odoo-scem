@@ -44,6 +44,7 @@ arregló y por qué.
 | Código del motor o un plugin nuevo | `up -d --build` (reconstruye Vendure) |
 | Campos nuevos en la base | nada especial: se crean solos al arrancar |
 | Solo documentación | nada, es un `git pull` y ya |
+| Una batería o el loop de pruebas | nada: corren fuera de Docker |
 
 **No hace falta borrar la base de datos casi nunca.** El esquema se sincroniza
 solo al arrancar el motor, y las tiendas que hayas creado en local se conservan
@@ -80,6 +81,11 @@ la semilla muere, el motor no llega a levantar y todo lo que hable con él falla
 
 **La web arranca pero se ve rara.** Suele ser caché del navegador con estilos
 viejos. Recarga forzando: `Ctrl` + `Shift` + `R`.
+
+**Una tienda se ve rara pero la fábrica no.** Las tiendas son instalables como
+aplicación (PWA) y guardan un service worker con la versión anterior. En las
+herramientas del navegador, pestaña *Application* → *Service Workers* →
+*Unregister*, y recarga.
 
 **La construcción falla a medias.** Reconstruye sin caché:
 
