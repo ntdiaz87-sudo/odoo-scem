@@ -55,6 +55,12 @@ cd factory/web && npm install && npm run dev   # http://localhost:8300
 | `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USERNAME` / `DB_PASSWORD` | vendure | `localhost` / `5432` / `vendure`×3 | Conexión PostgreSQL. |
 | `SUPERADMIN_USERNAME` / `SUPERADMIN_PASSWORD` | ambos | `superadmin` | Credenciales de administración (el web las usa para provisionar demos). |
 
+## Copia local en tu máquina
+
+Todo el sistema levanta con Docker en tres comandos. Está en
+[`LOCAL.md`](LOCAL.md), con el detalle de por dónde entrar y qué hacer si algo
+no arranca.
+
 ## Pruebas
 
 Todo se comprueba de punta a punta con navegador real contra la réplica local.

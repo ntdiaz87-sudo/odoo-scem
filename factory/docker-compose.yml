@@ -1,8 +1,12 @@
-# Fábrica de tiendas online — Fase 0
+# Fábrica de tiendas online — todo el sistema en local.
+# Guía completa: LOCAL.md
+#
 # Levanta todo con:  docker compose up -d --build
 # Web pública:       http://localhost:8300
-# Tiendas demo:      http://verdealto.localhost:8300  ·  http://nocta.localhost:8300
-# Panel Vendure:     http://localhost:8301/dashboard  (superadmin / superadmin)
+# Asistente:         http://localhost:8300/demo
+# Panel del dueño:   http://localhost:8300/panel
+# Tiendas de ejemplo: http://qingzhu.localhost:8300 · http://noctachina.localhost:8300
+# Consola Vendure:   http://localhost:8301/dashboard  (superadmin / superadmin)
 name: fabrica
 
 services:

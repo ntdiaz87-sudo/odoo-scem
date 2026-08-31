@@ -1,0 +1,8 @@
+# Mismo motivo que en web/: `npm ci` primero y `COPY . .` después.
+node_modules
+dist
+.env
+npm-debug.log*
+.git
+# Los assets subidos en pruebas locales no son parte de la imagen.
+static/assets

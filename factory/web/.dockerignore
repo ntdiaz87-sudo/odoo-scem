@@ -1,0 +1,10 @@
+# El Dockerfile hace `npm ci` y DESPUÉS `COPY . .`. Sin este fichero, el
+# node_modules de la máquina de quien construye se copia encima del que acaba
+# de instalar el contenedor: en un portátil Windows o Mac eso mete binarios
+# de otra plataforma y la construcción sale rota de formas difíciles de leer.
+node_modules
+.next
+.env
+.env.local
+npm-debug.log*
+.git
